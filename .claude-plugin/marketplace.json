@@ -1,0 +1,23 @@
+{
+  "name": "jabworks-agentic-toolkit",
+  "version": "1.0.0",
+  "plugins": [
+    {
+      "name": "session-handoff",
+      "description": "Creates and resumes handoff documents for seamless Claude Code session transitions. Use when context window approaches capacity or a work session is ending.",
+      "source": "./dist/plugins/session-handoff",
+      "strict": false,
+      "skills": [
+        "./skills/session-handoff"
+      ],
+      "category": "development",
+      "keywords": [
+        "handoff",
+        "context",
+        "session",
+        "resume",
+        "development"
+      ]
+    }
+  ]
+}
