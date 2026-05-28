@@ -1,63 +1,38 @@
 {
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "jabworks-agentic-toolkit",
-  "version": "1.2.0",
+  "description": "Hieu Vi's personal Claude Code toolkit: session handoff, plugin scaffolding, and stack-specific skill adapting.",
+  "owner": {
+    "name": "Hieu Vi",
+    "email": "hieu1871998@gmail.com"
+  },
   "plugins": [
     {
       "name": "session-handoff",
       "description": "Creates and resumes handoff documents for seamless Claude Code session transitions. Use when context window approaches capacity or a work session is ending.",
+      "author": {
+        "name": "Hieu Vi"
+      },
       "source": "./dist/plugins/session-handoff",
-      "strict": false,
-      "skills": [
-        "./skills/session-handoff"
-      ],
-      "category": "development",
-      "keywords": [
-        "handoff",
-        "context",
-        "session",
-        "resume",
-        "development"
-      ]
+      "category": "development"
     },
     {
       "name": "plugin-foundry",
       "description": "Create and maintain skills in jabworks/agentic-toolkit: scaffold, register in marketplace, sync dist mirror, and publish.",
+      "author": {
+        "name": "Hieu Vi"
+      },
       "source": "./dist/plugins/plugin-foundry",
-      "strict": false,
-      "skills": [
-        "./skills/plugin-foundry"
-      ],
-      "category": "development",
-      "keywords": [
-        "plugin",
-        "skill",
-        "scaffold",
-        "marketplace",
-        "toolkit",
-        "dist"
-      ]
+      "category": "development"
     },
     {
       "name": "adapting-skills",
       "description": "Use when adapting a generic skill or scaffolding code to match Harvey's stack, conventions, and working preferences.",
+      "author": {
+        "name": "Hieu Vi"
+      },
       "source": "./dist/plugins/adapting-skills",
-      "strict": false,
-      "skills": [
-        "./skills/adapting-skills"
-      ],
-      "category": "development",
-      "keywords": [
-        "profile",
-        "stack",
-        "conventions",
-        "typescript",
-        "nextjs",
-        "nestjs",
-        "drizzle",
-        "trpc",
-        "oxlint",
-        "jabworks"
-      ]
+      "category": "development"
     }
   ]
 }

@@ -45,6 +45,7 @@ dist/plugins/<name>/skills/<name>/
 ```bash
 mkdir -p skills/<name>/references
 mkdir -p dist/plugins/<name>/.codex-plugin
+mkdir -p dist/plugins/<name>/.claude-plugin
 mkdir -p dist/plugins/<name>/skills/<name>/references
 ```
 
@@ -62,21 +63,37 @@ description: Use when [triggering conditions only — no workflow summary]
 - `description`: third-person, max ~500 chars, starts with "Use when..."
 - Frontmatter total ≤ 1024 chars
 
-### 3. Write Codex plugin.json
+### 3. Write plugin manifests
 
-Create `dist/plugins/<name>/.codex-plugin/plugin.json` (required for `codex plugin add`):
+Both agents read from the same plugin root (`dist/plugins/<name>/`) but look in different subdirectories.
+
+**Codex** — `dist/plugins/<name>/.codex-plugin/plugin.json`:
 
 ```json
 {
   "name": "<name>",
   "version": "1.0.0",
   "description": "<short description>",
+  "author": { "name": "jabworks" },
+  "repository": "https://github.com/jabworks/agentic-toolkit",
+  "license": "MIT",
   "keywords": ["keyword1", "keyword2"],
-  "skills": "./skills/<name>"
+  "skills": "./skills/<name>",
+  "interface": {
+    "displayName": "<Display Name>",
+    "shortDescription": "<one line>",
+    "longDescription": "<two sentences>",
+    "developerName": "jabworks",
+    "category": "Productivity",
+    "capabilities": ["Skills"],
+    "defaultPrompt": ["<prompt 1>", "<prompt 2>"]
+  }
 }
 ```
 
-The `skills` path is relative to the plugin root (`dist/plugins/<name>/`) and must start with `./`.
+**Claude Code** — `dist/plugins/<name>/.claude-plugin/plugin.json`: identical structure; change only the `description` prefix to "Claude Code skill for...".
+
+The `skills` path is relative to the plugin root and must start with `./`.
 
 ### 5. Register in marketplace.json
 
@@ -160,4 +177,5 @@ Update `version` in `.claude-plugin/marketplace.json` manually:
 | Workflow summary in description | Description = triggering conditions only |
 | Leaving `[FILL]` placeholders in SKILL.md | Run quality check before committing |
 | Missing `.codex-plugin/plugin.json` | `codex plugin add` will fail with "missing plugin.json" |
+| Missing `.claude-plugin/plugin.json` | Claude Code `/plugin install` won't find plugin metadata |
 | Wrong `skills` path in plugin.json | Must be `"./skills/<name>"` starting with `./` |
