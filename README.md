@@ -1,6 +1,6 @@
 # agentic-toolkit
 
-Personal collection of agentic coding skills for Claude Code, Codex, OpenCode, and other tools that support the SKILL.md format.
+Personal collection of agentic coding skills. Compatible with Claude Code, Codex, OpenCode, Cursor, Gemini CLI, and [40+ other tools](https://github.com/vercel-labs/skills) via `npx skills add`.
 
 ## Skills
 
@@ -12,13 +12,17 @@ Personal collection of agentic coding skills for Claude Code, Codex, OpenCode, a
 
 ## Install
 
-### Claude Code — `npx skills add`
+`npx skills add` auto-detects the running agent and installs to the right directory:
 
 ```bash
 npx skills add jabworks/agentic-toolkit
 ```
 
-Or register as a plugin marketplace and install individual skills:
+This works inside Claude Code, Codex, OpenCode, Cursor, and most other agentic tools — no flags needed.
+
+### Claude Code — plugin marketplace
+
+Alternatively, register as a plugin marketplace to install individual skills:
 
 ```text
 /plugin marketplace add jabworks/agentic-toolkit
@@ -26,22 +30,22 @@ Or register as a plugin marketplace and install individual skills:
 /plugin install plugin-foundry@agentic-toolkit
 ```
 
-### Codex
+### Manual fallback
 
-Codex loads skills from `~/.agents/skills/`. Clone and copy the skill you want:
+If running outside an agent environment, clone and copy to your tool's skills directory:
+
+| Tool | Skills directory |
+|---|---|
+| Claude Code | `~/.claude/skills/` |
+| Codex | `~/.codex/skills/` |
+| OpenCode | `~/.config/opencode/skills/` |
+| Cursor | `~/.cursor/skills/` |
+| Gemini CLI | `~/.gemini/skills/` |
+| Most others | `.agents/skills/` (project-local) |
 
 ```bash
 git clone https://github.com/jabworks/agentic-toolkit /tmp/agentic-toolkit
-cp -r /tmp/agentic-toolkit/skills/session-handoff ~/.agents/skills/
-```
-
-### Other tools (manual)
-
-Each skill is a self-contained directory with a `SKILL.md`. Copy it to wherever your tool looks for skills:
-
-```bash
-git clone https://github.com/jabworks/agentic-toolkit /tmp/agentic-toolkit
-cp -r /tmp/agentic-toolkit/skills/<name> /path/to/your/tool/skills/
+cp -r /tmp/agentic-toolkit/skills/<name> <skills-directory>/
 ```
 
 ## Structure
