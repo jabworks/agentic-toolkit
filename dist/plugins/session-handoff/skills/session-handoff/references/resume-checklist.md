@@ -4,7 +4,7 @@ Run through this before touching any code.
 
 ## 1. Read the full handoff
 
-- [ ] Read every section — no skimming
+- [ ] Read every section — no skimming (handoff may be `.md` or `.html` — both are equally readable)
 - [ ] Note `workstream`, `branch`, and `continues-from`
 
 ## 2. Verify project state

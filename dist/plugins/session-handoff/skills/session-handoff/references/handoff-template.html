@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="created" content="YYYY-MM-DD HH:MM:SS">
+  <meta name="branch" content="[output of: git branch --show-current]">
+  <meta name="repo" content="[monorepo package or app, e.g. apps/web, packages/oxlint-config]">
+  <meta name="task" content="[slug — what were you doing]">
+  <meta name="continues-from" content="[previous handoff filename | none]">
+  <meta name="workstream" content="[slug describing the workstream]">
+  <title>Handoff: [task-slug] [YYYY-MM-DD]</title>
+</head>
+<body>
+<article class="session-handoff">
+
+<section id="current-state">
+  <h2>Current State Summary</h2>
+  <!-- One paragraph: where things stand right now. What just finished, what's in flight. -->
+  <p>[FILL]</p>
+</section>
+
+<section id="stack-snapshot">
+  <h2>Stack Snapshot</h2>
+  <dl>
+    <dt>Package / app</dt>
+    <dd>[path or package name]</dd>
+    <dt>Layer</dt>
+    <dd>[Frontend | Backend | API | Infra | Tooling | Other]</dd>
+    <dt>Docker Compose</dt>
+    <dd>[up / down / partial — list which services | N/A]</dd>
+    <dt>Dev server</dt>
+    <dd>[running on port X | not running | N/A]</dd>
+    <dt>DB migrations in flight</dt>
+    <dd>[describe | none]</dd>
+  </dl>
+</section>
+
+<section id="architecture">
+  <h2>Architecture Context</h2>
+
+  <section id="critical-files">
+    <h3>Critical Files</h3>
+    <table>
+      <thead>
+        <tr><th>File</th><th>Why it matters</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>path/to/file.ts:42</code></td>
+          <td>[what it does and why it's relevant now]</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="key-discoveries">
+    <h3>Key Discoveries</h3>
+    <ul>
+      <li>[Non-obvious thing learned or confirmed this session]</li>
+    </ul>
+  </section>
+</section>
+
+<section id="completed-work">
+  <h2>Completed Work</h2>
+
+  <section id="tasks-finished">
+    <h3>Tasks Finished</h3>
+    <ul>
+      <li>[Specific task — include file:line where applicable]</li>
+    </ul>
+  </section>
+
+  <section id="files-modified">
+    <h3>Files Modified</h3>
+    <table>
+      <thead>
+        <tr><th>File</th><th>Change</th><th>Why</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>path/to/file.ts</code></td>
+          <td>[what changed]</td>
+          <td>[rationale]</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</section>
+
+<section id="decisions">
+  <h2>Decisions Made</h2>
+  <table>
+    <thead>
+      <tr><th>Decision</th><th>Options considered</th><th>Chosen</th><th>Rationale</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>[What was decided]</td>
+        <td>[A vs B vs C]</td>
+        <td>[A]</td>
+        <td>[The constraint, tradeoff, or intent]</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="next-steps">
+  <h2>Immediate Next Steps</h2>
+  <!-- Ordered and specific. "Fix auth" is not acceptable. "Add refreshToken to auth.schema.ts:12" is. -->
+  <ol>
+    <li>[Step 1 — include file:line where applicable]</li>
+    <li>[Step 2]</li>
+    <li>[Step 3]</li>
+  </ol>
+</section>
+
+<section id="blockers">
+  <h2>Blockers</h2>
+  <table>
+    <thead>
+      <tr><th>Blocker</th><th>Context</th><th>Workaround tried</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>[What's stuck]</td>
+        <td>[Why]</td>
+        <td>[What was attempted]</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="important-context">
+  <h2>Important Context</h2>
+  <!-- MUST READ. Things the next agent gets wrong without knowing this. -->
+  <ul>
+    <li>[Critical invariant, hidden constraint, or gotcha]</li>
+    <li>[Known pitfall to avoid]</li>
+  </ul>
+</section>
+
+<section id="deferred">
+  <h2>Deferred / Out of Scope</h2>
+  <ul>
+    <li>[Thing that came up but was intentionally left for later]</li>
+  </ul>
+</section>
+
+</article>
+</body>
+</html>

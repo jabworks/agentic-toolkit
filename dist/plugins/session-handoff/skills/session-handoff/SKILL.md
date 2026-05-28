@@ -29,16 +29,17 @@ Preserve and restore session context across agentic coding sessions.
    git diff --name-only HEAD
    ls -lt handoffs/ 2>/dev/null | head -10
    ```
-2. **Scaffold** the document using `references/handoff-template.md`. Fill every section — no `[FILL]` placeholders left.
-3. **Validate** before saving:
+2. **Ask the user:** "Save handoff as **markdown** (.md) or **HTML** (.html)? Default: markdown."
+3. **Scaffold** using the chosen template — `references/handoff-template.md` or `references/handoff-template.html`. Fill every section — no `[FILL]` placeholders left.
+4. **Validate** before saving:
    - No `[FILL]` markers remain
    - No credentials, tokens, API key values, or env var values
    - Three required sections present and substantive (>50 chars each):
      "Current State Summary", "Important Context", "Immediate Next Steps"
    - Referenced file paths exist on disk
    - Next steps are specific (file:line, not "fix the auth")
-4. **Save** to `handoffs/YYYY-MM-DD-HHMMSS-[slug].md`
-5. Confirm: "Handoff saved: `handoffs/<filename>`"
+5. **Save** to `handoffs/YYYY-MM-DD-HHMMSS-[slug].[md|html]`
+6. Confirm: "Handoff saved: `handoffs/<filename>`"
 
 ## Resume workflow
 
@@ -75,7 +76,7 @@ Preserve and restore session context across agentic coding sessions.
 
 ## Storage
 
-`handoffs/YYYY-MM-DD-HHMMSS-[slug].md`
+`handoffs/YYYY-MM-DD-HHMMSS-[slug].md` or `handoffs/YYYY-MM-DD-HHMMSS-[slug].html`
 
 If continuing prior work, set `continues-from` in the metadata header and reference the predecessor filename.
 
