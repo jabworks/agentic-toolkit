@@ -36,8 +36,7 @@ For each file in "Critical files":
 
 - [ ] Docker Compose services needed are running
 - [ ] Dev server running if needed
-- [ ] Drizzle migration state matches handoff (`pnpm drizzle-kit status`)
-- [ ] llama.cpp server running if FitLens work
+- [ ] DB migration state matches handoff (run your migration status command if applicable)
 
 ## 6. Red flags — pause and confirm with user before proceeding
 

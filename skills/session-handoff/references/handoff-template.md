@@ -4,7 +4,7 @@ branch: [output of: git branch --show-current]
 repo: [monorepo package or app, e.g. apps/web, packages/oxlint-config]
 task: [slug — what were you doing]
 continues-from: [previous handoff filename | none]
-workstream: [jabworks-personal | axon-work | fitlens | other]
+workstream: [slug describing the workstream]
 ---
 
 ## Current State Summary
@@ -15,12 +15,10 @@ workstream: [jabworks-personal | axon-work | fitlens | other]
 
 ## Stack snapshot
 
-- **Package / app:** `@jabworks/...` or `apps/...`
-- **Layer:** [Frontend (Next.js) | Backend (NestJS+tRPC) | API (Go/AXON) | Infra | Tooling | FitLens]
-- **Docker Compose:** [up / down / partial — list which services]
-- **Dev server:** [running on port X | not running]
-- **Drizzle schema changes:** [pending migration | committed | none]
-- **tRPC router changes:** [describe | none]
+- **Package / app:** [path or package name]
+- **Layer:** [Frontend | Backend | API | Infra | Tooling | Other]
+- **Docker Compose:** [up / down / partial — list which services | N/A]
+- **Dev server:** [running on port X | not running | N/A]
 - **DB migrations in flight:** [describe | none]
 
 ## Architecture context
@@ -39,7 +37,7 @@ workstream: [jabworks-personal | axon-work | fitlens | other]
 
 ### Tasks finished
 
-- [x] [Specific task — e.g. "Implemented `user.update` router in `packages/trpc/src/routers/user.ts:88`"]
+- [x] [Specific task — include file:line where applicable]
 
 ### Files modified
 
@@ -73,23 +71,6 @@ workstream: [jabworks-personal | axon-work | fitlens | other]
 
 - [Critical invariant, hidden constraint, or gotcha]
 - [Known pitfall to avoid]
-
-## OpenCode agent context
-
-<!-- Fill if using OpenCode with AGENTS.md -->
-
-- **Active role:** [coder | reviewer | plan | researcher | N/A]
-- **Relevant AGENTS.md section:** [quote key lines or "N/A"]
-- **In-flight plan:** [link or brief summary | none]
-
-## FitLens / local AI context
-
-<!-- Only fill if this session involved FitLens or llama.cpp work -->
-
-- **Text model:** [name + quant, e.g. Qwen2.5-14B UD-IQ4_XS]
-- **Vision model:** [name + quant]
-- **VRAM state:** [comfortable | approaching 16GB ceiling — note specifics]
-- **llama.cpp server:** [running | stopped | config changed]
 
 ## Deferred / out of scope
 

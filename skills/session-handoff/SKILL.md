@@ -13,7 +13,7 @@ Preserve and restore session context across Claude Code sessions.
 - User says "save state", "handoff", "wrap up", or "context is full"
 - Context window approaching capacity (>80%)
 - Logical milestone complete before switching workstreams
-- Switching between jabworks, AXON, and FitLens work
+- Switching between workstreams or projects
 
 **Resume from a handoff when:**
 - User says "resume", "pick up from", or "continue from last session"
