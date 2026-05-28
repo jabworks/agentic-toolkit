@@ -18,6 +18,28 @@
         "resume",
         "development"
       ]
+    },
+    {
+      "name": "adapting-skills",
+      "description": "Use when adapting a generic skill or scaffolding code to match Harvey's stack, conventions, and working preferences.",
+      "source": "./dist/plugins/adapting-skills",
+      "strict": false,
+      "skills": [
+        "./skills/adapting-skills"
+      ],
+      "category": "development",
+      "keywords": [
+        "profile",
+        "stack",
+        "conventions",
+        "typescript",
+        "nextjs",
+        "nestjs",
+        "drizzle",
+        "trpc",
+        "oxlint",
+        "jabworks"
+      ]
     }
   ]
 }
