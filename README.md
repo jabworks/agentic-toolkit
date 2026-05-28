@@ -30,6 +30,27 @@ Alternatively, register as a plugin marketplace to install individual skills:
 /plugin install plugin-foundry@agentic-toolkit
 ```
 
+### Codex — plugin manifests
+
+This repo is also Codex plugin compatible:
+
+- The repository root is an aggregate Codex plugin via `.codex-plugin/plugin.json`.
+- Each install source under `dist/plugins/<name>/` has its own `.codex-plugin/plugin.json` for installing individual skills.
+
+From a local checkout, install the aggregate plugin with:
+
+```bash
+codex plugin add .
+```
+
+Or install an individual skill from its dist plugin directory:
+
+```bash
+codex plugin add ./dist/plugins/session-handoff
+codex plugin add ./dist/plugins/plugin-foundry
+codex plugin add ./dist/plugins/adapting-skills
+```
+
 ### Manual fallback
 
 If running outside an agent environment, clone and copy to your tool's skills directory:

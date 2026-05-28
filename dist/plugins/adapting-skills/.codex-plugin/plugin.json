@@ -1,7 +1,39 @@
 {
   "name": "adapting-skills",
   "version": "1.2.0",
-  "description": "Developer profile priors for adapting skills to Harvey's stack.",
-  "keywords": ["profile", "stack", "typescript", "conventions", "jabworks"],
-  "skills": "./skills/adapting-skills"
+  "description": "Codex skill with stack and style priors for adapting generated work to Harvey's conventions.",
+  "author": {
+    "name": "jabworks"
+  },
+  "repository": "https://github.com/jabworks/agentic-toolkit",
+  "license": "MIT",
+  "keywords": [
+    "profile",
+    "stack",
+    "conventions",
+    "typescript",
+    "nextjs",
+    "nestjs",
+    "drizzle",
+    "trpc",
+    "oxlint",
+    "jabworks"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Adapting Skills",
+    "shortDescription": "Apply local stack and style priors.",
+    "longDescription": "Adapting Skills gives Codex repo-sensitive priors for TypeScript, Next.js, NestJS, Drizzle, tRPC, oxlint, and working-style conventions.",
+    "developerName": "jabworks",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills",
+      "Development"
+    ],
+    "defaultPrompt": [
+      "Adapt this to Harvey stack.",
+      "Check this against local conventions.",
+      "Scaffold this in the preferred style."
+    ]
+  }
 }

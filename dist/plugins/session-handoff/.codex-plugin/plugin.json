@@ -1,7 +1,34 @@
 {
   "name": "session-handoff",
   "version": "1.2.0",
-  "description": "Preserve and restore session context across agentic coding sessions.",
-  "keywords": ["handoff", "context", "session", "resume", "development"],
-  "skills": "./skills/session-handoff"
+  "description": "Codex skill for creating and resuming handoff documents across agentic coding sessions.",
+  "author": {
+    "name": "jabworks"
+  },
+  "repository": "https://github.com/jabworks/agentic-toolkit",
+  "license": "MIT",
+  "keywords": [
+    "handoff",
+    "context",
+    "session",
+    "resume",
+    "development"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Session Handoff",
+    "shortDescription": "Preserve and resume coding-session context.",
+    "longDescription": "Session Handoff helps Codex create validated handoff documents and resume prior work with freshness checks, red flags, and concrete next steps.",
+    "developerName": "jabworks",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills",
+      "Documentation"
+    ],
+    "defaultPrompt": [
+      "Create a session handoff.",
+      "Resume from the latest handoff.",
+      "Check whether this handoff is stale."
+    ]
+  }
 }
