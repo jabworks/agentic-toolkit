@@ -1,11 +1,11 @@
 ---
 name: session-handoff
-description: Creates and resumes handoff documents for seamless Claude Code session transitions. Triggered when context approaches capacity, at natural pauses, or when resuming prior work.
+description: Creates and resumes handoff documents for seamless agentic coding session transitions. Triggered when context approaches capacity, at natural pauses, or when resuming prior work.
 ---
 
 # Session Handoff Skill
 
-Preserve and restore session context across Claude Code sessions.
+Preserve and restore session context across agentic coding sessions.
 
 ## Trigger conditions
 
@@ -17,7 +17,7 @@ Preserve and restore session context across Claude Code sessions.
 
 **Resume from a handoff when:**
 - User says "resume", "pick up from", or "continue from last session"
-- Starting a session on a branch that has handoffs in `.claude/handoffs/`
+- Starting a session on a branch that has handoffs in `handoffs/`
 
 ## Create workflow
 
@@ -27,7 +27,7 @@ Preserve and restore session context across Claude Code sessions.
    git log --oneline -5
    git status --short
    git diff --name-only HEAD
-   ls -lt .claude/handoffs/ 2>/dev/null | head -10
+   ls -lt handoffs/ 2>/dev/null | head -10
    ```
 2. **Scaffold** the document using `references/handoff-template.md`. Fill every section — no `[FILL]` placeholders left.
 3. **Validate** before saving:
@@ -37,14 +37,14 @@ Preserve and restore session context across Claude Code sessions.
      "Current State Summary", "Important Context", "Immediate Next Steps"
    - Referenced file paths exist on disk
    - Next steps are specific (file:line, not "fix the auth")
-4. **Save** to `.claude/handoffs/YYYY-MM-DD-HHMMSS-[slug].md`
-5. Confirm: "Handoff saved: `.claude/handoffs/<filename>`"
+4. **Save** to `handoffs/YYYY-MM-DD-HHMMSS-[slug].md`
+5. Confirm: "Handoff saved: `handoffs/<filename>`"
 
 ## Resume workflow
 
 1. **List and pick** the relevant handoff:
    ```bash
-   ls -lt .claude/handoffs/ | head -10
+   ls -lt handoffs/ | head -10
    ```
 2. **Check freshness** relative to the handoff timestamp:
    ```bash
@@ -75,6 +75,6 @@ Preserve and restore session context across Claude Code sessions.
 
 ## Storage
 
-`.claude/handoffs/YYYY-MM-DD-HHMMSS-[slug].md`
+`handoffs/YYYY-MM-DD-HHMMSS-[slug].md`
 
 If continuing prior work, set `continues-from` in the metadata header and reference the predecessor filename.
