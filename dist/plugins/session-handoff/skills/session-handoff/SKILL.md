@@ -78,3 +78,7 @@ Preserve and restore session context across agentic coding sessions.
 `handoffs/YYYY-MM-DD-HHMMSS-[slug].md`
 
 If continuing prior work, set `continues-from` in the metadata header and reference the predecessor filename.
+
+---
+
+*Adapted from [softaworks/agent-toolkit `session-handoff`](https://github.com/softaworks/agent-toolkit/tree/main/skills/session-handoff)*
