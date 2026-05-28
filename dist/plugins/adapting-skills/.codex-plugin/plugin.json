@@ -1,0 +1,7 @@
+{
+  "name": "adapting-skills",
+  "version": "1.2.0",
+  "description": "Developer profile priors for adapting skills to Harvey's stack.",
+  "keywords": ["profile", "stack", "typescript", "conventions", "jabworks"],
+  "skills": "./skills/adapting-skills"
+}

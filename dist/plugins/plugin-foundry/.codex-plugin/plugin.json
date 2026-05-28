@@ -1,0 +1,7 @@
+{
+  "name": "plugin-foundry",
+  "version": "1.2.0",
+  "description": "Create and maintain skills in jabworks/agentic-toolkit.",
+  "keywords": ["plugin", "skill", "scaffold", "marketplace", "toolkit"],
+  "skills": "./skills/plugin-foundry"
+}

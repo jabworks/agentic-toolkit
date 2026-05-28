@@ -44,6 +44,7 @@ dist/plugins/<name>/skills/<name>/
 
 ```bash
 mkdir -p skills/<name>/references
+mkdir -p dist/plugins/<name>/.codex-plugin
 mkdir -p dist/plugins/<name>/skills/<name>/references
 ```
 
@@ -61,7 +62,23 @@ description: Use when [triggering conditions only — no workflow summary]
 - `description`: third-person, max ~500 chars, starts with "Use when..."
 - Frontmatter total ≤ 1024 chars
 
-### 3. Register in marketplace.json
+### 3. Write Codex plugin.json
+
+Create `dist/plugins/<name>/.codex-plugin/plugin.json` (required for `codex plugin add`):
+
+```json
+{
+  "name": "<name>",
+  "version": "1.0.0",
+  "description": "<short description>",
+  "keywords": ["keyword1", "keyword2"],
+  "skills": "./skills/<name>"
+}
+```
+
+The `skills` path is relative to the plugin root (`dist/plugins/<name>/`) and must start with `./`.
+
+### 5. Register in marketplace.json
 
 Add an entry to `.claude-plugin/marketplace.json`:
 
@@ -77,13 +94,13 @@ Add an entry to `.claude-plugin/marketplace.json`:
 }
 ```
 
-### 4. Sync to dist/
+### 6. Sync to dist/
 
 ```bash
 cp -r skills/<name>/. dist/plugins/<name>/skills/<name>/
 ```
 
-### 5. Commit and push
+### 7. Commit and push
 
 ```bash
 git add skills/<name>/ dist/plugins/<name>/ .claude-plugin/marketplace.json
@@ -142,3 +159,5 @@ Update `version` in `.claude-plugin/marketplace.json` manually:
 | Co-author trailer in commit | Use `-s` (`--signoff`) — no `Co-Authored-By:` |
 | Workflow summary in description | Description = triggering conditions only |
 | Leaving `[FILL]` placeholders in SKILL.md | Run quality check before committing |
+| Missing `.codex-plugin/plugin.json` | `codex plugin add` will fail with "missing plugin.json" |
+| Wrong `skills` path in plugin.json | Must be `"./skills/<name>"` starting with `./` |

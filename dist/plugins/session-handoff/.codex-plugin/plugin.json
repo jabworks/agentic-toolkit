@@ -1,0 +1,7 @@
+{
+  "name": "session-handoff",
+  "version": "1.2.0",
+  "description": "Preserve and restore session context across agentic coding sessions.",
+  "keywords": ["handoff", "context", "session", "resume", "development"],
+  "skills": "./skills/session-handoff"
+}
