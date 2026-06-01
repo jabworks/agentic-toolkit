@@ -4,11 +4,11 @@ Personal collection of agentic coding skills. Compatible with Claude Code, Codex
 
 ## Skills
 
-| Skill | Description |
-|---|---|
-| [session-handoff](./skills/session-handoff/) | Preserve and restore session context across agentic coding sessions |
-| [plugin-foundry](./skills/plugin-foundry/) | Create and maintain skills in this toolkit |
-| [adapting-skills](./skills/adapting-skills/) | Developer profile priors for adapting skills to Harvey's stack *(personal — useful to collaborators)* |
+| Skill                                        | Description                                                                                           |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| [session-handoff](./skills/session-handoff/) | Preserve and restore session context across agentic coding sessions                                   |
+| [plugin-foundry](./skills/plugin-foundry/)   | Create and maintain skills in this toolkit                                                            |
+| [adapting-skills](./skills/adapting-skills/) | Developer profile priors for adapting skills to Harvey's stack _(personal — useful to collaborators)_ |
 
 ## Install
 
@@ -24,45 +24,62 @@ This works inside Claude Code, Codex, OpenCode, Cursor, and most other agentic t
 
 Alternatively, register as a plugin marketplace to install individual skills:
 
-```text
+> Via CLI:
+
+```bash
+claude plugin marketplace add jabworks/agentic-toolkit
+claude plugin install session-handoff@jabworks-agentic-toolkit # claude plugin install session-handoff
+claude plugin install plugin-foundry@jabworks-agentic-toolkit # claude plugin install plugin-foundry
+```
+
+> Via Claude Code CLI:
+
+```bash
 /plugin marketplace add jabworks/agentic-toolkit
-/plugin install session-handoff@agentic-toolkit
-/plugin install plugin-foundry@agentic-toolkit
+/plugin install session-handoff@jabworks-agentic-toolkit # /plugin install session-handoff
+/plugin install session-handoff@jabworks-agentic-toolkit # /plugin install session-handoff
+```
+
+> Via Claude Code CLI plugin menu:
+
+```bash
+/plugin
+-> Marketplaces tab -> Add Marketplace -> jabworks/agentic-toolkit
+-> Discover tab -> Search plugin name
 ```
 
 ### Codex — plugin manifests
 
 This repo is also Codex plugin compatible:
 
-- The repository root is an aggregate Codex plugin via `.codex-plugin/plugin.json`.
-- Each install source under `dist/plugins/<name>/` has its own `.codex-plugin/plugin.json` for installing individual skills.
-
-From a local checkout, install the aggregate plugin with:
+> Via CLI:
 
 ```bash
-codex plugin add .
+codex plugin marketplace add jabworks/agentic-toolkit
+codex plugin add session-handoff@jabworks-agentic-toolkit
+codex plugin add plugin-foundry@jabworks-agentic-toolkit
 ```
 
-Or install an individual skill from its dist plugin directory:
+> Via Codex CLI plugins menu:
 
 ```bash
-codex plugin add ./dist/plugins/session-handoff
-codex plugin add ./dist/plugins/plugin-foundry
-codex plugin add ./dist/plugins/adapting-skills
+/plugins
+-> Add Marketplace -> jabworks/agentic-toolkit
+-> Select jabworks/agentic-toolkit tab to add plugins
 ```
 
 ### Manual fallback
 
 If running outside an agent environment, clone and copy to your tool's skills directory:
 
-| Tool | Skills directory |
-|---|---|
-| Claude Code | `~/.claude/skills/` |
-| Codex | `~/.codex/skills/` |
-| OpenCode | `~/.config/opencode/skills/` |
-| Cursor | `~/.cursor/skills/` |
-| Gemini CLI | `~/.gemini/skills/` |
-| Most others | `.agents/skills/` (project-local) |
+| Tool        | Skills directory             |
+| ----------- | ---------------------------- |
+| Claude Code | `~/.claude/skills/`          |
+| Codex       | `~/.codex/skills/`           |
+| OpenCode    | `~/.config/opencode/skills/` |
+| Cursor      | `~/.cursor/skills/`          |
+| Gemini CLI  | `~/.gemini/skills/`          |
+| Most others | `.agents/skills/`            |
 
 ```bash
 git clone https://github.com/jabworks/agentic-toolkit /tmp/agentic-toolkit
