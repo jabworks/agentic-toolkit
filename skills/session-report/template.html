@@ -241,6 +241,10 @@
         color: var(--subtle);
         font-size: 11px;
       }
+      .stat .val.cost {
+        font-size: 15px;
+        color: var(--yellow);
+      }
 
       section {
         margin-top: 26px;
@@ -855,6 +859,8 @@
               : n >= 1e3
                 ? (n / 1e3).toFixed(1) + "k"
                 : String(n);
+        const fmtUSD = (n) =>
+          n === 0 ? "$0.00" : n < 0.01 ? "$" + n.toFixed(4) : "$" + n.toFixed(2);
         const pct = (a, b) => (b > 0 ? ((100 * a) / b).toFixed(1) + "%" : "—");
         const esc = (s) =>
           String(s).replace(
@@ -951,6 +957,25 @@
               `</div>`,
           )
           .join("");
+
+        // cost stats
+        const c = o.cost_usd;
+        if (c && c.total > 0) {
+          const inputCached = c.cache_read + c.cache_create;
+          $("overall-grid").innerHTML += [
+            ["est. cost", fmtUSD(c.total), `savings ${fmtUSD(c.savings_vs_no_cache || 0)}`],
+            ["input cost", fmtUSD(c.input + inputCached), `cached ${fmtUSD(inputCached)} · uncached ${fmtUSD(c.input)}`],
+            ["output cost", fmtUSD(c.output), ""],
+          ]
+            .map(
+              ([l, v, d]) =>
+                `<div class="stat"><div class="label">${l}</div>` +
+                `<div class="val cost">${v}</div>` +
+                (d ? `<div class="detail">${d}</div>` : "") +
+                `</div>`,
+            )
+            .join("");
+        }
 
         // session timeline by day
         (function () {
