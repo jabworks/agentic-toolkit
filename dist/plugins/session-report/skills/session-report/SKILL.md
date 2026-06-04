@@ -30,16 +30,16 @@ Produce a self-contained HTML report of session usage and save it to the current
 
 2. **Parse time range** from `$ARGUMENTS` (e.g. `7d`, `30d`, `24h`). Default: `7d`. If `all` — omit `--since`.
 
-3. **Run the analyzer.** Both scripts live alongside this SKILL.md — use the absolute path:
+3. **Run the analyzer.** Both scripts live alongside this SKILL.md — use the absolute path. Output to `/tmp/session-report-${TOOL}.json` (e.g. `session-report-claude.json`) so concurrent runs from different tools never collide:
    ```sh
    # With --since:
-   node <skill-dir>/$ANALYZER --json --since 7d > /tmp/session-report.json
+   node <skill-dir>/$ANALYZER --json --since 7d > /tmp/session-report-${TOOL}.json
 
    # All-time:
-   node <skill-dir>/$ANALYZER --json > /tmp/session-report.json
+   node <skill-dir>/$ANALYZER --json > /tmp/session-report-${TOOL}.json
    ```
 
-4. **Read** `/tmp/session-report.json`. Skim `overall`, `by_project`, `by_subagent_type`, `by_skill`, `cache_breaks`, `top_prompts`.
+4. **Read** `/tmp/session-report-${TOOL}.json`. Skim `overall`, `by_project`, `by_subagent_type`, `by_skill`, `cache_breaks`, `top_prompts`.
 
 5. **Copy the template** to the output path in the current working directory:
    ```sh
