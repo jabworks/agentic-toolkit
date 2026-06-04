@@ -16,11 +16,13 @@ Produce a self-contained HTML report of session usage and save it to the current
      TOOL=codex; ANALYZER=analyze-codex.mjs
    elif [ -d "$HOME/.codex/sessions" ] && [ ! -d "$HOME/.claude/projects" ]; then
      TOOL=codex; ANALYZER=analyze-codex.mjs
-   else
+   elif [ -d "$HOME/.claude/projects" ]; then
      TOOL=claude; ANALYZER=analyze-claude.mjs
+   else
+     TOOL=codex; ANALYZER=analyze-codex.mjs
    fi
    ```
-   The user can override with `--tool claude` or `--tool codex` in their message.
+   **Ambiguous case** — if both `~/.codex/sessions` and `~/.claude/projects` exist and no env var matched (shell fell through to Claude), override based on context: **if you are Codex, set `TOOL=codex` and `ANALYZER=analyze-codex.mjs`**. The user can also force the tool with `--tool codex` or `--tool claude`.
 
 2. **Parse time range** from `$ARGUMENTS` (e.g. `7d`, `30d`, `24h`). Default: `7d`. If `all` — omit `--since`.
 

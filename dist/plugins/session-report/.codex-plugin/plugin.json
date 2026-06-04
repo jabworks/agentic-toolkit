@@ -1,6 +1,6 @@
 {
   "name": "session-report",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Generate an explorable HTML report of Codex session usage — tokens, subagents, slash commands, expensive turns.",
   "author": {
     "name": "jabworks"
