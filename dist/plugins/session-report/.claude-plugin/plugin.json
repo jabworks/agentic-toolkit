@@ -1,6 +1,6 @@
 {
   "name": "session-report",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "Generate an explorable HTML report of Claude Code session usage — tokens, cache, subagents, skills, expensive prompts.",
   "author": {
     "name": "jabworks"

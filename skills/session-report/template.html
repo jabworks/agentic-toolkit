@@ -979,7 +979,7 @@
 
         // session timeline by day
         (function () {
-          const days = (DATA.by_day || []).slice(-14);
+          const days = (DATA.by_day || []);
           if (!days.length) {
             $("timeline-section").style.display = "none";
             return;

@@ -501,7 +501,7 @@
 
   // session timeline by day
   (function() {
-    const days = (DATA.by_day||[]).slice(-14);
+    const days = (DATA.by_day||[]);
     if (!days.length) { $('timeline-section').style.display='none'; return; }
     const PCOL = ['#52a9ff','#51a55d','#978365','#f1a10d',
                   '#f16a6a','#9b8cff','#6ec1d6','#c792ea'];
