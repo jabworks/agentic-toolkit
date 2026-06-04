@@ -123,7 +123,7 @@
   .term {
     max-width: 1180px; margin: 0 auto;
     background: var(--term-bg);
-    border-radius: 8px;
+    border-radius: 12px;
     outline: 1px solid var(--outline);
     box-shadow: 0 20px 60px rgba(20,20,19,0.22);
     position: relative;
@@ -131,13 +131,19 @@
   }
   .titlebar {
     background: var(--titlebar);
-    border-radius: 8px 8px 0 0;
+    border-radius: 12px 12px 0 0;
     border-bottom: 1px solid var(--outline);
-    padding: 11px 14px;
-    display: flex; align-items: center; gap: 7px;
+    padding: 10px 16px;
+    display: flex; align-items: center; gap: 12px;
   }
-  .titlebar .dot { width: 11px; height: 11px; border-radius: 50%; background: #3a3836; }
-  .titlebar .path { margin-left: 14px; color: var(--dim); font-size: 11px; }
+  .titlebar .tag {
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--clay);
+    padding: 1px 6px;
+    background: color-mix(in oklch, var(--clay) 12%, transparent);
+    border-radius: 9999px;
+  }
+  .titlebar .path { color: var(--dim); font-size: 11px; }
   .term-body { padding: 22px 30px 30px; }
 
   .cmd { color: var(--dim); margin-bottom: 6px; }
@@ -302,7 +308,7 @@
 
 <div class="term">
   <div class="titlebar">
-    <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    <span class="tag">session-report</span>
     <span class="path" id="title-path">~/.claude — session-report</span>
   </div>
   <div class="term-body">
