@@ -3,402 +3,503 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Plan: {{FEATURE_NAME}}</title>
+    <title>plan: {{FEATURE_NAME}}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
       :root {
-        --bg: #0f1117;
-        --surface: #1a1d27;
-        --surface-2: #22263a;
-        --border: #2e3352;
-        --text: #e2e8f0;
-        --text-muted: #7c87a6;
-        --accent: #6366f1;
-        --accent-dim: #3730a3;
-        --green: #22c55e;
-        --yellow: #eab308;
-        --red: #ef4444;
-        --tag-bg: #1e2035;
+        /* Terminus semantic tokens — dark default */
+        --background:         #111110;
+        --card:               #191918;
+        --foreground:         #ededec;
+        --muted:              #222221;
+        --muted-foreground:   #aba8a1;
+        --border:             #3e3e3a;
+        --input:              #4d4d47;
+        --primary:            #978365;
+        --primary-foreground: #f2e3c6;
+        --secondary:          #222221;
+        --accent:             #2a2a28;
+        --ring:               #978365;
+        --gold-9:             #978365;
+        --gold-10:            #a08b6e;
+
+        --success:      #51a55d;  --success-muted:     #0e2d16;
+        --warning:      #f1a10d;  --warning-muted:     #2d1d00;
+        --info:         #52a9ff;  --info-muted:        #082030;
+        --destructive:  #f16a6a;  --destructive-muted: #3b1219;
+
+        /* Aliases so existing CSS rules keep working unchanged */
+        --term-bg:  var(--background);
+        --term-fg:  var(--foreground);
+        --titlebar: var(--secondary);
+        --outline:  rgba(237,237,236,0.08);
+        --hover:    var(--accent);
+        --clay:     var(--primary);
+        --dim:      var(--muted-foreground);
+        --subtle:   #686560;
+        --green:    var(--success);
+        --red:      var(--destructive);
+        --blue:     var(--info);
+        --yellow:   var(--warning);
+        --ivory:    var(--background);
+        --mono:     'Geist Mono', 'JetBrains Mono', ui-monospace, Menlo, Monaco, monospace;
+        --radius:   0.75rem;
+      }
+
+      @media (prefers-color-scheme: light) {
+        :root {
+          --background:         #fdfdfc;
+          --card:               #f9f9f8;
+          --foreground:         #21201c;
+          --muted:              #f1f0ef;
+          --muted-foreground:   #82807c;
+          --border:             #d5d3cf;
+          --input:              #c2c0bb;
+          --primary:            #978365;
+          --primary-foreground: #3b2e1e;
+          --secondary:          #f1f0ef;
+          --accent:             #e9e8e6;
+          --ring:               #978365;
+          --gold-9:             #978365;
+          --gold-10:            #89775b;
+
+          --success:      #297c3b;  --success-muted:     #daf2e4;
+          --warning:      #946800;  --warning-muted:     #fff3c6;
+          --info:         #0d6cbd;  --info-muted:        #ddf3ff;
+          --destructive:  #ce2c31;  --destructive-muted: #ffe0df;
+
+          --outline: rgba(33,32,28,0.08);
+          --subtle:  #a09d98;
+        }
       }
 
       * {
         box-sizing: border-box;
-        margin: 0;
-        padding: 0;
       }
-
+      html {
+        background: var(--ivory);
+      }
       body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        background: var(--bg);
-        color: var(--text);
-        line-height: 1.6;
-        padding: 2rem 1rem;
+        margin: 0;
+        padding: 48px 24px 80px;
+        font: 13px/1.55 var(--mono);
+        font-variant-numeric: tabular-nums;
+        color: var(--term-fg);
+        position: relative;
+        min-height: 100vh;
       }
 
-      .container {
-        max-width: 860px;
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(to right,  color-mix(in oklch, var(--foreground) 2%, transparent) 1px, transparent 1px),
+          linear-gradient(to bottom, color-mix(in oklch, var(--foreground) 2%, transparent) 1px, transparent 1px);
+        background-size: 40px 40px;
+      }
+
+      body::after {
+        content: '';
+        position: fixed;
+        top: -240px;
+        left: 50%;
+        width: 640px;
+        height: 640px;
+        z-index: 0;
+        pointer-events: none;
+        transform: translateX(-50%);
+        background: radial-gradient(circle, color-mix(in oklch, var(--gold-9) 9%, transparent) 0%, transparent 70%);
+      }
+
+      ::-webkit-scrollbar { width: 9px; height: 9px; }
+      ::-webkit-scrollbar-thumb {
+        background-color: var(--primary);
+        border-radius: 9999px;
+        border: 2px solid transparent;
+        background-clip: padding-box;
+      }
+      ::-webkit-scrollbar-track { background: transparent; }
+
+      .term {
+        max-width: 1000px;
         margin: 0 auto;
+        background: var(--term-bg);
+        border-radius: 8px;
+        outline: 1px solid var(--outline);
+        box-shadow: 0 20px 60px rgba(20, 20, 19, 0.22);
+        position: relative;
+        z-index: 1;
       }
-
-      /* Header */
-      .header {
-        border-bottom: 1px solid var(--border);
-        padding-bottom: 1.5rem;
-        margin-bottom: 2rem;
-      }
-      .header h1 {
-        font-size: 1.6rem;
-        font-weight: 700;
-        color: var(--text);
-      }
-      .header .meta {
+      .titlebar {
+        background: var(--titlebar);
+        border-radius: 8px 8px 0 0;
+        border-bottom: 1px solid var(--outline);
+        padding: 11px 14px;
         display: flex;
-        gap: 1.5rem;
-        margin-top: 0.5rem;
-        font-size: 0.8rem;
-        color: var(--text-muted);
+        align-items: center;
+        gap: 7px;
+      }
+      .titlebar .dot {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: #3a3836;
+      }
+      .titlebar .path {
+        margin-left: 14px;
+        color: var(--dim);
+        font-size: 11px;
+      }
+      .term-body {
+        padding: 22px 30px 30px;
       }
 
-      /* Summary cards */
+      .cmd {
+        color: var(--dim);
+        margin-bottom: 6px;
+      }
+      .cmd .prompt {
+        color: var(--clay);
+      }
+      #meta-line {
+        color: var(--subtle);
+        font-size: 11px;
+      }
+
+      section {
+        margin-top: 26px;
+      }
+      .hr {
+        color: var(--subtle);
+        overflow: hidden;
+        white-space: nowrap;
+        user-select: none;
+        margin-bottom: 8px;
+      }
+      .hr::after {
+        content: "────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────";
+      }
+      h2 {
+        all: unset;
+        display: block;
+        color: var(--clay);
+        font-weight: 500;
+      }
+      h2::before {
+        content: "▸ ";
+      }
+      h2 .hint {
+        color: var(--subtle);
+        font-size: 11px;
+        font-weight: 400;
+        margin-left: 10px;
+      }
+      .section-body {
+        margin-top: 10px;
+      }
+
+      /* summary */
       .summary {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-        margin-bottom: 2rem;
+        gap: 8px;
       }
       .card {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 1rem 1.25rem;
+        background: rgba(255, 255, 255, 0.025);
+        border: 1px solid var(--outline);
+        border-radius: 4px;
+        padding: 10px 14px;
       }
-      .card h3 {
-        font-size: 0.7rem;
+      .card .label {
+        font-size: 10px;
         text-transform: uppercase;
         letter-spacing: 0.08em;
-        color: var(--text-muted);
-        margin-bottom: 0.4rem;
+        color: var(--subtle);
+        margin-bottom: 4px;
       }
       .card p {
-        font-size: 0.9rem;
-        color: var(--text);
+        font-size: 12px;
+        color: var(--term-fg);
+        margin: 0;
       }
 
-      /* Files affected */
-      .files {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 1rem 1.25rem;
-        margin-bottom: 2rem;
-      }
-      .files h2 {
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: var(--text-muted);
-        margin-bottom: 0.75rem;
-      }
-      .files ul {
-        list-style: none;
-        display: flex;
-        flex-direction: column;
-        gap: 0.35rem;
-      }
-      .files li {
-        font-size: 0.85rem;
-        display: flex;
-        gap: 0.6rem;
+      /* files */
+      .file-row {
+        display: grid;
+        grid-template-columns: 8ch 1fr;
+        gap: 14px;
+        padding: 6px 4px;
+        border-top: 1px solid var(--outline);
         align-items: baseline;
+        font-size: 12px;
       }
-      .file-badge {
-        font-size: 0.65rem;
-        padding: 0.1rem 0.45rem;
-        border-radius: 4px;
-        font-weight: 600;
+      .badge {
+        font-size: 10px;
+        font-weight: 700;
+        text-align: right;
         white-space: nowrap;
-        background: var(--tag-bg);
-        color: var(--text-muted);
       }
-      .file-badge.create {
-        background: #14301a;
+      .badge.create {
         color: var(--green);
       }
-      .file-badge.modify {
-        background: #2c2400;
+      .badge.modify {
         color: var(--yellow);
       }
       .file-path {
-        font-family: "SF Mono", "Fira Code", monospace;
-        color: var(--text);
+        color: var(--term-fg);
       }
       .file-desc {
-        color: var(--text-muted);
-        font-size: 0.8rem;
+        color: var(--dim);
       }
 
-      /* Tasks section */
-      .tasks-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
+      /* tasks */
+      .drill details {
+        border-top: 1px solid var(--outline);
       }
-      .tasks-header h2 {
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: var(--text-muted);
+      .drill details:last-of-type {
+        border-bottom: 1px solid var(--outline);
       }
-      .progress-text {
-        font-size: 0.8rem;
-        color: var(--text-muted);
-      }
-
-      /* Task card */
-      .task {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        margin-bottom: 1rem;
-        overflow: hidden;
-      }
-      .task.done {
-        opacity: 0.5;
-      }
-      .task-header {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 0.85rem 1.25rem;
+      .drill summary {
+        list-style: none;
         cursor: pointer;
-        user-select: none;
+        display: grid;
+        grid-template-columns: 4ch 1fr 10ch;
+        gap: 14px;
+        padding: 9px 4px;
+        align-items: baseline;
       }
-      .task-header:hover {
-        background: var(--surface-2);
+      .drill summary::-webkit-details-marker {
+        display: none;
+      }
+      .drill summary:hover {
+        background: var(--hover);
       }
       .task-num {
-        font-size: 0.7rem;
-        color: var(--text-muted);
-        font-family: "SF Mono", monospace;
-        min-width: 1.8rem;
+        font-size: 11px;
+        color: var(--subtle);
+        text-align: right;
       }
       .task-title {
-        font-weight: 600;
-        font-size: 0.95rem;
-        flex: 1;
+        font-size: 13px;
+        font-weight: 500;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      details[open] summary .task-title {
+        white-space: normal;
       }
       .task-status {
-        font-size: 0.7rem;
-        padding: 0.15rem 0.55rem;
-        border-radius: 20px;
-        font-weight: 600;
+        font-size: 10px;
+        font-weight: 700;
+        text-align: right;
+        white-space: nowrap;
       }
       .task-status.todo {
-        background: var(--tag-bg);
-        color: var(--text-muted);
+        color: var(--subtle);
       }
       .task-status.done {
-        background: #14301a;
         color: var(--green);
       }
       .task-status.blocked {
-        background: #2d1111;
         color: var(--red);
       }
-      .task-chevron {
-        color: var(--text-muted);
-        font-size: 0.75rem;
-        transition: transform 0.2s;
-      }
-      .task.open .task-chevron {
-        transform: rotate(90deg);
-      }
-
       .task-body {
-        display: none;
-        padding: 0 1.25rem 1.25rem;
+        padding: 4px 4px 14px calc(4ch + 18px);
+        font-size: 12px;
+        color: var(--dim);
       }
-      .task.open .task-body {
-        display: block;
-      }
-
       .task-section {
-        margin-top: 0.85rem;
+        margin-top: 8px;
       }
       .task-section-label {
-        font-size: 0.7rem;
+        font-size: 10px;
         text-transform: uppercase;
         letter-spacing: 0.08em;
-        color: var(--text-muted);
-        margin-bottom: 0.35rem;
+        color: var(--subtle);
+        margin-bottom: 3px;
       }
       .task-section p,
       .task-section li {
-        font-size: 0.875rem;
-        color: var(--text);
+        font-size: 12px;
+        color: var(--term-fg);
       }
       .task-section ul {
         list-style: none;
+        padding: 0;
+        margin: 0;
         display: flex;
         flex-direction: column;
-        gap: 0.25rem;
+        gap: 2px;
       }
       .task-section li::before {
-        content: "—";
-        color: var(--text-muted);
-        margin-right: 0.5rem;
+        content: "— ";
+        color: var(--subtle);
       }
-
-      .task-files {
-        display: flex;
-        flex-direction: column;
-        gap: 0.3rem;
-      }
-      .task-file {
-        display: flex;
-        gap: 0.5rem;
-        align-items: baseline;
-        font-size: 0.825rem;
-      }
-
       .dep-list {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.4rem;
+        gap: 4px;
+        margin-top: 2px;
       }
       .dep-tag {
-        font-size: 0.75rem;
-        padding: 0.1rem 0.5rem;
-        background: var(--accent-dim);
-        color: #a5b4fc;
-        border-radius: 4px;
-      }
-      .dep-none {
-        font-size: 0.875rem;
-        color: var(--text-muted);
+        font-size: 11px;
+        padding: 1px 6px;
+        background: var(--info-muted);
+        color: var(--info);
+        border-radius: 3px;
       }
 
-      /* Footer */
-      .footer {
-        margin-top: 3rem;
-        padding-top: 1rem;
-        border-top: 1px solid var(--border);
-        font-size: 0.75rem;
-        color: var(--text-muted);
+      code {
+        color: var(--blue);
+      }
+
+      footer {
+        margin-top: 28px;
+        color: var(--subtle);
+        font-size: 11px;
+      }
+
+      ::selection {
+        background: var(--clay);
+        color: var(--term-bg);
+      }
+
+      @media (max-width: 640px) {
+        body {
+          padding: 20px 12px 48px;
+        }
+        .term-body {
+          padding: 16px 16px 24px;
+        }
+        .summary {
+          grid-template-columns: 1fr;
+        }
+        .drill summary {
+          grid-template-columns: 3ch 1fr 8ch;
+          gap: 8px;
+        }
       }
     </style>
   </head>
   <body>
-    <div class="container">
-      <!-- HEADER -->
-      <div class="header">
-        <h1>Plan: {{FEATURE_NAME}}</h1>
-        <div class="meta">
-          <span>{{DATE}}</span>
-          <span>{{TASK_COUNT}} tasks</span>
-        </div>
+    <div class="term">
+      <div class="titlebar">
+        <span class="dot"></span><span class="dot"></span
+        ><span class="dot"></span>
+        <span class="path">~/project — write-plan</span>
       </div>
+      <div class="term-body">
+        <div class="cmd">
+          <span class="prompt">&gt;</span> /write-plan {{FEATURE_NAME}}
+        </div>
+        <div id="meta-line">{{DATE}} · {{TASK_COUNT}} tasks</div>
 
-      <!-- SUMMARY CARDS -->
-      <div class="summary">
-        <div class="card">
-          <h3>Goal</h3>
-          <p>{{GOAL}}</p>
-        </div>
-        <div class="card">
-          <h3>Approach</h3>
-          <p>{{APPROACH}}</p>
-        </div>
-      </div>
-
-      <!-- FILES AFFECTED -->
-      <div class="files">
-        <h2>Files Affected</h2>
-        <ul>
-          <!-- Repeat for each file:
-      <li>
-        <span class="file-badge create">create</span>
-        <span class="file-path">path/to/new-file.ts</span>
-        <span class="file-desc">— what it does</span>
-      </li>
-      <li>
-        <span class="file-badge modify">modify</span>
-        <span class="file-path">path/to/existing.ts</span>
-        <span class="file-desc">— what changes</span>
-      </li>
-      -->
-          {{FILES_AFFECTED}}
-        </ul>
-      </div>
-
-      <!-- TASKS -->
-      <div class="tasks-header">
-        <h2>Tasks</h2>
-        <span class="progress-text" id="progress-text"
-          >0 / {{TASK_COUNT}} done</span
-        >
-      </div>
-
-      <div id="task-list">
-        <!-- Repeat for each task:
-    <div class="task" data-task="1" data-status="todo">
-      <div class="task-header" onclick="toggleTask(this)">
-        <span class="task-num">01</span>
-        <span class="task-title">Task Title Here</span>
-        <span class="task-status todo">To do</span>
-        <span class="task-chevron">▶</span>
-      </div>
-      <div class="task-body">
-        <div class="task-section">
-          <div class="task-section-label">What</div>
-          <p>What this task builds or changes.</p>
-        </div>
-        <div class="task-section">
-          <div class="task-section-label">Why</div>
-          <p>Why this is needed.</p>
-        </div>
-        <div class="task-section">
-          <div class="task-section-label">Files</div>
-          <div class="task-files">
-            <div class="task-file">
-              <span class="file-badge create">create</span>
-              <span class="file-path">path/to/file.ts</span>
+        <section>
+          <div class="hr"></div>
+          <h2>goal &amp; approach</h2>
+          <div class="section-body summary">
+            <div class="card">
+              <div class="label">Goal</div>
+              <p>{{GOAL}}</p>
+            </div>
+            <div class="card">
+              <div class="label">Approach</div>
+              <p>{{APPROACH}}</p>
             </div>
           </div>
-        </div>
-        <div class="task-section">
-          <div class="task-section-label">Gotchas</div>
-          <ul>
-            <li>Use dayjs, not native JS Date</li>
-          </ul>
-        </div>
-        <div class="task-section">
-          <div class="task-section-label">Dependencies</div>
-          <div class="dep-list">
-            <span class="dep-tag">Task 1</span>
-          </div>
-        </div>
-      </div>
-    </div>
-    -->
-        {{TASKS}}
-      </div>
+        </section>
 
-      <div class="footer">
-        Generated {{DATE}} · Read-only — do not modify after creation
+        <section>
+          <div class="hr"></div>
+          <h2>files affected</h2>
+          <div class="section-body" id="files">
+            <!-- Repeat for each file:
+            <div class="file-row">
+              <span class="badge create">create</span>
+              <span>
+                <span class="file-path">path/to/new-file.ts</span>
+                <span class="file-desc"> — what it does</span>
+              </span>
+            </div>
+            <div class="file-row">
+              <span class="badge modify">modify</span>
+              <span>
+                <span class="file-path">path/to/existing.ts</span>
+                <span class="file-desc"> — what changes</span>
+              </span>
+            </div>
+            -->
+            {{FILES_AFFECTED}}
+          </div>
+        </section>
+
+        <section>
+          <div class="hr"></div>
+          <h2>tasks<span class="hint" id="progress-text"></span></h2>
+          <div class="section-body drill" id="task-list">
+            <!-- Repeat for each task:
+            <details data-status="todo">
+              <summary>
+                <span class="task-num">01</span>
+                <span class="task-title">Task Title Here</span>
+                <span class="task-status todo">todo</span>
+              </summary>
+              <div class="task-body">
+                <div class="task-section">
+                  <div class="task-section-label">What</div>
+                  <p>What this task builds or changes.</p>
+                </div>
+                <div class="task-section">
+                  <div class="task-section-label">Why</div>
+                  <p>Why this is needed.</p>
+                </div>
+                <div class="task-section">
+                  <div class="task-section-label">Files</div>
+                  <ul>
+                    <li><code>path/to/file.ts</code> — create</li>
+                  </ul>
+                </div>
+                <div class="task-section">
+                  <div class="task-section-label">Gotchas</div>
+                  <ul>
+                    <li>Use dayjs, not native JS Date</li>
+                  </ul>
+                </div>
+                <div class="task-section">
+                  <div class="task-section-label">Dependencies</div>
+                  <div class="dep-list">
+                    <span class="dep-tag">Task 1</span>
+                  </div>
+                </div>
+              </div>
+            </details>
+            -->
+            {{TASKS}}
+          </div>
+        </section>
+
+        <footer>Generated {{DATE}} · Read-only — do not modify after creation</footer>
       </div>
     </div>
     <script>
-      function toggleTask(header) {
-        header.parentElement.classList.toggle("open");
-      }
-      function updateProgress() {
-        const tasks = document.querySelectorAll(".task");
-        const done = document.querySelectorAll(".task.done").length;
-        document.getElementById("progress-text").textContent =
-          done + " / " + tasks.length + " done";
-      }
-      updateProgress();
+      (function () {
+        const tasks = document.querySelectorAll("#task-list details");
+        const done = [...tasks].filter(
+          (t) => t.dataset.status === "done",
+        ).length;
+        const el = document.getElementById("progress-text");
+        if (el && tasks.length)
+          el.textContent = done + " / " + tasks.length + " done";
+      })();
     </script>
   </body>
 </html>

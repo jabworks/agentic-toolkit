@@ -1,152 +1,552 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="created" content="YYYY-MM-DD HH:MM:SS">
-  <meta name="branch" content="[output of: git branch --show-current]">
-  <meta name="repo" content="[monorepo package or app, e.g. apps/web, packages/oxlint-config]">
-  <meta name="task" content="[slug — what were you doing]">
-  <meta name="continues-from" content="[previous handoff filename | none]">
-  <meta name="workstream" content="[slug describing the workstream]">
-  <title>Handoff: [task-slug] [YYYY-MM-DD]</title>
-</head>
-<body>
-<article class="session-handoff">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="created" content="YYYY-MM-DD HH:MM:SS" />
+    <meta name="branch" content="[output of: git branch --show-current]" />
+    <meta name="repo" content="[monorepo package or app, e.g. apps/web, packages/oxlint-config]" />
+    <meta name="task" content="[slug — what were you doing]" />
+    <meta name="continues-from" content="[previous handoff filename | none]" />
+    <meta name="workstream" content="[slug describing the workstream]" />
+    <title>handoff: [task-slug] [YYYY-MM-DD]</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        /* Terminus semantic tokens — dark default */
+        --background:         #111110;
+        --card:               #191918;
+        --foreground:         #ededec;
+        --muted:              #222221;
+        --muted-foreground:   #aba8a1;
+        --border:             #3e3e3a;
+        --input:              #4d4d47;
+        --primary:            #978365;
+        --primary-foreground: #f2e3c6;
+        --secondary:          #222221;
+        --accent:             #2a2a28;
+        --ring:               #978365;
+        --gold-9:             #978365;
+        --gold-10:            #a08b6e;
 
-<section id="current-state">
-  <h2>Current State Summary</h2>
-  <!-- One paragraph: where things stand right now. What just finished, what's in flight. -->
-  <p>[FILL]</p>
-</section>
+        --success:      #51a55d;  --success-muted:     #0e2d16;
+        --warning:      #f1a10d;  --warning-muted:     #2d1d00;
+        --info:         #52a9ff;  --info-muted:        #082030;
+        --destructive:  #f16a6a;  --destructive-muted: #3b1219;
 
-<section id="stack-snapshot">
-  <h2>Stack Snapshot</h2>
-  <dl>
-    <dt>Package / app</dt>
-    <dd>[path or package name]</dd>
-    <dt>Layer</dt>
-    <dd>[Frontend | Backend | API | Infra | Tooling | Other]</dd>
-    <dt>Docker Compose</dt>
-    <dd>[up / down / partial — list which services | N/A]</dd>
-    <dt>Dev server</dt>
-    <dd>[running on port X | not running | N/A]</dd>
-    <dt>DB migrations in flight</dt>
-    <dd>[describe | none]</dd>
-  </dl>
-</section>
+        /* Aliases so existing CSS rules keep working unchanged */
+        --term-bg:  var(--background);
+        --term-fg:  var(--foreground);
+        --titlebar: var(--secondary);
+        --outline:  rgba(237,237,236,0.08);
+        --hover:    var(--accent);
+        --clay:     var(--primary);
+        --dim:      var(--muted-foreground);
+        --subtle:   #686560;
+        --green:    var(--success);
+        --red:      var(--destructive);
+        --blue:     var(--info);
+        --yellow:   var(--warning);
+        --ivory:    var(--background);
+        --mono:     'Geist Mono', 'JetBrains Mono', ui-monospace, Menlo, Monaco, monospace;
+        --radius:   0.75rem;
+      }
 
-<section id="architecture">
-  <h2>Architecture Context</h2>
+      @media (prefers-color-scheme: light) {
+        :root {
+          --background:         #fdfdfc;
+          --card:               #f9f9f8;
+          --foreground:         #21201c;
+          --muted:              #f1f0ef;
+          --muted-foreground:   #82807c;
+          --border:             #d5d3cf;
+          --input:              #c2c0bb;
+          --primary:            #978365;
+          --primary-foreground: #3b2e1e;
+          --secondary:          #f1f0ef;
+          --accent:             #e9e8e6;
+          --ring:               #978365;
+          --gold-9:             #978365;
+          --gold-10:            #89775b;
 
-  <section id="critical-files">
-    <h3>Critical Files</h3>
-    <table>
-      <thead>
-        <tr><th>File</th><th>Why it matters</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><code>path/to/file.ts:42</code></td>
-          <td>[what it does and why it's relevant now]</td>
-        </tr>
-      </tbody>
-    </table>
-  </section>
+          --success:      #297c3b;  --success-muted:     #daf2e4;
+          --warning:      #946800;  --warning-muted:     #fff3c6;
+          --info:         #0d6cbd;  --info-muted:        #ddf3ff;
+          --destructive:  #ce2c31;  --destructive-muted: #ffe0df;
 
-  <section id="key-discoveries">
-    <h3>Key Discoveries</h3>
-    <ul>
-      <li>[Non-obvious thing learned or confirmed this session]</li>
-    </ul>
-  </section>
-</section>
+          --outline: rgba(33,32,28,0.08);
+          --subtle:  #a09d98;
+        }
+      }
 
-<section id="completed-work">
-  <h2>Completed Work</h2>
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        background: var(--ivory);
+      }
+      body {
+        margin: 0;
+        padding: 48px 24px 80px;
+        font: 13px/1.55 var(--mono);
+        font-variant-numeric: tabular-nums;
+        color: var(--term-fg);
+        position: relative;
+        min-height: 100vh;
+      }
 
-  <section id="tasks-finished">
-    <h3>Tasks Finished</h3>
-    <ul>
-      <li>[Specific task — include file:line where applicable]</li>
-    </ul>
-  </section>
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(to right,  color-mix(in oklch, var(--foreground) 2%, transparent) 1px, transparent 1px),
+          linear-gradient(to bottom, color-mix(in oklch, var(--foreground) 2%, transparent) 1px, transparent 1px);
+        background-size: 40px 40px;
+      }
 
-  <section id="files-modified">
-    <h3>Files Modified</h3>
-    <table>
-      <thead>
-        <tr><th>File</th><th>Change</th><th>Why</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><code>path/to/file.ts</code></td>
-          <td>[what changed]</td>
-          <td>[rationale]</td>
-        </tr>
-      </tbody>
-    </table>
-  </section>
-</section>
+      body::after {
+        content: '';
+        position: fixed;
+        top: -240px;
+        left: 50%;
+        width: 640px;
+        height: 640px;
+        z-index: 0;
+        pointer-events: none;
+        transform: translateX(-50%);
+        background: radial-gradient(circle, color-mix(in oklch, var(--gold-9) 9%, transparent) 0%, transparent 70%);
+      }
 
-<section id="decisions">
-  <h2>Decisions Made</h2>
-  <table>
-    <thead>
-      <tr><th>Decision</th><th>Options considered</th><th>Chosen</th><th>Rationale</th></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>[What was decided]</td>
-        <td>[A vs B vs C]</td>
-        <td>[A]</td>
-        <td>[The constraint, tradeoff, or intent]</td>
-      </tr>
-    </tbody>
-  </table>
-</section>
+      ::-webkit-scrollbar { width: 9px; height: 9px; }
+      ::-webkit-scrollbar-thumb {
+        background-color: var(--primary);
+        border-radius: 9999px;
+        border: 2px solid transparent;
+        background-clip: padding-box;
+      }
+      ::-webkit-scrollbar-track { background: transparent; }
 
-<section id="next-steps">
-  <h2>Immediate Next Steps</h2>
-  <!-- Ordered and specific. "Fix auth" is not acceptable. "Add refreshToken to auth.schema.ts:12" is. -->
-  <ol>
-    <li>[Step 1 — include file:line where applicable]</li>
-    <li>[Step 2]</li>
-    <li>[Step 3]</li>
-  </ol>
-</section>
+      .term {
+        max-width: 1000px;
+        margin: 0 auto;
+        background: var(--term-bg);
+        border-radius: 8px;
+        outline: 1px solid var(--outline);
+        box-shadow: 0 20px 60px rgba(20, 20, 19, 0.22);
+        position: relative;
+        z-index: 1;
+      }
+      .titlebar {
+        background: var(--titlebar);
+        border-radius: 8px 8px 0 0;
+        border-bottom: 1px solid var(--outline);
+        padding: 11px 14px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .titlebar .dot {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: #3a3836;
+      }
+      .titlebar .path {
+        margin-left: 14px;
+        color: var(--dim);
+        font-size: 11px;
+      }
+      .term-body {
+        padding: 22px 30px 30px;
+      }
 
-<section id="blockers">
-  <h2>Blockers</h2>
-  <table>
-    <thead>
-      <tr><th>Blocker</th><th>Context</th><th>Workaround tried</th></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>[What's stuck]</td>
-        <td>[Why]</td>
-        <td>[What was attempted]</td>
-      </tr>
-    </tbody>
-  </table>
-</section>
+      .cmd {
+        color: var(--dim);
+        margin-bottom: 6px;
+      }
+      .cmd .prompt {
+        color: var(--clay);
+      }
+      #meta-line {
+        color: var(--subtle);
+        font-size: 11px;
+      }
 
-<section id="important-context">
-  <h2>Important Context</h2>
-  <!-- MUST READ. Things the next agent gets wrong without knowing this. -->
-  <ul>
-    <li>[Critical invariant, hidden constraint, or gotcha]</li>
-    <li>[Known pitfall to avoid]</li>
-  </ul>
-</section>
+      section {
+        margin-top: 26px;
+      }
+      .hr {
+        color: var(--subtle);
+        overflow: hidden;
+        white-space: nowrap;
+        user-select: none;
+        margin-bottom: 8px;
+      }
+      .hr::after {
+        content: "────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────";
+      }
+      h2 {
+        all: unset;
+        display: block;
+        color: var(--clay);
+        font-weight: 500;
+      }
+      h2::before {
+        content: "▸ ";
+      }
+      h3 {
+        all: unset;
+        display: block;
+        color: var(--dim);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 500;
+        margin-top: 14px;
+        margin-bottom: 6px;
+      }
+      .section-body {
+        margin-top: 10px;
+      }
 
-<section id="deferred">
-  <h2>Deferred / Out of Scope</h2>
-  <ul>
-    <li>[Thing that came up but was intentionally left for later]</li>
-  </ul>
-</section>
+      p {
+        margin: 0;
+        color: var(--term-fg);
+        font-size: 13px;
+      }
 
-</article>
-</body>
+      /* key-value rows (stack snapshot) */
+      .kv {
+        display: grid;
+        grid-template-columns: 20ch 1fr;
+        gap: 14px;
+        padding: 5px 0;
+        border-top: 1px solid var(--outline);
+        align-items: baseline;
+        font-size: 12px;
+      }
+      .kv:last-of-type {
+        border-bottom: 1px solid var(--outline);
+      }
+      .kv .key {
+        color: var(--subtle);
+        white-space: nowrap;
+      }
+      .kv .val {
+        color: var(--term-fg);
+      }
+
+      /* tables */
+      .scroll {
+        overflow-x: auto;
+        border-top: 1px solid var(--outline);
+        border-bottom: 1px solid var(--outline);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 6px 10px;
+      }
+      td {
+        border-top: 1px solid color-mix(in oklch, var(--foreground) 4%, transparent);
+        color: var(--term-fg);
+        vertical-align: top;
+      }
+      th {
+        background: var(--term-bg);
+        font-weight: 500;
+        font-size: 11px;
+        color: var(--subtle);
+        border-bottom: 1px solid var(--outline);
+        white-space: nowrap;
+      }
+      tbody tr:hover td {
+        background: var(--hover);
+      }
+
+      /* lists */
+      ul,
+      ol {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+      }
+      ul li::before {
+        content: "— ";
+        color: var(--subtle);
+      }
+      ol {
+        counter-reset: step;
+      }
+      ol li {
+        counter-increment: step;
+        padding-left: 0;
+      }
+      ol li::before {
+        content: counter(step, decimal-leading-zero) "  ";
+        color: var(--clay);
+        font-weight: 700;
+      }
+      li {
+        font-size: 12px;
+        color: var(--term-fg);
+      }
+
+      /* callouts */
+      .callout {
+        padding: 6px 0 6px 14px;
+        border-left: 2px solid var(--subtle);
+        color: var(--dim);
+        margin: 6px 0;
+        font-size: 12px;
+      }
+      .callout.warn {
+        border-color: var(--red);
+        color: var(--term-fg);
+      }
+      .callout b,
+      .callout code {
+        color: var(--term-fg);
+      }
+      .callout.warn b {
+        color: var(--red);
+      }
+
+      code {
+        color: var(--blue);
+      }
+
+      footer {
+        margin-top: 28px;
+        color: var(--subtle);
+        font-size: 11px;
+      }
+
+      ::selection {
+        background: var(--clay);
+        color: var(--term-bg);
+      }
+
+      @media (max-width: 640px) {
+        body {
+          padding: 20px 12px 48px;
+        }
+        .term-body {
+          padding: 16px 16px 24px;
+        }
+        .kv {
+          grid-template-columns: 14ch 1fr;
+          gap: 8px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="term">
+      <div class="titlebar">
+        <span class="dot"></span><span class="dot"></span
+        ><span class="dot"></span>
+        <span class="path" id="title-path">~/project — session-handoff</span>
+      </div>
+      <div class="term-body">
+        <div class="cmd">
+          <span class="prompt">&gt;</span> /session-handoff
+        </div>
+        <div id="meta-line">[YYYY-MM-DD HH:MM] · [branch] · [repo]</div>
+
+        <article class="session-handoff">
+
+          <section id="current-state">
+            <div class="hr"></div>
+            <h2>current state</h2>
+            <!-- One paragraph: where things stand right now. What just finished, what's in flight. -->
+            <div class="section-body">
+              <p>[FILL]</p>
+            </div>
+          </section>
+
+          <section id="stack-snapshot">
+            <div class="hr"></div>
+            <h2>stack snapshot</h2>
+            <div class="section-body">
+              <div class="kv">
+                <span class="key">Package / app</span>
+                <span class="val">[path or package name]</span>
+              </div>
+              <div class="kv">
+                <span class="key">Layer</span>
+                <span class="val">[Frontend | Backend | API | Infra | Tooling | Other]</span>
+              </div>
+              <div class="kv">
+                <span class="key">Docker Compose</span>
+                <span class="val">[up / down / partial — list which services | N/A]</span>
+              </div>
+              <div class="kv">
+                <span class="key">Dev server</span>
+                <span class="val">[running on port X | not running | N/A]</span>
+              </div>
+              <div class="kv">
+                <span class="key">DB migrations in flight</span>
+                <span class="val">[describe | none]</span>
+              </div>
+            </div>
+          </section>
+
+          <section id="architecture">
+            <div class="hr"></div>
+            <h2>architecture context</h2>
+            <div class="section-body">
+              <h3>Critical Files</h3>
+              <div class="scroll">
+                <table>
+                  <thead>
+                    <tr><th>File</th><th>Why it matters</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><code>path/to/file.ts:42</code></td>
+                      <td>[what it does and why it's relevant now]</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h3>Key Discoveries</h3>
+              <ul>
+                <li>[Non-obvious thing learned or confirmed this session]</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="completed-work">
+            <div class="hr"></div>
+            <h2>completed work</h2>
+            <div class="section-body">
+              <h3>Tasks Finished</h3>
+              <ul>
+                <li>[Specific task — include file:line where applicable]</li>
+              </ul>
+
+              <h3>Files Modified</h3>
+              <div class="scroll">
+                <table>
+                  <thead>
+                    <tr><th>File</th><th>Change</th><th>Why</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><code>path/to/file.ts</code></td>
+                      <td>[what changed]</td>
+                      <td>[rationale]</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section id="decisions">
+            <div class="hr"></div>
+            <h2>decisions made</h2>
+            <div class="section-body scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Decision</th>
+                    <th>Options considered</th>
+                    <th>Chosen</th>
+                    <th>Rationale</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>[What was decided]</td>
+                    <td>[A vs B vs C]</td>
+                    <td>[A]</td>
+                    <td>[The constraint, tradeoff, or intent]</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="next-steps">
+            <div class="hr"></div>
+            <h2>immediate next steps</h2>
+            <!-- Ordered and specific. "Fix auth" is not acceptable. "Add refreshToken to auth.schema.ts:12" is. -->
+            <div class="section-body">
+              <ol>
+                <li>[Step 1 — include file:line where applicable]</li>
+                <li>[Step 2]</li>
+                <li>[Step 3]</li>
+              </ol>
+            </div>
+          </section>
+
+          <section id="blockers">
+            <div class="hr"></div>
+            <h2>blockers</h2>
+            <div class="section-body scroll">
+              <table>
+                <thead>
+                  <tr><th>Blocker</th><th>Context</th><th>Workaround tried</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>[What's stuck]</td>
+                    <td>[Why]</td>
+                    <td>[What was attempted]</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="important-context">
+            <div class="hr"></div>
+            <h2>important context</h2>
+            <!-- MUST READ. Things the next agent gets wrong without knowing this. -->
+            <div class="section-body">
+              <div class="callout warn">
+                <b>Must read</b> — things the next session gets wrong without knowing this.
+              </div>
+              <ul>
+                <li>[Critical invariant, hidden constraint, or gotcha]</li>
+                <li>[Known pitfall to avoid]</li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="deferred">
+            <div class="hr"></div>
+            <h2>deferred / out of scope</h2>
+            <div class="section-body">
+              <ul>
+                <li>[Thing that came up but was intentionally left for later]</li>
+              </ul>
+            </div>
+          </section>
+
+        </article>
+
+        <footer>Generated [YYYY-MM-DD HH:MM] · Read-only — do not modify after creation</footer>
+      </div>
+    </div>
+  </body>
 </html>

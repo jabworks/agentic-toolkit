@@ -7,26 +7,75 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
     <style>
       :root {
-        --ivory: #faf9f5;
-        --term-bg: #1a1918;
-        --term-fg: #d1cfc5;
-        --titlebar: #252321;
-        --outline: rgba(255, 255, 255, 0.08);
-        --hover: rgba(255, 255, 255, 0.035);
-        --clay: #d97757;
-        --dim: rgb(136, 136, 136);
-        --subtle: rgb(80, 80, 80);
-        --green: rgb(78, 186, 101);
-        --red: rgb(255, 107, 128);
-        --blue: rgb(177, 185, 249);
-        --yellow: rgb(255, 193, 7);
-        --mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Monaco,
-          monospace;
+        /* Terminus semantic tokens — dark default */
+        --background:         #111110;
+        --card:               #191918;
+        --foreground:         #ededec;
+        --muted:              #222221;
+        --muted-foreground:   #aba8a1;
+        --border:             #3e3e3a;
+        --input:              #4d4d47;
+        --primary:            #978365;
+        --primary-foreground: #f2e3c6;
+        --secondary:          #222221;
+        --accent:             #2a2a28;
+        --ring:               #978365;
+        --gold-9:             #978365;
+        --gold-10:            #a08b6e;
+
+        --success:      #51a55d;  --success-muted:     #0e2d16;
+        --warning:      #f1a10d;  --warning-muted:     #2d1d00;
+        --info:         #52a9ff;  --info-muted:        #082030;
+        --destructive:  #f16a6a;  --destructive-muted: #3b1219;
+
+        /* Aliases so existing CSS rules keep working unchanged */
+        --term-bg:  var(--background);
+        --term-fg:  var(--foreground);
+        --titlebar: var(--secondary);
+        --outline:  rgba(237,237,236,0.08);
+        --hover:    var(--accent);
+        --clay:     var(--primary);
+        --dim:      var(--muted-foreground);
+        --subtle:   #686560;
+        --green:    var(--success);
+        --red:      var(--destructive);
+        --blue:     var(--info);
+        --yellow:   var(--warning);
+        --ivory:    var(--background);
+        --mono:     'Geist Mono', 'JetBrains Mono', ui-monospace, Menlo, Monaco, monospace;
+        --radius:   0.75rem;
+      }
+
+      @media (prefers-color-scheme: light) {
+        :root {
+          --background:         #fdfdfc;
+          --card:               #f9f9f8;
+          --foreground:         #21201c;
+          --muted:              #f1f0ef;
+          --muted-foreground:   #82807c;
+          --border:             #d5d3cf;
+          --input:              #c2c0bb;
+          --primary:            #978365;
+          --primary-foreground: #3b2e1e;
+          --secondary:          #f1f0ef;
+          --accent:             #e9e8e6;
+          --ring:               #978365;
+          --gold-9:             #978365;
+          --gold-10:            #89775b;
+
+          --success:      #297c3b;  --success-muted:     #daf2e4;
+          --warning:      #946800;  --warning-muted:     #fff3c6;
+          --info:         #0d6cbd;  --info-muted:        #ddf3ff;
+          --destructive:  #ce2c31;  --destructive-muted: #ffe0df;
+
+          --outline: rgba(33,32,28,0.08);
+          --subtle:  #a09d98;
+        }
       }
 
       * {
@@ -41,7 +90,43 @@
         font: 13px/1.55 var(--mono);
         font-variant-numeric: tabular-nums;
         color: var(--term-fg);
+        position: relative;
+        min-height: 100vh;
       }
+
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(to right,  color-mix(in oklch, var(--foreground) 2%, transparent) 1px, transparent 1px),
+          linear-gradient(to bottom, color-mix(in oklch, var(--foreground) 2%, transparent) 1px, transparent 1px);
+        background-size: 40px 40px;
+      }
+
+      body::after {
+        content: '';
+        position: fixed;
+        top: -240px;
+        left: 50%;
+        width: 640px;
+        height: 640px;
+        z-index: 0;
+        pointer-events: none;
+        transform: translateX(-50%);
+        background: radial-gradient(circle, color-mix(in oklch, var(--gold-9) 9%, transparent) 0%, transparent 70%);
+      }
+
+      ::-webkit-scrollbar { width: 9px; height: 9px; }
+      ::-webkit-scrollbar-thumb {
+        background-color: var(--primary);
+        border-radius: 9999px;
+        border: 2px solid transparent;
+        background-clip: padding-box;
+      }
+      ::-webkit-scrollbar-track { background: transparent; }
 
       .term {
         max-width: 1000px;
@@ -50,6 +135,8 @@
         border-radius: 8px;
         outline: 1px solid var(--outline);
         box-shadow: 0 20px 60px rgba(20, 20, 19, 0.22);
+        position: relative;
+        z-index: 1;
       }
       .titlebar {
         background: var(--titlebar);
@@ -266,8 +353,8 @@
       .dep-tag {
         font-size: 11px;
         padding: 1px 6px;
-        background: rgba(177, 185, 249, 0.1);
-        color: var(--blue);
+        background: var(--info-muted);
+        color: var(--info);
         border-radius: 3px;
       }
 
