@@ -1,0 +1,24 @@
+{
+  "name": "session-report",
+  "version": "1.0.0",
+  "description": "Generate an explorable HTML report of Codex session usage — tokens, subagents, slash commands, expensive turns.",
+  "author": {
+    "name": "jabworks"
+  },
+  "repository": "https://github.com/jabworks/agentic-toolkit",
+  "license": "MIT",
+  "keywords": ["usage", "tokens", "sessions", "analytics", "report"],
+  "skills": "./skills/session-report",
+  "interface": {
+    "displayName": "Session Report",
+    "shortDescription": "HTML usage report for Codex sessions.",
+    "longDescription": "Scans ~/.codex/sessions transcripts and generates a self-contained HTML report with token totals, project breakdown, session timeline, subagent costs, and optimization recommendations.",
+    "developerName": "jabworks",
+    "category": "Productivity",
+    "defaultPrompt": [
+      "Generate a session report for the last 7 days.",
+      "Show me my token usage this week.",
+      "Session report for the last 30 days."
+    ]
+  }
+}

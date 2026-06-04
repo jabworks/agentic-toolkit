@@ -35,6 +35,15 @@
       "category": "development"
     },
     {
+      "name": "session-report",
+      "description": "Generate an explorable HTML report of session usage — tokens, cache, subagents, skills, expensive prompts. Works for Claude Code and Codex.",
+      "author": {
+        "name": "Hieu Vi"
+      },
+      "source": "./dist/plugins/session-report",
+      "category": "development"
+    },
+    {
       "name": "condux",
       "description": "Lean agentic workflow skills: tiered task routing, brainstorm gate, lean planning, opt-in TDD, subagent coordination, end-of-task quality gate, on-request code review, and done-check verification.",
       "author": {
