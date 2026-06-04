@@ -1,0 +1,35 @@
+{
+  "name": "condux",
+  "version": "1.0.0",
+  "description": "Codex skills for lean agentic workflow: tier routing, brainstorm, planning, TDD, subagent coordination, finalize, code review, and verification.",
+  "author": {
+    "name": "jabworks"
+  },
+  "repository": "https://github.com/jabworks/agentic-toolkit",
+  "license": "MIT",
+  "keywords": [
+    "workflow",
+    "condux",
+    "tier",
+    "finalize",
+    "brainstorm",
+    "tdd",
+    "code-review",
+    "verification",
+    "subagent",
+    "planning"
+  ],
+  "skills": "./skills/condux",
+  "interface": {
+    "displayName": "Condux",
+    "shortDescription": "Lean agentic workflow skills.",
+    "longDescription": "Condux gives Codex a tiered workflow system — Small, Medium, or Large — with lean task cards, opt-in TDD, on-request code review, and a single end-of-task quality gate. No runaway reviews, no mid-task tests, no monstrous plans.",
+    "developerName": "jabworks",
+    "category": "Productivity",
+    "defaultPrompt": [
+      "Route this task with /workflow.",
+      "Finalize this implementation.",
+      "Code review before merging."
+    ]
+  }
+}

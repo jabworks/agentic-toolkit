@@ -1,0 +1,24 @@
+{
+  "name": "condux",
+  "version": "1.0.0",
+  "description": "Claude Code skills for lean agentic workflow: tier routing, brainstorm, planning, TDD, subagent coordination, finalize, code review, and verification.",
+  "author": {
+    "name": "jabworks"
+  },
+  "repository": "https://github.com/jabworks/agentic-toolkit",
+  "license": "MIT",
+  "keywords": [
+    "workflow",
+    "condux",
+    "tier",
+    "finalize",
+    "brainstorm",
+    "tdd",
+    "code-review",
+    "verification",
+    "subagent",
+    "planning"
+  ],
+  "skills": "./skills/condux",
+  "agents": "./agents"
+}

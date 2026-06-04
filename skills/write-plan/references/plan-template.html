@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>plan: {{FEATURE_NAME}}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ivory: #faf9f5;
+        --term-bg: #1a1918;
+        --term-fg: #d1cfc5;
+        --titlebar: #252321;
+        --outline: rgba(255, 255, 255, 0.08);
+        --hover: rgba(255, 255, 255, 0.035);
+        --clay: #d97757;
+        --dim: rgb(136, 136, 136);
+        --subtle: rgb(80, 80, 80);
+        --green: rgb(78, 186, 101);
+        --red: rgb(255, 107, 128);
+        --blue: rgb(177, 185, 249);
+        --yellow: rgb(255, 193, 7);
+        --mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Monaco,
+          monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        background: var(--ivory);
+      }
+      body {
+        margin: 0;
+        padding: 48px 24px 80px;
+        font: 13px/1.55 var(--mono);
+        font-variant-numeric: tabular-nums;
+        color: var(--term-fg);
+      }
+
+      .term {
+        max-width: 1000px;
+        margin: 0 auto;
+        background: var(--term-bg);
+        border-radius: 8px;
+        outline: 1px solid var(--outline);
+        box-shadow: 0 20px 60px rgba(20, 20, 19, 0.22);
+      }
+      .titlebar {
+        background: var(--titlebar);
+        border-radius: 8px 8px 0 0;
+        border-bottom: 1px solid var(--outline);
+        padding: 11px 14px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .titlebar .dot {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: #3a3836;
+      }
+      .titlebar .path {
+        margin-left: 14px;
+        color: var(--dim);
+        font-size: 11px;
+      }
+      .term-body {
+        padding: 22px 30px 30px;
+      }
+
+      .cmd {
+        color: var(--dim);
+        margin-bottom: 6px;
+      }
+      .cmd .prompt {
+        color: var(--clay);
+      }
+      #meta-line {
+        color: var(--subtle);
+        font-size: 11px;
+      }
+
+      section {
+        margin-top: 26px;
+      }
+      .hr {
+        color: var(--subtle);
+        overflow: hidden;
+        white-space: nowrap;
+        user-select: none;
+        margin-bottom: 8px;
+      }
+      .hr::after {
+        content: "────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────";
+      }
+      h2 {
+        all: unset;
+        display: block;
+        color: var(--clay);
+        font-weight: 500;
+      }
+      h2::before {
+        content: "▸ ";
+      }
+      h2 .hint {
+        color: var(--subtle);
+        font-size: 11px;
+        font-weight: 400;
+        margin-left: 10px;
+      }
+      .section-body {
+        margin-top: 10px;
+      }
+
+      /* summary */
+      .summary {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .card {
+        background: rgba(255, 255, 255, 0.025);
+        border: 1px solid var(--outline);
+        border-radius: 4px;
+        padding: 10px 14px;
+      }
+      .card .label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--subtle);
+        margin-bottom: 4px;
+      }
+      .card p {
+        font-size: 12px;
+        color: var(--term-fg);
+        margin: 0;
+      }
+
+      /* files */
+      .file-row {
+        display: grid;
+        grid-template-columns: 8ch 1fr;
+        gap: 14px;
+        padding: 6px 4px;
+        border-top: 1px solid var(--outline);
+        align-items: baseline;
+        font-size: 12px;
+      }
+      .badge {
+        font-size: 10px;
+        font-weight: 700;
+        text-align: right;
+        white-space: nowrap;
+      }
+      .badge.create {
+        color: var(--green);
+      }
+      .badge.modify {
+        color: var(--yellow);
+      }
+      .file-path {
+        color: var(--term-fg);
+      }
+      .file-desc {
+        color: var(--dim);
+      }
+
+      /* tasks */
+      .drill details {
+        border-top: 1px solid var(--outline);
+      }
+      .drill details:last-of-type {
+        border-bottom: 1px solid var(--outline);
+      }
+      .drill summary {
+        list-style: none;
+        cursor: pointer;
+        display: grid;
+        grid-template-columns: 4ch 1fr 10ch;
+        gap: 14px;
+        padding: 9px 4px;
+        align-items: baseline;
+      }
+      .drill summary::-webkit-details-marker {
+        display: none;
+      }
+      .drill summary:hover {
+        background: var(--hover);
+      }
+      .task-num {
+        font-size: 11px;
+        color: var(--subtle);
+        text-align: right;
+      }
+      .task-title {
+        font-size: 13px;
+        font-weight: 500;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      details[open] summary .task-title {
+        white-space: normal;
+      }
+      .task-status {
+        font-size: 10px;
+        font-weight: 700;
+        text-align: right;
+        white-space: nowrap;
+      }
+      .task-status.todo {
+        color: var(--subtle);
+      }
+      .task-status.done {
+        color: var(--green);
+      }
+      .task-status.blocked {
+        color: var(--red);
+      }
+      .task-body {
+        padding: 4px 4px 14px calc(4ch + 18px);
+        font-size: 12px;
+        color: var(--dim);
+      }
+      .task-section {
+        margin-top: 8px;
+      }
+      .task-section-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--subtle);
+        margin-bottom: 3px;
+      }
+      .task-section p,
+      .task-section li {
+        font-size: 12px;
+        color: var(--term-fg);
+      }
+      .task-section ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .task-section li::before {
+        content: "— ";
+        color: var(--subtle);
+      }
+      .dep-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-top: 2px;
+      }
+      .dep-tag {
+        font-size: 11px;
+        padding: 1px 6px;
+        background: rgba(177, 185, 249, 0.1);
+        color: var(--blue);
+        border-radius: 3px;
+      }
+
+      code {
+        color: var(--blue);
+      }
+
+      footer {
+        margin-top: 28px;
+        color: var(--subtle);
+        font-size: 11px;
+      }
+
+      ::selection {
+        background: var(--clay);
+        color: var(--term-bg);
+      }
+
+      @media (max-width: 640px) {
+        body {
+          padding: 20px 12px 48px;
+        }
+        .term-body {
+          padding: 16px 16px 24px;
+        }
+        .summary {
+          grid-template-columns: 1fr;
+        }
+        .drill summary {
+          grid-template-columns: 3ch 1fr 8ch;
+          gap: 8px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="term">
+      <div class="titlebar">
+        <span class="dot"></span><span class="dot"></span
+        ><span class="dot"></span>
+        <span class="path">~/project — write-plan</span>
+      </div>
+      <div class="term-body">
+        <div class="cmd">
+          <span class="prompt">&gt;</span> /write-plan {{FEATURE_NAME}}
+        </div>
+        <div id="meta-line">{{DATE}} · {{TASK_COUNT}} tasks</div>
+
+        <section>
+          <div class="hr"></div>
+          <h2>goal &amp; approach</h2>
+          <div class="section-body summary">
+            <div class="card">
+              <div class="label">Goal</div>
+              <p>{{GOAL}}</p>
+            </div>
+            <div class="card">
+              <div class="label">Approach</div>
+              <p>{{APPROACH}}</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="hr"></div>
+          <h2>files affected</h2>
+          <div class="section-body" id="files">
+            <!-- Repeat for each file:
+            <div class="file-row">
+              <span class="badge create">create</span>
+              <span>
+                <span class="file-path">path/to/new-file.ts</span>
+                <span class="file-desc"> — what it does</span>
+              </span>
+            </div>
+            <div class="file-row">
+              <span class="badge modify">modify</span>
+              <span>
+                <span class="file-path">path/to/existing.ts</span>
+                <span class="file-desc"> — what changes</span>
+              </span>
+            </div>
+            -->
+            {{FILES_AFFECTED}}
+          </div>
+        </section>
+
+        <section>
+          <div class="hr"></div>
+          <h2>tasks<span class="hint" id="progress-text"></span></h2>
+          <div class="section-body drill" id="task-list">
+            <!-- Repeat for each task:
+            <details data-status="todo">
+              <summary>
+                <span class="task-num">01</span>
+                <span class="task-title">Task Title Here</span>
+                <span class="task-status todo">todo</span>
+              </summary>
+              <div class="task-body">
+                <div class="task-section">
+                  <div class="task-section-label">What</div>
+                  <p>What this task builds or changes.</p>
+                </div>
+                <div class="task-section">
+                  <div class="task-section-label">Why</div>
+                  <p>Why this is needed.</p>
+                </div>
+                <div class="task-section">
+                  <div class="task-section-label">Files</div>
+                  <ul>
+                    <li><code>path/to/file.ts</code> — create</li>
+                  </ul>
+                </div>
+                <div class="task-section">
+                  <div class="task-section-label">Gotchas</div>
+                  <ul>
+                    <li>Use dayjs, not native JS Date</li>
+                  </ul>
+                </div>
+                <div class="task-section">
+                  <div class="task-section-label">Dependencies</div>
+                  <div class="dep-list">
+                    <span class="dep-tag">Task 1</span>
+                  </div>
+                </div>
+              </div>
+            </details>
+            -->
+            {{TASKS}}
+          </div>
+        </section>
+
+        <footer>Generated {{DATE}} · Read-only — do not modify after creation</footer>
+      </div>
+    </div>
+    <script>
+      (function () {
+        const tasks = document.querySelectorAll("#task-list details");
+        const done = [...tasks].filter(
+          (t) => t.dataset.status === "done",
+        ).length;
+        const el = document.getElementById("progress-text");
+        if (el && tasks.length)
+          el.textContent = done + " / " + tasks.length + " done";
+      })();
+    </script>
+  </body>
+</html>

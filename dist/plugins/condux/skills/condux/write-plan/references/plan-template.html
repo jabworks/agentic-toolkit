@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Plan: {{FEATURE_NAME}}</title>
+    <style>
+      :root {
+        --bg: #0f1117;
+        --surface: #1a1d27;
+        --surface-2: #22263a;
+        --border: #2e3352;
+        --text: #e2e8f0;
+        --text-muted: #7c87a6;
+        --accent: #6366f1;
+        --accent-dim: #3730a3;
+        --green: #22c55e;
+        --yellow: #eab308;
+        --red: #ef4444;
+        --tag-bg: #1e2035;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+        padding: 2rem 1rem;
+      }
+
+      .container {
+        max-width: 860px;
+        margin: 0 auto;
+      }
+
+      /* Header */
+      .header {
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 1.5rem;
+        margin-bottom: 2rem;
+      }
+      .header h1 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .header .meta {
+        display: flex;
+        gap: 1.5rem;
+        margin-top: 0.5rem;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+
+      /* Summary cards */
+      .summary {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+      }
+      .card h3 {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-muted);
+        margin-bottom: 0.4rem;
+      }
+      .card p {
+        font-size: 0.9rem;
+        color: var(--text);
+      }
+
+      /* Files affected */
+      .files {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 2rem;
+      }
+      .files h2 {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-muted);
+        margin-bottom: 0.75rem;
+      }
+      .files ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+      }
+      .files li {
+        font-size: 0.85rem;
+        display: flex;
+        gap: 0.6rem;
+        align-items: baseline;
+      }
+      .file-badge {
+        font-size: 0.65rem;
+        padding: 0.1rem 0.45rem;
+        border-radius: 4px;
+        font-weight: 600;
+        white-space: nowrap;
+        background: var(--tag-bg);
+        color: var(--text-muted);
+      }
+      .file-badge.create {
+        background: #14301a;
+        color: var(--green);
+      }
+      .file-badge.modify {
+        background: #2c2400;
+        color: var(--yellow);
+      }
+      .file-path {
+        font-family: "SF Mono", "Fira Code", monospace;
+        color: var(--text);
+      }
+      .file-desc {
+        color: var(--text-muted);
+        font-size: 0.8rem;
+      }
+
+      /* Tasks section */
+      .tasks-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+      .tasks-header h2 {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-muted);
+      }
+      .progress-text {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+
+      /* Task card */
+      .task {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        overflow: hidden;
+      }
+      .task.done {
+        opacity: 0.5;
+      }
+      .task-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.85rem 1.25rem;
+        cursor: pointer;
+        user-select: none;
+      }
+      .task-header:hover {
+        background: var(--surface-2);
+      }
+      .task-num {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        font-family: "SF Mono", monospace;
+        min-width: 1.8rem;
+      }
+      .task-title {
+        font-weight: 600;
+        font-size: 0.95rem;
+        flex: 1;
+      }
+      .task-status {
+        font-size: 0.7rem;
+        padding: 0.15rem 0.55rem;
+        border-radius: 20px;
+        font-weight: 600;
+      }
+      .task-status.todo {
+        background: var(--tag-bg);
+        color: var(--text-muted);
+      }
+      .task-status.done {
+        background: #14301a;
+        color: var(--green);
+      }
+      .task-status.blocked {
+        background: #2d1111;
+        color: var(--red);
+      }
+      .task-chevron {
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        transition: transform 0.2s;
+      }
+      .task.open .task-chevron {
+        transform: rotate(90deg);
+      }
+
+      .task-body {
+        display: none;
+        padding: 0 1.25rem 1.25rem;
+      }
+      .task.open .task-body {
+        display: block;
+      }
+
+      .task-section {
+        margin-top: 0.85rem;
+      }
+      .task-section-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-muted);
+        margin-bottom: 0.35rem;
+      }
+      .task-section p,
+      .task-section li {
+        font-size: 0.875rem;
+        color: var(--text);
+      }
+      .task-section ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+      .task-section li::before {
+        content: "—";
+        color: var(--text-muted);
+        margin-right: 0.5rem;
+      }
+
+      .task-files {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+      }
+      .task-file {
+        display: flex;
+        gap: 0.5rem;
+        align-items: baseline;
+        font-size: 0.825rem;
+      }
+
+      .dep-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+      }
+      .dep-tag {
+        font-size: 0.75rem;
+        padding: 0.1rem 0.5rem;
+        background: var(--accent-dim);
+        color: #a5b4fc;
+        border-radius: 4px;
+      }
+      .dep-none {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+      }
+
+      /* Footer */
+      .footer {
+        margin-top: 3rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- HEADER -->
+      <div class="header">
+        <h1>Plan: {{FEATURE_NAME}}</h1>
+        <div class="meta">
+          <span>{{DATE}}</span>
+          <span>{{TASK_COUNT}} tasks</span>
+        </div>
+      </div>
+
+      <!-- SUMMARY CARDS -->
+      <div class="summary">
+        <div class="card">
+          <h3>Goal</h3>
+          <p>{{GOAL}}</p>
+        </div>
+        <div class="card">
+          <h3>Approach</h3>
+          <p>{{APPROACH}}</p>
+        </div>
+      </div>
+
+      <!-- FILES AFFECTED -->
+      <div class="files">
+        <h2>Files Affected</h2>
+        <ul>
+          <!-- Repeat for each file:
+      <li>
+        <span class="file-badge create">create</span>
+        <span class="file-path">path/to/new-file.ts</span>
+        <span class="file-desc">— what it does</span>
+      </li>
+      <li>
+        <span class="file-badge modify">modify</span>
+        <span class="file-path">path/to/existing.ts</span>
+        <span class="file-desc">— what changes</span>
+      </li>
+      -->
+          {{FILES_AFFECTED}}
+        </ul>
+      </div>
+
+      <!-- TASKS -->
+      <div class="tasks-header">
+        <h2>Tasks</h2>
+        <span class="progress-text" id="progress-text"
+          >0 / {{TASK_COUNT}} done</span
+        >
+      </div>
+
+      <div id="task-list">
+        <!-- Repeat for each task:
+    <div class="task" data-task="1" data-status="todo">
+      <div class="task-header" onclick="toggleTask(this)">
+        <span class="task-num">01</span>
+        <span class="task-title">Task Title Here</span>
+        <span class="task-status todo">To do</span>
+        <span class="task-chevron">▶</span>
+      </div>
+      <div class="task-body">
+        <div class="task-section">
+          <div class="task-section-label">What</div>
+          <p>What this task builds or changes.</p>
+        </div>
+        <div class="task-section">
+          <div class="task-section-label">Why</div>
+          <p>Why this is needed.</p>
+        </div>
+        <div class="task-section">
+          <div class="task-section-label">Files</div>
+          <div class="task-files">
+            <div class="task-file">
+              <span class="file-badge create">create</span>
+              <span class="file-path">path/to/file.ts</span>
+            </div>
+          </div>
+        </div>
+        <div class="task-section">
+          <div class="task-section-label">Gotchas</div>
+          <ul>
+            <li>Use dayjs, not native JS Date</li>
+          </ul>
+        </div>
+        <div class="task-section">
+          <div class="task-section-label">Dependencies</div>
+          <div class="dep-list">
+            <span class="dep-tag">Task 1</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    -->
+        {{TASKS}}
+      </div>
+
+      <div class="footer">
+        Generated {{DATE}} · Read-only — do not modify after creation
+      </div>
+    </div>
+    <script>
+      function toggleTask(header) {
+        header.parentElement.classList.toggle("open");
+      }
+      function updateProgress() {
+        const tasks = document.querySelectorAll(".task");
+        const done = document.querySelectorAll(".task.done").length;
+        document.getElementById("progress-text").textContent =
+          done + " / " + tasks.length + " done";
+      }
+      updateProgress();
+    </script>
+  </body>
+</html>

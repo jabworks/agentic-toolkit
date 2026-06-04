@@ -10,6 +10,21 @@ Personal collection of agentic coding skills. Compatible with Claude Code, Codex
 | [plugin-foundry](./skills/plugin-foundry/)   | Create and maintain skills in this toolkit                                                            |
 | [adapting-skills](./skills/adapting-skills/) | Developer profile priors for adapting skills to Harvey's stack _(personal — useful to collaborators)_ |
 
+### Condux
+
+Lean agentic workflow plugin (`condux`). Install all 8 skills as a unit via `/plugin install condux@agentic-toolkit`.
+
+| Skill | Description |
+|---|---|
+| [condux:workflow](./skills/workflow/) | Tier router — infer Small/Medium/Large, confirm with user, load only the skills the tier needs |
+| [condux:brainstorm](./skills/brainstorm/) | Design gate — clarifying questions, alternatives, section-by-section sign-off before planning |
+| [condux:write-plan](./skills/write-plan/) | Lean task-card plan (what/why/gotchas/deps), Markdown or HTML, LARGE tasks only |
+| [condux:test-driven-development](./skills/test-driven-development/) | Opt-in TDD — asks before writing tests, running tests, or updating specs |
+| [condux:subagent-driven-development](./skills/subagent-driven-development/) | Named specialist agents for LARGE plans, only when justified, never to fill time |
+| [condux:finalize](./skills/finalize/) | End-of-task quality gate — typecheck → lint → format → test, once, stop on first failure |
+| [condux:code-review](./skills/code-review/) | On-request diagnostic report (Critical/Important/Minor), never auto-triggers, never fixes |
+| [condux:verification](./skills/verification/) | "Am I actually done?" checklist before finalize — catches skipped steps and regressions |
+
 ## Install
 
 `npx skills add` auto-detects the running agent and installs to the right directory:
