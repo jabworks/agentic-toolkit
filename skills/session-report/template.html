@@ -237,6 +237,17 @@
       #hero-split .warn {
         color: var(--yellow);
       }
+      #hero-cost {
+        color: var(--dim);
+        margin-top: 4px;
+      }
+      #hero-cost b {
+        color: var(--term-fg);
+        font-weight: 500;
+      }
+      #hero-cost .ok {
+        color: var(--green);
+      }
       .cost-note {
         color: var(--subtle);
         font-size: 11px;
@@ -728,6 +739,7 @@
         <div id="hero">
           <div id="hero-total">—</div>
           <div id="hero-split"></div>
+          <div id="hero-cost"></div>
         </div>
 
         <!-- ====================================================================
@@ -933,8 +945,21 @@
           `${m ? m[1] : num}<span class="unit">${m ? m[2] : ""}</span><span class="label">tokens</span>`;
         const cacheCls = it.pct_cached >= 85 ? "ok" : "warn";
         $("hero-split").innerHTML =
-          `<b>${fmt(it.total)}</b> input <span class="${cacheCls}">(${it.pct_cached}% cache-read)</span> · ` +
+          `<b>${fmt(it.total)}</b> input ` +
+          `<span class="${cacheCls}">(${fmt(it.cache_read)} cached · ${it.pct_cached}%)</span> · ` +
           `<b>${fmt(o.output_tokens)}</b> output · all figures below are % of this total`;
+
+        const c = o.cost_usd;
+        if (c && c.total > 0) {
+          const fc = (n) => n >= 1 ? "$" + n.toFixed(2) : n >= 0.01 ? "$" + n.toFixed(4) : "<$0.01";
+          const savCls = c.savings_vs_no_cache > 0 ? "ok" : "";
+          $("hero-cost").innerHTML =
+            `<b>${fc(c.total)}</b> equiv. API cost · ` +
+            `cache-read ${fc(c.cache_read)} · cache-write ${fc(c.cache_create)} · ` +
+            `input ${fc(c.input)} · output ${fc(c.output)} · ` +
+            `<span class="${savCls}">${fc(Math.max(0, c.savings_vs_no_cache))} saved via cache</span>` +
+            ` <span class="cost-note">· subscription users pay flat rate — this is a reference estimate</span>`;
+        }
 
         // overall stat grid
         $("overall-grid").innerHTML = [
@@ -957,25 +982,6 @@
               `</div>`,
           )
           .join("");
-
-        // cost stats
-        const c = o.cost_usd;
-        if (c && c.total > 0) {
-          const inputCached = c.cache_read + c.cache_create;
-          $("overall-grid").innerHTML += [
-            ["est. cost", fmtUSD(c.total), `savings ${fmtUSD(c.savings_vs_no_cache || 0)}`],
-            ["input cost", fmtUSD(c.input + inputCached), `cached ${fmtUSD(inputCached)} · uncached ${fmtUSD(c.input)}`],
-            ["output cost", fmtUSD(c.output), ""],
-          ]
-            .map(
-              ([l, v, d]) =>
-                `<div class="stat"><div class="label">${l}</div>` +
-                `<div class="val cost">${v}</div>` +
-                (d ? `<div class="detail">${d}</div>` : "") +
-                `</div>`,
-            )
-            .join("");
-        }
 
         // session timeline by day
         (function () {
