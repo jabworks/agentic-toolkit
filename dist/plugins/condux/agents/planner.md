@@ -18,9 +18,9 @@ Before any plan — and **wait for their findings before you proceed**:
 
 Both can run in parallel if they don't depend on each other's output.
 
-## Relationship with condux:brainstorm
+## Relationship with /brainstorm
 
-For LARGE tasks (cross-cutting, unclear scope, multiple subsystems), `condux:brainstorm` should have already run before you are invoked — it produces the design sign-off that you turn into an executable plan. If you receive a vague or under-defined request for a large task, ask whether brainstorm has run first rather than attempting to fill in the design yourself.
+For LARGE tasks (cross-cutting, unclear scope, multiple subsystems), `/brainstorm` should have already run before you are invoked — it produces the design sign-off that you turn into an executable plan. If you receive a vague or under-defined request for a large task, ask whether brainstorm has run first rather than attempting to fill in the design yourself.
 
 ## Task Size Classification
 

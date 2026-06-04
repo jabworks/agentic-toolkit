@@ -6,6 +6,7 @@ Personal collection of agentic coding skills. Compatible with Claude Code, Codex
 
 | Skill                                        | Description                                                                                           |
 | -------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| [session-report](./skills/session-report/)   | Generate an explorable HTML report of session usage — tokens, cache, cost, subagents, skills          |
 | [session-handoff](./skills/session-handoff/) | Preserve and restore session context across agentic coding sessions                                   |
 | [plugin-foundry](./skills/plugin-foundry/)   | Create and maintain skills in this toolkit                                                            |
 | [adapting-skills](./skills/adapting-skills/) | Developer profile priors for adapting skills to Harvey's stack _(personal — useful to collaborators)_ |
@@ -16,14 +17,14 @@ Lean agentic workflow plugin (`condux`). Install all 8 skills as a unit via `/pl
 
 | Skill | Description |
 |---|---|
-| [condux:workflow](./skills/workflow/) | Tier router — infer Small/Medium/Large, confirm with user, load only the skills the tier needs |
-| [condux:brainstorm](./skills/brainstorm/) | Design gate — clarifying questions, alternatives, section-by-section sign-off before planning |
-| [condux:write-plan](./skills/write-plan/) | Lean task-card plan (what/why/gotchas/deps), Markdown or HTML, LARGE tasks only |
-| [condux:test-driven-development](./skills/test-driven-development/) | Opt-in TDD — asks before writing tests, running tests, or updating specs |
-| [condux:subagent-driven-development](./skills/subagent-driven-development/) | Named specialist agents for LARGE plans, only when justified, never to fill time |
-| [condux:finalize](./skills/finalize/) | End-of-task quality gate — typecheck → lint → format → test, once, stop on first failure |
-| [condux:code-review](./skills/code-review/) | On-request diagnostic report (Critical/Important/Minor), never auto-triggers, never fixes |
-| [condux:verification](./skills/verification/) | "Am I actually done?" checklist before finalize — catches skipped steps and regressions |
+| [/workflow](./skills/workflow/) | Tier router — infer Small/Medium/Large, confirm with user, load only the skills the tier needs |
+| [/brainstorm](./skills/brainstorm/) | Design gate — clarifying questions, alternatives, section-by-section sign-off before planning |
+| [/write-plan](./skills/write-plan/) | Lean task-card plan (what/why/gotchas/deps), Markdown or HTML, LARGE tasks only |
+| [/test-driven-development](./skills/test-driven-development/) | Opt-in TDD — asks before writing tests, running tests, or updating specs |
+| [/subagent-driven-development](./skills/subagent-driven-development/) | Named specialist agents for LARGE plans, only when justified, never to fill time |
+| [/finalize](./skills/finalize/) | End-of-task quality gate — typecheck → lint → format → test, once, stop on first failure |
+| [/code-review](./skills/code-review/) | On-request diagnostic report (Critical/Important/Minor), never auto-triggers, never fixes |
+| [/verification](./skills/verification/) | "Am I actually done?" checklist before finalize — catches skipped steps and regressions |
 
 ## Install
 
@@ -52,7 +53,7 @@ claude plugin install plugin-foundry@jabworks-agentic-toolkit # claude plugin in
 ```bash
 /plugin marketplace add jabworks/agentic-toolkit
 /plugin install session-handoff@jabworks-agentic-toolkit # /plugin install session-handoff
-/plugin install session-handoff@jabworks-agentic-toolkit # /plugin install session-handoff
+/plugin install plugin-foundry@jabworks-agentic-toolkit # /plugin install plugin-foundry
 ```
 
 > Via Claude Code CLI plugin menu:
