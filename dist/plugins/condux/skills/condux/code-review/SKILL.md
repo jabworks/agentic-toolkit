@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: On-request code review — produces a one-shot diagnostic report categorized by severity. Never auto-triggers. Never fixes issues automatically. After /finalize completes, ask the user: "Want a code review before merging?" Run only if yes. Trigger also with "review this", "review before merge", or "check this PR".
+description: 'On-request code review — produces a one-shot diagnostic report categorized by severity. Never auto-triggers. Never fixes issues automatically. After /finalize completes, ask the user: "Want a code review before merging?" Run only if yes. Trigger also with "review this", "review before merge", or "check this PR".'
 argument-hint: "<PR URL, diff, branch, or file path>"
 ---
 

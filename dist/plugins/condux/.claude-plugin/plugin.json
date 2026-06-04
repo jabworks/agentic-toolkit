@@ -19,6 +19,5 @@
     "subagent",
     "planning"
   ],
-  "skills": "./skills/condux",
-  "agents": "./agents"
+  "skills": "./skills/condux"
 }
