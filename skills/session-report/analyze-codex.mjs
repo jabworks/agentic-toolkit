@@ -28,6 +28,55 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import readline from 'readline';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const LOCAL_PRICES = require('./model-prices.json');
+const LITELLM_URL = 'https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json';
+
+async function refreshPricesFromLiteLLM() {
+  try {
+    const r = await fetch(LITELLM_URL, { signal: AbortSignal.timeout(3000) });
+    const d = await r.json();
+    for (const [key, val] of Object.entries(d)) {
+      if (!LOCAL_PRICES[key] && val.input_cost_per_token) {
+        LOCAL_PRICES[key] = {
+          input: val.input_cost_per_token,
+          cache_create: val.cache_creation_input_token_cost ?? val.input_cost_per_token,
+          cache_read: val.cache_read_input_token_cost ?? 0,
+          output: val.output_cost_per_token ?? 0,
+        };
+      }
+    }
+  } catch { /* offline or timeout — local prices only */ }
+}
+
+function lookupPrice(model) {
+  if (!model) return null;
+  if (LOCAL_PRICES[model]) return LOCAL_PRICES[model];
+  for (const [key, val] of Object.entries(LOCAL_PRICES)) {
+    if (model.startsWith(key) || key.startsWith(model)) return val;
+  }
+  return null;
+}
+
+function computeCostFromNormalized(tok, prices) {
+  if (!prices) return null;
+  const pCC = prices.cache_create ?? prices.input;
+  const input    = tok.inputUncached * prices.input;
+  const cacheC   = tok.cacheCreate  * pCC;
+  const cacheR   = tok.cacheRead    * prices.cache_read;
+  const output   = tok.output       * prices.output;
+  const savings  = (tok.cacheCreate + tok.cacheRead) * prices.input - cacheC - cacheR;
+  return { input, cacheCreate: cacheC, cacheRead: cacheR, output, savings };
+}
+
+function addCost(s, cost) {
+  s.costInput      += cost.input;
+  s.costCacheCreate += cost.cacheCreate;
+  s.costCacheRead  += cost.cacheRead;
+  s.costOutput     += cost.output;
+  s.costSavings    += cost.savings;
+}
 
 // ---------------------------------------------------------------------------
 // CLI args
@@ -77,6 +126,11 @@ function newStats() {
     skillInvocations: {},
     firstTs: null,
     lastTs: null,
+    costInput: 0,
+    costCacheCreate: 0,
+    costCacheRead: 0,
+    costOutput: 0,
+    costSavings: 0,
   };
 }
 
@@ -159,6 +213,7 @@ async function processFile(filePath) {
   let isSubagent = false;
   let project = 'unknown';
   let agentType = 'main';
+  let model = null;
   let sessionStartTs = 0;
   let metaParsed = false;
 
@@ -188,6 +243,7 @@ async function processFile(filePath) {
       isSubagent = !!p.parent_thread_id;
       project = cwdToProject(p.cwd);
       agentType = p.agent_nickname || p.agent_role || (isSubagent ? 'subagent' : 'main');
+      model = p.model || null;
       const t = Date.parse(p.timestamp);
       if (!isNaN(t)) sessionStartTs = t;
       continue;
@@ -258,6 +314,7 @@ async function processFile(filePath) {
     isSubagent,
     project,
     agentType,
+    model,
     firstTs,
     lastTs,
     activeMs,
@@ -404,6 +461,16 @@ function summarize(s) {
     },
     skill_invocations: s.skillInvocations,
     span: s.firstTs ? { from: new Date(s.firstTs).toISOString(), to: new Date(s.lastTs).toISOString() } : null,
+    cost_usd: (s.costInput + s.costCacheCreate + s.costCacheRead + s.costOutput) > 0
+      ? {
+          total:               +(s.costInput + s.costCacheCreate + s.costCacheRead + s.costOutput).toFixed(6),
+          input:               +s.costInput.toFixed(6),
+          cache_create:        +s.costCacheCreate.toFixed(6),
+          cache_read:          +s.costCacheRead.toFixed(6),
+          output:              +s.costOutput.toFixed(6),
+          savings_vs_no_cache: +s.costSavings.toFixed(6),
+        }
+      : null,
   };
 }
 
@@ -411,6 +478,7 @@ function summarize(s) {
 // Main
 // ---------------------------------------------------------------------------
 async function main() {
+  await refreshPricesFromLiteLLM();
   const overall = newStats();
   const perProject = new Map();
   const perSubagent = new Map();
@@ -426,6 +494,7 @@ async function main() {
       isSubagent,
       project: proj,
       agentType,
+      model,
       firstTs,
       lastTs,
       activeMs,
@@ -516,6 +585,12 @@ async function main() {
         s.inputCacheCreate += cacheCreate;
         s.inputCacheRead += cacheRead;
         s.outputTokens += output;
+      }
+
+      const prices = lookupPrice(model);
+      if (prices) {
+        const cost = computeCostFromNormalized({ inputUncached, cacheCreate, cacheRead, output }, prices);
+        for (const s of targets) addCost(s, cost);
       }
 
       if (isSubagent) {

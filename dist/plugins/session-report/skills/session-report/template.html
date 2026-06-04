@@ -153,6 +153,7 @@
   #hero-split b { color: var(--term-fg); font-weight: 500; }
   #hero-split .ok { color: var(--green); }
   #hero-split .warn { color: var(--yellow); }
+  .cost-note { color: var(--subtle); font-size: 11px; }
 
   section { margin-top: 26px; }
   .hr { color: var(--subtle); overflow: hidden; white-space: nowrap;
@@ -312,6 +313,7 @@
     <div id="hero">
       <div id="hero-total">—</div>
       <div id="hero-split"></div>
+      <div id="hero-cost"></div>
     </div>
 
     <!-- ====================================================================
@@ -452,6 +454,16 @@
     `<b>${fmt(it.total)}</b> input <span class="${cacheCls}">(${it.pct_cached}% cache-read)</span> · `+
     `<b>${fmt(o.output_tokens)}</b> output · all figures below are % of this total`;
 
+  const cost = o.cost_usd
+  if (cost && cost.total > 0) {
+    const fc = n => n >= 1 ? '$' + n.toFixed(2) : n >= 0.01 ? '$' + n.toFixed(4) : '<$0.01'
+    const savCls = cost.savings_vs_no_cache > 0 ? 'ok' : ''
+    $('hero-cost').innerHTML =
+      `<b>${fc(cost.total)}</b> equiv. API cost · ` +
+      `<span class="${savCls}">${fc(Math.max(0, cost.savings_vs_no_cache))} saved via cache</span>` +
+      ` <span class="cost-note">· subscription users pay flat rate — this is a reference estimate</span>`
+  }
+
   // overall stat grid
   $('overall-grid').innerHTML = [
     ['sessions', o.sessions],
@@ -460,6 +472,10 @@
     ['active hours', o.hours.active, `${o.hours.wall_clock} wall-clock`],
     ['cache breaks', o.cache_breaks_over_100k, '>100k uncached'],
     ['subagent calls', o.subagent.calls, `avg ${fmt(o.subagent.avg_tokens_per_call)}`],
+    ...(o.cost_usd ? [
+      ['equiv. cost', '$' + o.cost_usd.total.toFixed(4), 'API rate estimate'],
+      ['cache savings', '$' + Math.max(0, o.cost_usd.savings_vs_no_cache).toFixed(4), 'vs. no cache'],
+    ] : []),
   ].map(([l,v,d]) =>
     `<div class="stat"><div class="label">${l}</div>`+
     `<div class="val">${typeof v==='number'&&v>=1e4?fmt(v):v}</div>`+
