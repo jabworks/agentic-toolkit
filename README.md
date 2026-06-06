@@ -15,6 +15,8 @@ Personal collection of agentic coding skills. Compatible with Claude Code, Codex
 
 Lean agentic workflow plugin (`condux`). Install all 8 skills as a unit via `/plugin install condux@agentic-toolkit`.
 
+> Inspired by [obra/superpowers](https://github.com/obra/superpowers) — condux reworks its skill-orchestration ideas around a lean, proportional-effort philosophy (tiered routing, lazy loading, soft gates) rather than always-on maximalism.
+
 | Skill | Description |
 |---|---|
 | [/workflow](./skills/workflow/) | Tier router — infer Small/Medium/Large, confirm with user, load only the skills the tier needs |

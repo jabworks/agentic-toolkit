@@ -113,3 +113,7 @@ Stop if you catch yourself doing any of these — they violate condux's lean phi
 | Rewriting a test spec to make it pass          | Stop and ask — never silently edit specs                     |
 | Auto-running code-review                        | It's on-request only                                         |
 | Expanding scope past the confirmed tier         | Stop, report, re-confirm                                     |
+
+---
+
+*Inspired by [obra/superpowers](https://github.com/obra/superpowers) — condux reworks its skill-orchestration ideas around a lean, proportional-effort philosophy (tiered routing, lazy loading, soft gates) rather than always-on maximalism.*
