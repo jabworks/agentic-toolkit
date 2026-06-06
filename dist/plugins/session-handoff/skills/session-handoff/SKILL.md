@@ -29,8 +29,8 @@ Preserve and restore session context across agentic coding sessions.
    git diff --name-only HEAD
    ls -lt handoffs/ 2>/dev/null | head -10
    ```
-2. **Ask the user:** "Save handoff as **markdown** (.md) or **HTML** (.html)? Default: markdown."
-3. **Scaffold** using the chosen template — `references/handoff-template.md` or `references/handoff-template.html`. Fill every section — no `[FILL]` placeholders left.
+2. **Ask the user:** "Save handoff as **markdown** (.md), **HTML** (.html), or **both**? Default: markdown."
+3. **Scaffold** using the chosen template — `references/handoff-template.md` or `references/handoff-template.html`. For **both**, fill the markdown template once, then mirror the same content into the HTML template — identical sections, no divergence. Fill every section — no `[FILL]` placeholders left.
 4. **Validate** before saving:
    - No `[FILL]` markers remain
    - No credentials, tokens, API key values, or env var values
@@ -38,8 +38,8 @@ Preserve and restore session context across agentic coding sessions.
      "Current State Summary", "Important Context", "Immediate Next Steps"
    - Referenced file paths exist on disk
    - Next steps are specific (file:line, not "fix the auth")
-5. **Save** to `handoffs/YYYY-MM-DD-HHMMSS-[slug].[md|html]`
-6. Confirm: "Handoff saved: `handoffs/<filename>`"
+5. **Save** to `handoffs/YYYY-MM-DD-HHMMSS-[slug].[md|html]`. For **both**, save the two files under the *same* `YYYY-MM-DD-HHMMSS-[slug]` stem, differing only in extension.
+6. Confirm: "Handoff saved: `handoffs/<filename>`" (list both paths when **both** was chosen)
 
 ## Resume workflow
 
@@ -76,7 +76,7 @@ Preserve and restore session context across agentic coding sessions.
 
 ## Storage
 
-`handoffs/YYYY-MM-DD-HHMMSS-[slug].md` or `handoffs/YYYY-MM-DD-HHMMSS-[slug].html`
+`handoffs/YYYY-MM-DD-HHMMSS-[slug].md` and/or `handoffs/YYYY-MM-DD-HHMMSS-[slug].html`. When **both** formats are saved, they share one timestamp-slug stem and differ only in extension.
 
 If continuing prior work, set `continues-from` in the metadata header and reference the predecessor filename.
 
