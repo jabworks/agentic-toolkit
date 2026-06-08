@@ -654,6 +654,7 @@
         cursor: pointer;
         user-select: none;
         border-bottom: 1px solid var(--outline);
+        white-space: nowrap;
       }
       th:hover {
         color: var(--dim);
@@ -832,7 +833,7 @@
 
         <section>
           <div class="hr"></div>
-          <h2 id="skill-heading">skills &amp; slash commands</h2>
+          <h2 id="skill-heading">skills</h2>
           <div class="section-body scroll"><table id="tbl-skills"></table></div>
         </section>
 
@@ -918,7 +919,7 @@
         $("cmd-text").textContent = isCodex ? "codex usage" : "claude usage";
         if (isCodex) {
           $("skill-heading").innerHTML =
-            'slash commands<span class="hint">extracted from message text</span>';
+            'skills<span class="hint">extracted from message text</span>';
         }
 
         // header + hero
