@@ -214,6 +214,7 @@ async function processFile(filePath) {
   let project = 'unknown';
   let agentType = 'main';
   let model = null;
+  let currentModel = null; // updated per turn_context event
   let sessionStartTs = 0;
   let metaParsed = false;
 
@@ -250,6 +251,15 @@ async function processFile(filePath) {
     }
 
     if (e.type === 'session_meta') continue;
+
+    // turn_context fires before each API call and carries the active model name.
+    // session_meta never has a model field in Codex logs, so this is the only
+    // reliable source of per-call model identity.
+    if (e.type === 'turn_context' && e.payload?.model) {
+      currentModel = e.payload.model;
+      if (!model) model = currentModel;
+      continue;
+    }
 
     // Skip compacted records — they hold replacement_history, not new calls
     if (e.type === 'compacted') continue;
@@ -293,7 +303,7 @@ async function processFile(filePath) {
       const dedupKey = `${ts}|${inputUncached}|${cacheCreate}|${cacheRead}|${output}`;
       if (!seenTokenEvents.has(dedupKey)) {
         seenTokenEvents.add(dedupKey);
-        tokenEvents.push({ ts, inputUncached, cacheCreate, cacheRead, output });
+        tokenEvents.push({ ts, inputUncached, cacheCreate, cacheRead, output, model: currentModel });
       }
       continue;
     }
@@ -564,7 +574,7 @@ async function main() {
     const sortedTurns = [...userTurns].sort((a, b) => a.ts - b.ts);
     const sortedTokenEvents = [...tokenEvents].sort((a, b) => a.ts - b.ts);
 
-    for (const { ts, inputUncached, cacheCreate, cacheRead, output } of sortedTokenEvents) {
+    for (const { ts, inputUncached, cacheCreate, cacheRead, output, model: eventModel } of sortedTokenEvents) {
       while (turnIdx < sortedTurns.length && sortedTurns[turnIdx].ts <= ts) {
         currentPromptKey = sortedTurns[turnIdx].key;
         turnIdx++;
@@ -587,7 +597,7 @@ async function main() {
         s.outputTokens += output;
       }
 
-      const prices = lookupPrice(model);
+      const prices = lookupPrice(eventModel || model);
       if (prices) {
         const cost = computeCostFromNormalized({ inputUncached, cacheCreate, cacheRead, output }, prices);
         for (const s of targets) addCost(s, cost);
