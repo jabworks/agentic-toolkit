@@ -242,6 +242,10 @@ function bumpSkill(s, name) {
   s.skillInvocations[name] = (s.skillInvocations[name] || 0) + 1;
 }
 
+function bumpTool(s, name) {
+  s.toolCalls[name] = (s.toolCalls[name] || 0) + 1;
+}
+
 // ---------------------------------------------------------------------------
 // Per-file processing
 // ---------------------------------------------------------------------------
@@ -268,6 +272,7 @@ async function processFile(filePath) {
   // Collected during parse, committed after
   const tokenEvents = []; // {ts, inputUncached, cacheCreate, cacheRead, output}
   const userTurns = []; // {text, ts, key}
+  const toolCallNames = []; // tool/function names called
 
   for await (const line of rl) {
     if (!line.trim()) continue;
@@ -333,6 +338,15 @@ async function processFile(filePath) {
       lastTs = ts;
     }
 
+    // function_call and custom_tool_call live under response_item, not event_msg
+    if (e.type === 'response_item' && e.payload) {
+      const rpl = e.payload;
+      if ((rpl.type === 'function_call' || rpl.type === 'custom_tool_call') && rpl.name) {
+        toolCallNames.push(rpl.name);
+      }
+      continue;
+    }
+
     if (e.type !== 'event_msg' || !e.payload) continue;
     const pl = e.payload;
 
@@ -347,6 +361,12 @@ async function processFile(filePath) {
         seenTokenEvents.add(dedupKey);
         tokenEvents.push({ ts, inputUncached, cacheCreate, cacheRead, output, model: currentModel });
       }
+      continue;
+    }
+
+    // Tool / function calls
+    if ((pl.type === 'function_call' || pl.type === 'custom_tool_call') && pl.name) {
+      toolCallNames.push(pl.name);
       continue;
     }
 
@@ -367,6 +387,7 @@ async function processFile(filePath) {
     project,
     agentType,
     model,
+    toolCallNames,
     firstTs,
     lastTs,
     activeMs,
@@ -558,6 +579,7 @@ async function main() {
       activeMs,
       tokenEvents,
       userTurns,
+      toolCallNames,
     } = await processFile(filePath);
 
     if (!perProject.has(proj)) perProject.set(proj, newStats());
@@ -614,6 +636,13 @@ async function main() {
       let turns = sessionTurns.get(sessionId);
       if (!turns) sessionTurns.set(sessionId, (turns = []));
       turns.push(key);
+    }
+
+    // Attribute tool calls
+    for (const name of toolCallNames) {
+      bumpTool(overall, name);
+      bumpTool(projStats, name);
+      if (subStats) bumpTool(subStats, name);
     }
 
     // Commit token events to buckets
