@@ -124,6 +124,8 @@ function newStats() {
     subagentCalls: 0,
     subagentTokens: 0,
     skillInvocations: {},
+    modelUsage: {},
+    toolCalls: {},
     firstTs: null,
     lastTs: null,
     costInput: 0,
@@ -132,6 +134,46 @@ function newStats() {
     costOutput: 0,
     costSavings: 0,
   };
+}
+
+function bumpModel(s, model, usage, costTotal) {
+  if (!model) return;
+  const m = s.modelUsage[model] || (s.modelUsage[model] = { calls: 0, inputUncached: 0, inputCacheCreate: 0, inputCacheRead: 0, outputTokens: 0, costTotal: 0 });
+  m.calls++;
+  m.inputUncached    += usage.inputUncached || 0;
+  m.inputCacheCreate += usage.cacheCreate || 0;
+  m.inputCacheRead   += usage.cacheRead || 0;
+  m.outputTokens     += usage.output || 0;
+  m.costTotal        += costTotal || 0;
+}
+
+const HIST_BREAKS = [0, 1000, 5000, 10000, 50000, 100000, 500000];
+function promptSizeBucket(tokens) {
+  if (tokens === 0) return 0;
+  for (let i = HIST_BREAKS.length - 1; i >= 1; i--) {
+    if (tokens >= HIST_BREAKS[i]) return i;
+  }
+  return 1;
+}
+
+function buildPromptHistogram() {
+  const labels = ['0', '<1k', '<5k', '<10k', '<50k', '<100k', '<500k', '500k+'];
+  const counts = new Array(labels.length).fill(0);
+  for (const r of prompts.values()) {
+    if (r.apiCalls > 0) counts[promptSizeBucket(promptTotal(r))]++;
+  }
+  return labels.map((label, i) => ({ label, count: counts[i] }));
+}
+
+function efficiencyScore(s) {
+  const inTotal = s.inputUncached + s.inputCacheCreate + s.inputCacheRead;
+  const grand = inTotal + s.outputTokens;
+  const cacheScore = inTotal > 0 ? s.inputCacheRead / inTotal : 0;
+  const tokPerMsg = s.humanMessages > 0 ? grand / s.humanMessages : 0;
+  const msgScore = 1 - Math.min(1, tokPerMsg / 10000);
+  const subRatio = grand > 0 ? s.subagentTokens / grand : 0;
+  const subScore = 1 - Math.min(1, subRatio);
+  return Math.round(100 * (0.4 * cacheScore + 0.3 * msgScore + 0.3 * subScore));
 }
 
 // ---------------------------------------------------------------------------
@@ -214,6 +256,7 @@ async function processFile(filePath) {
   let project = 'unknown';
   let agentType = 'main';
   let model = null;
+  let currentModel = null; // updated per turn_context event
   let sessionStartTs = 0;
   let metaParsed = false;
 
@@ -250,6 +293,15 @@ async function processFile(filePath) {
     }
 
     if (e.type === 'session_meta') continue;
+
+    // turn_context fires before each API call and carries the active model name.
+    // session_meta never has a model field in Codex logs, so this is the only
+    // reliable source of per-call model identity.
+    if (e.type === 'turn_context' && e.payload?.model) {
+      currentModel = e.payload.model;
+      if (!model) model = currentModel;
+      continue;
+    }
 
     // Skip compacted records — they hold replacement_history, not new calls
     if (e.type === 'compacted') continue;
@@ -293,7 +345,7 @@ async function processFile(filePath) {
       const dedupKey = `${ts}|${inputUncached}|${cacheCreate}|${cacheRead}|${output}`;
       if (!seenTokenEvents.has(dedupKey)) {
         seenTokenEvents.add(dedupKey);
-        tokenEvents.push({ ts, inputUncached, cacheCreate, cacheRead, output });
+        tokenEvents.push({ ts, inputUncached, cacheCreate, cacheRead, output, model: currentModel });
       }
       continue;
     }
@@ -390,10 +442,12 @@ function buildByDay() {
     }
     const base = new Date(d0.getFullYear(), d0.getMonth(), d0.getDate()).getTime();
     day.tokens += s.tokens;
+    day.cost = (day.cost || 0) + (s.cost || 0);
     day.sessions.push({
       id,
       project: s.project,
       tokens: s.tokens,
+      cost: +(s.cost || 0).toFixed(4),
       start_min: Math.max(0, Math.round((s.firstTs - base) / 60000)),
       end_min: Math.max(1, Math.round((s.lastTs - base) / 60000)),
     });
@@ -408,6 +462,7 @@ function buildByDay() {
     d.peak = Math.max(0, ...b);
     d.peak_at_min = d.peak > 0 ? b.indexOf(d.peak) * 10 : 0;
     d.sessions.sort((a, b) => a.start_min - b.start_min);
+    d.cost = +(d.cost || 0).toFixed(4);
   }
   return [...days.values()].sort((a, b) => a.date.localeCompare(b.date));
 }
@@ -460,6 +515,7 @@ function summarize(s) {
       avg_tokens_per_call: s.subagentCalls > 0 ? Math.round(s.subagentTokens / s.subagentCalls) : 0,
     },
     skill_invocations: s.skillInvocations,
+    efficiency_score: efficiencyScore(s),
     span: s.firstTs ? { from: new Date(s.firstTs).toISOString(), to: new Date(s.lastTs).toISOString() } : null,
     cost_usd: (s.costInput + s.costCacheCreate + s.costCacheRead + s.costOutput) > 0
       ? {
@@ -471,6 +527,8 @@ function summarize(s) {
           savings_vs_no_cache: +s.costSavings.toFixed(6),
         }
       : null,
+    by_model: s.modelUsage,
+    tool_calls: s.toolCalls,
   };
 }
 
@@ -564,7 +622,7 @@ async function main() {
     const sortedTurns = [...userTurns].sort((a, b) => a.ts - b.ts);
     const sortedTokenEvents = [...tokenEvents].sort((a, b) => a.ts - b.ts);
 
-    for (const { ts, inputUncached, cacheCreate, cacheRead, output } of sortedTokenEvents) {
+    for (const { ts, inputUncached, cacheCreate, cacheRead, output, model: eventModel } of sortedTokenEvents) {
       while (turnIdx < sortedTurns.length && sortedTurns[turnIdx].ts <= ts) {
         currentPromptKey = sortedTurns[turnIdx].key;
         turnIdx++;
@@ -587,11 +645,17 @@ async function main() {
         s.outputTokens += output;
       }
 
-      const prices = lookupPrice(model);
+      const resolvedModel = eventModel || model;
+      const prices = lookupPrice(resolvedModel);
+      let callCostTotal = 0;
       if (prices) {
         const cost = computeCostFromNormalized({ inputUncached, cacheCreate, cacheRead, output }, prices);
         for (const s of targets) addCost(s, cost);
+        callCostTotal = cost.input + cost.cacheCreate + cost.cacheRead + cost.output;
       }
+      const usageNorm = { inputUncached, cacheCreate, cacheRead, output };
+      for (const s of targets) bumpModel(s, resolvedModel, usageNorm, callCostTotal);
+      span.cost = (span.cost || 0) + callCostTotal;
 
       if (isSubagent) {
         overall.subagentTokens += tot;
@@ -660,6 +724,7 @@ async function main() {
       by_skill: Object.fromEntries([...perSkill].map(([k, v]) => [k, summarize(v)])),
       top_prompts: topPrompts(100),
       by_day: buildByDay(),
+      prompt_size_histogram: buildPromptHistogram(),
     };
     process.stdout.write(JSON.stringify(out, null, 2) + '\n');
   } else {
