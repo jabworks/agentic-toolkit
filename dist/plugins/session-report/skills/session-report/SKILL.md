@@ -47,7 +47,7 @@ Produce a self-contained HTML report of session usage and save it to the current
    ```
 
 6. **Edit the output file** (use Edit, not Write — preserve the template's JS/CSS):
-   - Replace the contents of `<script id="report-data" type="application/json">` with the full JSON from step 3. The page's JS renders everything automatically from this blob.
+   - Replace the contents of `<script id="report-data" type="application/json">` with the full JSON from step 3. The page's JS renders everything automatically from this blob. **IMPORTANT: the script tag must contain only valid JSON — no comments, no debug lines, no analysis notes. Any non-JSON text before or after the `{...}` will break `JSON.parse()` and leave all sections blank.**
    - Fill the `<!-- AGENT: anomalies -->` block with **3–5 one-line findings**. Express figures as **% of total tokens** (total = `overall.input_tokens.total + overall.output_tokens`):
      ```html
      <div class="take bad"><div class="fig">41.2%</div><div class="txt"><b>project-x</b> consumed 41% of the week across 3 sessions</div></div>
