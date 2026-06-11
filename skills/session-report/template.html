@@ -839,6 +839,24 @@
 
         <section>
           <div class="hr"></div>
+          <h2>model usage</h2>
+          <div class="section-body scroll"><table id="tbl-models"></table></div>
+        </section>
+
+        <section>
+          <div class="hr"></div>
+          <h2>tool calls</h2>
+          <div class="section-body scroll"><table id="tbl-tools"></table></div>
+        </section>
+
+        <section>
+          <div class="hr"></div>
+          <h2>prompt size distribution</h2>
+          <div class="section-body" id="prompt-histogram"></div>
+        </section>
+
+        <section>
+          <div class="hr"></div>
           <h2>recommendations</h2>
           <div class="section-body">
             <!-- AGENT: optimizations -->
@@ -974,6 +992,7 @@
             o.subagent.calls,
             `avg ${fmt(o.subagent.avg_tokens_per_call)}`,
           ],
+          ["efficiency", (o.efficiency_score ?? "—") + (o.efficiency_score != null ? "/100" : ""), "cache·msg·subagent"],
         ]
           .map(
             ([l, v, d]) =>
@@ -1042,8 +1061,10 @@
             const d = days[sel],
               DAY = 1440;
             $("g-day").textContent = `${d.dow} ${md(d.date)}`;
+            const fc2 = (n) => n >= 1 ? "$" + n.toFixed(2) : n >= 0.001 ? "$" + n.toFixed(4) : n > 0 ? "<$0.001" : "";
             $("g-stats").innerHTML =
               `${d.sessions.length} sessions · ${fmt(d.tokens)} tokens` +
+              (d.cost > 0 ? ` · ${fc2(d.cost)} est. cost` : "") +
               ` · peak <b>${d.peak}</b> concurrent at <b>${hhmm(d.peak_at_min)}</b>`;
             const lanes = [];
             for (const s of d.sessions) {
@@ -1067,7 +1088,8 @@
                     const w = Math.max(0.15, (100 * (end - s.start_min)) / DAY);
                     const tip =
                       `folder: ${short(s.project)}\n` +
-                      `${hhmm(s.start_min)}–${hhmm(s.end_min)} · ${fmt(s.tokens)} tokens\n` +
+                      `${hhmm(s.start_min)}–${hhmm(s.end_min)} · ${fmt(s.tokens)} tokens` +
+                      (s.cost > 0 ? ` · ${fc2(s.cost)} est.` : "") + "\n" +
                       `session ${s.id}`;
                     return (
                       `<span class="seg" style="left:${(100 * s.start_min) / DAY}%;width:${w}%;` +
@@ -1258,6 +1280,7 @@
           render();
         }
 
+        const fc3 = (n) => n == null || n === 0 ? "—" : n >= 1 ? "$" + n.toFixed(2) : "$" + n.toFixed(4);
         function statRows(obj) {
           return Object.entries(obj || {}).map(([k, v]) => [
             short(k),
@@ -1274,6 +1297,8 @@
             v.cache_breaks_over_100k,
             v.subagent.calls,
             v.subagent.avg_tokens_per_call,
+            v.cost_usd ? v.cost_usd.total : 0,
+            v.efficiency_score ?? 0,
           ]);
         }
         const statCols = [
@@ -1289,10 +1314,79 @@
           { h: "breaks", num: 1 },
           { h: "subagents", num: 1 },
           { h: "avg sub tok", num: 1, fmt: fmt },
+          { h: "est. cost", num: 1, fmt: fc3 },
+          { h: "efficiency", num: 1, fmt: (v) => v > 0 ? v + "/100" : "—" },
         ];
         table($("tbl-projects"), statCols, statRows(DATA.by_project));
         table($("tbl-subagents"), statCols, statRows(DATA.by_subagent_type));
         table($("tbl-skills"), statCols, statRows(DATA.by_skill));
+
+        // model usage table
+        (function () {
+          const overall = DATA.overall || {};
+          const byModel = overall.by_model || {};
+          const GRAND_ALL = (overall.input_tokens?.total || 0) + (overall.output_tokens || 0);
+          const rows = Object.entries(byModel)
+            .map(([model, m]) => {
+              const tot = m.inputUncached + m.inputCacheCreate + m.inputCacheRead + m.outputTokens;
+              const inTot = m.inputUncached + m.inputCacheCreate + m.inputCacheRead;
+              return [
+                model,
+                GRAND_ALL > 0 ? (100 * tot) / GRAND_ALL : 0,
+                m.calls,
+                inTot,
+                inTot > 0 ? +(100 * m.inputCacheRead / inTot).toFixed(1) : 0,
+                m.outputTokens,
+                m.costTotal || 0,
+              ];
+            })
+            .sort((a, b) => b[1] - a[1]);
+          table($("tbl-models"), [
+            { h: "model" },
+            { h: "% total", num: 1, sort: 1, fmt: (v) => v.toFixed(1) + "%" },
+            { h: "calls", num: 1 },
+            { h: "input", num: 1, fmt: fmt },
+            { h: "%cached", num: 1, fmt: (v) => v + "%" },
+            { h: "output", num: 1, fmt: fmt },
+            { h: "est. cost", num: 1, fmt: fc3 },
+          ], rows);
+        })();
+
+        // tool calls table
+        (function () {
+          const tools = (DATA.overall || {}).tool_calls || {};
+          const total = Object.values(tools).reduce((a, b) => a + b, 0) || 1;
+          const rows = Object.entries(tools)
+            .map(([name, count]) => [name, (100 * count) / total, count])
+            .sort((a, b) => b[2] - a[2]);
+          table($("tbl-tools"), [
+            { h: "tool" },
+            { h: "% of calls", num: 1, sort: 1, fmt: (v) => v.toFixed(1) + "%" },
+            { h: "calls", num: 1 },
+          ], rows);
+        })();
+
+        // prompt size histogram
+        (function () {
+          const hist = DATA.prompt_size_histogram || [];
+          if (!hist.length) return;
+          const maxCount = Math.max(...hist.map((b) => b.count), 1);
+          const W = 40;
+          $("prompt-histogram").innerHTML = hist
+            .filter((b) => b.label !== "0" || b.count > 0)
+            .map((b) => {
+              const n = Math.max(0, Math.round((W * b.count) / maxCount));
+              const total = hist.reduce((a, x) => a + x.count, 0) || 1;
+              const pct = ((100 * b.count) / total).toFixed(1);
+              return (
+                `<div class="bar">` +
+                `<span class="name" style="min-width:5ch">${esc(b.label)}</span>` +
+                `<span class="blocks">${"█".repeat(n)}<span class="empty">${"░".repeat(W - n)}</span></span>` +
+                `<span class="pct">${b.count} (${pct}%)</span></div>`
+              );
+            })
+            .join("");
+        })();
       })();
     </script>
   </body>

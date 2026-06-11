@@ -85,6 +85,30 @@ function addCost(s, cost) {
   s.costSavings    += cost.savings
 }
 
+function bumpModel(s, model, usage, costTotal) {
+  if (!model) return
+  const m = s.modelUsage[model] || (s.modelUsage[model] = { calls: 0, inputUncached: 0, inputCacheCreate: 0, inputCacheRead: 0, outputTokens: 0, costTotal: 0 })
+  m.calls++
+  m.inputUncached    += usage.input_tokens || 0
+  m.inputCacheCreate += usage.cache_creation_input_tokens || 0
+  m.inputCacheRead   += usage.cache_read_input_tokens || 0
+  m.outputTokens     += usage.output_tokens || 0
+  m.costTotal        += costTotal || 0
+}
+
+function bumpTool(s, name) {
+  s.toolCalls[name] = (s.toolCalls[name] || 0) + 1
+}
+
+const HIST_BREAKS = [0, 1000, 5000, 10000, 50000, 100000, 500000]
+function promptSizeBucket(tokens) {
+  if (tokens === 0) return 0
+  for (let i = HIST_BREAKS.length - 1; i >= 1; i--) {
+    if (tokens >= HIST_BREAKS[i]) return i
+  }
+  return 1
+}
+
 // ---------------------------------------------------------------------------
 // CLI args
 // ---------------------------------------------------------------------------
@@ -131,6 +155,9 @@ function newStats() {
     subagentCalls: 0,
     subagentTokens: 0, // total (in+out) inside subagent transcripts
     skillInvocations: {}, // name -> count
+    modelUsage: {}, // model -> {calls, inputUncached, inputCacheCreate, inputCacheRead, outputTokens, costTotal}
+    toolCalls: {}, // toolName -> count
+    promptSizeHistogram: [0, 0, 0, 0, 0, 0, 0, 0], // buckets: 0,<1k,<5k,<10k,<50k,<100k,<500k,500k+
     firstTs: null,
     lastTs: null,
     costInput: 0,
@@ -342,6 +369,9 @@ async function processFile(p, info, buckets) {
       if (Array.isArray(msg.content)) {
         for (const c of msg.content) {
           if (c && c.type === 'tool_use') {
+            bumpTool(overall, c.name)
+            bumpTool(project, c.name)
+            if (subagent) bumpTool(subagent, c.name)
             if (c.name === 'Skill' && c.input && c.input.skill) {
               const sk = String(c.input.skill)
               bumpSkill(overall, sk)
@@ -396,7 +426,7 @@ async function processFile(p, info, buckets) {
   // session span (for by_day timeline) — subagent files roll into parent sessionId
   let span = sessionSpans.get(info.sessionId)
   if (!span) {
-    span = { project: info.project, firstTs: null, lastTs: null, tokens: 0 }
+    span = { project: info.project, firstTs: null, lastTs: null, tokens: 0, cost: 0 }
     sessionSpans.set(info.sessionId, span)
   }
   if (firstTs !== null) {
@@ -425,10 +455,14 @@ async function processFile(p, info, buckets) {
     for (const s of targets) addUsage(s, usage)
 
     const prices = lookupPrice(model)
+    let callCostTotal = 0
     if (prices) {
       const cost = computeCost(usage, prices)
       for (const s of targets) addCost(s, cost)
+      callCostTotal = cost.input + cost.cacheCreate + cost.cacheRead + cost.output
     }
+    for (const s of targets) bumpModel(s, model, usage, callCostTotal)
+    span.cost += callCostTotal
 
     if (prompt) {
       const r = prompts.get(prompt)
@@ -679,6 +713,17 @@ function hrs(ms) {
   return (ms / 3600000).toFixed(1)
 }
 
+function efficiencyScore(s) {
+  const inTotal = s.inputUncached + s.inputCacheCreate + s.inputCacheRead
+  const grand = inTotal + s.outputTokens
+  const cacheScore = inTotal > 0 ? s.inputCacheRead / inTotal : 0
+  const tokPerMsg = s.humanMessages > 0 ? grand / s.humanMessages : 0
+  const msgScore = 1 - Math.min(1, tokPerMsg / 10000)
+  const subRatio = grand > 0 ? s.subagentTokens / grand : 0
+  const subScore = 1 - Math.min(1, subRatio)
+  return Math.round(100 * (0.4 * cacheScore + 0.3 * msgScore + 0.3 * subScore))
+}
+
 function summarize(s) {
   const inTotal = s.inputUncached + s.inputCacheCreate + s.inputCacheRead
   return {
@@ -705,6 +750,7 @@ function summarize(s) {
           : 0,
     },
     skill_invocations: s.skillInvocations,
+    efficiency_score: efficiencyScore(s),
     span: s.firstTs
       ? {
           from: new Date(s.firstTs).toISOString(),
@@ -721,6 +767,8 @@ function summarize(s) {
           savings_vs_no_cache: +s.costSavings.toFixed(6),
         }
       : null,
+    by_model: s.modelUsage,
+    tool_calls: s.toolCalls,
   }
 }
 
@@ -748,6 +796,7 @@ function printJson({ overall, perProject, perSubagent, perSkill }) {
     ),
     top_prompts: topPrompts(100),
     by_day: buildByDay(),
+    prompt_size_histogram: buildPromptHistogram(),
   }
   process.stdout.write(JSON.stringify(out, null, 2) + '\n')
 }
@@ -764,7 +813,7 @@ function buildByDay() {
     const key = `${d0.getFullYear()}-${String(d0.getMonth() + 1).padStart(2, '0')}-${String(d0.getDate()).padStart(2, '0')}`
     let day = days.get(key)
     if (!day) {
-      day = { date: key, dow: DOW[d0.getDay()], tokens: 0, sessions: [] }
+      day = { date: key, dow: DOW[d0.getDay()], tokens: 0, cost: 0, sessions: [] }
       days.set(key, day)
     }
     const base = new Date(
@@ -773,10 +822,12 @@ function buildByDay() {
       d0.getDate(),
     ).getTime()
     day.tokens += s.tokens
+    day.cost += s.cost || 0
     day.sessions.push({
       id,
       project: s.project,
       tokens: s.tokens,
+      cost: +(s.cost || 0).toFixed(4),
       start_min: Math.max(0, Math.round((s.firstTs - base) / 60000)),
       end_min: Math.max(1, Math.round((s.lastTs - base) / 60000)),
     })
@@ -792,6 +843,7 @@ function buildByDay() {
     d.peak = Math.max(0, ...b)
     d.peak_at_min = d.peak > 0 ? b.indexOf(d.peak) * 10 : 0
     d.sessions.sort((a, b) => a.start_min - b.start_min)
+    d.cost = +d.cost.toFixed(4)
   }
   return [...days.values()].sort((a, b) => a.date.localeCompare(b.date))
 }
@@ -800,6 +852,15 @@ function promptTotal(r) {
   return (
     r.inputUncached + r.inputCacheCreate + r.inputCacheRead + r.outputTokens
   )
+}
+
+function buildPromptHistogram() {
+  const labels = ['0', '<1k', '<5k', '<10k', '<50k', '<100k', '<500k', '500k+']
+  const counts = new Array(labels.length).fill(0)
+  for (const r of prompts.values()) {
+    if (r.apiCalls > 0) counts[promptSizeBucket(promptTotal(r))]++
+  }
+  return labels.map((label, i) => ({ label, count: counts[i] }))
 }
 
 function topPrompts(n) {
