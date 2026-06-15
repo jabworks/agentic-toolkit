@@ -99,3 +99,5 @@ Save to: `docs/plans/YYYY-MM-DD-<feature>-design.md` (optional — ask user)
 
 Optionally generate an HTML visual using `references/brainstorm-design-template.html`.
 Fill in the `{{PLACEHOLDERS}}` and open it in the browser for a scannable one-page summary.
+
+For side-by-side layout comparisons or architecture diagrams during the design phase, see `references/visual-companion.md`.

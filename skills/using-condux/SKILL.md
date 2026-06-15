@@ -53,6 +53,7 @@ Load each only when its step is reached.
 | `verification` | End of every tier, before finalize — the "am I actually done?" check | automatic                                  |
 | `finalize`     | After all implementation — typecheck → lint → format → tests        | automatic, run once, stop on first failure |
 | `code-review`  | On request only — "review this", or after finalize if user says yes | never auto-triggers                        |
+| `systematic-debugging` | Any bug investigation — before proposing fixes | load when debugging, not proactively  |
 
 ### Gate discipline
 
@@ -61,6 +62,7 @@ Load each only when its step is reached.
 - **tdd** is fully opt-in. Always ask before writing tests, before running them, and before editing an existing spec. Never silently rewrite a test to match new behavior.
 - **finalize** runs its steps in order, once, and stops on the first failure to fix it before continuing. Check `AGENTS.md` for the project's real commands.
 - **code-review** never fires on its own and never auto-fixes. After finalize, you may ask once: "Want a code review before merging?"
+- **systematic-debugging** is triggered when investigating a bug — load it then, not upfront. It enforces investigation before fixes: never propose a solution before tracing the root cause.
 
 ## The Agents
 
