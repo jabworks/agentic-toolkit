@@ -1,6 +1,6 @@
 {
   "name": "technical-spec",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Codex skill for scaffolding and previewing structured feature tech specs.",
   "author": {
     "name": "jabworks"
