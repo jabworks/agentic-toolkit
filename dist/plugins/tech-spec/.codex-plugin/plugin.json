@@ -1,0 +1,36 @@
+{
+  "name": "tech-spec",
+  "version": "1.0.0",
+  "description": "Codex skill for scaffolding and previewing structured feature tech specs.",
+  "author": {
+    "name": "jabworks"
+  },
+  "repository": "https://github.com/jabworks/agentic-toolkit",
+  "license": "MIT",
+  "keywords": [
+    "spec",
+    "documentation",
+    "feature",
+    "architecture",
+    "decisions",
+    "preview",
+    "jabworks"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Tech Spec",
+    "shortDescription": "Scaffold and preview feature tech specs.",
+    "longDescription": "Tech Spec scaffolds structured feature specifications — decisions, API contracts, implementation details, and quirks — then serves a live HTML preview for review and iteration. Specs are organised one folder per feature, one file per concern.",
+    "developerName": "jabworks",
+    "category": "Documentation",
+    "capabilities": [
+      "Skills",
+      "Documentation"
+    ],
+    "defaultPrompt": [
+      "Save spec for this feature.",
+      "Document what we just decided.",
+      "Open a live preview of the spec."
+    ]
+  }
+}
