@@ -114,8 +114,10 @@ Add an entry to `.claude-plugin/marketplace.json`:
 ### 6. Sync to dist/
 
 ```bash
-cp -r skills/<name>/. dist/plugins/<name>/skills/<name>/
+bash scripts/sync.sh <name>
 ```
+
+The script auto-detects whether the skill belongs to the condux bundle or a standalone plugin and copies to the right target. Run without arguments to sync everything.
 
 ### 7. Commit and push
 
@@ -129,11 +131,12 @@ git push origin main
 
 ```bash
 # 1. Edit skills/<name>/ files
-# 2. Sync
-cp -r skills/<name>/. dist/plugins/<name>/skills/<name>/
+# 2. Sync (or just commit — the pre-commit hook syncs automatically)
+bash scripts/sync.sh <name>
 # 3. Commit
-git add skills/<name>/ dist/plugins/<name>/
+git add skills/<name>/
 git commit -s -m "fix: update <name> skill"
+# dist/ is staged automatically by the pre-commit hook
 git push origin main
 ```
 
@@ -171,8 +174,8 @@ Update `version` in `.claude-plugin/marketplace.json` manually:
 
 | Mistake | Fix |
 |---|---|
-| Editing `dist/` directly | Edit `skills/`, then `cp -r` to sync |
-| Forgetting to sync after edits | Always run `cp -r` before committing |
+| Editing `dist/` directly | Edit `skills/`, then `bash scripts/sync.sh <name>` |
+| Forgetting to sync after edits | The pre-commit hook syncs automatically — or run `bash scripts/sync.sh` manually |
 | Co-author trailer in commit | Use `-s` (`--signoff`) — no `Co-Authored-By:` |
 | Workflow summary in description | Description = triggering conditions only |
 | Leaving `[FILL]` placeholders in SKILL.md | Run quality check before committing |
