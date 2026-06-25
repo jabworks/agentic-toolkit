@@ -101,3 +101,47 @@ Optionally generate an HTML visual using `references/brainstorm-design-template.
 Fill in the `{{PLACEHOLDERS}}` and open it in the browser for a scannable one-page summary.
 
 For side-by-side layout comparisons or architecture diagrams during the design phase, see `references/visual-companion.md`.
+
+## Spec Integration (Live Preview)
+
+Integrates with the `technical-spec` skill to persist the design and render it live while you brainstorm.
+
+### At brainstorm start
+
+Infer the feature slug (kebab-case from `$ARGUMENTS`). If `specs/<feature-slug>/` already exists, offer:
+
+> "Found an existing spec for this feature. Open live preview while we brainstorm? [y/n]"
+
+If yes, go straight to **Launch preview** below (skip scaffold + write — spec already exists).
+
+### At sign-off
+
+Offer:
+
+> "Save design as tech spec and open live preview? [y/n]"
+
+If yes:
+
+1. **Find scripts** from the installed technical-spec plugin:
+   ```bash
+   SCAFFOLD=$(find ~/.claude ~/.agents -name "scaffold.sh" -path "*/technical-spec/*" 2>/dev/null | head -1)
+   PREVIEW=$(find ~/.claude ~/.agents -name "preview-server.js" -path "*/technical-spec/*" 2>/dev/null | head -1)
+   ```
+   If either is missing, tell the user: "`jabworks/technical-spec` plugin not found — install it to enable spec integration."
+
+2. **Scaffold** the spec dir:
+   ```bash
+   bash "$SCAFFOLD" "<FeatureName>"
+   ```
+
+3. **Write initial spec files** from the design summary. At minimum, write `decisions.md` with the chosen approach and rationale. Add `api.md` or `fields.md` if the design covers contracts or field mappings.
+
+4. **Launch preview** in the background, pointing at the spec folder:
+   ```bash
+   node "$PREVIEW" specs/<feature-slug>
+   ```
+   Tell user: "Preview is live. The browser updates automatically as spec files change. Ctrl+C in the terminal to stop."
+
+### Keeping the spec current
+
+As the brainstorm continues and design details shift, update the relevant spec files — the preview re-renders on every save. This is the main benefit: the spec stays in sync with the conversation instead of being written once at the end.

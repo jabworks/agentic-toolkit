@@ -16,6 +16,7 @@ Copy-paste templates for each spec file. Omit sections that don't apply — don'
 ## Contents
 - [Decisions](decisions.md) — why we built it this way
 - [API](api.md) — contracts, endpoints, types
+- [Fields](fields.md) — field mappings: BE/3rd-party → UI
 - [Implementation](implementation.md) — how it works, key files
 - [Quirks](quirks.md) — edge cases and gotchas
 
@@ -75,6 +76,45 @@ interface ExampleType {
 | Service | Purpose | Notes |
 |---------|---------|-------|
 | {Service} | {What we use it for} | {Rate limits, quirks} |
+```
+
+---
+
+## fields.md
+
+```markdown
+# Fields — {Feature Name}
+
+Document which fields flow from source (BE or 3rd-party API) to destination (UI or your BE),
+with descriptions so you can glance at the spec instead of traversing the codebase.
+
+## Response Fields — {Endpoint or Source Name}
+
+> Source: `GET /api/...` or `{ThirdParty} → BE → FE`
+
+| Source Field | UI Label / FE Key | Type | Nullable | Description |
+|---|---|---|---|---|
+| `user_full_name` | Full Name | `string` | no | Display name shown in profile card |
+| `created_at` | Created | `string (ISO 8601)` | no | Formatted to `MMM D, YYYY` in UI |
+| `metadata.region` | Region | `string` | yes | Omitted from UI when null |
+
+### Forwarding Chain (3rd-party → BE → FE)
+
+Use this sub-section when your BE proxies a 3rd-party API and renames fields.
+
+| 3rd-party Field | BE Field | FE Key | Notes |
+|---|---|---|---|
+| `usr_nm` | `username` | `username` | Renamed at BE layer |
+| `acct_bal` | `accountBalance` | `balance` | Converted cents → dollars at BE |
+
+## Request Fields — {Endpoint or Action Name}
+
+> Sent from FE to `POST /api/...`
+
+| FE Key | BE Field | Type | Required | Description |
+|---|---|---|---|---|
+| `email` | `email` | `string` | yes | Validated client-side before send |
+| `preferredName` | `preferred_name` | `string` | no | Optional; omitted if empty |
 ```
 
 ---

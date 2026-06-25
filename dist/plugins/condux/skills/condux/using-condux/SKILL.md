@@ -55,6 +55,18 @@ Load each only when its step is reached.
 | `code-review`  | On request only — "review this", or after finalize if user says yes | never auto-triggers                        |
 | `systematic-debugging` | Any bug investigation — before proposing fixes | load when debugging, not proactively  |
 
+### Companion: `technical-spec`
+
+`technical-spec` is a separate plugin (`jabworks/technical-spec`) that integrates with condux at two levels:
+
+**Spec context (cross-cutting — `workflow` + `systematic-debugging`):** Before any task executes, condux checks `specs/` for a saved spec matching the affected feature or domain. If found, it loads the relevant files as context (decisions, API contracts, field mappings, quirks) so refactors, bug fixes, and new work on that domain start informed rather than cold.
+
+**Brainstorm integration (`brainstorm`):**
+- **At start**: if a spec exists for the feature, offers to open the live HTML preview
+- **At sign-off**: saves the design as a structured spec (`specs/<feature>/`) and launches the live preview server, which re-renders as spec files change
+
+Install once; condux uses it silently when present. No spec? No noise — the lookup produces no output if nothing is found.
+
 ### Gate discipline
 
 - **brainstorm** is a soft gate before planning. If a LARGE task arrives and brainstorm hasn't run, ask: "Want to skip brainstorm and go straight to planning?" — don't assume.

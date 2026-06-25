@@ -17,6 +17,7 @@ specs/
     index.md                # TOC, last updated, commit hash, changelog  ← scaffold creates this
     decisions.md            # Design decisions with context + rationale
     api.md                  # Endpoints, types, external APIs consumed
+    fields.md               # Field mappings: BE/3rd-party → UI, or forwarding chains
     implementation.md       # Key files, patterns, how it hangs together
     quirks.md               # Edge cases, gotchas, known issues
 ```

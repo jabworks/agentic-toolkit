@@ -49,11 +49,23 @@ Pick the right tier, confirm it, execute. No over-engineering for a button chang
 │    - Does it cross service/package boundaries?                  │
 │    - Are there unknowns that need exploration first?            │
 │                                                                  │
+│  Step 1b: SPEC LOOKUP                                           │
+│  Check for saved specs covering the affected feature/domain:    │
+│    ls specs/ 2>/dev/null                                        │
+│  Match the task subject to a spec dir (fuzzy kebab-case:        │
+│  "checkout flow" → specs/checkout-flow).                        │
+│  If found, read index.md, then load files by task type:         │
+│    Bug / debug   → quirks.md, api.md, fields.md                │
+│    Refactor      → implementation.md, decisions.md              │
+│    New feature   → decisions.md, api.md, fields.md             │
+│  Carry this context through — don't re-read mid-task.           │
+│  If no spec found, proceed without comment.                     │
+│                                                                  │
 │  Step 2: CONFIRM WITH USER                                      │
 │  State the inferred tier + one-sentence reason.                 │
+│  If a spec was loaded, mention it briefly:                      │
+│  "Found spec for `checkout-flow` — loaded as context."          │
 │  Wait for explicit confirmation before proceeding.              │
-│  e.g. "Looks like SMALL — one component, no API change.         │
-│  Confirm, or should I treat this differently?"                  │
 │                                                                  │
 │  Step 3: EXECUTE TIER FLOW                                      │
 │  Load only the skills the tier needs, when needed.             │

@@ -1,6 +1,6 @@
 ---
 name: systematic-debugging
-description: "Use when investigating any bug — before proposing fixes, before making changes. Enforces root-cause-first investigation: read the error, reproduce it, trace the data flow backward. Never propose a solution before completing the investigation phase."
+description: Use when investigating any bug — before proposing fixes, before making changes. Enforces root-cause-first investigation: read the error, reproduce it, trace the data flow backward. Never propose a solution before completing the investigation phase.
 argument-hint: "<error message or bug description>"
 ---
 
@@ -22,6 +22,11 @@ Run in order. Don't skip ahead.
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │  Phase 1: ROOT CAUSE INVESTIGATION                              │
+│  - Spec check FIRST: ls specs/ 2>/dev/null — match the          │
+│    failing feature/domain to a spec dir (fuzzy kebab-case).    │
+│    If found, read quirks.md (known edge cases), api.md          │
+│    (contracts), fields.md (field mappings), implementation.md   │
+│    (data flow). Note any behavior that contradicts the spec.   │
 │  - Read the full error message and stack trace                  │
 │  - Reproduce the failure (confirm it's real, not stale)        │
 │  - Check recent changes: git log since last known good state    │
