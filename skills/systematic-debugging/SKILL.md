@@ -1,7 +1,9 @@
 ---
 name: systematic-debugging
-description: Use when investigating any bug — before proposing fixes, before making changes. Enforces root-cause-first investigation: read the error, reproduce it, trace the data flow backward. Never propose a solution before completing the investigation phase.
+description: Enforces root-cause-first bug investigation — read the error, reproduce it, trace the data flow backward. Never propose a solution before the investigation phase completes.
+when_to_use: Use when investigating any bug, before proposing fixes or making changes. Load when debugging starts — not proactively.
 argument-hint: "<error message or bug description>"
+effort: high
 ---
 
 # /systematic-debugging

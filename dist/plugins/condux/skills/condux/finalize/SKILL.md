@@ -1,6 +1,7 @@
 ---
 name: finalize
-description: End-of-task quality gate. Run after all implementation is done — typecheck, lint, format, then tests. Run once, in order, stop on first failure and fix before continuing. Called by /workflow automatically but can be run standalone. Check AGENTS.md for the project's actual commands.
+description: End-of-task quality gate — typecheck → lint → format → tests. Runs in order, once. Stops on first failure and fixes before continuing.
+when_to_use: Run after all implementation is complete. Called automatically by /workflow, or standalone. Check AGENTS.md for the project's actual commands.
 argument-hint: "[package or path to scope — optional]"
 ---
 

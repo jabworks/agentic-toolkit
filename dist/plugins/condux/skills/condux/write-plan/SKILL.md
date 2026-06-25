@@ -1,7 +1,9 @@
 ---
 name: write-plan
-description: Write a structured implementation plan for a LARGE task after brainstorm sign-off. Produces a lean Option-C plan with task cards (what, why, gotchas, dependencies). Asks whether to generate Markdown, HTML, or both. Never writes a plan without a signed-off design — if brainstorm hasn't run, apply the soft gate first.
+description: Turns a signed-off design into an executable plan of lean task cards (what, why, gotchas, dependencies). Asks for Markdown, HTML, or both output.
+when_to_use: Run for LARGE tasks after /brainstorm sign-off. Never writes a plan without a signed-off design — if brainstorm hasn't run, apply the soft gate first.
 argument-hint: "<feature name or design summary>"
+effort: high
 ---
 
 # /write-plan

@@ -1,6 +1,8 @@
 ---
 name: using-condux
-description: Use at the start of any development task to route through condux's lean agentic workflow — tiered execution, soft gates, lazy skill loading, and named specialist agents. Establishes how the condux skills and agents fit together so effort stays proportional to the task.
+description: Operating manual for condux's lean agentic workflow — tiered execution, soft gates, lazy skill loading, and named specialist agents. Establishes how skills and agents fit together so effort stays proportional to the task.
+when_to_use: Load at the start of any development task.
+user-invocable: false
 ---
 
 # Using Condux

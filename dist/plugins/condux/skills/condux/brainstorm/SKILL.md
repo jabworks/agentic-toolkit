@@ -1,7 +1,9 @@
 ---
 name: brainstorm
-description: Refine a rough idea into a signed-off design before any planning or code. Trigger for LARGE tasks, before write-plan, or when scope is unclear. Asks clarifying questions, surfaces alternatives, presents design in sections for validation. Acts as a soft gate — if brainstorm hasn't run, ask the user if they want to skip it consciously before proceeding to planning.
+description: Refine a rough idea into a signed-off design. Asks clarifying questions, surfaces alternatives, and presents the design in sections for sign-off before any planning or code begins.
+when_to_use: Trigger for LARGE tasks or when scope is unclear. Acts as a soft gate before /write-plan — if brainstorm hasn't run, ask the user if they want to skip it consciously.
 argument-hint: "<rough idea or feature description>"
+effort: high
 ---
 
 # /brainstorm

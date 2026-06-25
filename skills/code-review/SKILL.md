@@ -1,7 +1,9 @@
 ---
 name: code-review
-description: 'On-request code review — produces a one-shot diagnostic report categorized by severity. Never auto-triggers. Never fixes issues automatically. After /finalize completes, ask the user: "Want a code review before merging?" Run only if yes. Trigger also with "review this", "review before merge", or "check this PR".'
+description: 'One-shot code review. Produces a diagnostic report categorized by severity (Critical / Important / Minor). Never fixes issues automatically.'
+when_to_use: 'On-request only — never auto-triggers. After /finalize, ask once: "Want a code review before merging?" Trigger phrases: "review this", "review before merge", "check this PR".'
 argument-hint: "<PR URL, diff, branch, or file path>"
+disable-model-invocation: true
 ---
 
 # /code-review

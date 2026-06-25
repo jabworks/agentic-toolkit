@@ -1,7 +1,9 @@
 ---
 name: session-report
-description: Generate an explorable HTML report of session usage (tokens, cache, subagents, slash commands) from local transcripts. Works for Claude Code (~/.claude) and Codex (~/.codex). Pass a time range as argument (24h, 7d, 30d, all) — defaults to 7d.
+description: Generates a self-contained HTML report of session usage — tokens, cache efficiency, subagent costs, and slash command frequency — from local transcripts.
+when_to_use: Run when you want a usage report. Works for Claude Code (~/.claude) and Codex (~/.codex). Pass a time range as argument (24h, 7d, 30d, all) — defaults to 7d.
 argument-hint: "[24h|7d|30d|all]"
+disable-model-invocation: true
 ---
 
 # Session Report

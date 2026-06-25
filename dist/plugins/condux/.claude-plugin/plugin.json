@@ -1,6 +1,6 @@
 {
   "name": "condux",
-  "version": "1.3.3",
+  "version": "1.4.0",
   "description": "Claude Code skills for lean agentic workflow: tier routing, brainstorm, planning, TDD, subagent coordination, finalize, code review, verification, and systematic debugging.",
   "author": {
     "name": "jabworks"

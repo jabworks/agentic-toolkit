@@ -1,6 +1,7 @@
 ---
 name: session-handoff
-description: Creates and resumes handoff documents for seamless agentic coding session transitions. Triggered when context approaches capacity, at natural pauses, or when resuming prior work.
+description: Creates and resumes handoff documents for seamless agentic coding session transitions.
+when_to_use: Trigger when context approaches capacity (>80%), at natural pauses, when switching workstreams, or when resuming prior work. Trigger phrases: "save state", "handoff", "wrap up", "resume", "continue from last session".
 ---
 
 # Session Handoff Skill

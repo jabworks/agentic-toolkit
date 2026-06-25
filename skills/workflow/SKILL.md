@@ -1,6 +1,7 @@
 ---
 name: workflow
-description: Route any dev task into the right execution tier before touching code. Trigger with any implementation request — feature, bug fix, refactor, new endpoint, UI change. Infers Small/Medium/Large tier from description, confirms with user, then executes the appropriate flow. Do NOT load brainstorm, write-plan, tdd, sdd, or finalize upfront — load them only when the tier flow requires them.
+description: Routes any dev task into the right execution tier (Small/Medium/Large). Confirms tier with user, then executes the matching flow. Only loads downstream skills (brainstorm, write-plan, finalize) when the tier flow reaches them.
+when_to_use: Trigger with any implementation request — feature, bug fix, refactor, new endpoint, UI change.
 argument-hint: "<task description>"
 ---
 
@@ -12,6 +13,13 @@ Pick the right tier, confirm it, execute. No over-engineering for a button chang
 
 ```
 /workflow $ARGUMENTS
+```
+
+## Live Context
+
+```!
+git status --short
+git log --oneline -5
 ```
 
 ## Tiers at a Glance
