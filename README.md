@@ -13,7 +13,11 @@ Personal collection of agentic coding skills. Compatible with Claude Code, Codex
 
 ### Condux
 
-Lean agentic workflow plugin (`condux`). Install all 9 skills as a unit via `/plugin install condux@agentic-toolkit`.
+Lean agentic workflow plugin (`condux`). Install all 10 skills as a unit:
+
+```bash
+/plugin install condux@jabworks-agentic-toolkit
+```
 
 > Inspired by [obra/superpowers](https://github.com/obra/superpowers) — condux reworks its skill-orchestration ideas around a lean, proportional-effort philosophy (tiered routing, lazy loading, soft gates) rather than always-on maximalism.
 
@@ -28,6 +32,7 @@ Lean agentic workflow plugin (`condux`). Install all 9 skills as a unit via `/pl
 | [/code-review](./skills/code-review/) | On-request diagnostic report (Critical/Important/Minor), never auto-triggers, never fixes |
 | [/verification](./skills/verification/) | "Am I actually done?" checklist before finalize — catches skipped steps and regressions |
 | [/systematic-debugging](./skills/systematic-debugging/) | Root-cause-first bug investigation — enforces the 4-phase sequence before any fix |
+| [/technical-spec](./skills/technical-spec/) | Scaffold and persist feature specs (decisions, API, fields, quirks) with a live HTML preview |
 
 ## Install
 

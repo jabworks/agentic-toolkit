@@ -35,8 +35,6 @@ walk through the resume checklist before touching any code.
 - Critical files with line references
 - Decisions made and their rationale
 - Ordered next steps (specific, not vague)
-- OpenCode agent context (role, AGENTS.md section)
-- FitLens / llama.cpp model state (if applicable)
 
 ## Storage
 
