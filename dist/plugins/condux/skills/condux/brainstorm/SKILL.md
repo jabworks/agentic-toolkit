@@ -139,7 +139,7 @@ If yes:
 2. **Scaffold** the spec dir and capture the output:
    ```bash
    SCAFFOLD_OUT=$(bash "$SCAFFOLD" "<FeatureName>")
-   SPEC_PATH=$(echo "$SCAFFOLD_OUT" | grep -oP '(?<=created:|exists:)\S+')
+   SPEC_PATH=$(echo "$SCAFFOLD_OUT" | sed 's/^[^:]*://; s/ .*//')
    ```
    `SPEC_PATH` is an absolute path (e.g. `/repo/apps/web/specs/wan-config`).
    The scaffold script places specs under the nearest package root automatically.
