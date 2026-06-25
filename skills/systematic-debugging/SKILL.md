@@ -24,11 +24,12 @@ Run in order. Don't skip ahead.
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │  Phase 1: ROOT CAUSE INVESTIGATION                              │
-│  - Spec check FIRST: ls specs/ 2>/dev/null — match the          │
-│    failing feature/domain to a spec dir (fuzzy kebab-case).    │
-│    If found, read quirks.md (known edge cases), api.md          │
-│    (contracts), fields.md (field mappings), implementation.md   │
-│    (data flow). Note any behavior that contradicts the spec.   │
+│  - Spec check FIRST: detect package root (walk up from CWD to  │
+│    git root, find nearest package manifest). Check:            │
+│      <package-root>/specs/ and <git-root>/specs/               │
+│    Match the failing feature/domain (fuzzy kebab-case).         │
+│    If found, read quirks.md, api.md, fields.md,               │
+│    implementation.md. Note any behavior contradicting the spec.│
 │  - Read the full error message and stack trace                  │
 │  - Reproduce the failure (confirm it's real, not stale)        │
 │  - Check recent changes: git log since last known good state    │

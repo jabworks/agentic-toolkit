@@ -58,8 +58,11 @@ git log --oneline -5
 │    - Are there unknowns that need exploration first?            │
 │                                                                  │
 │  Step 1b: SPEC LOOKUP                                           │
-│  Check for saved specs covering the affected feature/domain:    │
-│    ls specs/ 2>/dev/null                                        │
+│  Detect package root: walk up from CWD to git root, find       │
+│  nearest package.json / Cargo.toml / go.mod / pyproject.toml.  │
+│  Check both scopes (deduplicate if they're the same dir):       │
+│    ls <package-root>/specs/ 2>/dev/null                        │
+│    ls <git-root>/specs/ 2>/dev/null                            │
 │  Match the task subject to a spec dir (fuzzy kebab-case:        │
 │  "checkout flow" → specs/checkout-flow).                        │
 │  If found, read index.md, then load files by task type:         │

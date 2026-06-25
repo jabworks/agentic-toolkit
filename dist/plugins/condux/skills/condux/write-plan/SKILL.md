@@ -117,10 +117,18 @@ HTML is generated once, never modified after creation. Checkboxes in the HTML ar
 
 ## Save Paths
 
-| Format   | Default Path                           |
-| -------- | -------------------------------------- |
-| Markdown | `docs/plans/YYYY-MM-DD-<feature>.md`   |
-| HTML     | `docs/plans/YYYY-MM-DD-<feature>.html` |
+Plans are co-located with the package they describe. Detect the package root
+the same way as `technical-spec`: walk up from CWD to git root, find the nearest
+`package.json` / `Cargo.toml` / `go.mod` / `pyproject.toml`.
+
+| Format   | Default Path                                          |
+| -------- | ----------------------------------------------------- |
+| Markdown | `<package-root>/docs/plans/YYYY-MM-DD-<feature>.md`  |
+| HTML     | `<package-root>/docs/plans/YYYY-MM-DD-<feature>.html`|
+
+In a single-package repo `<package-root>` is the git root, so paths are just
+`docs/plans/...`. In a monorepo working on `apps/web`, they land at
+`apps/web/docs/plans/...`.
 
 Check `AGENTS.md` for project-specific overrides.
 

@@ -110,7 +110,12 @@ Integrates with the `technical-spec` skill to persist the design and render it l
 
 ### At brainstorm start
 
-Infer the feature slug (kebab-case from `$ARGUMENTS`). If `specs/<feature-slug>/` already exists, offer:
+Infer the feature slug (kebab-case from `$ARGUMENTS`). Detect the package root
+(walk up from CWD to git root, find nearest `package.json` / `Cargo.toml` /
+`go.mod` / `pyproject.toml`). Check `<package-root>/specs/<feature-slug>/`
+(and `<git-root>/specs/<feature-slug>/` if different) for an existing spec.
+
+If found, offer:
 
 > "Found an existing spec for this feature. Open live preview while we brainstorm? [y/n]"
 
@@ -131,16 +136,21 @@ If yes:
    ```
    If either is missing, tell the user: "`jabworks/technical-spec` plugin not found — install it to enable spec integration."
 
-2. **Scaffold** the spec dir:
+2. **Scaffold** the spec dir and capture the output:
    ```bash
-   bash "$SCAFFOLD" "<FeatureName>"
+   SCAFFOLD_OUT=$(bash "$SCAFFOLD" "<FeatureName>")
+   SPEC_PATH=$(echo "$SCAFFOLD_OUT" | grep -oP '(?<=created:|exists:)\S+')
    ```
+   `SPEC_PATH` is an absolute path (e.g. `/repo/apps/web/specs/wan-config`).
+   The scaffold script places specs under the nearest package root automatically.
 
-3. **Write initial spec files** from the design summary. At minimum, write `decisions.md` with the chosen approach and rationale. Add `api.md` or `fields.md` if the design covers contracts or field mappings.
+3. **Write initial spec files** from the design summary into `$SPEC_PATH/`.
+   At minimum, write `decisions.md` with the chosen approach and rationale.
+   Add `api.md` or `fields.md` if the design covers contracts or field mappings.
 
-4. **Launch preview** in the background, pointing at the spec folder:
+4. **Launch preview** in the background, pointing at the absolute spec path:
    ```bash
-   node "$PREVIEW" specs/<feature-slug>
+   node "$PREVIEW" "$SPEC_PATH"
    ```
    Tell user: "Preview is live. The browser updates automatically as spec files change. Ctrl+C in the terminal to stop."
 

@@ -13,8 +13,12 @@ Persists feature decisions, API contracts, implementation details, and quirks in
 
 ## Spec Folder Layout
 
+Specs are co-located with the package they describe. The scaffold script
+detects the nearest package root (walking up from CWD to the git root,
+finding the first `package.json`, `Cargo.toml`, `go.mod`, or `pyproject.toml`).
+
 ```
-specs/
+<package-root>/specs/
   {feature-slug}/           # kebab-case: WanConfig → wan-config
     index.md                # TOC, last updated, commit hash, changelog  ← scaffold creates this
     decisions.md            # Design decisions with context + rationale
@@ -23,6 +27,9 @@ specs/
     implementation.md       # Key files, patterns, how it hangs together
     quirks.md               # Edge cases, gotchas, known issues
 ```
+
+In a single-package repo `<package-root>` is the git root, so specs live at
+`specs/`. In a monorepo working on `apps/web`, they land at `apps/web/specs/`.
 
 Only create files that have actual content. Don't create empty files.
 
@@ -91,10 +98,10 @@ bash path/to/skill/references/scaffold.sh "WanConfig"
 ```
 
 The script outputs one line:
-- `created:specs/wan-config commit:abc1234 date:2026-06-24` — new spec, `index.md` written
-- `exists:specs/wan-config commit:abc1234 date:2026-06-24` — spec already exists
+- `created:/abs/path/to/specs/wan-config commit:abc1234 date:2026-06-24` — new spec, `index.md` written
+- `exists:/abs/path/to/specs/wan-config commit:abc1234 date:2026-06-24` — spec already exists
 
-Parse `commit` and `date` from the output — use them when writing or updating content files.
+Parse `commit`, `date`, and the **absolute spec path** from the output — use the absolute path when writing content files and launching the preview server.
 
 ## After Scaffold: Writing Content Files
 
