@@ -129,7 +129,7 @@ Spec saved. Want a live HTML preview? It renders diagrams, updates as you edit, 
 If yes, locate the preview server script:
 
 ```bash
-find ~/.claude ~/.agents -name "preview-server.js" -path "*/save-tech-spec/*" 2>/dev/null | head -1
+find ~/.claude ~/.agents -name "preview-server.js" -path "*/technical-spec/*" 2>/dev/null | head -1
 ```
 
 Run it in the background, pointing at the spec folder:

@@ -50,7 +50,7 @@ See `skills/plugin-foundry/SKILL.md` for the canonical checklist. Short version:
 | `session-handoff` | Preserve/restore session context at context limits |
 | `session-report` | Generate HTML usage report from session transcripts |
 | `adapting-skills` | Adapt generic skills to Harvey's stack and conventions |
-| `condux` (plugin) | 9-skill agentic workflow bundle (workflow, brainstorm, write-plan, tdd, sdd, finalize, code-review, verification, systematic-debugging) |
+| `condux` (plugin) | 10-skill agentic workflow bundle (workflow, brainstorm, write-plan, tdd, sdd, finalize, code-review, verification, systematic-debugging, technical-spec) |
 
 The `condux` bundle lives at `dist/plugins/condux/` and its sources are in the corresponding `skills/` subdirectories.
 
