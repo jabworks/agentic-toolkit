@@ -9,29 +9,68 @@
 <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root {
+  /* Terminus UI — dark default */
   --background:         #111110;
   --card:               #191918;
-  --foreground:         #ededec;
+  --foreground:         #eeeeec;
   --muted:              #222221;
-  --muted-foreground:   #aba8a1;
-  --border:             #3e3e3a;
+  --muted-foreground:   #b5b3ad;
+  --border:             #3b3a37;
+  --input:              #3b3a37;
   --primary:            #978365;
-  --primary-foreground: #f2e3c6;
+  --primary-foreground: #ffffff;
   --secondary:          #222221;
   --accent:             #2a2a28;
+  --ring:               #978365;
+  --radius:             0.25rem;
+
+  --card-foreground:    #eeeeec;
+  --card-hover:         #222221;
+  --card-active:        #2a2a28;
+  --popover:            #222221;
+  --popover-foreground: #eeeeec;
+  --primary-hover:      #a39073;
+  --primary-muted:      #24231f;
+  --primary-text:       #cbb99f;
+  --border-hover:       #494844;
   --gold-9:             #978365;
-  --success:            #51a55d;
-  --info:               #52a9ff;
-  --destructive:        #f16a6a;
-  --term-bg:   var(--background);
-  --term-fg:   var(--foreground);
-  --titlebar:  var(--secondary);
-  --outline:   rgba(237,237,236,0.08);
-  --clay:      var(--primary);
-  --dim:       var(--muted-foreground);
-  --subtle:    #686560;
-  --mono:      'Geist Mono', 'JetBrains Mono', ui-monospace, Menlo, monospace;
-  --radius:    0.75rem;
+  --gold-10:            #a39073;
+
+  --success:              #71d083;
+  --success-muted:        #1b2a1e;
+  --success-foreground:   #ffffff;
+  --success-border:       #2d5736;
+  --success-solid:        #46a758;
+  --warning:              #ffca16;
+  --warning-muted:        #302008;
+  --warning-foreground:   #21180b;
+  --warning-border:       #5c3d05;
+  --warning-solid:        #ffc53d;
+  --info:                 #70b8ff;
+  --info-muted:           #0d2847;
+  --info-foreground:      #ffffff;
+  --info-border:          #104d87;
+  --info-solid:           #0090ff;
+  --destructive:          #ff977d;
+  --destructive-muted:    #391714;
+  --destructive-foreground: #ffffff;
+  --destructive-border:   #6e2920;
+  --destructive-solid:    #e54d2e;
+
+  /* Aliases */
+  --term-bg:  var(--background);
+  --term-fg:  var(--foreground);
+  --titlebar: var(--secondary);
+  --outline:  rgba(237, 237, 236, 0.08);
+  --hover:    var(--accent);
+  --clay:     var(--primary);
+  --dim:      var(--muted-foreground);
+  --subtle:   #686560;
+  --green:    var(--success);
+  --red:      var(--destructive);
+  --blue:     var(--info);
+  --yellow:   var(--warning);
+  --mono:     "Geist Mono", "JetBrains Mono", ui-monospace, Menlo, Monaco, monospace;
 }
 
 @media (prefers-color-scheme: light) {
@@ -40,18 +79,49 @@
     --card:               #f9f9f8;
     --foreground:         #21201c;
     --muted:              #f1f0ef;
-    --muted-foreground:   #82807c;
-    --border:             #d5d3cf;
+    --muted-foreground:   #63635e;
+    --border:             #dad9d6;
+    --input:              #dad9d6;
     --primary:            #978365;
-    --primary-foreground: #3b2e1e;
+    --primary-foreground: #ffffff;
     --secondary:          #f1f0ef;
     --accent:             #e9e8e6;
-    --gold-9:             #978365;
-    --success:            #297c3b;
-    --info:               #0d6cbd;
-    --destructive:        #ce2c31;
-    --outline:  rgba(33,32,28,0.08);
-    --subtle:   #a09d98;
+    --ring:               #978365;
+
+    --card-foreground:    #21201c;
+    --card-hover:         #f1f0ef;
+    --card-active:        #e9e8e6;
+    --popover:            #f1f0ef;
+    --popover-foreground: #21201c;
+    --primary-hover:      #8c7a5e;
+    --primary-muted:      #f2f0e7;
+    --primary-text:       #71624b;
+    --border-hover:       #cfceca;
+    --gold-10:            #8c7a5e;
+
+    --success:              #2a7e3b;
+    --success-muted:        #e9f6e9;
+    --success-foreground:   #ffffff;
+    --success-border:       #b2ddb5;
+    --success-solid:        #46a758;
+    --warning:              #ab6400;
+    --warning-muted:        #fff7c2;
+    --warning-foreground:   #21180b;
+    --warning-border:       #f3d673;
+    --warning-solid:        #ffc53d;
+    --info:                 #0d74ce;
+    --info-muted:           #e6f4fe;
+    --info-foreground:      #ffffff;
+    --info-border:          #acd8fc;
+    --info-solid:           #0090ff;
+    --destructive:          #d13415;
+    --destructive-muted:    #feebe7;
+    --destructive-foreground: #ffffff;
+    --destructive-border:   #fdbdaf;
+    --destructive-solid:    #e54d2e;
+
+    --outline: rgba(33, 32, 28, 0.08);
+    --subtle:  #a09d98;
   }
 }
 
