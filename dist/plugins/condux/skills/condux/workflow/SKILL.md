@@ -74,8 +74,11 @@ git log --oneline -5
 │                                                                  │
 │  Step 2: CONFIRM WITH USER                                      │
 │  State the inferred tier + one-sentence reason.                 │
-│  If a spec was loaded, mention it briefly:                      │
-│  "Found spec for `checkout-flow` — loaded as context."          │
+│  If a spec was loaded, mention it and offer the companion:      │
+│  "Found spec for `checkout-flow` — loaded as context.           │
+│   Want me to open the live HTML preview while we work? [y/n]"  │
+│  If yes: load `technical-spec` and run the preview server       │
+│  (see technical-spec skill — Live HTML Preview section).        │
 │  Wait for explicit confirmation before proceeding.              │
 │                                                                  │
 │  Step 3: EXECUTE TIER FLOW                                      │

@@ -21,7 +21,7 @@ Condux is **lean and proportional**. It is the opposite of "always run every gat
 
 ## Entry Point
 
-Almost every dev task starts the same way:
+Every dev task starts with `/workflow` — no exceptions unless the user explicitly says otherwise:
 
 ```
 /workflow <task description>
@@ -29,7 +29,15 @@ Almost every dev task starts the same way:
 
 `workflow` infers the tier (Small / Medium / Large), confirms it with you, then runs the matching flow. You don't pre-load the downstream skills — `workflow` pulls each one in at the right moment.
 
-If the user is clearly mid-flow (already brainstormed, already has a plan), skip straight to the relevant step instead of re-routing.
+**Valid bypasses (require explicit user instruction):**
+- User is mid-flow: "I've already planned this / already brainstormed" → skip to the relevant step
+- User explicitly opts out: "skip workflow", "just do it" → proceed, but note the skip
+
+**Not valid bypasses:**
+- Your own assessment that the task is small or bounded — that's `workflow`'s job, not yours
+- Being loaded as companion context alongside another skill — condux still drives the workflow
+
+If condux is loaded alongside another skill, run `/workflow` first. The other skill executes within the workflow, not instead of it.
 
 ## The Tiers
 
@@ -66,6 +74,8 @@ Load each only when its step is reached.
 **Brainstorm integration (`brainstorm`):**
 - **At start**: if a spec exists for the feature, offers to open the live HTML preview
 - **At sign-off**: saves the design as a structured spec (`specs/<feature>/`) and launches the live preview server, which re-renders as spec files change
+
+**After any spec changes:** whenever a task modifies spec files (`specs/`, OpenAPI YAMLs, API contracts, field mappings), ask the user: "Want me to open the technical-spec visual companion so you can review the changes?"
 
 Install once; condux uses it silently when present. No spec? No noise — the lookup produces no output if nothing is found.
 
@@ -121,6 +131,8 @@ Stop if you catch yourself doing any of these — they violate condux's lean phi
 
 | Doing                                          | Instead                                                       |
 | ---------------------------------------------- | ------------------------------------------------------------ |
+| Skipping `/workflow` because the task "seems small" | That judgment belongs to `workflow` — run it first      |
+| Treating condux as reference when loaded alongside another skill | Run `/workflow` first; the other skill runs within it |
 | Loading every condux skill upfront             | Let `workflow` pull each in at its step                      |
 | Brainstorming or writing a plan doc for a SMALL task | Implement directly; verify; finalize                   |
 | Running tests / lint / typecheck mid-implementation | Save it all for `finalize`                              |
