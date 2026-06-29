@@ -64,6 +64,8 @@ Load each only when its step is reached.
 | `finalize`     | After all implementation — typecheck → lint → format → tests        | automatic, run once, stop on first failure |
 | `code-review`  | On request only — "review this", or after finalize if user says yes | never auto-triggers                        |
 | `systematic-debugging` | Any bug investigation — before proposing fixes | load when debugging, not proactively  |
+| `plan-review`  | Interactive planning system skill set plan. Annotate plans, specs, and markdown before implementation. | interactive feedback loop |
+| `html-artifacts` | Annotate rendered HTML artifacts. Review and comment on HTML before or after implementation. | interactive preview |
 
 ### Companion: `technical-spec`
 
@@ -78,6 +80,12 @@ Load each only when its step is reached.
 **After any spec changes:** whenever a task modifies spec files (`specs/`, OpenAPI YAMLs, API contracts, field mappings), ask the user: "Want me to open the technical-spec visual companion so you can review the changes?"
 
 Install once; condux uses it silently when present. No spec? No noise — the lookup produces no output if nothing is found.
+
+### Interactive Planning & HTML Artifact Skills
+
+**`plan-review`:** Interactive planning system skill set plan. Annotate plans, specs, and markdown before implementation. Review diffs and PRs. Send feedback to your agent. Use `/plan-review` to review the agent's last plan or proposal, or annotate specific markdown/HTML files.
+
+**`html-artifacts`:** Annotate rendered HTML artifacts. Review and comment on HTML before or after implementation. Use `/html-artifacts` to open a live HTML preview with annotation support, allowing you to comment on sections and send feedback to the agent.
 
 ### Gate discipline
 

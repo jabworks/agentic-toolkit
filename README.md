@@ -10,6 +10,8 @@ Personal collection of agentic coding skills. Compatible with Claude Code, Codex
 | [session-handoff](./skills/session-handoff/) | Preserve and restore session context across agentic coding sessions                                   |
 | [plugin-foundry](./skills/plugin-foundry/)   | Create and maintain skills in this toolkit                                                            |
 | [adapting-skills](./skills/adapting-skills/) | Developer profile priors for adapting skills to Harvey's stack _(personal — useful to collaborators)_ |
+| [plan-review](./skills/plan-review/)         | Interactive planning system skill set. Annotate plans, specs, and markdown before implementation.    |
+| [html-artifacts](./skills/html-artifacts/)   | Annotate rendered HTML artifacts. Review and comment on HTML before or after implementation.          |
 
 ### Condux
 
@@ -33,6 +35,10 @@ Lean agentic workflow plugin (`condux`). Install all 10 skills as a unit:
 | [/verification](./skills/verification/) | "Am I actually done?" checklist before finalize — catches skipped steps and regressions |
 | [/systematic-debugging](./skills/systematic-debugging/) | Root-cause-first bug investigation — enforces the 4-phase sequence before any fix |
 | [/technical-spec](./skills/technical-spec/) | Scaffold and persist feature specs (decisions, API, fields, quirks) with a live HTML preview |
+
+## Acknowledgments
+
+The new **plan-review**, **enhanced code-review**, and **html-artifacts** skills are inspired by and based on the [Plannotator](https://github.com/backnotprop/plannotator) project. We gratefully acknowledge their work on interactive plan review, code review with feedback loops, and HTML artifact annotation.
 
 ## Install
 
