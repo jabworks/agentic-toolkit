@@ -1,6 +1,6 @@
 {
   "name": "condux",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "description": "Codex skills for lean agentic workflow: tier routing, brainstorm, planning, TDD, subagent coordination, finalize, code review, verification, systematic debugging, and feature spec management.",
   "author": {
     "name": "jabworks"
