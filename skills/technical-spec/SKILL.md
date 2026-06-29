@@ -1,7 +1,6 @@
 ---
 name: technical-spec
-description: Persists feature decisions, API contracts, field mappings, implementation details, and quirks into a structured spec tree (one folder per feature, one file per concern).
-when_to_use: Use when a feature plan, design session, or implementation milestone is complete. Trigger phrases: "save spec", "document this", "write up what we decided", "spec this out".
+description: Use when a feature plan, design session, or implementation milestone is complete and the decisions, API contracts, implementation details, and quirks should be persisted for future reference. Also use when the user says "save spec", "document this", "write up what we decided", or "spec this out".
 disable-model-invocation: true
 ---
 
