@@ -15,7 +15,7 @@ Inspired by [Plannotator](https://github.com/backnotprop/plannotator), rebuilt
 in-house so it carries **no third-party runtime dependency** and makes **no
 network calls** — safe for strict environments.
 
-## Two ways in
+## Ways in
 
 ### Auto — ExitPlanMode hook (the real workflow)
 
@@ -101,6 +101,38 @@ Serves the file, writes your decision to `<file>.feedback.md`, and stays running
 (Ctrl+C to stop). Use this for ad-hoc review of a spec or a written plan when you
 are not in plan mode. After submitting, read `<file>.feedback.md` to action it.
 
+### Steer — agent-invoked loop (any agent, no hook needed)
+
+When you want the review to actually **drive an agent** outside Claude's
+`ExitPlanMode` / Codex `Stop` hooks — e.g. an agent that wrote a plan to a file
+and wants you to gate it — run the server in `--steer` mode. The server is
+**long-lived**: launch it once, and one browser tab stays open for the whole
+review while the agent loops.
+
+```bash
+# 1. Launch once, in the background (default port 7777; override with --port).
+node /PATH/TO/plan-review/references/annotate-server.js <plan.md> --steer &
+
+# 2. Each round: block until you submit a decision (long-poll).
+curl -s http://127.0.0.1:7777/api/decision
+#   → {"decision":"Request Revisions","feedback":"<markdown>","feedbackFile":"<abs>.feedback.md"}
+```
+
+The agent runs the **iterative loop** off that decision:
+
+1. Launch the server (step 1) — the review tab opens and stays open.
+2. `GET /api/decision` — blocks until you decide; returns the decision JSON.
+3. Branch on `decision`:
+   - **Approve** → stop looping, implement the plan (use `feedback` as notes). The server exits.
+   - **Request Revisions** → edit `<plan.md>` **in place**; the open tab live-reloads the new plan over SSE (orphaned notes auto-clear). **Go to 2.**
+   - **Deny** → stop; rework the approach or surface the blocker. The server exits.
+
+Same steering the hooks give you, available to any agent that can run a command
+and read a file — at the cost of the agent orchestrating the loop itself rather
+than a hook blocking inline. Because the server is long-lived, **the same tab
+reflects every revision** — no new tab per round. The decision is also written to
+`<plan.md>.feedback.md` as a record each round.
+
 ## The review surface
 
 A three-pane layout: a **Contents** outline (left, with per-section note counts),
@@ -142,7 +174,7 @@ notes. The page live-reloads when the plan file changes on disk (SSE +
 
 | File | Role |
 |---|---|
-| `references/annotate-server.js` | Local server. `--hook` (Claude ExitPlanMode), `--codex-stop` (Codex Stop), or a file path for manual mode. |
+| `references/annotate-server.js` | Local server. `--hook` (Claude ExitPlanMode), `--codex-stop` (Codex Stop), `<file> --steer` (agent-invoked blocking loop), or `<file>` alone for manual mode. |
 | `references/install-codex-hook.sh` | Registers the Codex `Stop` hook in `~/.codex` and enables the hooks feature flag. |
 | `references/plan-review-template.html` | Self-contained review UI (renderer + annotation surface). |
 

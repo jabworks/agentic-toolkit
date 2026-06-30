@@ -2,11 +2,21 @@
 // Local plan-review surface. Renders a plan in the browser, collects inline
 // annotations + an approval decision. No npm deps. Binds 127.0.0.1 only.
 //
-// Three modes:
+// Four modes:
 //
 //   Manual:  node annotate-server.js <plan-file.md>
 //            Serves the plan, writes the decision to <plan-file>.feedback.md,
-//            stays running until Ctrl+C.
+//            stays running until Ctrl+C. No agent attached.
+//
+//   Steer:   node annotate-server.js <plan-file.md> --steer [--port 7777]
+//            (agent-invoked) Long-lived review server for the iterative loop.
+//            The agent launches it once in the background, then BLOCKS on
+//            GET /api/decision (a long-poll) which resolves when you submit:
+//              {"decision":"Approve|Request Revisions|Deny","feedback":<md>,"feedbackFile":<path>}
+//            On "Request Revisions" the agent edits <plan-file.md> in place — the
+//            SAME browser tab live-reloads over SSE — and re-polls. On Approve or
+//            Deny the review is over and the server exits. Default port 7777 so
+//            the agent knows the URL without discovery. Diagnostics go to stderr.
 //
 //   Hook:    node annotate-server.js --hook   (Claude Code)
 //            Reads a Claude Code PreToolUse(ExitPlanMode) payload on stdin,
@@ -36,9 +46,17 @@ const { exec } = require('child_process');
 
 const HOOK_MODE = process.argv.includes('--hook');
 const CODEX_STOP_MODE = process.argv.includes('--codex-stop');
-const STDOUT_JSON = HOOK_MODE || CODEX_STOP_MODE; // these modes emit JSON on stdout
+const STEER_MODE = process.argv.includes('--steer');
+const STDOUT_JSON = HOOK_MODE || CODEX_STOP_MODE || STEER_MODE; // these modes emit JSON on stdout
 const log = STDOUT_JSON ? console.error : console.log; // keep stdout clean for hooks
 const sseClients = new Set();
+
+// Steer mode: the agent long-polls GET /api/decision; a decision resolves the
+// waiter. Default to a fixed port so the agent knows the URL without discovery.
+const portArg = (function () { const i = process.argv.indexOf('--port'); return i >= 0 ? parseInt(process.argv[i + 1], 10) : NaN; })();
+const PORT = !isNaN(portArg) ? portArg : (STEER_MODE ? 7777 : 0);
+let decisionWaiter = null;   // pending GET /api/decision response (steer)
+let pendingDecision = null;  // decision that arrived before a waiter (steer)
 
 let planFile;       // path to the markdown being reviewed
 let feedbackFile;   // manual mode only
@@ -133,6 +151,25 @@ function resolveDecision(decision, thread) {
     process.stdout.write(JSON.stringify(out));
     log('\n  Decision: ' + decision + ' — returned to Codex. Stopping.\n');
     setTimeout(function () { process.exit(0); }, 150);
+  } else if (STEER_MODE) {
+    // Agent-invoked, long-lived: deliver the decision to the agent's pending
+    // GET /api/decision long-poll. The server stays up across rounds so the same
+    // browser tab live-reloads when the agent revises the plan on disk. On a
+    // terminal decision (Approve/Deny) the review is over, so we exit after the
+    // response flushes; on "Request Revisions" we keep serving the next round.
+    fs.writeFileSync(feedbackFile, md);
+    const payload = { decision: decision, feedback: md, feedbackFile: feedbackFile };
+    if (decisionWaiter) {
+      try { decisionWaiter.writeHead(200, { 'Content-Type': 'application/json' }); decisionWaiter.end(JSON.stringify(payload)); } catch (e) { /* client gone */ }
+      decisionWaiter = null;
+    } else {
+      pendingDecision = payload; // agent hasn't polled yet — hand it to the next GET
+    }
+    log('\n  Decision: ' + decision + ' — delivered to agent.\n');
+    if (decision === 'Approve' || decision === 'Deny') {
+      log('  Review concluded (' + decision + '). Stopping.\n');
+      setTimeout(function () { process.exit(0); }, 400);
+    }
   } else {
     fs.writeFileSync(feedbackFile, md);
     log('\n[PLAN-REVIEW FEEDBACK -> ' + feedbackFile + ']\n' + md + '\n');
@@ -167,13 +204,21 @@ function handler(req, res) {
     req.on('close', function () { sseClients.delete(res); });
     return;
   }
+  if (req.method === 'GET' && p === '/api/decision') {
+    // Steer long-poll: block until a decision is submitted in the browser.
+    if (pendingDecision) { const d = pendingDecision; pendingDecision = null; return sendJson(res, 200, d); }
+    res.setTimeout(0); // a human may take minutes — don't let Node close the idle socket
+    decisionWaiter = res;
+    req.on('close', function () { if (decisionWaiter === res) decisionWaiter = null; });
+    return;
+  }
   if (req.method === 'POST' && p === '/api/feedback') {
     let body = '';
     req.on('data', function (c) { body += c; if (body.length > 1e6) req.destroy(); });
     req.on('end', function () {
       try {
         const data = JSON.parse(body);
-        sendJson(res, 200, { status: 'received', mode: CODEX_STOP_MODE ? 'codex' : HOOK_MODE ? 'hook' : 'manual', file: feedbackFile });
+        sendJson(res, 200, { status: 'received', mode: CODEX_STOP_MODE ? 'codex' : HOOK_MODE ? 'hook' : STEER_MODE ? 'steer' : 'manual', file: feedbackFile });
         resolveDecision(data.decision || 'Request Revisions', data.thread || []);
       } catch (e) {
         sendJson(res, 400, { error: 'invalid JSON' });
@@ -188,10 +233,15 @@ function handler(req, res) {
 let server;
 function listen() {
   server = http.createServer(handler);
-  server.listen(0, '127.0.0.1', function () {
+  server.on('error', function (e) {
+    if (e && e.code === 'EADDRINUSE') fail('port ' + PORT + ' is in use — pass a free --port <n>.');
+    fail(String((e && e.message) || e));
+  });
+  server.listen(PORT, '127.0.0.1', function () {
     const url = 'http://127.0.0.1:' + server.address().port;
     log('\n  Plan review   →  ' + url);
     log('  Plan          →  ' + planFile);
+    if (STEER_MODE) log('  Decisions     →  GET ' + url + '/api/decision (long-poll)');
     if (!STDOUT_JSON) log('  Feedback      →  ' + feedbackFile);
     log('\n  Annotate the plan, then submit your decision. Ctrl+C to stop.\n');
     const opener = process.platform === 'darwin' ? 'open' :
@@ -259,7 +309,13 @@ if (HOOK_MODE) {
     start(plan, null);
   });
 } else {
-  const file = process.argv[2];
+  // Manual or steer: first non-flag arg is the plan file (skip --port's value).
+  const args = process.argv.slice(2);
+  let file = null;
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--port') { i++; continue; }
+    if (args[i][0] !== '-') { file = args[i]; break; }
+  }
   if (!file || !fs.existsSync(file)) fail('plan file not found — pass a markdown file path, or use --hook / --codex-stop.');
   start(null, file);
 }
