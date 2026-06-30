@@ -49,6 +49,8 @@ If condux is loaded alongside another skill, run `/workflow` first. The other sk
 
 Every tier ends with `verification` then `finalize` — no exceptions. If mid-task the scope outgrows the confirmed tier, stop, report it, and re-confirm before continuing. Never silently expand scope.
 
+On **MEDIUM and LARGE** tasks, `workflow` stops at each phase boundary (plan ready → implementation done → finalized) and presents a `what next?` menu — recommended option first — so the user drives every transition instead of the flow running on a rail. SMALL tasks skip the menus and run straight through. See `workflow` → Checkpoints.
+
 ## The Skills
 
 Load each only when its step is reached.
