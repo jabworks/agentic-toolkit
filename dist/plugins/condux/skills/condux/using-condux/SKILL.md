@@ -64,6 +64,7 @@ Load each only when its step is reached.
 | `finalize`     | After all implementation — typecheck → lint → format → tests        | automatic, run once, stop on first failure |
 | `code-review`  | On request only — "review this", or after finalize if user says yes | never auto-triggers                        |
 | `systematic-debugging` | Any bug investigation — before proposing fixes | load when debugging, not proactively  |
+| `plan-review`  | Annotate a plan in the browser before implementation, then return approve/revise/deny to the agent | ExitPlanMode hook or manual |
 
 ### Companion: `technical-spec`
 
@@ -78,6 +79,14 @@ Load each only when its step is reached.
 **After any spec changes:** whenever a task modifies spec files (`specs/`, OpenAPI YAMLs, API contracts, field mappings), ask the user: "Want me to open the technical-spec visual companion so you can review the changes?"
 
 Install once; condux uses it silently when present. No spec? No noise — the lookup produces no output if nothing is found.
+
+### Interactive plan review: `plan-review`
+
+Render a plan in a local browser for inline annotation, then return an
+approve / request-revisions / deny decision to the agent. Wire it to the
+`ExitPlanMode` hook so it fires automatically when the agent finishes planning,
+or run it manually on any markdown plan/spec. Self-contained — no network egress,
+no third-party runtime dependency.
 
 ### Gate discipline
 

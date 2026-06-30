@@ -13,7 +13,7 @@ Personal collection of agentic coding skills. Compatible with Claude Code, Codex
 
 ### Condux
 
-Lean agentic workflow plugin (`condux`). Install all 10 skills as a unit:
+Lean agentic workflow plugin (`condux`). Install all 11 skills as a unit:
 
 ```bash
 /plugin install condux@jabworks-agentic-toolkit
@@ -33,6 +33,11 @@ Lean agentic workflow plugin (`condux`). Install all 10 skills as a unit:
 | [/verification](./skills/verification/) | "Am I actually done?" checklist before finalize — catches skipped steps and regressions |
 | [/systematic-debugging](./skills/systematic-debugging/) | Root-cause-first bug investigation — enforces the 4-phase sequence before any fix |
 | [/technical-spec](./skills/technical-spec/) | Scaffold and persist feature specs (decisions, API, fields, quirks) with a live HTML preview |
+| [/plan-review](./skills/plan-review/) | Annotate a plan in a local browser, then return approve/revise/deny to the agent — via ExitPlanMode hook or manually. Self-contained, no egress |
+
+## Acknowledgments
+
+The **plan-review** skill is inspired by [Plannotator](https://github.com/backnotprop/plannotator) — its interactive plan-review workflow served as the design reference. plan-review is an independent in-house reimplementation with no shared code and no third-party runtime dependency.
 
 ## Install
 
