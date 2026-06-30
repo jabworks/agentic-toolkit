@@ -1,7 +1,7 @@
 ---
 name: plan-review
-description: Render a plan in a local browser for inline annotation, then return an approve / request-revisions / deny decision to the agent. Auto-captures the plan via an ExitPlanMode hook, or runs manually on any markdown file. Self-contained — no network egress, no third-party runtime deps.
-when_to_use: When the agent finishes planning (ExitPlanMode) and you want to review/annotate before it implements, or when you invoke /plan-review on a markdown plan/spec.
+description: Render a plan in a local browser for inline annotation, then return an approve / request-revisions / deny decision to the agent. Auto-captures the plan via a Claude Code ExitPlanMode hook or a Codex Stop hook, or runs manually on any markdown file. Self-contained — no network egress, no third-party runtime deps.
+when_to_use: When the agent finishes planning (Claude Code ExitPlanMode, or a Codex planning turn) and you want to review/annotate before it implements, or when you invoke /plan-review on a markdown plan/spec.
 ---
 
 # /plan-review
@@ -19,11 +19,13 @@ network calls** — safe for strict environments.
 
 ### Auto — ExitPlanMode hook (the real workflow)
 
-Wire a `PreToolUse` hook so every time the agent exits plan mode, the plan is
-captured and the review UI opens automatically. The hook blocks until you decide:
+When installed as part of the **condux plugin**, this hook ships in the plugin
+(`hooks/hooks.json`) and is auto-registered — no setup. Every time the agent
+exits plan mode, the plan is captured and the review UI opens automatically. The
+hook blocks until you decide. The plugin entry is:
 
 ```json
-// settings.json (project .claude/settings.json or ~/.claude/settings.json)
+// dist/plugins/condux/hooks/hooks.json (shipped — for reference)
 {
   "hooks": {
     "PreToolUse": [
@@ -32,7 +34,7 @@ captured and the review UI opens automatically. The hook blocks until you decide
         "hooks": [
           {
             "type": "command",
-            "command": "node /ABSOLUTE/PATH/TO/plan-review/references/annotate-server.js --hook"
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/skills/condux/plan-review/references/annotate-server.js\" --hook"
           }
         ]
       }
@@ -41,7 +43,9 @@ captured and the review UI opens automatically. The hook blocks until you decide
 }
 ```
 
-Find the absolute path after install:
+**Standalone (no plugin)?** Wire the same hook by hand in your
+`settings.json` (project `.claude/settings.json` or `~/.claude/settings.json`),
+swapping `${CLAUDE_PLUGIN_ROOT}/skills/condux/plan-review` for the absolute path:
 
 ```bash
 find ~/.claude ~/.codex ~/.agents -name annotate-server.js -path '*plan-review*' 2>/dev/null | head -1
@@ -54,6 +58,38 @@ What the hook returns to the agent:
 | **Approve** | `permissionDecision: "allow"` (+ notes as `additionalContext` if any) | proceeds to implement |
 | **Request Revisions** | `permissionDecision: "deny"`, reason = your feedback | revises the plan, re-enters plan mode (re-triggers the hook) |
 | **Deny** | `permissionDecision: "deny"`, reason = your feedback | reworks the approach |
+
+### Auto — Codex Stop hook
+
+Codex has **no `ExitPlanMode`** interception point, so plan review runs off
+Codex's experimental **`Stop` hook**. When a planning turn ends
+(`permission_mode === "plan"`), `annotate-server.js --codex-stop` reads the plan
+from the Stop payload (`last_assistant_message`, falling back to
+`transcript_path`) and opens the same review UI. On any other turn it emits `{}`
+and exits, leaving the turn untouched.
+
+Run the installer once (writes `~/.codex/hooks.json` + sets the feature flag):
+
+```bash
+bash /PATH/TO/plan-review/references/install-codex-hook.sh
+# or, after a plugin install:
+find ~/.codex ~/.claude -name install-codex-hook.sh -path '*plan-review*' 2>/dev/null | head -1 | xargs bash
+```
+
+It enables `[features] hooks = true` in `$CODEX_HOME/config.toml` and merges a
+`Stop` hook pointing at the absolute `annotate-server.js` path. Then **restart
+Codex** and **trust the hook** when prompted.
+
+| Your decision | Hook output | Codex behavior |
+|---|---|---|
+| **Approve** | `{}` (turn completes) | plan accepted, turn ends |
+| **Request Revisions** | `{"decision":"block","reason":<feedback>}` | revises the plan in the same turn (re-triggers on next stop) |
+| **Deny** | `{"decision":"block","reason":<feedback>}` | reworks the approach |
+
+Caveats: Codex hooks are **experimental and disabled on Windows**; the review is
+**post-render** (after Codex prints the plan), not a pre-interception like Claude
+Code; use an **absolute** node/command path (Codex Desktop doesn't inherit `PATH`
+— the installer handles this).
 
 ### Manual — on any file
 
@@ -68,23 +104,29 @@ are not in plan mode. After submitting, read `<file>.feedback.md` to action it.
 ## The review surface
 
 A three-pane layout: a **Contents** outline (left, with per-section note counts),
-the rendered plan (center), and a **Review** rail (right) listing your notes and
-messages above the decision buttons.
+the centered rendered plan (middle), and a **Review** rail (right) listing your
+notes and messages above the decision buttons.
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
-│  Step 1  RENDER     Plan renders in the browser, with a TOC.      │
-│  Step 2  ANNOTATE   Select text → inline comment (highlighted).   │
-│                     Or message the agent in the Review rail.      │
+│  Step 1  RENDER     Plan renders centered in the browser, w/ TOC. │
+│  Step 2  ANNOTATE   Select text → a toolbar opens above it. Pick  │
+│                     a category (Comment / Issue / Question /       │
+│                     Suggestion / Nitpick) → the note input opens.  │
+│                     Or message the agent in the Review rail.       │
 │  Step 3  DECIDE     Approve / Request Revisions / Deny.            │
-│  Step 4  RETURN     Decision + notes (each quoting the text it    │
-│                     anchors to) go back to the agent.             │
+│  Step 4  RETURN     Decision + notes (each tagged with its        │
+│                     category and quoting its anchor) go back.     │
 └──────────────────────────────────────────────────────────────────┘
 ```
 
-Selecting text highlights it and anchors the comment; clicking a highlight or a
-note cross-links the two. The page live-reloads if the plan file changes on disk
-(SSE + `fs.watch`).
+Selecting text opens a floating **annotation toolbar** anchored above the
+selection (it flips below when there's no room). It starts as a category
+**menubar**; choosing a category expands it to reveal the note input and
+Save/Cancel. Saving highlights the text and anchors the note; clicking a
+highlight or a note cross-links the two. A revised plan clears the now-orphaned
+notes. The page live-reloads when the plan file changes on disk (SSE +
+`fs.watch`).
 
 ## Guarantees (why it passes review)
 
@@ -100,7 +142,8 @@ note cross-links the two. The page live-reloads if the plan file changes on disk
 
 | File | Role |
 |---|---|
-| `references/annotate-server.js` | Local server. `--hook` for ExitPlanMode, or a file path for manual mode. |
+| `references/annotate-server.js` | Local server. `--hook` (Claude ExitPlanMode), `--codex-stop` (Codex Stop), or a file path for manual mode. |
+| `references/install-codex-hook.sh` | Registers the Codex `Stop` hook in `~/.codex` and enables the hooks feature flag. |
 | `references/plan-review-template.html` | Self-contained review UI (renderer + annotation surface). |
 
 ## Related skills

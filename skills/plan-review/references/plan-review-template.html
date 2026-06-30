@@ -89,8 +89,8 @@
           linear-gradient(to right, color-mix(in oklab, var(--foreground) 3%, transparent) 1px, transparent 1px),
           linear-gradient(to bottom, color-mix(in oklab, var(--foreground) 3%, transparent) 1px, transparent 1px);
         background-size: 32px 32px; }
-      .main .hint { color: var(--subtle); margin: 0 0 24px; font-size: 12px; }
-      .doc { max-width: 760px; }
+      .main .hint { color: var(--subtle); margin: 0 auto 24px; font-size: 12px; max-width: 760px; }
+      .doc { max-width: 760px; margin: 0 auto; }
       h1, h2, h3 { line-height: 1.3; margin: 1.5em 0 0.6em; scroll-margin-top: 24px; }
       h1 { font-size: 21px; } h2 { font-size: 16px; } h3 { font-size: 14px; color: var(--muted-foreground); }
       p { margin: 0.6em 0; }
@@ -106,19 +106,38 @@
       mark.hl.active { background: var(--hl-active); box-shadow: 0 0 0 1px var(--warning-border); }
 
       /* Floating "comment" button (Button surface) + comment Popover */
-      .sel-btn { position: absolute; z-index: 30; display: none; border-radius: 9999px; box-shadow: 0 4px 14px rgba(0,0,0,0.3); }
-      .popover { position: absolute; z-index: 31; display: none; width: 324px; background: var(--popover); border: 1px solid var(--border);
-        border-radius: var(--radius); box-shadow: 0 12px 32px rgba(0,0,0,0.4); padding: 12px; }
-      .popover .q { color: var(--warning); font-size: 11px; max-height: 48px; overflow: auto; border-left: 2px solid var(--warning); padding: 2px 8px; margin-bottom: 8px; }
-      .popover .row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; align-items: center; }
+      /* Step 1: menubar only. Step 2 (.expanded): reveal the input + actions. */
+      .popover:not(.expanded) .ta, .popover:not(.expanded) .row { display: none; }
+      .popover:not(.expanded) .cats { border-bottom: none; }
+      .popover:not(.expanded) .chip:first-child { border-bottom-left-radius: var(--radius); }
+      .popover:not(.expanded) .chip:last-child { border-bottom-right-radius: var(--radius); }
+      /* Floating annotation toolbar — a menubar of category items over an input. */
+      .popover { position: absolute; z-index: 31; display: none; width: 340px; background: var(--popover); border: 1px solid var(--border);
+        border-radius: var(--radius); box-shadow: 0 12px 32px rgba(0,0,0,0.45); padding: 0; }
+      .popover .q { color: var(--muted-foreground); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        padding: 6px 10px; margin: 0; background: var(--muted); border-bottom: 1px solid var(--border); border-radius: var(--radius) var(--radius) 0 0; }
+      /* Menubar strip: category items, evenly split, divider-separated */
+      .popover .cats { display: flex; margin: 0; border-bottom: 1px solid var(--border); }
+      .chip { flex: 1; font: 500 11px var(--mono); padding: 6px 8px; text-align: center; border: none; border-right: 1px solid var(--border);
+        background: transparent; color: var(--muted-foreground); cursor: pointer; transition: background-color .12s, color .12s; }
+      .chip:last-child { border-right: none; }
+      .chip:hover { background: var(--accent); color: var(--foreground); }
+      .chip.active { background: var(--primary-muted); color: var(--primary-text); }
+      .popover .row { display: flex; justify-content: flex-end; gap: 8px; align-items: center; padding: 6px 8px; border-top: 1px solid var(--border); }
       .popover .hintk { color: var(--subtle); font-size: 11px; margin-right: auto; }
+      /* Caret pointing at the selection (down when the toolbar sits above it) */
+      .popover::after { content: ''; position: absolute; left: 18px; width: 9px; height: 9px; background: var(--popover);
+        border: 1px solid var(--border); transform: rotate(45deg); display: none; }
+      .popover.above::after { display: block; bottom: -5px; border-top: none; border-left: none; }
+      .popover.below::after { display: block; top: -5px; background: var(--muted); border-bottom: none; border-right: none; }
 
       /* ---- Terminus: Textarea ---- */
       .ta { width: 100%; resize: vertical; font: 13px/1.5 var(--mono); color: var(--foreground); background: transparent;
         border: 1px solid var(--input); border-radius: var(--radius-md); padding: 8px 10px; }
       .ta::placeholder { color: var(--subtle); }
       .ta:focus-visible { outline: none; border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 28%, transparent); }
-      .popover .ta { min-height: 60px; } .composer .ta { min-height: 52px; }
+      .popover .ta { min-height: 132px; border: none; border-radius: 0; padding: 8px 10px; } .popover .ta:focus-visible { outline: none; box-shadow: none; }
+      .composer .ta { min-height: 52px; }
 
       /* Right: annotations (Cards) + composer + decisions */
       .chat { border-left: 1px solid var(--border); background: var(--card); display: flex; flex-direction: column; }
@@ -151,10 +170,16 @@
       <main class="main">
         <p class="hint">Select any text to comment on it. Or chat with the agent on the right. Then decide.</p>
         <div class="doc" id="plan">Loading plan…</div>
-        <button class="sel-btn btn btn-surface btn-sm" id="selbtn">💬 Comment</button>
         <div class="popover" id="popover">
           <div class="q" id="pop-quote"></div>
-          <textarea class="ta" id="pop-text" placeholder="Your note on this selection…"></textarea>
+          <div class="cats" id="pop-cats">
+            <button type="button" class="chip active" data-cat="Comment">Comment</button>
+            <button type="button" class="chip" data-cat="Issue">Issue</button>
+            <button type="button" class="chip" data-cat="Question">Question</button>
+            <button type="button" class="chip" data-cat="Suggestion">Suggestion</button>
+            <button type="button" class="chip" data-cat="Nitpick">Nitpick</button>
+          </div>
+          <textarea class="ta" id="pop-text" rows="6" placeholder="Your note on this selection…"></textarea>
           <div class="row"><span class="hintk">⌘↵ to save</span>
             <button class="btn btn-ghost btn-sm" id="pop-cancel">Cancel</button>
             <button class="btn btn-solid btn-sm" id="pop-save">Save</button></div>
@@ -203,11 +228,19 @@
       const annotations = []; let nextId = 1;
       const planEl=document.getElementById('plan');
       const tocEl=document.getElementById('toc');
-      const selBtn=document.getElementById('selbtn');
       const pop=document.getElementById('popover');
       const popQuote=document.getElementById('pop-quote');
       const popText=document.getElementById('pop-text');
-      let pendingRange=null, pendingQuote='', pendingSection='';
+      const popCats=document.getElementById('pop-cats');
+      const main=document.querySelector('.main');
+      let pendingRange=null, pendingQuote='', pendingSection='', pendingCat=null, selDoc=null;
+      function setCat(cat){ pendingCat=cat; popCats.querySelectorAll('.chip').forEach(function(x){x.classList.toggle('active',x.dataset.cat===cat);}); }
+      // Step 1 shows just the quote + category menubar. Choosing a category expands
+      // the toolbar to reveal the note input and action buttons (step 2).
+      popCats.querySelectorAll('.chip').forEach(function(c){
+        c.onmousedown=function(e){ e.preventDefault(); }; // keep the text selection alive
+        c.onclick=function(){ setCat(c.dataset.cat); pop.classList.add('expanded'); placePopover(); popText.focus(); };
+      });
 
       function renderPlan(md){
         planEl.innerHTML=''; tocEl.innerHTML='';
@@ -229,29 +262,38 @@
       // ---- Selection -> highlight ----
       function blockOf(node){ while(node&&node!==planEl){ if(node.classList&&node.classList.contains('blk')) return node; node=node.parentNode; } return null; }
 
-      document.addEventListener('selectionchange', function(){
-        const sel=window.getSelection();
-        if(!sel.rangeCount||sel.isCollapsed){ if(!pop.contains(document.activeElement)) selBtn.style.display='none'; return; }
-        const r=sel.getRangeAt(0);
-        if(!planEl.contains(r.commonAncestorContainer)||!sel.toString().trim()){ selBtn.style.display='none'; return; }
-        const rect=r.getBoundingClientRect(); const main=document.querySelector('.main'); const host=main.getBoundingClientRect();
-        selBtn.style.left=(rect.right-host.left+main.scrollLeft)+'px';
-        selBtn.style.top=(rect.bottom-host.top+main.scrollTop+8)+'px';
-        selBtn.style.display='inline-flex';
-      });
-
-      selBtn.onmousedown=function(e){
-        e.preventDefault();
-        const sel=window.getSelection(); if(!sel.rangeCount) return;
-        pendingRange=sel.getRangeAt(0).cloneRange();
-        pendingQuote=sel.toString().trim();
-        const blk=blockOf(pendingRange.startContainer); pendingSection=blk?blk.dataset.section:'(top)';
-        const rect=pendingRange.getBoundingClientRect(); const main=document.querySelector('.main'); const host=main.getBoundingClientRect();
+      // Anchor the toolbar to the stored selection; sits above it, flips below
+      // only when the selection is too near the top of the scroll area.
+      function placePopover(){
+        if(!selDoc) return;
+        const pw=pop.offsetWidth, ph=pop.offsetHeight;
+        const left=Math.max(4, Math.min(selDoc.left, main.scrollWidth-pw-8));
+        let top=selDoc.top-ph-10;
+        if(top < main.scrollTop+4){ top=selDoc.bottom+10; pop.classList.add('below'); pop.classList.remove('above'); }
+        else { pop.classList.add('above'); pop.classList.remove('below'); }
+        pop.style.left=left+'px'; pop.style.top=top+'px';
+      }
+      function openToolbar(){
         popQuote.textContent='“'+pendingQuote+'”'; popText.value='';
-        pop.style.left=Math.min(rect.left-host.left+main.scrollLeft, main.scrollWidth-344)+'px';
-        pop.style.top=(rect.bottom-host.top+main.scrollTop+10)+'px';
-        selBtn.style.display='none'; pop.style.display='block'; popText.focus();
-      };
+        pendingCat=null; popCats.querySelectorAll('.chip').forEach(function(x){x.classList.remove('active');});
+        pop.classList.remove('expanded');
+        pop.style.display='block'; placePopover();
+      }
+      // Selecting text in the plan opens the menubar above the selection.
+      document.addEventListener('mouseup', function(e){
+        if(pop.contains(e.target)) return;
+        setTimeout(function(){
+          const sel=window.getSelection();
+          if(!sel.rangeCount||sel.isCollapsed) return;
+          const r=sel.getRangeAt(0);
+          if(!planEl.contains(r.commonAncestorContainer)||!sel.toString().trim()) return;
+          pendingRange=r.cloneRange(); pendingQuote=sel.toString().trim();
+          const blk=blockOf(pendingRange.startContainer); pendingSection=blk?blk.dataset.section:'(top)';
+          const rect=pendingRange.getBoundingClientRect(); const host=main.getBoundingClientRect();
+          selDoc={ left: rect.left-host.left+main.scrollLeft, top: rect.top-host.top+main.scrollTop, bottom: rect.bottom-host.top+main.scrollTop };
+          openToolbar();
+        },0);
+      });
 
       function highlight(range, aid){
         const root=range.commonAncestorContainer; const base=root.nodeType===3?root.parentNode:root;
@@ -277,14 +319,14 @@
         const text=popText.value.trim(); if(!text||!pendingRange) { closePop(); return; }
         const id=nextId++;
         try{ highlight(pendingRange,id); }catch(e){}
-        annotations.push({id:id,kind:'note',quote:pendingQuote,text:text,section:pendingSection});
+        annotations.push({id:id,kind:'note',cat:pendingCat,quote:pendingQuote,text:text,section:pendingSection});
         closePop(); window.getSelection().removeAllRanges(); paint();
       }
-      function closePop(){ pop.style.display='none'; pendingRange=null; }
+      function closePop(){ pop.style.display='none'; pop.classList.remove('expanded'); pendingRange=null; }
       document.getElementById('pop-save').onclick=saveNote;
       document.getElementById('pop-cancel').onclick=function(){closePop();window.getSelection().removeAllRanges();};
       popText.addEventListener('keydown',function(e){ if((e.metaKey||e.ctrlKey)&&e.key==='Enter')saveNote(); if(e.key==='Escape')closePop(); });
-      document.addEventListener('mousedown',function(e){ if(!pop.contains(e.target)&&e.target!==selBtn&&pop.style.display==='block') closePop(); });
+      document.addEventListener('mousedown',function(e){ if(!pop.contains(e.target)&&pop.style.display==='block') closePop(); });
 
       planEl.addEventListener('click',function(e){
         const m=e.target.closest&&e.target.closest('mark.hl'); if(!m) return;
@@ -306,8 +348,8 @@
         annotations.forEach(function(a){
           const m=document.createElement('div'); m.className='msg'+(a.kind==='note'?' note':''); if(a.kind==='note')m.dataset.aid=String(a.id);
           const meta=document.createElement('div'); meta.className='meta';
-          const who=document.createElement('span'); who.className='who'; who.textContent=a.kind==='note'?'📌 note':'message';
-          const del=document.createElement('button'); del.className='del'; del.textContent='✕';
+          const who=document.createElement('span'); who.className='who'; who.textContent=a.kind==='note'?(a.cat||'Note'):'message';
+          const del=document.createElement('button'); del.className='del'; del.textContent='×';
           del.onclick=function(ev){ev.stopPropagation(); if(a.kind==='note')unhighlight(a.id); const i=annotations.indexOf(a); annotations.splice(i,1); paint();};
           meta.appendChild(who); meta.appendChild(del); m.appendChild(meta);
           if(a.quote){ const q=document.createElement('div'); q.className='quote'; q.textContent='“'+a.quote+'”'; m.appendChild(q); }
@@ -337,7 +379,18 @@
       document.getElementById('input').addEventListener('keydown',function(e){if((e.metaKey||e.ctrlKey)&&e.key==='Enter')sendChat();});
       document.querySelectorAll('.actions button').forEach(function(b){b.onclick=function(){submit(b.dataset.decision);};});
 
-      async function load(){ renderPlan(await (await fetch('/api/plan')).text()); paint(); }
+      let lastPlanMd=null;
+      async function load(){
+        const md=await (await fetch('/api/plan')).text();
+        // A revised plan invalidates every anchor — the marks vanish on re-render,
+        // so drop the now-orphaned notes too. First load (lastPlanMd===null) is a no-op.
+        if(lastPlanMd!==null && md!==lastPlanMd && annotations.length){
+          annotations.length=0; nextId=1;
+          document.getElementById('status').textContent='Plan updated — previous notes cleared.';
+        }
+        lastPlanMd=md;
+        renderPlan(md); paint();
+      }
       try{const es=new EventSource('/api/events');es.onmessage=function(){load();};}catch(e){}
       load();
     </script>

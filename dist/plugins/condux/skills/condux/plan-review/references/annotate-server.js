@@ -2,20 +2,30 @@
 // Local plan-review surface. Renders a plan in the browser, collects inline
 // annotations + an approval decision. No npm deps. Binds 127.0.0.1 only.
 //
-// Two modes:
+// Three modes:
 //
 //   Manual:  node annotate-server.js <plan-file.md>
 //            Serves the plan, writes the decision to <plan-file>.feedback.md,
 //            stays running until Ctrl+C.
 //
-//   Hook:    node annotate-server.js --hook
+//   Hook:    node annotate-server.js --hook   (Claude Code)
 //            Reads a Claude Code PreToolUse(ExitPlanMode) payload on stdin,
 //            renders tool_input.plan, blocks until you decide, then prints a
 //            hookSpecificOutput JSON decision to stdout and exits:
 //              Approve          -> permissionDecision "allow"
 //              Request Revisions -> permissionDecision "deny" (reason = feedback)
 //              Deny             -> permissionDecision "deny" (reason = feedback)
-//            In hook mode all diagnostics go to stderr so stdout stays clean JSON.
+//
+//   Codex:   node annotate-server.js --codex-stop   (Codex Stop hook)
+//            Reads a Codex Stop payload on stdin. Only reviews planning turns
+//            (permission_mode === 'plan'); otherwise emits "{}" and exits so the
+//            turn completes untouched. The plan is taken from last_assistant_message
+//            (falling back to transcript_path). On decide it prints a Stop result:
+//              Approve          -> "{}"  (turn completes, plan accepted)
+//              Request Revisions -> {"decision":"block","reason":<feedback>}  (Codex revises)
+//              Deny             -> {"decision":"block","reason":<feedback>}  (Codex revises)
+//
+//            In hook/codex modes all diagnostics go to stderr so stdout stays clean JSON.
 'use strict';
 
 const http = require('http');
@@ -25,7 +35,9 @@ const path = require('path');
 const { exec } = require('child_process');
 
 const HOOK_MODE = process.argv.includes('--hook');
-const log = HOOK_MODE ? console.error : console.log; // keep stdout clean for hooks
+const CODEX_STOP_MODE = process.argv.includes('--codex-stop');
+const STDOUT_JSON = HOOK_MODE || CODEX_STOP_MODE; // these modes emit JSON on stdout
+const log = STDOUT_JSON ? console.error : console.log; // keep stdout clean for hooks
 const sseClients = new Set();
 
 let planFile;       // path to the markdown being reviewed
@@ -71,7 +83,8 @@ function feedbackMarkdown(decision, thread) {
     notes.forEach(function (t, i) {
       const quote = (t.quote || '').trim();
       const anchor = quote ? '> ' + quote.replace(/\n+/g, ' ') + '\n\n' : '';
-      lines.push((i + 1) + '. ' + anchor + '   ' + (t.text || '').trim());
+      const cat = t.cat ? '**[' + t.cat + ']** ' : '';
+      lines.push((i + 1) + '. ' + cat + anchor + '   ' + (t.text || '').trim());
     });
     lines.push('');
   }
@@ -103,6 +116,22 @@ function resolveDecision(decision, thread) {
     }
     process.stdout.write(JSON.stringify(out));
     log('\n  Decision: ' + decision + ' — returned to agent. Stopping.\n');
+    setTimeout(function () { process.exit(0); }, 150);
+  } else if (CODEX_STOP_MODE) {
+    // Codex Stop: "block" continues the turn with `reason` as a new prompt; an
+    // empty object lets the turn complete (= approve). Codex has no approve-with-
+    // notes channel, so approval simply completes; the notes are still logged.
+    let out;
+    if (decision === 'Approve') {
+      out = {};
+    } else {
+      out = {
+        decision: 'block',
+        reason: 'Plan review: ' + decision + '. Revise the plan to address:\n\n' + md,
+      };
+    }
+    process.stdout.write(JSON.stringify(out));
+    log('\n  Decision: ' + decision + ' — returned to Codex. Stopping.\n');
     setTimeout(function () { process.exit(0); }, 150);
   } else {
     fs.writeFileSync(feedbackFile, md);
@@ -144,7 +173,7 @@ function handler(req, res) {
     req.on('end', function () {
       try {
         const data = JSON.parse(body);
-        sendJson(res, 200, { status: 'received', mode: HOOK_MODE ? 'hook' : 'manual', file: feedbackFile });
+        sendJson(res, 200, { status: 'received', mode: CODEX_STOP_MODE ? 'codex' : HOOK_MODE ? 'hook' : 'manual', file: feedbackFile });
         resolveDecision(data.decision || 'Request Revisions', data.thread || []);
       } catch (e) {
         sendJson(res, 400, { error: 'invalid JSON' });
@@ -163,7 +192,7 @@ function listen() {
     const url = 'http://127.0.0.1:' + server.address().port;
     log('\n  Plan review   →  ' + url);
     log('  Plan          →  ' + planFile);
-    if (!HOOK_MODE) log('  Feedback      →  ' + feedbackFile);
+    if (!STDOUT_JSON) log('  Feedback      →  ' + feedbackFile);
     log('\n  Annotate the plan, then submit your decision. Ctrl+C to stop.\n');
     const opener = process.platform === 'darwin' ? 'open' :
                    process.platform === 'win32' ? 'start ""' : 'xdg-open';
@@ -177,21 +206,60 @@ process.on('SIGINT', function () {
   if (server) server.close(function () { process.exit(0); }); else process.exit(0);
 });
 
-if (HOOK_MODE) {
+// Best-effort: pull the latest assistant message text out of a Codex transcript.
+// The transcript format is explicitly not a stable interface, so this is wrapped
+// defensively and only used when last_assistant_message is absent.
+function readCodexTranscriptPlan(transcriptPath) {
+  try {
+    const raw = fs.readFileSync(transcriptPath, 'utf8');
+    const lines = raw.split('\n').filter(Boolean);
+    for (let i = lines.length - 1; i >= 0; i--) {
+      let entry;
+      try { entry = JSON.parse(lines[i]); } catch (e) { continue; }
+      const role = entry.role || (entry.message && entry.message.role);
+      if (role !== 'assistant') continue;
+      const content = (entry.message && entry.message.content) || entry.content;
+      if (typeof content === 'string' && content.trim()) return content;
+      if (Array.isArray(content)) {
+        const text = content
+          .map(function (c) { return typeof c === 'string' ? c : (c && c.text) || ''; })
+          .join('').trim();
+        if (text) return text;
+      }
+    }
+  } catch (e) { /* fall through */ }
+  return '';
+}
+
+function readStdinJSON(cb) {
   let input = '';
   process.stdin.setEncoding('utf8');
   process.stdin.on('data', function (c) { input += c; });
   process.stdin.on('end', function () {
-    let plan = '';
-    try {
-      const payload = JSON.parse(input || '{}');
-      const ti = payload.tool_input || {};
-      plan = ti.plan || ti.message || payload.plan || '';
-    } catch (e) { /* fall through with empty plan */ }
+    let payload = {};
+    try { payload = JSON.parse(input || '{}'); } catch (e) { /* keep {} */ }
+    cb(payload);
+  });
+}
+
+if (HOOK_MODE) {
+  readStdinJSON(function (payload) {
+    const ti = payload.tool_input || {};
+    const plan = ti.plan || ti.message || payload.plan || '';
+    start(plan, null);
+  });
+} else if (CODEX_STOP_MODE) {
+  readStdinJSON(function (payload) {
+    // Only intercept planning turns — every other turn-stop must pass through
+    // untouched, and Stop requires valid JSON on stdout when exiting 0.
+    if (payload.permission_mode !== 'plan') { process.stdout.write('{}'); return process.exit(0); }
+    let plan = (payload.last_assistant_message || '').trim();
+    if (!plan && payload.transcript_path) plan = readCodexTranscriptPlan(payload.transcript_path).trim();
+    if (!plan) { process.stdout.write('{}'); return process.exit(0); } // nothing to review
     start(plan, null);
   });
 } else {
   const file = process.argv[2];
-  if (!file || !fs.existsSync(file)) fail('plan file not found — pass a markdown file path, or use --hook.');
+  if (!file || !fs.existsSync(file)) fail('plan file not found — pass a markdown file path, or use --hook / --codex-stop.');
   start(null, file);
 }
