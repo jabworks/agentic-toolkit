@@ -1,7 +1,7 @@
 ---
 name: code-review
-description: 'One-shot code review. Produces a diagnostic report categorized by severity (Critical / Important / Minor). Never fixes issues automatically. Supports PR/MR review, inline comments, and feedback to agent.'
-when_to_use: 'On-request only — never auto-triggers. After /finalize, ask once: "Want a code review before merging?" Trigger phrases: "review this", "review before merge", "check this PR", "review PR", "review MR".'
+description: 'One-shot code review. Produces a diagnostic report categorized by severity (Critical / Important / Minor). Never fixes issues automatically.'
+when_to_use: 'On-request only — never auto-triggers. After /finalize, ask once: "Want a code review before merging?" Trigger phrases: "review this", "review before merge", "check this PR".'
 argument-hint: "<PR URL, diff, branch, or file path>"
 disable-model-invocation: true
 ---
@@ -15,8 +15,6 @@ One review pass. Categorized findings. You decide what to action. No fixing, no 
 ```
 /code-review                    # review current changes
 /code-review <branch or path>   # review specific scope
-/code-review <github-pr-url>    # review a GitHub pull request
-/code-review <gitlab-mr-url>    # review a GitLab merge request
 ```
 
 ## When This Runs
@@ -122,20 +120,10 @@ Do not ask again. Do not auto-trigger. Do not re-review after fixes unless expli
 ```
 ✗ Auto-triggering after finalize without asking
 ✗ Fixing any finding automatically
+✗ Requesting a re-review after fixes
 ✗ Looping: review → fix → re-review → fix → re-review
 ✗ Blocking merge on Minor findings
 ✗ Spawning a reviewer subagent (do the review inline)
-```
-
-## Feedback to Agent
-
-When reviewing PRs or MRs, you can provide structured feedback to the agent:
-
-```markdown
-### Feedback for Agent
-
-- **Line/Section [X]:** [Your comment or suggestion for code change]
-- **Action:** [Fix now / Create follow-up task / Note for later]
 ```
 
 ## After the Report
@@ -146,7 +134,5 @@ The report is yours to action. Common next steps:
 - **Important findings** → create a follow-up task or fix now, your call
 - **Minor findings** → note for later or ignore, your call
 - **Nothing blocking** → merge
-
-When reviewing PRs/MRs, you can also send structured feedback to the agent for revision using the feedback format above.
 
 The agent does not manage this process. You do.

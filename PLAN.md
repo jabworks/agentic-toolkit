@@ -1,43 +1,63 @@
-# Plannonator Skill Set Plan
+# plan-review — Interactive Planning Skill
 
-## Context
+## Goal
 
-The user wants to bring their own **plannonator skill set** (plan review, code review, HTML artifact annotation) to the toolkit repo, not relying on the external `plannotator` repo or binary. This means implementing plan review, code review with feedback loop, and HTML artifact annotation as skills within the toolkit repo, using the existing skill framework (markdown files, scaffold scripts, preview servers, etc.).
+A self-contained, in-house interactive plan-review surface for agentic coding.
+Capture a plan, annotate it in a local browser, send structured feedback back to
+the agent. Inspired by [Plannotator](https://github.com/backnotprop/plannotator)
+as a **design reference** — reimplemented in-house, no third-party runtime
+dependency, because the toolset targets a company with a strict 3rd-party policy.
 
-## Approach
+## Locked scope
 
-1. **Create a `plan-review` skill** in `skills/plan-review/SKILL.md` for annotating plans, specs, and markdown before implementation, and sending feedback to the agent (approve/revisions/deny).
-2. **Enhance the existing `code-review` skill** in `skills/code-review/SKILL.md` to support PR/MR review, commenting on diffs, suggesting code, and sending structured feedback to the agent for revision.
-3. **Create a `html-artifacts` skill** in `skills/html-artifacts/SKILL.md` for annotating rendered HTML artifacts, using the `tech-spec` skill's live HTML preview server (`preview-server.js`) as a base.
-4. **Integrate these skills** into the toolkit's existing workflow (e.g., `condux` bundle, `write-plan`, `technical-spec` skills).
+- **One skill:** `plan-review` (the `html-artifacts` skill is folded in — the HTML
+  surface *is* the rendered plan).
+- **Two capture paths:**
+  - **Auto** — a Claude Code `ExitPlanMode` hook captures the plan and opens the UI.
+  - **Manual** — `/plan-review <markdown-file>` for ad-hoc review.
+- **Feedback loop:** annotate → approve / request-revisions / deny → written to a
+  feedback file the agent reads back → agent revises.
 
-## Files to Modify / Create
+## Hard constraints (company policy)
 
-- `skills/plan-review/SKILL.md` (new)
-- `skills/code-review/SKILL.md` (enhance to support PR/MR review and feedback loop)
-- `skills/html-artifacts/SKILL.md` (new)
-- `skills/plan-review/references/` (new directory for plan review scripts/templates)
-- `skills/html-artifacts/references/` (new directory for HTML artifact scripts/templates)
-- Potentially update `dist/plugins/condux/plugin.json` or `skills/using-condux/SKILL.md` to reference the new skills
+- **No egress.** Server binds `127.0.0.1` only. No CDN, no Google Fonts, no paste
+  / short-link service. Markdown renderer (`marked.min.js`) is **vendored** into
+  the repo; font is a system monospace stack (or inlined). Fully auditable.
+- **No third-party runtime deps.** Node stdlib only for the server (mirrors
+  `technical-spec/preview-server.js`).
 
-## Reuse
+## Out of scope
 
-- `skills/technical-spec/SKILL.md` for live HTML preview workflow and scaffold script patterns (`preview-server.js`, `scaffold.sh`)
-- `skills/write-plan/SKILL.md` for plan presentation and approval workflow
-- `skills/code-review/SKILL.md` (existing) for diagnostic report and severity categorization
-- `references/templates.md` and `references/plan-template.html` from `technical-spec` or `write-plan` for HTML and markdown templates
+Diff / PR / MR review, the standalone `html-artifacts` skill, the sharing/paste
+service, Perforce/Jujutsu, Obsidian/Bear, multi-agent breadth beyond Claude Code
++ Codex.
 
-## Steps
+## Task cards
 
-- [ ] Step 1: Create `skills/plan-review/SKILL.md` with annotation and feedback loop workflow
-- [ ] Step 2: Enhance `skills/code-review/SKILL.md` to support PR/MR review, inline comments, and feedback to agent
-- [ ] Step 3: Create `skills/html-artifacts/SKILL.md` with live HTML preview and annotation support
-- [ ] Step 4: Add reference scripts (like `preview-server.js` and `annotate-server.js`) in the `references/` directories for `plan-review` and `html-artifacts` skills
-- [ ] Step 5: Update `skills/using-condux/SKILL.md` or `dist/plugins/condux/` to include the new skills in the condux bundle or workflow
+1. **Cleanup** — remove `html-artifacts`, revert `code-review` SKILL.md, drop dist
+   orphans. _(done)_
+2. **`references/plan-review-template.html`** — single-file Terminus UI dark theme;
+   annotation UI (section comment, approve/revise/deny, pending list, submit);
+   vendored renderer; `{{PLACEHOLDER}}` tokens.
+3. **Markdown renderer** — hand-rolled ~55-line renderer embedded in the template
+   instead of a vendored `marked.min.js` blob. Smaller, fully readable, more
+   auditable — a better fit for the compliance story than a minified dependency.
+4. **`references/annotate-server.js`** — mirror `technical-spec/preview-server.js`:
+   `'use strict'`, stdlib only, template from `__dirname`, SSE live-reload via
+   `fs.watch`, `listen(0, '127.0.0.1')`; `POST /api/feedback` → `<plan>.feedback.md`.
+5. **Hook folded into the server (`--hook`)** — instead of a separate hook script.
+   Reads the `ExitPlanMode` payload on stdin, blocks until you decide, then returns
+   a synchronous `hookSpecificOutput` decision (Approve→`allow`, Revise/Deny→`deny`
+   with feedback as the reason). One auditable file; plus `settings.json` wiring docs.
+6. **`SKILL.md` rewrite** — honest: two entry paths, feedback loop, no-egress note,
+   hook setup. Drop unimplemented claims.
+7. **Resync + register** — into condux bundle, update README/manifests, version bump.
+8. **Verify** — server smoke tests, hook dry-run, skill loads in Claude Code + Codex.
 
 ## Verification
 
-- Test the `plan-review` skill by proposing a plan and annotating it with feedback
-- Test the enhanced `code-review` skill by reviewing a local diff or PR URL and sending feedback
-- Test the `html-artifacts` skill by generating HTML artifacts and using the live preview with annotation support
-- Verify that the skills integrate with existing `write-plan`, `technical-spec`, and `condux` workflows without conflicts
+- `node --check` on every script; server smoke test (GET template, SSE event on
+  file change, POST feedback → file written).
+- Hook dry-run: feed a sample `ExitPlanMode` payload, confirm plan file + server launch.
+- No-egress audit: `grep` the template for `http(s)://` → zero external hosts.
+- Skill loads via local marketplace install (Claude Code) and `npx skills add` (Codex).
