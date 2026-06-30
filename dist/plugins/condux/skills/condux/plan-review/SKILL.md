@@ -92,7 +92,9 @@ note cross-links the two. The page live-reloads if the plan file changes on disk
   markdown renderer and uses a system monospace font — no CDN, no web fonts, no
   paste/share service. Audit: `grep -rE 'https?://' references/*.html` returns nothing.
 - **No dependencies.** `annotate-server.js` is Node stdlib only.
-- **Auditable.** One ~210-line server, one self-contained HTML file. Read them both.
+- **Auditable.** One stdlib server + one self-contained HTML file. The UI is
+  styled after the **Terminus UI** design system (Button, Badge, Card, Textarea,
+  Popover) — adapted as vanilla CSS tokens + classes, no React, no bundle.
 
 ## Files
 

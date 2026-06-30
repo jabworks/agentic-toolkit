@@ -4,25 +4,32 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>review: {{PLAN_NAME}}</title>
-    <!-- Self-contained: no external fonts, scripts, or styles. Zero network egress. -->
+    <!-- Self-contained: no external fonts, scripts, or styles. Zero network egress.
+         UI components styled after the Terminus UI design system (Button, Badge,
+         Card, Textarea, Popover, Separator) — adapted as vanilla CSS, no React. -->
     <style>
       :root {
-        --background: #111110; --card: #191918; --foreground: #eeeeec;
-        --muted: #222221; --muted-foreground: #b5b3ad; --border: #3b3a37;
-        --primary: #978365; --accent: #2a2a28; --gold-9: #978365;
+        --background: #111110; --card: #191918; --card-foreground: #eeeeec;
+        --popover: #222221; --foreground: #eeeeec;
+        --muted: #222221; --muted-foreground: #b5b3ad; --border: #3b3a37; --input: #3b3a37;
+        --primary: #978365; --primary-foreground: #ffffff; --primary-hover: #a39073;
+        --primary-muted: #24231f; --primary-text: #cbb99f; --ring: #978365; --accent: #2a2a28;
         --success: #71d083; --success-muted: #1b2a1e; --success-border: #2d5736;
         --warning: #ffca16; --warning-muted: #302008; --warning-border: #5c3d05;
         --destructive: #ff977d; --destructive-muted: #391714; --destructive-border: #6e2920;
         --info: #70b8ff; --info-muted: #0d2847; --info-border: #104d87;
         --hl: rgba(255, 202, 22, 0.30); --hl-active: rgba(255, 202, 22, 0.55);
         --outline: rgba(237, 237, 236, 0.08); --subtle: #686560;
+        --radius: 0.5rem; --radius-md: 0.375rem;
         --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Monaco, "Cascadia Code", monospace;
       }
       @media (prefers-color-scheme: light) {
         :root {
-          --background: #fdfdfc; --card: #f9f9f8; --foreground: #21201c;
-          --muted: #f1f0ef; --muted-foreground: #63635e; --border: #dad9d6;
-          --accent: #e9e8e6;
+          --background: #fdfdfc; --card: #f9f9f8; --card-foreground: #21201c;
+          --popover: #ffffff; --foreground: #21201c;
+          --muted: #f1f0ef; --muted-foreground: #63635e; --border: #dad9d6; --input: #dad9d6;
+          --primary: #978365; --primary-foreground: #ffffff; --primary-hover: #8c7a5e;
+          --primary-muted: #f2f0e7; --primary-text: #71624b; --ring: #978365; --accent: #e9e8e6;
           --success: #2a7e3b; --success-muted: #e9f6e9; --success-border: #b2ddb5;
           --warning: #ab6400; --warning-muted: #fff7c2; --warning-border: #f3d673;
           --destructive: #d13415; --destructive-muted: #feebe7; --destructive-border: #fdbdaf;
@@ -34,10 +41,37 @@
       * { box-sizing: border-box; }
       html, body { height: 100%; }
       body { margin: 0; background: var(--background); color: var(--foreground); font: 13px/1.6 var(--mono); font-variant-numeric: tabular-nums; }
-      .app { display: grid; grid-template-columns: 248px minmax(0, 1fr) 360px; height: 100vh; }
+      .app { display: grid; grid-template-columns: 248px minmax(0, 1fr) 372px; height: 100vh; }
       ::-webkit-scrollbar { width: 9px; height: 9px; }
       ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 9999px; border: 2px solid transparent; background-clip: padding-box; }
       ::-webkit-scrollbar-track { background: transparent; }
+
+      /* ---- Terminus: Button ---- */
+      .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;
+        font: 500 13px var(--mono); border-radius: var(--radius-md); padding: 8px 14px; border: 1px solid transparent;
+        background: transparent; color: var(--foreground); cursor: pointer; transition: background-color .12s, border-color .12s, color .12s; }
+      .btn:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--background), 0 0 0 4px color-mix(in oklch, var(--ring) 45%, transparent); }
+      .btn:disabled { pointer-events: none; opacity: .4; }
+      .btn-sm { padding: 6px 10px; font-size: 12px; }
+      .btn-block { width: 100%; }
+      .btn-solid { background: var(--primary); color: var(--primary-foreground); border-color: var(--primary); }
+      .btn-solid:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
+      .btn-soft { background: var(--primary-muted); color: var(--primary-text); }
+      .btn-soft:hover { background: var(--accent); }
+      .btn-surface { background: var(--card); border-color: var(--border); color: var(--foreground); }
+      .btn-surface:hover { border-color: var(--primary); }
+      .btn-outline { background: transparent; border-color: var(--border); color: var(--foreground); }
+      .btn-outline:hover { background: var(--accent); border-color: var(--border); }
+      .btn-ghost { background: transparent; color: var(--muted-foreground); }
+      .btn-ghost:hover { background: var(--accent); color: var(--foreground); }
+      .btn-danger { background: var(--destructive-muted); color: var(--destructive); border-color: var(--destructive-border); }
+      .btn-danger:hover { background: color-mix(in oklch, var(--destructive-muted) 70%, var(--destructive)); }
+
+      /* ---- Terminus: Badge ---- */
+      .badge { display: inline-flex; align-items: center; gap: 4px; border-radius: 9999px; border: 1px solid transparent;
+        font: 500 11px var(--mono); padding: 1px 7px; min-width: 20px; justify-content: center; }
+      .badge-warning { background: var(--warning-muted); color: var(--warning); border-color: var(--warning-border); }
+      .badge-soft { background: var(--primary-muted); color: var(--primary-text); }
 
       /* Left: navigation */
       .nav { border-right: 1px solid var(--border); background: var(--card); overflow-y: auto; padding: 18px 14px 40px; }
@@ -47,7 +81,6 @@
       .nav a:hover { background: var(--accent); color: var(--foreground); }
       .nav a.active { color: var(--foreground); border-left-color: var(--primary); background: var(--accent); }
       .nav a.lvl2 { padding-left: 16px; } .nav a.lvl3 { padding-left: 28px; font-size: 12px; color: var(--subtle); }
-      .nav .badge { background: var(--warning-muted); color: var(--warning); border: 1px solid var(--warning-border); border-radius: 999px; font-size: 10px; padding: 0 6px; min-width: 18px; text-align: center; }
 
       /* Center: plan */
       .main { overflow-y: auto; padding: 28px 44px 120px; position: relative; }
@@ -59,7 +92,7 @@
       ul, ol { margin: 0.6em 0; padding-left: 22px; } li { margin: 0.25em 0; }
       a { color: var(--info); }
       code { background: var(--muted); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; font-size: 12px; }
-      pre { background: var(--muted); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; overflow-x: auto; }
+      pre { background: var(--muted); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; overflow-x: auto; }
       pre code { background: none; border: none; padding: 0; }
       blockquote { margin: 0.6em 0; padding: 2px 14px; color: var(--muted-foreground); border-left: 3px solid var(--primary); }
       hr { border: none; border-top: 1px solid var(--border); margin: 1.6em 0; }
@@ -67,42 +100,41 @@
       mark.hl { background: var(--hl); color: inherit; border-radius: 2px; cursor: pointer; padding: 0 1px; }
       mark.hl.active { background: var(--hl-active); box-shadow: 0 0 0 1px var(--warning-border); }
 
-      /* Floating "comment" button on selection */
-      .sel-btn { position: absolute; z-index: 30; display: none; gap: 6px; align-items: center; background: var(--card); color: var(--foreground); border: 1px solid var(--primary); border-radius: 999px; box-shadow: 0 4px 14px rgba(0,0,0,0.3); padding: 5px 11px; font: 12px var(--mono); cursor: pointer; }
-      /* Inline comment popover anchored at the selection */
-      .popover { position: absolute; z-index: 31; display: none; width: 320px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.35); padding: 12px; }
+      /* Floating "comment" button (Button surface) + comment Popover */
+      .sel-btn { position: absolute; z-index: 30; display: none; border-radius: 9999px; box-shadow: 0 4px 14px rgba(0,0,0,0.3); }
+      .popover { position: absolute; z-index: 31; display: none; width: 324px; background: var(--popover); border: 1px solid var(--border);
+        border-radius: var(--radius); box-shadow: 0 12px 32px rgba(0,0,0,0.4); padding: 12px; }
       .popover .q { color: var(--warning); font-size: 11px; max-height: 48px; overflow: auto; border-left: 2px solid var(--warning); padding: 2px 8px; margin-bottom: 8px; }
-      .popover textarea { width: 100%; min-height: 60px; resize: vertical; font: 13px/1.5 var(--mono); color: var(--foreground); background: var(--muted); border: 1px solid var(--border); border-radius: 7px; padding: 8px; }
-      .popover textarea:focus { outline: none; border-color: var(--primary); }
       .popover .row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; align-items: center; }
       .popover .hintk { color: var(--subtle); font-size: 11px; margin-right: auto; }
 
-      /* Right: annotations + chat + decision */
+      /* ---- Terminus: Textarea ---- */
+      .ta { width: 100%; resize: vertical; font: 13px/1.5 var(--mono); color: var(--foreground); background: transparent;
+        border: 1px solid var(--input); border-radius: var(--radius-md); padding: 8px 10px; }
+      .ta::placeholder { color: var(--subtle); }
+      .ta:focus-visible { outline: none; border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 28%, transparent); }
+      .popover .ta { min-height: 60px; } .composer .ta { min-height: 52px; }
+
+      /* Right: annotations (Cards) + composer + decisions */
       .chat { border-left: 1px solid var(--border); background: var(--card); display: flex; flex-direction: column; }
-      .chat .label { padding: 16px 16px 0; margin-bottom: 8px; }
+      .chat .label { padding: 16px 16px 0; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
       .thread { flex: 1; overflow-y: auto; padding: 6px 14px; display: flex; flex-direction: column; gap: 8px; }
       .thread .empty { color: var(--subtle); padding: 8px 4px; }
-      .msg { border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; background: var(--muted); cursor: default; }
-      .msg.note { border-color: var(--warning-border); background: var(--warning-muted); cursor: pointer; }
+      /* Terminus: Card */
+      .msg { border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; background: var(--card); box-shadow: 0 1px 2px rgba(0,0,0,0.16); cursor: default; }
+      .msg.note { border-color: var(--warning-border); cursor: pointer; }
       .msg.note.active { box-shadow: 0 0 0 2px var(--warning); }
-      .msg .meta { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 3px; align-items: center; }
-      .msg .who { color: var(--primary); font-size: 11px; } .msg.note .who { color: var(--warning); }
+      .msg .meta { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 4px; align-items: center; }
+      .msg .who { color: var(--muted-foreground); font-size: 11px; letter-spacing: .03em; } .msg.note .who { color: var(--warning); }
       .msg .del { cursor: pointer; border: none; background: none; color: var(--subtle); font-size: 11px; padding: 0 2px; } .msg .del:hover { color: var(--destructive); }
-      .msg .quote { color: var(--muted-foreground); font-size: 11px; border-left: 2px solid var(--warning); padding: 1px 8px; margin-bottom: 4px; max-height: 42px; overflow: hidden; }
-      .msg .body { white-space: pre-wrap; word-break: break-word; }
+      .msg .quote { color: var(--muted-foreground); font-size: 11px; border-left: 2px solid var(--warning); padding: 1px 8px; margin-bottom: 5px; max-height: 42px; overflow: hidden; }
+      .msg .body { white-space: pre-wrap; word-break: break-word; color: var(--card-foreground); }
 
-      .composer { border-top: 1px solid var(--border); padding: 10px 14px; }
-      .composer textarea { width: 100%; resize: vertical; min-height: 52px; font: 13px/1.5 var(--mono); color: var(--foreground); background: var(--muted); border: 1px solid var(--border); border-radius: 7px; padding: 8px 10px; }
-      .composer textarea:focus { outline: none; border-color: var(--primary); }
-      .composer .send { margin-top: 7px; width: 100%; }
+      /* Terminus: Separator + composer */
+      .composer { border-top: 1px solid var(--border); padding: 12px 14px; }
+      .composer .send { margin-top: 8px; }
       .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 14px 14px; }
       .actions .approve-wrap { grid-column: 1 / -1; }
-      button { font-family: var(--mono); font-size: 12px; cursor: pointer; border-radius: 7px; padding: 9px 12px; border: 1px solid var(--border); background: var(--muted); color: var(--foreground); }
-      button:hover { border-color: var(--primary); }
-      button.approve { width: 100%; background: var(--success-muted); border-color: var(--success-border); color: var(--success); }
-      button.revise { background: var(--warning-muted); border-color: var(--warning-border); color: var(--warning); }
-      button.deny { background: var(--destructive-muted); border-color: var(--destructive-border); color: var(--destructive); }
-      button.primary { background: var(--primary); color: #fff; border-color: var(--primary); }
       #status { padding: 0 16px 16px; color: var(--success); min-height: 16px; font-size: 12px; }
       .count { color: var(--subtle); font-size: 11px; }
     </style>
@@ -114,12 +146,13 @@
       <main class="main">
         <p class="hint">Select any text to comment on it. Or chat with the agent on the right. Then decide.</p>
         <div class="doc" id="plan">Loading plan…</div>
-        <div class="sel-btn" id="selbtn">💬 Comment</div>
+        <button class="sel-btn btn btn-surface btn-sm" id="selbtn">💬 Comment</button>
         <div class="popover" id="popover">
           <div class="q" id="pop-quote"></div>
-          <textarea id="pop-text" placeholder="Your note on this selection…"></textarea>
+          <textarea class="ta" id="pop-text" placeholder="Your note on this selection…"></textarea>
           <div class="row"><span class="hintk">⌘↵ to save</span>
-            <button id="pop-cancel">Cancel</button><button class="primary" id="pop-save">Save</button></div>
+            <button class="btn btn-ghost btn-sm" id="pop-cancel">Cancel</button>
+            <button class="btn btn-solid btn-sm" id="pop-save">Save</button></div>
         </div>
       </main>
 
@@ -127,13 +160,13 @@
         <p class="label">Review <span class="count" id="count"></span></p>
         <div class="thread" id="thread"><div class="empty">No notes yet. Select text to comment, or send a message.</div></div>
         <div class="composer">
-          <textarea id="input" placeholder="Message the agent about this plan…"></textarea>
-          <button class="send" id="send">Send message</button>
+          <textarea class="ta" id="input" placeholder="Message the agent about this plan…"></textarea>
+          <button class="btn btn-soft btn-block send" id="send">Send message</button>
         </div>
         <div class="actions">
-          <div class="approve-wrap"><button class="approve" data-decision="Approve">Approve &amp; proceed</button></div>
-          <button class="revise" data-decision="Request Revisions">Request revisions</button>
-          <button class="deny" data-decision="Deny">Deny</button>
+          <div class="approve-wrap"><button class="btn btn-solid btn-block" data-decision="Approve">Approve &amp; proceed</button></div>
+          <button class="btn btn-outline" data-decision="Request Revisions">Request revisions</button>
+          <button class="btn btn-danger" data-decision="Deny">Deny</button>
         </div>
         <div id="status"></div>
       </aside>
@@ -162,8 +195,7 @@
       }
 
       // ---- State ----
-      const annotations = []; // { id, kind:'note'|'chat', quote, text, section }
-      let nextId = 1;
+      const annotations = []; let nextId = 1;
       const planEl=document.getElementById('plan');
       const tocEl=document.getElementById('toc');
       const selBtn=document.getElementById('selbtn');
@@ -171,8 +203,6 @@
       const popQuote=document.getElementById('pop-quote');
       const popText=document.getElementById('pop-text');
       let pendingRange=null, pendingQuote='', pendingSection='';
-
-      function shortHeading(t){return t.length>44?t.slice(0,44)+'…':t;}
 
       function renderPlan(md){
         planEl.innerHTML=''; tocEl.innerHTML='';
@@ -182,7 +212,7 @@
           if(b.heading){ section='blk-'+idx;
             const a=document.createElement('a'); a.href='#blk-'+idx; a.className='lvl'+b.heading.level; a.dataset.target='blk-'+idx; a.dataset.section='blk-'+idx;
             const t=document.createElement('span'); t.className='t'; t.textContent=b.heading.text; a.appendChild(t);
-            const bd=document.createElement('span'); bd.className='badge'; bd.style.display='none'; bd.dataset.for='blk-'+idx; a.appendChild(bd);
+            const bd=document.createElement('span'); bd.className='badge badge-warning'; bd.style.display='none'; bd.dataset.for='blk-'+idx; a.appendChild(bd);
             a.onclick=function(e){e.preventDefault();document.getElementById('blk-'+idx).scrollIntoView({behavior:'smooth',block:'start'});};
             tocEl.appendChild(a);
           }
@@ -199,9 +229,9 @@
         if(!sel.rangeCount||sel.isCollapsed){ if(!pop.contains(document.activeElement)) selBtn.style.display='none'; return; }
         const r=sel.getRangeAt(0);
         if(!planEl.contains(r.commonAncestorContainer)||!sel.toString().trim()){ selBtn.style.display='none'; return; }
-        const rect=r.getBoundingClientRect(); const host=document.querySelector('.main').getBoundingClientRect();
-        selBtn.style.left=(r.endContainer&&rect.right-host.left+document.querySelector('.main').scrollLeft)+'px';
-        selBtn.style.top=(rect.bottom-host.top+document.querySelector('.main').scrollTop+8)+'px';
+        const rect=r.getBoundingClientRect(); const main=document.querySelector('.main'); const host=main.getBoundingClientRect();
+        selBtn.style.left=(rect.right-host.left+main.scrollLeft)+'px';
+        selBtn.style.top=(rect.bottom-host.top+main.scrollTop+8)+'px';
         selBtn.style.display='inline-flex';
       });
 
@@ -211,15 +241,13 @@
         pendingRange=sel.getRangeAt(0).cloneRange();
         pendingQuote=sel.toString().trim();
         const blk=blockOf(pendingRange.startContainer); pendingSection=blk?blk.dataset.section:'(top)';
-        const rect=pendingRange.getBoundingClientRect(); const host=document.querySelector('.main').getBoundingClientRect(); const main=document.querySelector('.main');
-        popQuote.textContent='“'+pendingQuote+'”';
-        popText.value='';
-        pop.style.left=Math.min(rect.left-host.left+main.scrollLeft, main.scrollWidth-340)+'px';
+        const rect=pendingRange.getBoundingClientRect(); const main=document.querySelector('.main'); const host=main.getBoundingClientRect();
+        popQuote.textContent='“'+pendingQuote+'”'; popText.value='';
+        pop.style.left=Math.min(rect.left-host.left+main.scrollLeft, main.scrollWidth-344)+'px';
         pop.style.top=(rect.bottom-host.top+main.scrollTop+10)+'px';
         selBtn.style.display='none'; pop.style.display='block'; popText.focus();
       };
 
-      // Wrap every text node intersecting a range in <mark data-aid>.
       function highlight(range, aid){
         const root=range.commonAncestorContainer; const base=root.nodeType===3?root.parentNode:root;
         const walker=document.createTreeWalker(base,NodeFilter.SHOW_TEXT,null); const nodes=[]; let n;
@@ -253,7 +281,6 @@
       popText.addEventListener('keydown',function(e){ if((e.metaKey||e.ctrlKey)&&e.key==='Enter')saveNote(); if(e.key==='Escape')closePop(); });
       document.addEventListener('mousedown',function(e){ if(!pop.contains(e.target)&&e.target!==selBtn&&pop.style.display==='block') closePop(); });
 
-      // Click a highlight -> focus its note in the rail
       planEl.addEventListener('click',function(e){
         const m=e.target.closest&&e.target.closest('mark.hl'); if(!m) return;
         focusNote(m.dataset.aid,true);
@@ -264,11 +291,9 @@
         if(scroll){const el=document.querySelector('.msg.note[data-aid="'+aid+'"]'); if(el)el.scrollIntoView({block:'nearest'});}
       }
 
-      // ---- Chat ----
       function sendChat(){ const ta=document.getElementById('input'); const text=ta.value.trim(); if(!text)return;
         annotations.push({id:nextId++,kind:'chat',quote:'',text:text,section:''}); ta.value=''; paint(); }
 
-      // ---- Right rail + badges ----
       function paint(){
         const box=document.getElementById('thread'); box.innerHTML='';
         document.getElementById('count').textContent=annotations.length?'('+annotations.length+')':'';
@@ -289,10 +314,9 @@
       }
       function updateBadges(){
         const counts={}; annotations.forEach(function(a){ if(a.kind==='note'&&a.section){counts[a.section]=(counts[a.section]||0)+1;} });
-        document.querySelectorAll('.nav .badge').forEach(function(b){ const c=counts[b.dataset.for]||0; b.textContent=c; b.style.display=c?'inline-block':'none'; });
+        document.querySelectorAll('.nav .badge').forEach(function(b){ const c=counts[b.dataset.for]||0; b.textContent=c; b.style.display=c?'inline-flex':'none'; });
       }
 
-      // Scroll-spy
       let spy;
       function observeHeadings(){ if(spy)spy.disconnect();
         spy=new IntersectionObserver(function(es){es.forEach(function(en){ if(en.isIntersecting){document.querySelectorAll('#toc a').forEach(function(a){a.classList.toggle('active',a.dataset.target===en.target.id);});} });},{root:document.querySelector('.main'),rootMargin:'0px 0px -75% 0px',threshold:0});
