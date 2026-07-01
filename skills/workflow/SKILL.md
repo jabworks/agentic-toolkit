@@ -147,11 +147,13 @@ chooses **Done**.
 
 > "Plan is ready. What next?"
 
+Plan review already happened (or was declined) as part of `write-plan`'s own save step — this menu doesn't re-offer it.
+
 | Option | What it does |
 | --- | --- |
 | **Start implementing** *(recommended)* | Implement the plan top-to-bottom yourself |
-| **Spawn specialist agents** | Load `subagent-driven-development`; deploy explorer/researcher/coder for parallel exploration or a large plan |
-| **Review the plan in the browser** | Load `plan-review`; annotate the plan inline before any code |
+| **Spawn specialist agents** | Load `subagent-driven-development`; execute the plan task-by-task with named specialist agents |
+| **Dispatch independent tasks in parallel** | Load `subagent-deployment`; fan out N independent tasks across named agents at once |
 | **Revise the plan** | Loop back to `write-plan` with the new direction |
 
 ### CP-2 — Implementation done

@@ -18,6 +18,12 @@ Turn a rough idea into a clear, agreed-upon design. Nothing gets planned or buil
 
 ## How It Works
 
+Before Step 1, check for an existing design: glob `docs/plans/*<slug>*-design.md`
+and `specs/<slug>/` (slug = kebab-case of the feature name). If either
+exists, offer: "Found an existing design for this feature at `<path>` —
+resume from there, or start a fresh brainstorm?" Accept either answer, same
+as any other soft gate in this skill.
+
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │                        BRAINSTORM                               │

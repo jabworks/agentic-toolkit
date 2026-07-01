@@ -28,6 +28,7 @@ Lean agentic workflow plugin (`condux`). Install all 11 skills as a unit:
 | [/write-plan](./skills/write-plan/) | Lean task-card plan (what/why/gotchas/deps), Markdown or HTML, LARGE tasks only |
 | [/test-driven-development](./skills/test-driven-development/) | Opt-in TDD — asks before writing tests, running tests, or updating specs |
 | [/subagent-driven-development](./skills/subagent-driven-development/) | Named specialist agents for LARGE plans, only when justified, never to fill time |
+| [/subagent-deployment](./skills/subagent-deployment/) | Fan out independent tasks across named agents in one message — ad-hoc, not a formal plan |
 | [/finalize](./skills/finalize/) | End-of-task quality gate — typecheck → lint → format → test, once, stop on first failure |
 | [/code-review](./skills/code-review/) | On-request diagnostic report (Critical/Important/Minor), never auto-triggers, never fixes |
 | [/verification](./skills/verification/) | "Am I actually done?" checklist before finalize — catches skipped steps and regressions |

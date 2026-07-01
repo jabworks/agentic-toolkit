@@ -62,6 +62,7 @@ Load each only when its step is reached.
 | `write-plan`   | LARGE tasks, after brainstorm sign-off                              | **soft gate** — needs a signed-off design  |
 | `test-driven-development` | Opt-in only — user asks for TDD or input/output logic    | ask before writing/running/editing tests   |
 | `subagent-driven-development` | LARGE plan where agent specialization/parallelism pays off | default is to implement yourself      |
+| `subagent-deployment` | 2+ independent tasks (any agent mix), no shared files/deps | ad-hoc, not tied to a formal plan |
 | `verification` | End of every tier, before finalize — the "am I actually done?" check | automatic                                  |
 | `finalize`     | After all implementation — typecheck → lint → format → tests        | automatic, run once, stop on first failure |
 | `code-review`  | On request only — "review this", or after finalize if user says yes | never auto-triggers                        |

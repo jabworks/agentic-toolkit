@@ -18,8 +18,12 @@ Turn a signed-off design into a clear, executable plan. Lean task cards, not mic
 
 ## Before Writing
 
-1. Confirm brainstorm has run and design is signed off.
-   If not: "We haven't aligned on the design yet — run /brainstorm first, or confirm you want to skip it."
+1. Confirm brainstorm has run and design is signed off. First glob
+   `docs/plans/*<slug>*-design.md` and `specs/<slug>/` (slug = kebab-case
+   of the feature name) for an existing signed-off design — if found,
+   treat this check as satisfied without asking. Otherwise ask: "We
+   haven't aligned on the design yet — run /brainstorm first, or confirm
+   you want to skip it."
 2. Ask the user: **"Markdown, HTML, or both?"**
    - Markdown → optimized for AI agent consumption during execution
    - HTML → optimized for human reading in browser, static, never modified after creation
@@ -123,6 +127,38 @@ HTML is generated once, never modified after creation. Checkboxes in the HTML ar
 | HTML     | `docs/plans/YYYY-MM-DD-<feature>.html` |
 
 Check `AGENTS.md` for project-specific overrides.
+
+## After Saving
+
+Once the plan file is saved, always ask — regardless of whether this
+skill was invoked via `/workflow` or standalone:
+
+> "Plan saved to `<path>`. Want to review it in the browser before
+> implementing, or go straight to implementation?"
+
+Accept either answer, same as any other soft gate in this skill.
+
+**If review chosen:** locate `annotate-server.js` from the installed
+`plan-review` skill (`find ~/.claude ~/.codex ~/.agents -name
+annotate-server.js -path '*plan-review*' 2>/dev/null | head -1`) and
+launch it in `--steer` mode against the saved plan file:
+```bash
+node /path/to/plan-review/references/annotate-server.js docs/plans/<file>.md --steer
+```
+Poll `GET http://127.0.0.1:7777/api/decision` (long-poll — blocks until a
+decision is submitted) and branch on the result:
+- **Approve** → proceed to implementation, using any feedback as notes.
+- **Request Revisions** → revise the plan file in place per the feedback
+  (the open browser tab live-reloads over SSE), then poll again.
+- **Deny** → stop; report the feedback and rework the approach before
+  re-planning.
+
+**If straight to implementation chosen:** proceed directly, no server
+launch.
+
+This applies to the plan doc this skill produces (LARGE tier). It does
+not apply to `/workflow`'s MEDIUM-tier inline quick-plan, which isn't
+written via this skill.
 
 ## Plan Failures — Never Write These
 

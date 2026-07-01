@@ -4,11 +4,30 @@ Reference for deciding when and which agent to spawn. Read this before every spa
 
 ## Agent Cost Tiers
 
-| Tier          | Examples                  | When to Use                                                                                 |
-| ------------- | ------------------------- | ------------------------------------------------------------------------------------------- |
-| **FREE**      | —                         | Built-in tool calls (bash, grep, file reads) — do these yourself, no agent needed           |
-| **CHEAP**     | `explorer`, `researcher`  | Read-only, narrow scope, clear output. Good for lookup tasks that would bloat your context  |
-| **EXPENSIVE** | `coder`, `planner`        | Write-capable or high-context output. Justify carefully                                     |
+| Tier          | Examples                  | Model                                  | When to Use                                                                                 |
+| ------------- | ------------------------- | ----------------------------------------- | --------------------------------------------------------------------------------------------- |
+| **FREE**      | —                         | n/a                                        | Built-in tool calls (bash, grep, file reads) — do these yourself, no agent needed           |
+| **CHEAP**     | `explorer`, `researcher`  | haiku                                      | Read-only, narrow scope, clear output. Good for lookup tasks that would bloat your context  |
+| **EXPENSIVE** | `coder`, `planner`        | sonnet (default) — see Model Selection     | Write-capable or high-context output. Justify carefully                                     |
+
+### Model Selection for `coder` Dispatch
+
+`coder`'s baseline model is sonnet. Override per-dispatch based on task
+complexity — always pass the model explicitly; an omitted model silently
+inherits the session's own model, which is often the most capable and most
+expensive tier.
+
+| Task complexity                                                     | Model  |
+| --------------------------------------------------------------------- | ------ |
+| Mechanical, 1-2 files, complete spec/code already in the task brief    | haiku  |
+| Multi-file integration, pattern-matching, moderate judgment            | sonnet |
+| Architecture-level judgment; the final whole-branch review            | opus   |
+
+Turn count costs more than token price on multi-step work — the cheapest
+tier routinely takes more turns to reach the same result, which can cost
+more overall. Use sonnet as the floor for reviewers and for implementers
+working from prose descriptions; reserve haiku for tasks whose brief
+already contains the exact code to write.
 
 ## Agent Capability Boundaries
 
@@ -24,6 +43,11 @@ Reference for deciding when and which agent to spawn. Read this before every spa
 ## Spawn Decision Tree
 
 ```
+Do I have 2+ independent tasks to handle right now (any agent mix)?
+│   YES → See subagent-deployment — check its safety checklist,
+│         dispatch the cleared ones together in one message.
+│   NO  → continue below for the single task in front of you
+│
 Do I need to do something?
 │
 ├─ Can I do it with a tool call (bash, grep, read)?
@@ -50,17 +74,8 @@ Do I need to do something?
 
 ## Parallel Safety Checklist
 
-Before spawning two agents simultaneously:
-
-```
-□ Task A and Task B write to different files
-□ Task A does not depend on Task B's output (and vice versa)
-□ No active coder agent is running
-□ Both tasks have clear, independent scope
-□ You can integrate both outputs without conflicts
-```
-
-If any box is unchecked → run sequentially, not in parallel.
+See `subagent-deployment/references/safety-checklist.md` — the one
+place this logic lives. Do not restate it here.
 
 ## Common Mistakes
 

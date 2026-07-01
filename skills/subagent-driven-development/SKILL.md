@@ -28,7 +28,36 @@ Before spawning any agent, answer:
 
 If you can't answer all four, don't spawn.
 
+## Progress Ledger
+
+Conversation memory does not survive compaction. Track task completion in a
+ledger file, not only in todos.
+
+- At skill start, check for a ledger: `.condux/progress/<feature-slug>.md`
+  (slug inferred kebab-case from the plan's feature name — the same
+  convention `write-plan` uses for its own filename). Tasks listed there as
+  complete are DONE — do not re-dispatch them; resume at the first task not
+  marked complete.
+- If no ledger exists, create it with a header naming the plan file:
+  ```
+  # SDD Progress: <feature-slug>
+
+  Plan: docs/plans/<plan-file>.md
+
+  ```
+- When a task's review comes back clean, append one line in the same
+  message as other bookkeeping: `- [x] Task N: <name> — commits
+  <base7>..<head7>, review clean`.
+- The ledger is a recovery aid, not the source of truth — the commits it
+  names exist in git even if context no longer remembers creating them.
+  After compaction or a new session, trust the ledger and `git log` over
+  your own recollection.
+- `.condux/` is gitignored scratch. If it's ever deleted, recover progress
+  from `git log` against the plan's task list.
+
 ## How It Works
+
+Before Step 1, check the **Progress Ledger** (above) for already-completed tasks and resume there if any exist.
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
@@ -36,7 +65,7 @@ If you can't answer all four, don't spawn.
 ├──────────────────────────────────────────────────────────────────┤
 │  Step 1: READ THE PLAN                                          │
 │  Load the plan file. Map out task dependencies.                 │
-│  Identify which tasks can run in parallel (no shared deps).     │
+│  Identify which tasks are unblocked (all dependencies complete).│
 │                                                                  │
 │  Step 2: FOR EACH TASK                                          │
 │  Ask: can I implement this myself?                              │
@@ -44,15 +73,15 @@ If you can't answer all four, don't spawn.
 │    NO  → consult spawn-rules.md, pick the right agent,         │
 │           construct the delegation prompt, spawn                │
 │                                                                  │
-│  Step 3: PARALLEL ONLY WHEN INDEPENDENT                        │
-│  Tasks are parallel-safe if:                                    │
-│    - They share no file writes                                  │
-│    - Neither depends on the other's output                      │
-│    - They won't conflict on the same codebase state            │
+│  Step 3: GROUP INTO A WAVE                                      │
+│  Among this round's unblocked tasks needing an agent, check     │
+│  references/safety-checklist.md (subagent-deployment skill);    │
+│  tasks that clear it form one wave.                             │
 │                                                                  │
-│  Step 4: NO SPAWNING WHILE CODE WORKER IS ACTIVE               │
-│  Do not spawn explore, research, or review agents while         │
-│  a coder agent is still working. Wait for it to complete.      │
+│  Step 4: DISPATCH THE WAVE                                      │
+│  Checklist-cleared tasks get dispatched together in one message;│
+│  otherwise dispatch one at a time. Either way, don't mix in     │
+│  unrelated off-plan work until the current wave finishes.       │
 │                                                                  │
 │  Step 5: RETRIEVE AND INTEGRATE                                 │
 │  Read agent output. Integrate into the codebase.               │
@@ -61,21 +90,22 @@ If you can't answer all four, don't spawn.
 └──────────────────────────────────────────────────────────────────┘
 ```
 
+Step 5's "mark task complete" also means appending the ledger line described in **Progress Ledger** — do this in the same message as marking the todo complete.
+
 ## Parallel Spawning Rules
 
-```
-✓ Spawn parallel when:
-  - Tasks are genuinely independent (no shared file writes, no deps)
-  - Each task has a clear justification for being a separate agent
-  - Example: "explore auth patterns" + "research date library options"
-    can run simultaneously — both read-only, no shared state
+For the full safety checklist (which combinations are safe, why, and how
+to construct the batch), see
+`subagent-deployment/references/safety-checklist.md` — the one place
+this logic lives. Do not restate it here.
 
-✗ Do NOT spawn parallel when:
-  - A code worker (coder) is still active
-  - Tasks write to the same files
-  - One task needs the output of another
-  - You'd be spawning just to "fill time" while waiting
-```
+## Model Selection
+
+Before dispatching any `coder` subagent, choose its model explicitly based
+on task complexity — see `references/spawn-rules.md` → Model Selection for
+the tiering table. Never omit the model on a dispatch call; an omitted
+model inherits the session's own model, which defeats the point of
+tiering.
 
 ## Delegation Prompt Quality
 
@@ -96,6 +126,26 @@ Bad delegation prompt:
   ✗ No constraints
 ```
 
+## File Handoffs
+
+Pasted plan content and diffs stay resident in context for the rest of the
+session and get re-read on every later turn. Hand them over as files
+instead:
+
+- **Task brief:** before dispatching an implementer, run
+  `references/task-brief.sh <plan-file> <task-number>` — it extracts the
+  task's full text to a scratch file and prints the path. Reference that
+  path in the dispatch prompt ("read this first — it is your
+  requirements"), plus any interfaces/decisions from earlier tasks the
+  brief can't know.
+- **Review package:** record the commit SHA before dispatching the
+  implementer (this is BASE — never `HEAD~1`, which silently drops all
+  but the last commit of a multi-commit task). After the implementer
+  reports DONE, run `references/review-package.sh <BASE> <HEAD>` and pass
+  the printed path to the task reviewer instead of pasting the diff.
+- For the final whole-branch review, BASE is the branch's merge-base with
+  its parent (e.g. `git merge-base main HEAD`), not the per-task BASE.
+
 ## Non-Blocking Research Pattern
 
 For research/exploration tasks, prefer non-blocking delegation:
@@ -109,3 +159,4 @@ Don't block the main session waiting for research that isn't on the critical pat
 ## See Also
 
 - `references/spawn-rules.md` — agent cost tiers, capability boundaries, decision tree
+- `references/task-brief.sh`, `references/review-package.sh` — file-handoff scripts (see File Handoffs above)

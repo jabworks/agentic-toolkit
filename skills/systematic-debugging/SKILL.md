@@ -78,3 +78,6 @@ Run in order. Don't skip ahead.
 - **Phase 4 + /tdd active**: write a failing test before the fix
 - **After fixing**: run `/verification` to confirm nothing regressed
 - **Bug reveals architectural issue**: escalate to `/brainstorm` before patching further
+- **Multiple unrelated failures**: if 2+ failures are independent (different
+  files, no shared cause), use `subagent-deployment` to fix them
+  concurrently instead of one at a time

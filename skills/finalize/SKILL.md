@@ -18,7 +18,7 @@ One quality gate at the end. Typecheck → lint → format → test. In that ord
 
 ## Before Running
 
-Check `AGENTS.md` for the project's finalize commands. If `AGENTS.md` defines a `finalize` script or step sequence, use that. Otherwise fall back to reading `package.json` scripts and infer the right commands.
+Check `AGENTS.md` for the project's finalize commands. If `AGENTS.md` defines a `finalize` script or step sequence, use that. Otherwise fall back to reading `package.json` scripts and infer the right commands. If no `docs/plans/*<slug>*.md` exists for the inferred feature slug, note it in the output below — don't block. This is informational only, surfacing when a task ran without going through `/workflow` or `/write-plan`, not a gate.
 
 ## How It Works
 
@@ -78,6 +78,8 @@ Tests fail
 
 ## Output Format
 
+The `Plan` line below only appears when no matching plan doc was found for the inferred feature slug — it's omitted entirely otherwise.
+
 ```
 ## Finalize: [task or feature name]
 
@@ -85,6 +87,7 @@ Typecheck  ✓ clean
 Lint       ✓ clean  (2 warnings — not blocking)
 Format     ✓ 2 files auto-fixed (Button.tsx, invoice.router.ts)
 Tests      ✓ 18 passed, 0 failed
+Plan       (none found for this task — treating as standalone scope)
 
 Ready to commit.
 ```
