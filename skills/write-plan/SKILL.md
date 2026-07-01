@@ -1,6 +1,6 @@
 ---
 name: write-plan
-description: Turns a signed-off design into an executable plan of lean task cards (what, why, gotchas, dependencies). Asks for Markdown, HTML, or both output.
+description: Turns a signed-off design into an executable plan of lean task cards (what, why, gotchas, dependencies). Writes Markdown; review in the browser via plan-review.
 when_to_use: Run for LARGE tasks after /brainstorm sign-off. Never writes a plan without a signed-off design — if brainstorm hasn't run, apply the soft gate first.
 argument-hint: "<feature name or design summary>"
 effort: high
@@ -24,10 +24,10 @@ Turn a signed-off design into a clear, executable plan. Lean task cards, not mic
    treat this check as satisfied without asking. Otherwise ask: "We
    haven't aligned on the design yet — run /brainstorm first, or confirm
    you want to skip it."
-2. Ask the user: **"Markdown, HTML, or both?"**
-   - Markdown → optimized for AI agent consumption during execution
-   - HTML → optimized for human reading in browser, static, never modified after creation
-   - Both → generate both files from the same content
+
+The plan is written as Markdown — optimized for AI agent consumption during
+execution. To read it in the browser, use `plan-review` (see After Saving);
+no separate HTML file is produced.
 
 ## How It Works
 
@@ -56,12 +56,12 @@ Turn a signed-off design into a clear, executable plan. Lean task cards, not mic
 │  Show plan in sections, get sign-off before saving.             │
 │                                                                  │
 │  Step 5: SAVE                                                   │
-│  Write file(s) to docs/plans/ per AGENTS.md or default paths.  │
-│  Do NOT modify plan files after saving.                         │
+│  Write the file to docs/plans/ per AGENTS.md or default path.  │
+│  Do NOT modify the plan file after saving.                      │
 └──────────────────────────────────────────────────────────────────┘
 ```
 
-## Task Card Format (Markdown)
+## Task Card Format
 
 ```markdown
 ### Task N: <Short Name>
@@ -84,7 +84,7 @@ Turn a signed-off design into a clear, executable plan. Lean task cards, not mic
 **Dependencies:** Task 2, Task 3 (or "None")
 ```
 
-## Plan Document Structure (Markdown)
+## Plan Document Structure
 
 ```markdown
 # Plan: <Feature Name>
@@ -114,17 +114,9 @@ One sentence.
 [Task cards follow]
 ```
 
-## Plan Document Structure (HTML)
+## Save Path
 
-See `references/plan-template.html` for the exact template to populate.
-HTML is generated once, never modified after creation. Checkboxes in the HTML are decorative — progress is tracked via the Markdown task list.
-
-## Save Paths
-
-| Format   | Default Path                           |
-| -------- | -------------------------------------- |
-| Markdown | `docs/plans/YYYY-MM-DD-<feature>.md`   |
-| HTML     | `docs/plans/YYYY-MM-DD-<feature>.html` |
+Write the plan to `docs/plans/YYYY-MM-DD-<feature>.md`.
 
 Check `AGENTS.md` for project-specific overrides.
 
