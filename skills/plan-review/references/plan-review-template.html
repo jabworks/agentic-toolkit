@@ -91,6 +91,26 @@
         background-size: 32px 32px; }
       .main .hint { color: var(--subtle); margin: 0 auto 24px; font-size: 12px; max-width: 760px; }
       .doc { max-width: 760px; margin: 0 auto; }
+
+      /* Revision diff — on a revised plan, show what changed instead of a silent swap. */
+      .revbar { display: none; align-items: center; gap: 10px; max-width: 760px; margin: 0 auto 20px;
+        padding: 9px 12px; border: 1px solid var(--warning-border); background: var(--warning-muted); border-radius: var(--radius); }
+      .revbar.show { display: flex; }
+      .revbar .rb-text { color: var(--warning); font: 600 12px var(--mono); }
+      .revbar .rb-stat { color: var(--muted-foreground); font-size: 12px; }
+      .revbar .rb-actions { margin-left: auto; display: flex; gap: 6px; }
+      .diffwrap { display: none; max-width: 760px; margin: 0 auto; }
+      .diffwrap.show { display: block; }
+      .diffview { background: var(--muted); border: 1px solid var(--border); border-radius: var(--radius);
+        padding: 8px 0; overflow-x: auto; font: 12px/1.55 var(--mono); }
+      .diffline { display: flex; white-space: pre; padding: 0 12px; }
+      .diffline .g { width: 14px; flex: none; color: var(--subtle); user-select: none; }
+      .diffline.ctx { color: var(--muted-foreground); }
+      .diffline.add { background: var(--success-muted); color: var(--success); }
+      .diffline.add .g { color: var(--success); }
+      .diffline.del { background: var(--destructive-muted); color: var(--destructive); }
+      .diffline.del .g { color: var(--destructive); }
+      .diffline.fold { justify-content: center; color: var(--subtle); font-style: italic; padding: 3px 12px; }
       h1, h2, h3 { line-height: 1.3; margin: 1.5em 0 0.6em; scroll-margin-top: 24px; }
       h1 { font-size: 21px; } h2 { font-size: 16px; } h3 { font-size: 14px; color: var(--muted-foreground); }
       p { margin: 0.6em 0; }
@@ -159,8 +179,24 @@
       .composer .send { margin-top: 8px; }
       .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 14px 14px; }
       .actions .approve-wrap { grid-column: 1 / -1; }
-      #status { padding: 0 16px 16px; color: var(--success); min-height: 16px; font-size: 12px; }
       .count { color: var(--subtle); font-size: 11px; }
+
+      /* Post-submit confirmation — replaces the decision buttons once a decision
+         is sent. Per-decision copy tells you exactly what the agent does next. */
+      .sent { display: none; margin: 0 14px 16px; border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; }
+      .sent.show { display: block; }
+      .sent.approve { border-color: var(--success-border); background: var(--success-muted); }
+      .sent.revise  { border-color: var(--warning-border); background: var(--warning-muted); }
+      .sent.deny    { border-color: var(--destructive-border); background: var(--destructive-muted); }
+      .sent .h { display: flex; align-items: center; gap: 8px; font: 600 13px var(--mono); }
+      .sent.approve .h { color: var(--success); }
+      .sent.revise  .h { color: var(--warning); }
+      .sent.deny    .h { color: var(--destructive); }
+      .sent .sub { color: var(--muted-foreground); font-size: 12px; margin-top: 5px; line-height: 1.5; }
+      .sent .ico { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; }
+      .sent .again { margin-top: 10px; }
+      .dot { width: 7px; height: 7px; border-radius: 9999px; background: currentColor; animation: pulse 1.3s ease-in-out infinite; }
+      @keyframes pulse { 0%, 100% { opacity: .3; } 50% { opacity: 1; } }
     </style>
   </head>
   <body>
@@ -169,7 +205,16 @@
 
       <main class="main">
         <p class="hint">Select any text to comment on it. Or chat with the agent on the right. Then decide.</p>
+        <div class="revbar" id="revbar">
+          <span class="rb-text">Plan revised</span>
+          <span class="rb-stat" id="rb-stat"></span>
+          <span class="rb-actions">
+            <button type="button" class="btn btn-surface btn-sm" id="rb-toggle">View changes</button>
+            <button type="button" class="btn btn-ghost btn-sm" id="rb-dismiss">Dismiss</button>
+          </span>
+        </div>
         <div class="doc" id="plan">Loading plan…</div>
+        <div class="diffwrap" id="diffwrap"><div class="diffview" id="diffview"></div></div>
         <div class="popover" id="popover">
           <div class="q" id="pop-quote"></div>
           <div class="cats" id="pop-cats">
@@ -193,12 +238,15 @@
           <textarea class="ta" id="input" placeholder="Message the agent about this plan…"></textarea>
           <button class="btn btn-soft btn-block send" id="send">Send message</button>
         </div>
-        <div class="actions">
+        <div class="actions" id="actions">
           <div class="approve-wrap"><button class="btn btn-solid btn-block" data-decision="Approve">Approve &amp; proceed</button></div>
           <button class="btn btn-outline" data-decision="Request Revisions">Request revisions</button>
           <button class="btn btn-danger" data-decision="Deny">Deny</button>
         </div>
-        <div id="status"></div>
+        <div class="sent" id="sent">
+          <div class="h"><span class="ico" id="sent-ico"></span><span id="sent-title"></span></div>
+          <div class="sub" id="sent-sub"></div>
+        </div>
       </aside>
     </div>
 
@@ -370,26 +418,98 @@
         document.querySelectorAll('#toc a').forEach(function(a){const el=document.getElementById(a.dataset.target); if(el)spy.observe(el);});
       }
 
+      // Per-decision confirmation copy — what the agent does with each verdict.
+      const SENT={
+        'Approve':          {cls:'approve',ico:'✓',wait:false,title:'Approved',sub:'Sent to the agent — it will proceed and implement the plan.'},
+        'Request Revisions':{cls:'revise', ico:'',wait:true, title:'Revisions requested',sub:'Your notes are on their way. The agent will revise the plan; the updated version reloads here when it’s ready.'},
+        'Deny':             {cls:'deny',   ico:'✕',wait:false,title:'Denied',sub:'Sent to the agent — it will step back and rework the approach.'},
+      };
+      let submitting=false;
+      function clearAllNotes(){
+        annotations.slice().forEach(function(a){ if(a.kind==='note') unhighlight(a.id); });
+        annotations.length=0; nextId=1; paint();
+      }
+      function showSent(decision){
+        const cfg=SENT[decision]||SENT['Request Revisions'];
+        document.getElementById('actions').style.display='none';
+        const ico=document.getElementById('sent-ico');
+        ico.className='ico'+(cfg.wait?' dot':''); ico.textContent=cfg.wait?'':cfg.ico;
+        document.getElementById('sent-title').textContent=cfg.title;
+        document.getElementById('sent-sub').textContent=cfg.sub;
+        document.getElementById('sent').className='sent show '+cfg.cls;
+      }
+      function resetDecisionUI(){
+        document.getElementById('sent').className='sent';
+        const a=document.getElementById('actions'); a.style.display='grid';
+        a.querySelectorAll('button').forEach(function(b){b.disabled=false;});
+      }
       async function submit(decision){
-        const res=await fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({decision:decision,thread:annotations})});
-        const data=await res.json();
-        document.getElementById('status').textContent=decision+' sent — '+(data.file?('written to '+data.file):'returned to the agent')+'.';
+        if(submitting) return; submitting=true;
+        document.querySelectorAll('.actions button').forEach(function(b){b.disabled=true;});
+        try{ await fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({decision:decision,thread:annotations})}); }
+        catch(e){}
+        clearAllNotes();        // notes clear the moment the decision is sent
+        showSent(decision);
+        submitting=false;
       }
       document.getElementById('send').onclick=sendChat;
       document.getElementById('input').addEventListener('keydown',function(e){if((e.metaKey||e.ctrlKey)&&e.key==='Enter')sendChat();});
       document.querySelectorAll('.actions button').forEach(function(b){b.onclick=function(){submit(b.dataset.decision);};});
 
-      let lastPlanMd=null;
+      // ---- Revision diff (self-contained line-level LCS, no deps) ----
+      function lineDiff(a,b){
+        const A=(a||'').replace(/\r\n/g,'\n').split('\n'), B=(b||'').replace(/\r\n/g,'\n').split('\n');
+        const n=A.length,m=B.length; const dp=[]; for(let i=0;i<=n;i++)dp.push(new Int32Array(m+1));
+        for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--)
+          dp[i][j]=A[i]===B[j]?dp[i+1][j+1]+1:(dp[i+1][j]>=dp[i][j+1]?dp[i+1][j]:dp[i][j+1]);
+        const out=[]; let i=0,j=0;
+        while(i<n&&j<m){ if(A[i]===B[j]){out.push({t:'ctx',s:A[i]});i++;j++;}
+          else if(dp[i+1][j]>=dp[i][j+1]){out.push({t:'del',s:A[i]});i++;}
+          else{out.push({t:'add',s:B[j]});j++;} }
+        while(i<n)out.push({t:'del',s:A[i++]}); while(j<m)out.push({t:'add',s:B[j++]});
+        return out;
+      }
+      function renderDiff(diff){
+        const view=document.getElementById('diffview'); view.innerHTML=''; const FOLD=6; let run=[];
+        function line(t,s){ const el=document.createElement('div'); el.className='diffline '+t;
+          const g=document.createElement('span'); g.className='g'; g.textContent=t==='add'?'+':t==='del'?'-':' ';
+          el.appendChild(g); el.appendChild(document.createTextNode(s||' ')); view.appendChild(el); }
+        function flush(){ if(!run.length)return;
+          if(run.length>FOLD){ line('ctx',run[0].s); line('ctx',run[1].s);
+            const f=document.createElement('div'); f.className='diffline fold'; f.textContent='⋯ '+(run.length-4)+' unchanged lines'; view.appendChild(f);
+            line('ctx',run[run.length-2].s); line('ctx',run[run.length-1].s); }
+          else run.forEach(function(r){line('ctx',r.s);}); run=[]; }
+        diff.forEach(function(d){ if(d.t==='ctx')run.push(d); else{ flush(); line(d.t,d.s); } }); flush();
+      }
+      const diffwrap=document.getElementById('diffwrap');
+      function setDiffView(on){
+        diffwrap.classList.toggle('show',on);
+        planEl.style.display=on?'none':'';
+        document.getElementById('rb-toggle').textContent=on?'View rendered':'View changes';
+      }
+      function showRevBar(diff){
+        const adds=diff.filter(function(d){return d.t==='add';}).length;
+        const dels=diff.filter(function(d){return d.t==='del';}).length;
+        document.getElementById('rb-stat').textContent='+'+adds+' / -'+dels+' lines';
+        renderDiff(diff); document.getElementById('revbar').classList.add('show'); setDiffView(false);
+      }
+      function hideRevBar(){ document.getElementById('revbar').classList.remove('show'); setDiffView(false); }
+      document.getElementById('rb-toggle').onclick=function(){ setDiffView(!diffwrap.classList.contains('show')); };
+      document.getElementById('rb-dismiss').onclick=hideRevBar;
+
+      let lastPlanMd=null, prevPlanMd=null;
       async function load(){
         const md=await (await fetch('/api/plan')).text();
-        // A revised plan invalidates every anchor — the marks vanish on re-render,
-        // so drop the now-orphaned notes too. First load (lastPlanMd===null) is a no-op.
-        if(lastPlanMd!==null && md!==lastPlanMd && annotations.length){
-          annotations.length=0; nextId=1;
-          document.getElementById('status').textContent='Plan updated — previous notes cleared.';
+        if(md===lastPlanMd) return;              // spurious watch event, no content change
+        const revised=lastPlanMd!==null;
+        if(revised){
+          // A revised plan invalidates every anchor. Drop orphaned notes, restore the
+          // decision buttons, and diff the old plan against the new one for this round.
+          prevPlanMd=lastPlanMd; annotations.length=0; nextId=1; resetDecisionUI();
         }
         lastPlanMd=md;
         renderPlan(md); paint();
+        if(revised) showRevBar(lineDiff(prevPlanMd,md)); else hideRevBar();
       }
       try{const es=new EventSource('/api/events');es.onmessage=function(){load();};}catch(e){}
       load();

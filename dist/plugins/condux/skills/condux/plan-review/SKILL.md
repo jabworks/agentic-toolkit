@@ -156,9 +156,15 @@ Selecting text opens a floating **annotation toolbar** anchored above the
 selection (it flips below when there's no room). It starts as a category
 **menubar**; choosing a category expands it to reveal the note input and
 Save/Cancel. Saving highlights the text and anchors the note; clicking a
-highlight or a note cross-links the two. A revised plan clears the now-orphaned
-notes. The page live-reloads when the plan file changes on disk (SSE +
-`fs.watch`).
+highlight or a note cross-links the two. The page live-reloads when the plan
+file changes on disk (SSE + `fs.watch`).
+
+When the agent **revises** the plan, the tab doesn't silently swap the text: a
+banner reports the change (`+adds / -dels lines`) with a **View changes** toggle
+that shows a unified line diff (old vs. new, folding long unchanged runs), and
+the now-orphaned notes clear so the next round starts clean. Submitting a
+decision **clears your notes immediately** and replaces the buttons with a
+confirmation that states what the agent does next (implement / revise / rework).
 
 ## Guarantees (why it passes review)
 
