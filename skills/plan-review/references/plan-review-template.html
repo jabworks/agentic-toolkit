@@ -133,6 +133,10 @@
       pre code { background: none; border: none; padding: 0; }
       blockquote { margin: 0.6em 0; padding: 2px 14px; color: var(--muted-foreground); border-left: 3px solid var(--primary); }
       hr { border: none; border-top: 1px solid var(--border); margin: 1.6em 0; }
+      table { border-collapse: collapse; margin: 0.9em 0; width: 100%; display: block; overflow-x: auto; font-size: 13px; }
+      th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+      th { background: var(--muted); font-weight: 600; }
+      tbody tr:nth-child(even) { background: color-mix(in oklch, var(--muted) 40%, transparent); }
       .blk { border-radius: 4px; padding: 1px 8px; margin: 0 -8px; }
       mark.hl { background: var(--hl); color: inherit; border-radius: 2px; cursor: pointer; padding: 0 1px; }
       mark.hl.active { background: var(--hl-active); box-shadow: 0 0 0 1px var(--warning-border); }
@@ -296,6 +300,8 @@
         .replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" rel="noopener noreferrer">$1</a>');}
       function renderBlocks(md){
         const lines=md.replace(/\r\n/g,'\n').split('\n'); const out=[]; let i=0;
+        function tcells(row){ return row.trim().replace(/^\|/,'').replace(/\|\s*$/,'').split('|').map(function(c){return c.trim();}); }
+        function isDelim(row){ if(row.indexOf('|')<0) return false; const cs=tcells(row); return cs.length>0 && cs.every(function(c){return /^:?-{1,}:?$/.test(c);}); }
         while(i<lines.length){let line=lines[i];
           if(/^```/.test(line)){const buf=[];i++;while(i<lines.length&&!/^```/.test(lines[i]))buf.push(lines[i++]);i++;out.push({html:'<pre><code>'+esc(buf.join('\n'))+'</code></pre>',heading:null});continue;}
           if(/^\s*$/.test(line)){i++;continue;}
@@ -303,7 +309,8 @@
           if(/^---+\s*$/.test(line)){out.push({html:'<hr>',heading:null});i++;continue;}
           if(/^\s*>/.test(line)){const buf=[];while(i<lines.length&&/^\s*>/.test(lines[i]))buf.push(lines[i++].replace(/^\s*>\s?/,''));out.push({html:'<blockquote>'+inline(buf.join(' '))+'</blockquote>',heading:null});continue;}
           if(/^\s*([-*+]|\d+\.)\s/.test(line)){const ordered=/^\s*\d+\./.test(line);const buf=[];while(i<lines.length&&/^\s*([-*+]|\d+\.)\s/.test(lines[i])){buf.push('<li>'+inline(lines[i].replace(/^\s*([-*+]|\d+\.)\s/,''))+'</li>');i++;}out.push({html:'<'+(ordered?'ol':'ul')+'>'+buf.join('')+'</'+(ordered?'ol':'ul')+'>',heading:null});continue;}
-          const buf=[];while(i<lines.length&&!/^\s*$/.test(lines[i])&&!/^(#{1,3}\s|```|\s*>|\s*([-*+]|\d+\.)\s|---+\s*$)/.test(lines[i]))buf.push(lines[i++]);
+          if(line.indexOf('|')>=0&&i+1<lines.length&&isDelim(lines[i+1])){const header=tcells(line);const aligns=tcells(lines[i+1]).map(function(c){const l=/^:/.test(c),r=/:$/.test(c);return l&&r?'center':r?'right':l?'left':'';});i+=2;const rows=[];while(i<lines.length&&lines[i].indexOf('|')>=0&&!/^\s*$/.test(lines[i])&&!/^(#{1,3}\s|```|---+\s*$)/.test(lines[i])){rows.push(tcells(lines[i]));i++;}let h='<table><thead><tr>';header.forEach(function(c,ci){h+='<th'+(aligns[ci]?' style="text-align:'+aligns[ci]+'"':'')+'>'+inline(c)+'</th>';});h+='</tr></thead><tbody>';rows.forEach(function(cs){h+='<tr>';header.forEach(function(_,ci){h+='<td'+(aligns[ci]?' style="text-align:'+aligns[ci]+'"':'')+'>'+inline(cs[ci]!==undefined?cs[ci]:'')+'</td>';});h+='</tr>';});h+='</tbody></table>';out.push({html:h,heading:null});continue;}
+          const buf=[];while(i<lines.length&&!/^\s*$/.test(lines[i])&&!/^(#{1,3}\s|```|\s*>|\s*([-*+]|\d+\.)\s|---+\s*$)/.test(lines[i])&&!(lines[i].indexOf('|')>=0&&i+1<lines.length&&isDelim(lines[i+1])))buf.push(lines[i++]);
           out.push({html:'<p>'+inline(buf.join(' '))+'</p>',heading:null});}
         return out;
       }
