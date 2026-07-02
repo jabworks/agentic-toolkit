@@ -1,6 +1,6 @@
 ---
 name: plan-review
-description: Render a plan in a local browser for inline annotation, then return an approve / request-revisions / deny decision to the agent. Auto-captures the plan via a Claude Code ExitPlanMode hook or a Codex Stop hook, or runs manually on any markdown file. Self-contained — no network egress, no third-party runtime deps.
+description: Render a plan in a local browser for inline annotation, then return an approve / request-revisions / deny decision to the agent. Auto-captures the plan via a Claude Code ExitPlanMode hook or a Codex Stop hook, or runs manually on any markdown file or spec directory. Self-contained — no network egress, no third-party runtime deps.
 when_to_use: When the agent finishes planning (Claude Code ExitPlanMode, or a Codex planning turn) and you want to review/annotate before it implements, or when you invoke /plan-review on a markdown plan/spec.
 ---
 
@@ -92,15 +92,23 @@ Caveats: Codex hooks are **experimental and disabled on Windows**; the review is
 Code; use an **absolute** node/command path (Codex Desktop doesn't inherit `PATH`
 — the installer handles this).
 
-### Manual — on any file
+### Manual — on any file or spec directory
 
 ```bash
 node /PATH/TO/plan-review/references/annotate-server.js <plan-or-spec.md>
+node /PATH/TO/plan-review/references/annotate-server.js <spec-dir>
 ```
 
 Serves the file, writes your decision to `<file>.feedback.md`, and stays running
 (Ctrl+C to stop). Use this for ad-hoc review of a spec or a written plan when you
 are not in plan mode. After submitting, read `<file>.feedback.md` to action it.
+
+**Directory mode** reviews a whole spec folder (e.g. `specs/wan-config/` from
+the `technical-spec` skill): every top-level `*.md` is listed in the sidebar,
+notes are tagged with their source file, edits to any file live-reload (with a
+per-file revision diff), and the decision lands in `<dir>/review.feedback.md`
+grouped by file. Works in manual and `--steer` modes; this is also the live
+preview surface for `technical-spec` (its old preview server is retired).
 
 ### Steer — agent-invoked loop (any agent, no hook needed)
 
@@ -136,11 +144,15 @@ reflects every revision** — no new tab per round. The decision is also written
 
 ## The review surface
 
-A three-pane layout over a **decision bar**: a **Contents** outline (left, with
-per-section note counts), the centered rendered plan (middle), and a **Review**
-rail (right) holding your notes and messages. The decisions live in a fixed bar
-along the bottom — `[Reject] ——— [Request revisions] [Approve]` — with a live
-summary of what rides along ("3 notes · 1 message will be sent").
+A three-pane layout over a **decision bar**: a left sidebar with two tabs —
+**Contents** (heading outline with per-section note counts; in directory mode,
+each document is a top-level node with its headings nested, click to switch
+docs) and **Files** (paths the plan touches, parsed from inline code and
+fences, badged **exists**/**new** against the repo; click jumps to the first
+mention, repeat clicks cycle) — the centered rendered plan (middle), and a
+**Review** rail (right) holding your notes and messages. The decisions live in
+a fixed bar along the bottom — `[Reject] ——— [Request revisions] [Approve]` —
+with a live summary of what rides along ("3 notes · 1 message will be sent").
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
@@ -185,11 +197,11 @@ content with a confirmation that states what the agent does next
 
 | File | Role |
 |---|---|
-| `references/annotate-server.js` | Local server. `--hook` (Claude ExitPlanMode), `--codex-stop` (Codex Stop), `<file> --steer` (agent-invoked blocking loop), or `<file>` alone for manual mode. |
+| `references/annotate-server.js` | Local server. `--hook` (Claude ExitPlanMode), `--codex-stop` (Codex Stop), `<file> --steer` (agent-invoked blocking loop), or `<file|dir>` alone for manual mode. A directory argument reviews every top-level `*.md` in it. |
 | `references/install-codex-hook.sh` | Registers the Codex `Stop` hook in `~/.codex` and enables the hooks feature flag. |
 | `references/plan-review-template.html` | Self-contained review UI (renderer + annotation surface). |
 
 ## Related skills
 
 - `write-plan` — produces the plan this skill reviews.
-- `technical-spec` — persists decisions/API/quirks; ships the live-preview pattern this server mirrors.
+- `technical-spec` — persists decisions/API/quirks; this server (directory mode) is its live preview + review surface.

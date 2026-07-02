@@ -50,3 +50,60 @@ test('annotate-server manual mode: serves plan, accepts feedback, writes feedbac
     fs.rmSync(feedbackFile, { force: true });
   }
 });
+
+test('annotate-server directory mode: doc manifest, per-doc content, grouped feedback', async () => {
+  const specDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ci-spec-review-'));
+  fs.writeFileSync(path.join(specDir, 'index.md'), '# Sample Spec\n');
+  fs.writeFileSync(path.join(specDir, 'decisions.md'), '# Decisions\n\nBody.\n');
+  const feedbackFile = path.join(specDir, 'review.feedback.md');
+
+  const { proc, port } = await spawnServer(
+    SERVER, [specDir], /Plan review\s+→\s+http:\/\/127\.0\.0\.1:(\d+)/
+  );
+  try {
+    const base = 'http://127.0.0.1:' + port;
+
+    const docsRes = await fetch(base + '/api/docs');
+    assert.deepEqual(await docsRes.json(), { dir: true, docs: ['index.md', 'decisions.md'] });
+
+    const docRes = await fetch(base + '/api/plan?doc=decisions.md');
+    assert.equal(await docRes.text(), fs.readFileSync(path.join(specDir, 'decisions.md'), 'utf8'));
+
+    // Only enumerated docs are servable — traversal comes back empty
+    const escapeRes = await fetch(base + '/api/plan?doc=' + encodeURIComponent('../outside.md'));
+    assert.equal(await escapeRes.text(), '');
+
+    // Files-tab path verification resolves against the reviewed dir (no git root above tmp)
+    const verifyRes = await fetch(base + '/api/verify-paths', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ paths: ['index.md', 'nope/missing.ts', '../escape.md'] }),
+    });
+    const verify = await verifyRes.json();
+    assert.equal(verify.results['index.md'], true);
+    assert.equal(verify.results['nope/missing.ts'], false);
+    assert.ok(!('../escape.md' in verify.results), 'escaping paths must be refused');
+
+    const feedbackRes = await fetch(base + '/api/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        decision: 'Request Revisions',
+        thread: [{ kind: 'note', cat: 'Issue', quote: 'Body.', text: 'fix this', doc: 'decisions.md' }],
+      }),
+    });
+    assert.equal((await feedbackRes.json()).status, 'received');
+
+    const deadline = Date.now() + 2000;
+    while (!fs.existsSync(feedbackFile) && Date.now() < deadline) {
+      await new Promise((r) => setTimeout(r, 50));
+    }
+    const feedback = fs.readFileSync(feedbackFile, 'utf8');
+    assert.match(feedback, /\*\*Decision:\*\* Request Revisions/);
+    assert.match(feedback, /### `decisions\.md`/);
+    assert.match(feedback, /fix this/);
+  } finally {
+    await stopServer(proc);
+    fs.rmSync(specDir, { recursive: true, force: true });
+  }
+});

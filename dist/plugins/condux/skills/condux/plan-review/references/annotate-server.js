@@ -4,9 +4,14 @@
 //
 // Four modes:
 //
-//   Manual:  node annotate-server.js <plan-file.md>
+//   Manual:  node annotate-server.js <plan-file.md | spec-dir>
 //            Serves the plan, writes the decision to <plan-file>.feedback.md,
 //            stays running until Ctrl+C. No agent attached.
+//            Passing a DIRECTORY (e.g. a tech-spec folder) reviews every
+//            top-level *.md in it: the UI lists the documents, notes are
+//            tagged with their source file, and the decision lands in
+//            <dir>/review.feedback.md grouped by file. Directory mode works
+//            in manual and steer modes.
 //
 //   Steer:   node annotate-server.js <plan-file.md> --steer [--port 7777]
 //            (agent-invoked) Long-lived review server for the iterative loop.
@@ -58,15 +63,17 @@ const PORT = !isNaN(portArg) ? portArg : (STEER_MODE ? 7777 : 0);
 let decisionWaiter = null;   // pending GET /api/decision response (steer)
 let pendingDecision = null;  // decision that arrived before a waiter (steer)
 
-let planFile;       // path to the markdown being reviewed
-let feedbackFile;   // manual mode only
+let planFile;       // path to the markdown file — or directory — being reviewed
+let feedbackFile;   // manual/steer modes
+let DIR_MODE = false; // reviewing a directory of markdown docs (spec folder)
 
 function fail(msg) { console.error('  plan-review: ' + msg); process.exit(1); }
 
 function start(planText, sourcePath) {
   if (sourcePath) {
     planFile = path.resolve(sourcePath);
-    feedbackFile = planFile + '.feedback.md';
+    DIR_MODE = fs.statSync(planFile).isDirectory();
+    feedbackFile = DIR_MODE ? path.join(planFile, 'review.feedback.md') : planFile + '.feedback.md';
   } else {
     // hook mode: persist the plan to a temp file so render + live-reload work uniformly
     planFile = path.join(os.tmpdir(), 'plan-review-' + process.pid + '.md');
@@ -76,18 +83,61 @@ function start(planText, sourcePath) {
   listen();
 }
 
-function readPlan() {
-  try { return fs.readFileSync(planFile, 'utf8'); } catch (e) { return ''; }
+// Directory mode: the reviewable documents — top-level *.md, index.md first,
+// skipping dotfiles and the feedback file this server writes itself.
+function listDocs() {
+  try {
+    return fs.readdirSync(planFile)
+      .filter(function (n) { return /\.md$/i.test(n) && !/\.feedback\.md$/i.test(n) && n[0] !== '.'; })
+      .sort(function (a, b) {
+        if (a === 'index.md') return -1;
+        if (b === 'index.md') return 1;
+        return a.localeCompare(b);
+      });
+  } catch (e) { return []; }
+}
+
+function readPlan(doc) {
+  try {
+    if (DIR_MODE) {
+      if (listDocs().indexOf(doc) < 0) return ''; // only enumerated docs are servable
+      return fs.readFileSync(path.join(planFile, doc), 'utf8');
+    }
+    return fs.readFileSync(planFile, 'utf8');
+  } catch (e) { return ''; }
 }
 
 function watchPlan() {
   try {
+    if (DIR_MODE) {
+      // Watch the whole folder; tag events with the doc so the client reloads
+      // (and diffs) only the changed document.
+      fs.watch(planFile, {}, function (_, filename) {
+        if (!filename || !/\.md$/i.test(filename)) return;
+        if (/\.feedback\.md$/i.test(filename) || filename[0] === '.') return;
+        sseClients.forEach(function (res) { try { res.write('data: change:' + filename + '\n\n'); } catch (e) {} });
+      });
+      return;
+    }
     fs.watch(path.dirname(planFile), {}, function (_, filename) {
       if (filename && path.basename(planFile) === filename) {
         sseClients.forEach(function (res) { try { res.write('data: change\n\n'); } catch (e) {} });
       }
     });
   } catch (e) { /* live reload simply won't fire */ }
+}
+
+// Files-tab support: resolve mentioned paths against the git root of the
+// reviewed file (walking up to the filesystem root), so exists/new badges
+// reflect the repo under review, not the server's CWD.
+function gitRoot() {
+  let dir = DIR_MODE ? planFile : path.dirname(planFile);
+  while (true) {
+    if (fs.existsSync(path.join(dir, '.git'))) return dir;
+    const up = path.dirname(dir);
+    if (up === dir) return DIR_MODE ? planFile : path.dirname(planFile);
+    dir = up;
+  }
 }
 
 function feedbackMarkdown(decision, thread) {
@@ -98,13 +148,23 @@ function feedbackMarkdown(decision, thread) {
   const chat = (thread || []).filter(function (t) { return t.kind !== 'note'; });
   if (notes.length) {
     lines.push('## Inline notes', '');
-    notes.forEach(function (t, i) {
-      const quote = (t.quote || '').trim();
-      const anchor = quote ? '> ' + quote.replace(/\n+/g, ' ') + '\n\n' : '';
-      const cat = t.cat ? '**[' + t.cat + ']** ' : '';
-      lines.push((i + 1) + '. ' + cat + anchor + '   ' + (t.text || '').trim());
+    // Directory mode tags each note with its source doc — group under a
+    // per-file heading so the agent knows which spec file each note targets.
+    const byDoc = {};
+    notes.forEach(function (t) {
+      const key = (t.doc || '');
+      (byDoc[key] = byDoc[key] || []).push(t);
     });
-    lines.push('');
+    Object.keys(byDoc).sort().forEach(function (doc) {
+      if (doc) lines.push('### `' + doc + '`', '');
+      byDoc[doc].forEach(function (t, i) {
+        const quote = (t.quote || '').trim();
+        const anchor = quote ? '> ' + quote.replace(/\n+/g, ' ') + '\n\n' : '';
+        const cat = t.cat ? '**[' + t.cat + ']** ' : '';
+        lines.push((i + 1) + '. ' + cat + anchor + '   ' + (t.text || '').trim());
+      });
+      lines.push('');
+    });
   }
   if (chat.length) {
     lines.push('## Messages', '');
@@ -202,7 +262,35 @@ function handler(req, res) {
   }
   if (req.method === 'GET' && p === '/api/plan') {
     res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
-    return res.end(readPlan());
+    return res.end(readPlan(url.searchParams.get('doc') || ''));
+  }
+  if (req.method === 'GET' && p === '/api/docs') {
+    // Document manifest. Single-file reviews report dir:false so the client
+    // keeps the classic one-document layout.
+    return sendJson(res, 200, DIR_MODE
+      ? { dir: true, docs: listDocs() }
+      : { dir: false, docs: [path.basename(planFile)] });
+  }
+  if (req.method === 'POST' && p === '/api/verify-paths') {
+    // Files tab: check which mentioned paths exist in the repo under review.
+    // Read-only existsSync against the git root; refuses escapes and absolutes.
+    let body = '';
+    req.on('data', function (c) { body += c; if (body.length > 1e6) req.destroy(); });
+    req.on('end', function () {
+      try {
+        const paths = (JSON.parse(body).paths || []).slice(0, 500);
+        const root = gitRoot();
+        const results = {};
+        paths.forEach(function (rel) {
+          if (typeof rel !== 'string' || !rel || path.isAbsolute(rel) || rel.split(/[\\/]/).indexOf('..') >= 0) return;
+          results[rel] = fs.existsSync(path.join(root, rel));
+        });
+        sendJson(res, 200, { root: root, results: results });
+      } catch (e) {
+        sendJson(res, 400, { error: 'invalid JSON' });
+      }
+    });
+    return;
   }
   if (req.method === 'GET' && p === '/api/events') {
     res.writeHead(200, {
@@ -325,6 +413,10 @@ if (HOOK_MODE) {
     if (args[i] === '--port') { i++; continue; }
     if (args[i][0] !== '-') { file = args[i]; break; }
   }
-  if (!file || !fs.existsSync(file)) fail('plan file not found — pass a markdown file path, or use --hook / --codex-stop.');
+  if (!file || !fs.existsSync(file)) fail('plan file not found — pass a markdown file or spec directory, or use --hook / --codex-stop.');
+  if (fs.statSync(file).isDirectory()) {
+    const docs = fs.readdirSync(file).filter(function (n) { return /\.md$/i.test(n) && !/\.feedback\.md$/i.test(n) && n[0] !== '.'; });
+    if (!docs.length) fail('no markdown files in ' + file + ' — a spec directory needs at least one top-level *.md.');
+  }
   start(null, file);
 }

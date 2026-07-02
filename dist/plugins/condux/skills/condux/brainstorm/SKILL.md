@@ -117,10 +117,11 @@ Integrates with the `technical-spec` skill to persist the design and render it l
 
 ### At brainstorm start
 
-Infer the feature slug (kebab-case from `$ARGUMENTS`). Detect the package root
-(walk up from CWD to git root, find nearest `package.json` / `Cargo.toml` /
-`go.mod` / `pyproject.toml`). Check `<package-root>/specs/<feature-slug>/`
-(and `<git-root>/specs/<feature-slug>/` if different) for an existing spec.
+Infer the feature slug (kebab-case from `$ARGUMENTS`). Specs live under
+`<git-root>/specs/`, mirroring the repo structure: check
+`<git-root>/specs/<pkg-relpath>/<feature-slug>/` (pkg-relpath = the nearest
+package root's path relative to the git root, empty at the root) and
+`<git-root>/specs/<feature-slug>/` for an existing spec.
 
 If found, offer:
 
@@ -136,20 +137,22 @@ Offer:
 
 If yes:
 
-1. **Find scripts** from the installed technical-spec plugin:
+1. **Find scripts** — the scaffold from technical-spec, the preview from
+   plan-review (its annotate server renders spec directories):
    ```bash
-   SCAFFOLD=$(find ~/.claude ~/.agents -name "scaffold.sh" -path "*/technical-spec/*" 2>/dev/null | head -1)
-   PREVIEW=$(find ~/.claude ~/.agents -name "preview-server.js" -path "*/technical-spec/*" 2>/dev/null | head -1)
+   SCAFFOLD=$(find ~/.claude ~/.codex ~/.agents -name "scaffold.sh" -path "*technical-spec*" 2>/dev/null | head -1)
+   PREVIEW=$(find ~/.claude ~/.codex ~/.agents -name "annotate-server.js" -path "*plan-review*" 2>/dev/null | head -1)
    ```
-   If either is missing, tell the user: "`jabworks/technical-spec` plugin not found — install it to enable spec integration."
+   If either is missing, tell the user: "the `technical-spec` / `plan-review` skills weren't found — install the condux plugin to enable spec integration."
 
 2. **Scaffold** the spec dir and capture the output:
    ```bash
    SCAFFOLD_OUT=$(bash "$SCAFFOLD" "<FeatureName>")
    SPEC_PATH=$(echo "$SCAFFOLD_OUT" | sed 's/^[^:]*://; s/ .*//')
    ```
-   `SPEC_PATH` is an absolute path (e.g. `/repo/apps/web/specs/wan-config`).
-   The scaffold script places specs under the nearest package root automatically.
+   `SPEC_PATH` is an absolute path (e.g. `/repo/specs/apps/web/wan-config`).
+   The scaffold script places specs under `<git-root>/specs/`, mirroring the
+   repo structure, automatically.
 
 3. **Write initial spec files** from the design summary into `$SPEC_PATH/`.
    At minimum, write `decisions.md` with the chosen approach and rationale.
@@ -159,8 +162,10 @@ If yes:
    ```bash
    node "$PREVIEW" "$SPEC_PATH"
    ```
-   Tell user: "Preview is live. The browser updates automatically as spec files change. Ctrl+C in the terminal to stop."
+   Tell user: "Preview is live. The browser updates automatically as spec files change, and you can annotate any file and submit a decision. Ctrl+C in the terminal to stop."
 
 ### Keeping the spec current
 
 As the brainstorm continues and design details shift, update the relevant spec files — the preview re-renders on every save. This is the main benefit: the spec stays in sync with the conversation instead of being written once at the end.
+
+If the user submits a decision in the preview, read `$SPEC_PATH/review.feedback.md` (notes grouped by file) and action it: **Request Revisions** = fix the spec files, **Reject** = revisit the design direction before continuing.

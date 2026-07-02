@@ -60,7 +60,7 @@ digraph save_spec {
     "Write content files, update index.md Contents" [shape=box];
     "Read index.md, update changed files only" [shape=box];
     "Ask: open live HTML preview?" [shape=diamond];
-    "Locate + run preview-server.js" [shape=box];
+    "Locate + run plan-review annotate-server.js on the spec dir" [shape=box];
     "Tell user: Ctrl+C when done reviewing" [shape=box];
     "Done" [shape=doublecircle];
 
@@ -76,9 +76,9 @@ digraph save_spec {
     "Output: exists or created?" -> "Read index.md, update changed files only" [label="exists"];
     "Write content files, update index.md Contents" -> "Ask: open live HTML preview?";
     "Read index.md, update changed files only" -> "Ask: open live HTML preview?";
-    "Ask: open live HTML preview?" -> "Locate + run preview-server.js" [label="yes"];
+    "Ask: open live HTML preview?" -> "Locate + run plan-review annotate-server.js on the spec dir" [label="yes"];
     "Ask: open live HTML preview?" -> "Done" [label="no"];
-    "Locate + run preview-server.js" -> "Tell user: Ctrl+C when done reviewing";
+    "Locate + run plan-review annotate-server.js on the spec dir" -> "Tell user: Ctrl+C when done reviewing";
     "Tell user: Ctrl+C when done reviewing" -> "Done";
 }
 ```
@@ -129,34 +129,49 @@ When scaffold output is `exists:`:
 3. Bump `Last updated` and `Commit` in `index.md` using values from scaffold output
 4. Append to the `## Changelog` in `index.md`
 
-## Live HTML Preview (Optional)
+## Live HTML Preview & Review (Optional)
+
+Spec preview is served by the **plan-review** skill's annotate server in
+directory mode — the same annotation UI used for plan review, so the user can
+not only read the spec live but select text, attach notes per file, and submit
+a decision.
 
 After writing spec files, ask:
 
 ```
-Spec saved. Want a live HTML preview? It renders diagrams, updates as you edit, and closes when you're done. [y/n]
+Spec saved. Want a live HTML preview? It renders all spec files, updates as you edit, and lets you annotate. [y/n]
 ```
 
-If yes, locate the preview server script:
+If yes, locate the plan-review server script:
 
 ```bash
-find ~/.claude ~/.agents -name "preview-server.js" -path "*/technical-spec/*" 2>/dev/null | head -1
+find ~/.claude ~/.codex ~/.agents -name "annotate-server.js" -path "*plan-review*" 2>/dev/null | head -1
 ```
 
 Run it in the background, pointing at the spec folder:
 
 ```bash
-node /path/to/preview-server.js specs/wan-config
+node /path/to/plan-review/references/annotate-server.js specs/wan-config
 ```
 
-It opens the browser automatically, watches for file changes, and re-renders live. Tell the user:
+It opens the browser automatically, lists every top-level `.md` in the folder
+(Contents tab), watches for file changes, and re-renders live. If the user
+submits a decision, it lands in `specs/<slug>/review.feedback.md` with notes
+grouped by file — read it and action it:
+
+- **Approve** — the spec is accurate; nothing to do.
+- **Request Revisions** — fix the spec files per the notes.
+- **Reject** — the spec's premise is wrong; discuss before rewriting.
+
+Tell the user:
 
 ```
 Preview running. Edit your spec files and the browser updates live.
-Press Ctrl+C in the terminal to stop the server when you're done.
+Annotate and submit a decision, or just press Ctrl+C in the terminal when done.
 ```
 
-The server is in-memory only — no HTML files are written to disk. When the user stops it, everything is gone.
+The server is in-memory only — no HTML files are written to disk (only the
+feedback file, if a decision is submitted).
 
 ## Common Mistakes
 

@@ -26,3 +26,28 @@ test('scaffold.sh: creates a spec dir with index.md, then reports exists on re-r
 
   fs.rmSync(tmpRepo, { recursive: true, force: true });
 });
+
+test('scaffold.sh: acronym-safe slugs and root-mirrored monorepo layout', () => {
+  // realpath: on macOS mkdtemp returns /tmp/… but git resolves /private/tmp/…
+  const tmpRepo = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'ci-scaffold-mono-')));
+  execFileSync('git', ['init', '-q'], { cwd: tmpRepo });
+  const pkgDir = path.join(tmpRepo, 'apps', 'web');
+  fs.mkdirSync(pkgDir, { recursive: true });
+  fs.writeFileSync(path.join(pkgDir, 'package.json'), '{}');
+
+  // Scaffolding from inside a package mirrors its path under <git-root>/specs/
+  const pkgRun = execFileSync('bash', [SCRIPT, 'UIFormControls'], { cwd: pkgDir }).toString().trim();
+  assert.equal(
+    pkgRun.match(/^created:(\S+) /)[1],
+    path.join(tmpRepo, 'specs', 'apps', 'web', 'ui-form-controls')
+  );
+
+  // Scaffolding from the repo root lands directly under specs/
+  const rootRun = execFileSync('bash', [SCRIPT, 'AOGrcIntegration'], { cwd: tmpRepo }).toString().trim();
+  assert.equal(
+    rootRun.match(/^created:(\S+) /)[1],
+    path.join(tmpRepo, 'specs', 'ao-grc-integration')
+  );
+
+  fs.rmSync(tmpRepo, { recursive: true, force: true });
+});
