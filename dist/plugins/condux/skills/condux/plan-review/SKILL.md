@@ -136,9 +136,11 @@ reflects every revision** — no new tab per round. The decision is also written
 
 ## The review surface
 
-A three-pane layout: a **Contents** outline (left, with per-section note counts),
-the centered rendered plan (middle), and a **Review** rail (right) listing your
-notes and messages above the decision buttons.
+A three-pane layout over a **decision bar**: a **Contents** outline (left, with
+per-section note counts), the centered rendered plan (middle), and a **Review**
+rail (right) holding your notes and messages. The decisions live in a fixed bar
+along the bottom — `[Reject] ——— [Request revisions] [Approve]` — with a live
+summary of what rides along ("3 notes · 1 message will be sent").
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
@@ -147,7 +149,8 @@ notes and messages above the decision buttons.
 │                     a category (Comment / Issue / Question /       │
 │                     Suggestion / Nitpick) → the note input opens.  │
 │                     Or message the agent in the Review rail.       │
-│  Step 3  DECIDE     Approve / Request Revisions / Reject.         │
+│  Step 3  DECIDE     Bottom bar: Approve / Request Revisions /     │
+│                     Reject — with a note/message count summary.    │
 │  Step 4  RETURN     Decision + notes (each tagged with its        │
 │                     category and quoting its anchor) go back.     │
 └──────────────────────────────────────────────────────────────────┘
@@ -164,8 +167,9 @@ When the agent **revises** the plan, the tab doesn't silently swap the text: a
 banner reports the change (`+adds / -dels lines`) with a **View changes** toggle
 that shows a unified line diff (old vs. new, folding long unchanged runs), and
 the now-orphaned notes clear so the next round starts clean. Submitting a
-decision **clears your notes immediately** and replaces the buttons with a
-confirmation that states what the agent does next (implement / revise / rework).
+decision **clears your notes immediately** and replaces the decision bar's
+content with a confirmation that states what the agent does next
+(implement / revise / rework).
 
 ## Guarantees (why it passes review)
 

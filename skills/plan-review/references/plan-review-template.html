@@ -41,8 +41,8 @@
       }
       * { box-sizing: border-box; }
       html, body { height: 100%; }
-      body { margin: 0; background: var(--background); color: var(--foreground); font: 13px/1.6 var(--mono); font-variant-numeric: tabular-nums; }
-      .app { display: grid; grid-template-columns: 248px minmax(0, 1fr) 372px; height: 100vh; }
+      body { margin: 0; background: var(--background); color: var(--foreground); font: 13px/1.6 var(--mono); font-variant-numeric: tabular-nums; display: flex; flex-direction: column; height: 100vh; }
+      .app { display: grid; grid-template-columns: 248px minmax(0, 1fr) 372px; flex: 1 1 auto; min-height: 0; }
       ::-webkit-scrollbar { width: 9px; height: 9px; }
       ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 9999px; border: 2px solid transparent; background-clip: padding-box; }
       ::-webkit-scrollbar-track { background: transparent; }
@@ -176,13 +176,21 @@
 
       /* Terminus: Separator + composer */
       .composer { border-top: 1px solid var(--border); padding: 12px 14px; }
-      .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 14px 14px; }
+      .actions { padding: 0 14px 14px; }
       .count { color: var(--subtle); font-size: 11px; }
 
-      /* Post-submit confirmation — replaces the decision buttons once a decision
+      /* Bottom decision bar — decisions read as the end of the review. Reject sits
+         isolated on the left; the two "continue" actions group on the right. The
+         summary in the middle says what rides along with the decision. */
+      .dbar { flex: none; display: flex; align-items: center; border-top: 1px solid var(--border); background: var(--card); padding: 10px 16px; min-height: 58px; }
+      .dbar-live { display: flex; flex: 1; align-items: center; gap: 12px; }
+      .dbar-summary { flex: 1; text-align: center; color: var(--subtle); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .dbar-group { display: flex; gap: 8px; }
+
+      /* Post-submit confirmation — replaces the decision bar content once a decision
          is sent. Per-decision copy tells you exactly what the agent does next. */
-      .sent { display: none; margin: 0 14px 16px; border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; }
-      .sent.show { display: block; }
+      .sent { display: none; flex: 1; align-items: center; gap: 14px; border: 1px solid var(--border); border-radius: var(--radius); padding: 9px 14px; }
+      .sent.show { display: flex; }
       .sent.approve { border-color: var(--success-border); background: var(--success-muted); }
       .sent.revise  { border-color: var(--warning-border); background: var(--warning-muted); }
       .sent.deny    { border-color: var(--destructive-border); background: var(--destructive-muted); }
@@ -190,7 +198,8 @@
       .sent.approve .h { color: var(--success); }
       .sent.revise  .h { color: var(--warning); }
       .sent.deny    .h { color: var(--destructive); }
-      .sent .sub { color: var(--muted-foreground); font-size: 12px; margin-top: 5px; line-height: 1.5; }
+      .sent .h { flex: none; }
+      .sent .sub { color: var(--muted-foreground); font-size: 12px; line-height: 1.5; }
       .sent .ico { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; }
       .sent .again { margin-top: 10px; }
       .dot { width: 7px; height: 7px; border-radius: 9999px; background: currentColor; animation: pulse 1.3s ease-in-out infinite; }
@@ -235,20 +244,28 @@
         <div class="composer">
           <textarea class="ta" id="input" placeholder="Message the agent about this plan…"></textarea>
         </div>
-        <!-- Row 1 = give / send feedback · Row 2 = final decisions. Approve is no
-             longer an oversized top button, so a stray click can't approve early. -->
-        <div class="actions" id="actions">
-          <button class="btn btn-soft" id="send">Send message</button>
-          <button class="btn btn-outline" data-decision="Request Revisions">Request revisions</button>
-          <button class="btn btn-danger" data-decision="Reject">Reject</button>
-          <button class="btn btn-solid" data-decision="Approve">Approve</button>
-        </div>
-        <div class="sent" id="sent">
-          <div class="h"><span class="ico" id="sent-ico"></span><span id="sent-title"></span></div>
-          <div class="sub" id="sent-sub"></div>
+        <div class="actions">
+          <button class="btn btn-soft btn-block" id="send">Send message</button>
         </div>
       </aside>
     </div>
+
+    <!-- Decisions live in a fixed bottom bar — the rail above is purely
+         conversational (notes + messages). Reject is isolated on the left. -->
+    <footer class="dbar">
+      <div class="dbar-live" id="dbar-live">
+        <button class="btn btn-danger" data-decision="Reject">Reject</button>
+        <span class="dbar-summary" id="dbar-summary"></span>
+        <span class="dbar-group">
+          <button class="btn btn-outline" data-decision="Request Revisions">Request revisions</button>
+          <button class="btn btn-solid" data-decision="Approve">Approve</button>
+        </span>
+      </div>
+      <div class="sent" id="sent">
+        <div class="h"><span class="ico" id="sent-ico"></span><span id="sent-title"></span></div>
+        <div class="sub" id="sent-sub"></div>
+      </div>
+    </footer>
 
     <script>
       // ---- Self-contained Markdown renderer (no external deps) ----
@@ -392,7 +409,7 @@
       function paint(){
         const box=document.getElementById('thread'); box.innerHTML='';
         document.getElementById('count').textContent=annotations.length?'('+annotations.length+')':'';
-        if(!annotations.length){ box.innerHTML='<div class="empty">No notes yet. Select text to comment, or send a message.</div>'; updateBadges(); return; }
+        if(!annotations.length){ box.innerHTML='<div class="empty">No notes yet. Select text to comment, or send a message.</div>'; updateBadges(); updateSummary(); return; }
         annotations.forEach(function(a){
           const m=document.createElement('div'); m.className='msg'+(a.kind==='note'?' note':''); if(a.kind==='note')m.dataset.aid=String(a.id);
           const meta=document.createElement('div'); meta.className='meta';
@@ -405,7 +422,16 @@
           if(a.kind==='note') m.onclick=function(){ focusNote(a.id,false); const el=document.getElementById(a.section); if(el)el.scrollIntoView({behavior:'smooth',block:'center'}); };
           box.appendChild(m);
         });
-        updateBadges();
+        updateBadges(); updateSummary();
+      }
+      // Live summary in the decision bar — what rides along with the decision.
+      function updateSummary(){
+        const n=annotations.filter(function(a){return a.kind==='note';}).length;
+        const m=annotations.filter(function(a){return a.kind==='chat';}).length;
+        const parts=[];
+        if(n)parts.push(n+' note'+(n>1?'s':'')); if(m)parts.push(m+' message'+(m>1?'s':''));
+        document.getElementById('dbar-summary').textContent=
+          parts.length?parts.join(' · ')+' will be sent with your decision':'No notes or messages yet — a decision sends on its own';
       }
       function updateBadges(){
         const counts={}; annotations.forEach(function(a){ if(a.kind==='note'&&a.section){counts[a.section]=(counts[a.section]||0)+1;} });
@@ -431,7 +457,7 @@
       }
       function showSent(decision){
         const cfg=SENT[decision]||SENT['Request Revisions'];
-        document.getElementById('actions').style.display='none';
+        document.getElementById('dbar-live').style.display='none';
         const ico=document.getElementById('sent-ico');
         ico.className='ico'+(cfg.wait?' dot':''); ico.textContent=cfg.wait?'':cfg.ico;
         document.getElementById('sent-title').textContent=cfg.title;
@@ -440,12 +466,12 @@
       }
       function resetDecisionUI(){
         document.getElementById('sent').className='sent';
-        const a=document.getElementById('actions'); a.style.display='grid';
+        const a=document.getElementById('dbar-live'); a.style.display='';
         a.querySelectorAll('button').forEach(function(b){b.disabled=false;});
       }
       async function submit(decision){
         if(submitting) return; submitting=true;
-        document.querySelectorAll('.actions button').forEach(function(b){b.disabled=true;});
+        document.querySelectorAll('.dbar button').forEach(function(b){b.disabled=true;});
         try{ await fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({decision:decision,thread:annotations})}); }
         catch(e){}
         clearAllNotes();        // notes clear the moment the decision is sent
@@ -454,7 +480,7 @@
       }
       document.getElementById('send').onclick=sendChat;
       document.getElementById('input').addEventListener('keydown',function(e){if((e.metaKey||e.ctrlKey)&&e.key==='Enter')sendChat();});
-      document.querySelectorAll('.actions button[data-decision]').forEach(function(b){b.onclick=function(){submit(b.dataset.decision);};});
+      document.querySelectorAll('.dbar button[data-decision]').forEach(function(b){b.onclick=function(){submit(b.dataset.decision);};});
 
       // ---- Revision diff (self-contained line-level LCS, no deps) ----
       function lineDiff(a,b){
