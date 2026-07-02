@@ -12,23 +12,35 @@ Persists feature decisions, API contracts, implementation details, and quirks in
 
 ## Spec Folder Layout
 
-Specs are co-located with the package they describe. The scaffold script
-detects the nearest package root (walking up from CWD to the git root,
-finding the first `package.json`, `Cargo.toml`, `go.mod`, or `pyproject.toml`).
+All specs live under one `specs/` tree at the **git root**, mirroring the
+repo structure. The scaffold script detects the nearest package root (walking
+up from CWD to the git root, finding the first `package.json`, `Cargo.toml`,
+`go.mod`, or `pyproject.toml`) and uses its path *relative to the git root*
+to place the spec.
 
 ```
-<package-root>/specs/
-  {feature-slug}/           # kebab-case: WanConfig → wan-config
-    index.md                # TOC, last updated, commit hash, changelog  ← scaffold creates this
-    decisions.md            # Design decisions with context + rationale
-    api.md                  # Endpoints, types, external APIs consumed
-    fields.md               # Field mappings: BE/3rd-party → UI, or forwarding chains
-    implementation.md       # Key files, patterns, how it hangs together
-    quirks.md               # Edge cases, gotchas, known issues
+<git-root>/specs/
+  {feature-slug}/           # cross-cutting, or scaffolded from the repo root
+  apps/web/
+    {feature-slug}/         # scaffolded while working in apps/web
+      index.md              # TOC, last updated, commit hash, changelog  ← scaffold creates this
+      decisions.md          # Design decisions with context + rationale
+      api.md                # Endpoints, types, external APIs consumed
+      fields.md             # Field mappings: BE/3rd-party → UI, or forwarding chains
+      implementation.md     # Key files, patterns, how it hangs together
+      quirks.md             # Edge cases, gotchas, known issues
 ```
 
-In a single-package repo `<package-root>` is the git root, so specs live at
-`specs/`. In a monorepo working on `apps/web`, they land at `apps/web/specs/`.
+Slugs are kebab-case and acronym-aware: `WanConfig` → `wan-config`,
+`UIFormControls` → `ui-form-controls`.
+
+In a single-package repo the package root is the git root, so specs land at
+`specs/<slug>/`. In a monorepo working on `apps/web`, they land at
+`specs/apps/web/<slug>/` — one browsable tree, with a natural home for
+cross-cutting features at `specs/<slug>/`.
+
+Existing specs co-located inside packages (`apps/web/specs/…`) are not
+auto-migrated — `git mv` them into the root tree if you want them unified.
 
 Only create files that have actual content. Don't create empty files.
 

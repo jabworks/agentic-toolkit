@@ -5,10 +5,11 @@
 #   created:<absolute-spec-path> commit:<hash> date:<YYYY-MM-DD>
 #   exists:<absolute-spec-path>  commit:<hash> date:<YYYY-MM-DD>
 #
-# Spec location: <package-root>/specs/<slug>/
-# Package root = nearest directory above CWD containing a package manifest
-# (package.json, Cargo.toml, go.mod, pyproject.toml), stopping at git root.
-# Falls back to git root when no manifest is found.
+# Spec location: <git-root>/specs/<pkg-relpath>/<slug>/
+# pkg-relpath = path of the nearest package root (first directory above CWD
+# with package.json, Cargo.toml, go.mod, or pyproject.toml) relative to the
+# git root — empty when they coincide, giving <git-root>/specs/<slug>/.
+# All specs live under the root specs/ tree, mirroring the repo structure.
 
 set -euo pipefail
 
@@ -19,13 +20,17 @@ fi
 
 INPUT="$*"
 
-# PascalCase or spaces → kebab-case
+# PascalCase or spaces → kebab-case, acronym-aware: dashes go only at
+# lower/digit→Upper and UPPER→Upper+lower boundaries, so AOGrcIntegration →
+# ao-grc-integration and UIFormControls → ui-form-controls. Kebab input
+# passes through unchanged.
 SLUG=$(echo "$INPUT" \
-  | sed 's/\([A-Z]\)/-\1/g' \
-  | sed 's/^-//' \
+  | sed 's/\([a-z0-9]\)\([A-Z]\)/\1-\2/g' \
+  | sed 's/\([A-Z]\)\([A-Z][a-z]\)/\1-\2/g' \
   | tr '[:upper:]' '[:lower:]' \
   | tr ' _' '-' \
-  | tr -s '-')
+  | tr -s '-' \
+  | sed 's/^-//; s/-$//')
 
 DATE=$(date +%Y-%m-%d)
 COMMIT=$(git rev-parse --short HEAD 2>/dev/null || echo "no-git")
@@ -33,7 +38,9 @@ REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 [[ -z "$REPO_ROOT" ]] && REPO_ROOT="${PWD}"
 
 # ---------------------------------------------------------------------------
-# Detect spec base: nearest dir with a package manifest, up to git root
+# Detect package root: nearest dir with a package manifest, up to git root.
+# Used only to compute the path relative to the git root — specs themselves
+# always live under <git-root>/specs/, mirroring the repo structure.
 # ---------------------------------------------------------------------------
 detect_spec_base() {
   local dir="${PWD}"
@@ -50,7 +57,13 @@ detect_spec_base() {
 }
 
 SPEC_BASE=$(detect_spec_base)
-SPEC_DIR="$SPEC_BASE/specs/$SLUG"
+PKG_REL="${SPEC_BASE#"$REPO_ROOT"}"
+PKG_REL="${PKG_REL#/}"
+if [[ -n "$PKG_REL" ]]; then
+  SPEC_DIR="$REPO_ROOT/specs/$PKG_REL/$SLUG"
+else
+  SPEC_DIR="$REPO_ROOT/specs/$SLUG"
+fi
 
 if [[ -d "$SPEC_DIR" ]]; then
   echo "exists:$SPEC_DIR commit:$COMMIT date:$DATE"
