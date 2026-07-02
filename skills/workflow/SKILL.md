@@ -105,9 +105,11 @@ git log --oneline -5
 ### MEDIUM
 
 ```
-1. Write a short inline plan covering:
-   - Files to touch and what changes in each
-   - New types, interfaces, or procedures needed
+1. Write a short inline plan — same section shape as write-plan, kept lean:
+   - Overview — goal + approach in 2-3 sentences
+   - Files — each file to touch and what changes
+   - Interfaces — new types, signatures, or procedures
+   - Sketch — a few lines of code ONLY where the logic is non-obvious
    - Edge cases to handle
 2. CP-1 — "Plan ready. What next?"
 3. Implement top-to-bottom

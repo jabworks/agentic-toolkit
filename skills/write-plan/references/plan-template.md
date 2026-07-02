@@ -52,6 +52,20 @@ genuinely none.
   how neighbouring tasks learn the names and types they share. Use "None" for
   a leaf task.
 
+**Sketch:** _(optional — include only where seeing the code changes whether
+you'd approve: the non-obvious algorithm, a tricky transform, a key data
+shape or type definition. Skip boilerplate the implementer will obviously
+write.)_
+
+```ts
+type Layer = { id: string; visible: boolean };
+
+// core logic worth reviewing before it's written
+function mergeLayers(base: Layer[], incoming: Layer[]): Layer[] {
+  // …the actual approach, concrete enough to annotate and tweak
+}
+```
+
 **Gotchas:**
 
 - Use `dayjs` for date handling, not native JS `Date`

@@ -85,6 +85,12 @@ from headings, and `###` renders as a greyed sub-entry).
 - Produces: what later tasks rely on — exact function names, parameter and
   return types (or "None" for a leaf task)
 
+**Sketch:** _(optional)_
+
+```ts
+// only the code worth annotating before it's written
+```
+
 **Gotchas:**
 
 - Use `dayjs` for date handling, not native JS Date
@@ -99,6 +105,25 @@ implementer (especially a subagent) sees only their own card, so `Consumes`
 / `Produces` is how neighbouring tasks agree on exact names and types. This
 is what prevents drift like `clearLayers()` in Task 3 vs `clearFullLayers()`
 in Task 7.
+
+## Code Sketches
+
+Plans are reviewed by annotation before any code is written, so the cheapest
+place to catch a bad approach is the plan. Include a **Sketch** whenever
+seeing the code changes whether you'd approve the task:
+
+- ✓ The non-obvious algorithm or the tricky transform
+- ✓ A key data shape, schema, or type/interface definition
+- ✓ A function signature whose contract other tasks depend on
+
+Keep sketches to the code that carries a decision. They are illustrative
+intent for the reviewer to tweak — not the final implementation, and not a
+substitute for the implementer's judgement. Do **not** sketch:
+
+- ✗ Boilerplate the implementer will obviously write (CRUD, wiring, imports)
+- ✗ Full file bodies — show the part worth reviewing, elide the rest with `…`
+- ✗ Test code (that belongs to `/tdd`)
+- ✗ The TDD micro-step cycle (write test → run → implement → run → commit)
 
 ## Plan Document Structure
 
@@ -168,9 +193,10 @@ decision is submitted) and branch on the result:
 **If straight to implementation chosen:** proceed directly, no server
 launch.
 
-This applies to the plan doc this skill produces (LARGE tier). It does
-not apply to `/workflow`'s MEDIUM-tier inline quick-plan, which isn't
-written via this skill.
+This applies to the plan doc this skill produces (LARGE tier).
+`/workflow`'s MEDIUM-tier quick-plan uses the same section shape and card
+fields (Overview · Files · Interfaces · Sketch · Gotchas) inline and lean —
+it is not written via this skill, but stays consistent with this structure.
 
 ## Plan Failures — Never Write These
 
@@ -192,7 +218,7 @@ Ask yourself: could this task be reviewed as a standalone PR? If yes, it's the r
 ## What Does NOT Happen
 
 ```
-✗ Writing code in the plan
+✗ Full implementations or boilerplate (sketch decision-carrying code only — see Code Sketches)
 ✗ Exact commands with expected output
 ✗ Test code in the plan (tests are written during /tdd)
 ✗ Modifying the plan file after it's saved
