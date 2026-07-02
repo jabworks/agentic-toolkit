@@ -63,8 +63,12 @@ no separate HTML file is produced.
 
 ## Task Card Format
 
+Each task card is a **top-level `##` heading** — this makes every task a
+first-class entry in the plan-review navigation menu (the TOC is generated
+from headings, and `###` renders as a greyed sub-entry).
+
 ```markdown
-### Task N: <Short Name>
+## Task N: <Short Name>
 
 **What:** One paragraph — what this task builds or changes.
 
@@ -73,7 +77,13 @@ no separate HTML file is produced.
 **Files:**
 
 - Create: `exact/path/to/file.ts`
-- Modify: `exact/path/to/existing.ts`
+- Modify: `exact/path/to/existing.ts:123-145`
+
+**Interfaces:**
+
+- Consumes: what this task uses from earlier tasks — exact names / signatures
+- Produces: what later tasks rely on — exact function names, parameter and
+  return types (or "None" for a leaf task)
 
 **Gotchas:**
 
@@ -84,34 +94,44 @@ no separate HTML file is produced.
 **Dependencies:** Task 2, Task 3 (or "None")
 ```
 
+The `Interfaces` block carries the typed contract between tasks: a task's
+implementer (especially a subagent) sees only their own card, so `Consumes`
+/ `Produces` is how neighbouring tasks agree on exact names and types. This
+is what prevents drift like `clearLayers()` in Task 3 vs `clearFullLayers()`
+in Task 7.
+
 ## Plan Document Structure
+
+Fill in `references/plan-template.md` — it is the canonical skeleton, kept
+consistent so the plan-review nav renders the same predictable TOC every
+time (`Overview · Global Constraints · Files Affected · Task Checklist ·
+Task 1…N`). Do not reinvent the section set or reorder it.
 
 ```markdown
 # Plan: <Feature Name>
 
 > Date: YYYY-MM-DD
 
-## Goal
+## Overview
 
-One sentence.
+**Goal:** one sentence. **Approach:** 2-3 sentences. **Tech / conventions:** key libs and rules.
 
-## Approach
+## Global Constraints
 
-2-3 sentences on the chosen direction.
+- Project-wide rules copied verbatim from the design/spec (delete if none).
 
 ## Files Affected
 
 - `path/to/file.ts` — what it does / what changes
 
-## Tasks
+## Task Checklist
 
 - [ ] Task 1: ...
 - [ ] Task 2: ...
-- [ ] Task 3: ...
 
 ---
 
-[Task cards follow]
+[Task cards follow — each a top-level ## heading]
 ```
 
 ## Save Path
