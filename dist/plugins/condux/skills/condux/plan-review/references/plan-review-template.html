@@ -123,10 +123,13 @@
       .diffline.del { background: var(--destructive-muted); color: var(--destructive); }
       .diffline.del .g { color: var(--destructive); }
       .diffline.fold { justify-content: center; color: var(--subtle); font-style: italic; padding: 3px 12px; }
-      h1, h2, h3 { line-height: 1.3; margin: 1.5em 0 0.6em; scroll-margin-top: 24px; }
+      h1, h2, h3, h4, h5, h6 { line-height: 1.3; margin: 1.5em 0 0.6em; scroll-margin-top: 24px; }
       h1 { font-size: 21px; } h2 { font-size: 16px; } h3 { font-size: 14px; color: var(--muted-foreground); }
+      h4 { font-size: 13px; } h5, h6 { font-size: 12px; color: var(--muted-foreground); }
       p { margin: 0.6em 0; }
       ul, ol { margin: 0.6em 0; padding-left: 22px; } li { margin: 0.25em 0; }
+      li.task { list-style: none; margin-left: -18px; }
+      del { color: var(--subtle); }
       a { color: var(--info); }
       code { background: var(--muted); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; font-size: 12px; }
       pre { background: var(--muted); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; overflow-x: auto; }
@@ -293,179 +296,34 @@
     <script>
       // ---- Self-contained Markdown renderer (no external deps) ----
       function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-      function inline(s){return esc(s)
-        .replace(/`([^`]+)`/g,'<code>$1</code>')
-        .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
-        .replace(/(^|[^*])\*([^*]+)\*/g,'$1<em>$2</em>')
-        .replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" rel="noopener noreferrer">$1</a>');}
+      function inline(s){
+        const codes=[];
+        s=esc(s).replace(/`([^`]+)`/g,function(_,c){codes.push('<code>'+c+'</code>');return '\u0000'+(codes.length-1)+'\u0000';});
+        s=s.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
+           .replace(/__([^_]+)__/g,'<strong>$1</strong>')
+           .replace(/(^|[^*])\*([^*]+)\*/g,'$1<em>$2</em>')
+           .replace(/(^|[^\w_])_([^_]+)_(?![\w_])/g,'$1<em>$2</em>')
+           .replace(/~~([^~]+)~~/g,'<del>$1</del>')
+           .replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" rel="noopener noreferrer">$1</a>');
+        return s.replace(/\u0000(\d+)\u0000/g,function(_,n){return codes[+n];});
+      }
+
       function renderBlocks(md){
         const lines=md.replace(/\r\n/g,'\n').split('\n'); const out=[]; let i=0;
         function tcells(row){ return row.trim().replace(/^\|/,'').replace(/\|\s*$/,'').split('|').map(function(c){return c.trim();}); }
         function isDelim(row){ if(row.indexOf('|')<0) return false; const cs=tcells(row); return cs.length>0 && cs.every(function(c){return /^:?-{1,}:?$/.test(c);}); }
+        function litem(raw){ let item=raw.replace(/^\s*([-*+]|\d+\.)\s/,''); const cb=item.match(/^\[([ xX])\]\s+/); if(cb){ item=item.slice(cb[0].length); return '<li class="task">'+(/[xX]/.test(cb[1])?'☑':'☐')+' '+inline(item)+'</li>'; } return '<li>'+inline(item)+'</li>'; }
         while(i<lines.length){let line=lines[i];
           if(/^```/.test(line)){const buf=[];i++;while(i<lines.length&&!/^```/.test(lines[i]))buf.push(lines[i++]);i++;out.push({html:'<pre><code>'+esc(buf.join('\n'))+'</code></pre>',heading:null});continue;}
           if(/^\s*$/.test(line)){i++;continue;}
-          if(/^#{1,3}\s/.test(line)){const lvl=line.match(/^#+/)[0].length;const text=line.replace(/^#+\s/,'');out.push({html:'<h'+lvl+'>'+inline(text)+'</h'+lvl+'>',heading:{level:lvl,text:text}});i++;continue;}
+          if(/^#{1,6}\s/.test(line)){const lvl=line.match(/^#+/)[0].length;const text=line.replace(/^#+\s/,'');out.push({html:'<h'+lvl+'>'+inline(text)+'</h'+lvl+'>',heading:{level:lvl,text:text}});i++;continue;}
           if(/^---+\s*$/.test(line)){out.push({html:'<hr>',heading:null});i++;continue;}
           if(/^\s*>/.test(line)){const buf=[];while(i<lines.length&&/^\s*>/.test(lines[i]))buf.push(lines[i++].replace(/^\s*>\s?/,''));out.push({html:'<blockquote>'+inline(buf.join(' '))+'</blockquote>',heading:null});continue;}
-          if(/^\s*([-*+]|\d+\.)\s/.test(line)){const ordered=/^\s*\d+\./.test(line);const buf=[];while(i<lines.length&&/^\s*([-*+]|\d+\.)\s/.test(lines[i])){buf.push('<li>'+inline(lines[i].replace(/^\s*([-*+]|\d+\.)\s/,''))+'</li>');i++;}out.push({html:'<'+(ordered?'ol':'ul')+'>'+buf.join('')+'</'+(ordered?'ol':'ul')+'>',heading:null});continue;}
-          if(line.indexOf('|')>=0&&i+1<lines.length&&isDelim(lines[i+1])){const header=tcells(line);const aligns=tcells(lines[i+1]).map(function(c){const l=/^:/.test(c),r=/:$/.test(c);return l&&r?'center':r?'right':l?'left':'';});i+=2;const rows=[];while(i<lines.length&&lines[i].indexOf('|')>=0&&!/^\s*$/.test(lines[i])&&!/^(#{1,3}\s|```|---+\s*$)/.test(lines[i])){rows.push(tcells(lines[i]));i++;}let h='<table><thead><tr>';header.forEach(function(c,ci){h+='<th'+(aligns[ci]?' style="text-align:'+aligns[ci]+'"':'')+'>'+inline(c)+'</th>';});h+='</tr></thead><tbody>';rows.forEach(function(cs){h+='<tr>';header.forEach(function(_,ci){h+='<td'+(aligns[ci]?' style="text-align:'+aligns[ci]+'"':'')+'>'+inline(cs[ci]!==undefined?cs[ci]:'')+'</td>';});h+='</tr>';});h+='</tbody></table>';out.push({html:h,heading:null});continue;}
-          const buf=[];while(i<lines.length&&!/^\s*$/.test(lines[i])&&!/^(#{1,3}\s|```|\s*>|\s*([-*+]|\d+\.)\s|---+\s*$)/.test(lines[i])&&!(lines[i].indexOf('|')>=0&&i+1<lines.length&&isDelim(lines[i+1])))buf.push(lines[i++]);
+          if(/^\s*([-*+]|\d+\.)\s/.test(line)){const ordered=/^\s*\d+\./.test(line);const buf=[];while(i<lines.length&&/^\s*([-*+]|\d+\.)\s/.test(lines[i])){buf.push(litem(lines[i]));i++;}out.push({html:'<'+(ordered?'ol':'ul')+'>'+buf.join('')+'</'+(ordered?'ol':'ul')+'>',heading:null});continue;}
+          if(line.indexOf('|')>=0&&i+1<lines.length&&isDelim(lines[i+1])){const header=tcells(line);const aligns=tcells(lines[i+1]).map(function(c){const l=/^:/.test(c),r=/:$/.test(c);return l&&r?'center':r?'right':l?'left':'';});i+=2;const rows=[];while(i<lines.length&&lines[i].indexOf('|')>=0&&!/^\s*$/.test(lines[i])&&!/^(#{1,6}\s|```|---+\s*$)/.test(lines[i])){rows.push(tcells(lines[i]));i++;}let h='<table><thead><tr>';header.forEach(function(c,ci){h+='<th'+(aligns[ci]?' style="text-align:'+aligns[ci]+'"':'')+'>'+inline(c)+'</th>';});h+='</tr></thead><tbody>';rows.forEach(function(cs){h+='<tr>';header.forEach(function(_,ci){h+='<td'+(aligns[ci]?' style="text-align:'+aligns[ci]+'"':'')+'>'+inline(cs[ci]!==undefined?cs[ci]:'')+'</td>';});h+='</tr>';});h+='</tbody></table>';out.push({html:h,heading:null});continue;}
+          const buf=[];while(i<lines.length&&!/^\s*$/.test(lines[i])&&!/^(#{1,6}\s|```|\s*>|\s*([-*+]|\d+\.)\s|---+\s*$)/.test(lines[i])&&!(lines[i].indexOf('|')>=0&&i+1<lines.length&&isDelim(lines[i+1])))buf.push(lines[i++]);
           out.push({html:'<p>'+inline(buf.join(' '))+'</p>',heading:null});}
         return out;
-      }
-
-      // ---- State ----
-      const annotations = []; let nextId = 1;
-      const planEl=document.getElementById('plan');
-      const tocEl=document.getElementById('toc');
-      const pop=document.getElementById('popover');
-      const popQuote=document.getElementById('pop-quote');
-      const popText=document.getElementById('pop-text');
-      const popCats=document.getElementById('pop-cats');
-      const main=document.querySelector('.main');
-      let pendingRange=null, pendingQuote='', pendingSection='', pendingCat=null, selDoc=null;
-      function setCat(cat){ pendingCat=cat; popCats.querySelectorAll('.chip').forEach(function(x){x.classList.toggle('active',x.dataset.cat===cat);}); }
-      // Step 1 shows just the quote + category menubar. Choosing a category expands
-      // the toolbar to reveal the note input and action buttons (step 2).
-      popCats.querySelectorAll('.chip').forEach(function(c){
-        c.onmousedown=function(e){ e.preventDefault(); }; // keep the text selection alive
-        c.onclick=function(){ setCat(c.dataset.cat); pop.classList.add('expanded'); placePopover(); popText.focus(); };
-      });
-
-      // ---- Documents: one pane per doc (a single plan file, or a spec dir) ----
-      // Panes stay in the DOM when hidden, so highlights and note anchors on an
-      // inactive doc survive switching back and forth.
-      let DIRMODE=false, docs=[], activeDoc=null;
-      const docState={}; // name -> { md, pane, scroll, key, headings }
-
-      function renderDocPane(doc, md){
-        const st=docState[doc];
-        st.md=md; st.pane.innerHTML=''; st.headings=[];
-        let section='(top)';
-        renderBlocks(md).forEach(function(b,idx){
-          const id=st.key+'-blk-'+idx;
-          const wrap=document.createElement('div'); wrap.className='blk'; wrap.id=id; wrap.innerHTML=b.html;
-          if(b.heading){ section=id; st.headings.push({id:id,level:b.heading.level,text:b.heading.text}); }
-          wrap.dataset.section=section; st.pane.appendChild(wrap);
-        });
-      }
-
-      function buildToc(){
-        tocEl.innerHTML='';
-        var lastGroup=null;
-        docs.forEach(function(doc){
-          const st=docState[doc];
-          if(DIRMODE){
-            const slash=doc.lastIndexOf('/');
-            const group=slash>=0?doc.slice(0,slash):'';
-            if(group && group!==lastGroup){ const g=document.createElement('div'); g.className='group'; g.title=group; g.textContent=group; tocEl.appendChild(g); }
-            lastGroup=group;
-            const d=document.createElement('a'); d.href='#'; d.className='doc'; d.dataset.doc=doc;
-            const t=document.createElement('span'); t.className='t'; t.textContent=slash>=0?doc.slice(slash+1):doc; d.appendChild(t);
-            const bd=document.createElement('span'); bd.className='badge badge-warning'; bd.style.display='none'; bd.dataset.fordoc=doc; d.appendChild(bd);
-            d.onclick=function(e){ e.preventDefault(); switchDoc(doc); main.scrollTop=0; };
-            tocEl.appendChild(d);
-          }
-          st.headings.forEach(function(h){
-            const a=document.createElement('a'); a.href='#'+h.id;
-            a.className='lvl'+(DIRMODE?Math.min(h.level+1,3):h.level); a.dataset.target=h.id; a.dataset.doc=doc;
-            const t=document.createElement('span'); t.className='t'; t.textContent=h.text; a.appendChild(t);
-            const bd=document.createElement('span'); bd.className='badge badge-warning'; bd.style.display='none'; bd.dataset.for=h.id; a.appendChild(bd);
-            a.onclick=function(e){ e.preventDefault(); if(doc!==activeDoc)switchDoc(doc);
-              document.getElementById(h.id).scrollIntoView({behavior:'smooth',block:'start'}); };
-            tocEl.appendChild(a);
-          });
-        });
-        observeHeadings(); updateBadges();
-      }
-
-      function switchDoc(doc){
-        if(activeDoc&&docState[activeDoc]) docState[activeDoc].scroll=main.scrollTop;
-        activeDoc=doc;
-        docs.forEach(function(d){ docState[d].pane.style.display=d===doc?'':'none'; });
-        tocEl.querySelectorAll('a.doc').forEach(function(a){ a.classList.toggle('active',a.dataset.doc===doc); });
-        main.scrollTop=docState[doc].scroll||0;
-        observeHeadings();
-      }
-
-      // ---- Selection -> highlight ----
-      function blockOf(node){ while(node&&node!==planEl){ if(node.classList&&node.classList.contains('blk')) return node; node=node.parentNode; } return null; }
-
-      // Anchor the toolbar to the stored selection; sits above it, flips below
-      // only when the selection is too near the top of the scroll area.
-      function placePopover(){
-        if(!selDoc) return;
-        const pw=pop.offsetWidth, ph=pop.offsetHeight;
-        const left=Math.max(4, Math.min(selDoc.left, main.scrollWidth-pw-8));
-        let top=selDoc.top-ph-10;
-        if(top < main.scrollTop+4){ top=selDoc.bottom+10; pop.classList.add('below'); pop.classList.remove('above'); }
-        else { pop.classList.add('above'); pop.classList.remove('below'); }
-        pop.style.left=left+'px'; pop.style.top=top+'px';
-      }
-      function openToolbar(){
-        popQuote.textContent='“'+pendingQuote+'”'; popText.value='';
-        pendingCat=null; popCats.querySelectorAll('.chip').forEach(function(x){x.classList.remove('active');});
-        pop.classList.remove('expanded');
-        pop.style.display='block'; placePopover();
-      }
-      // Selecting text in the plan opens the menubar above the selection.
-      document.addEventListener('mouseup', function(e){
-        if(pop.contains(e.target)) return;
-        setTimeout(function(){
-          const sel=window.getSelection();
-          if(!sel.rangeCount||sel.isCollapsed) return;
-          const r=sel.getRangeAt(0);
-          if(!planEl.contains(r.commonAncestorContainer)||!sel.toString().trim()) return;
-          pendingRange=r.cloneRange(); pendingQuote=sel.toString().trim();
-          const blk=blockOf(pendingRange.startContainer); pendingSection=blk?blk.dataset.section:'(top)';
-          const rect=pendingRange.getBoundingClientRect(); const host=main.getBoundingClientRect();
-          selDoc={ left: rect.left-host.left+main.scrollLeft, top: rect.top-host.top+main.scrollTop, bottom: rect.bottom-host.top+main.scrollTop };
-          openToolbar();
-        },0);
-      });
-
-      function highlight(range, aid){
-        const root=range.commonAncestorContainer; const base=root.nodeType===3?root.parentNode:root;
-        const walker=document.createTreeWalker(base,NodeFilter.SHOW_TEXT,null); const nodes=[]; let n;
-        while(n=walker.nextNode()){ if(range.intersectsNode(n)&&n.nodeValue.trim()!=='') nodes.push(n); }
-        nodes.forEach(function(node){
-          let s=0,e=node.nodeValue.length;
-          if(node===range.startContainer) s=range.startOffset;
-          if(node===range.endContainer) e=range.endOffset;
-          if(s>=e) return;
-          const rng=document.createRange(); rng.setStart(node,s); rng.setEnd(node,e);
-          const m=document.createElement('mark'); m.className='hl'; m.dataset.aid=String(aid);
-          try{ rng.surroundContents(m); }catch(err){}
-        });
-      }
-      function unhighlight(aid){
-        document.querySelectorAll('mark.hl[data-aid="'+aid+'"]').forEach(function(m){
-          const p=m.parentNode; while(m.firstChild) p.insertBefore(m.firstChild,m); p.removeChild(m); p.normalize();
-        });
-      }
-
-      function saveNote(){
-        const text=popText.value.trim(); if(!text||!pendingRange) { closePop(); return; }
-        const id=nextId++;
-        try{ highlight(pendingRange,id); }catch(e){}
-        annotations.push({id:id,kind:'note',cat:pendingCat,quote:pendingQuote,text:text,section:pendingSection,doc:activeDoc});
-        closePop(); window.getSelection().removeAllRanges(); paint();
-      }
-      function closePop(){ pop.style.display='none'; pop.classList.remove('expanded'); pendingRange=null; }
-      document.getElementById('pop-save').onclick=saveNote;
-      document.getElementById('pop-cancel').onclick=function(){closePop();window.getSelection().removeAllRanges();};
-      popText.addEventListener('keydown',function(e){ if((e.metaKey||e.ctrlKey)&&e.key==='Enter')saveNote(); if(e.key==='Escape')closePop(); });
-      document.addEventListener('mousedown',function(e){ if(!pop.contains(e.target)&&pop.style.display==='block') closePop(); });
-
-      planEl.addEventListener('click',function(e){
-        const m=e.target.closest&&e.target.closest('mark.hl'); if(!m) return;
-        focusNote(m.dataset.aid,true);
-      });
-      function focusNote(aid,scroll){
-        document.querySelectorAll('mark.hl').forEach(function(x){x.classList.toggle('active',x.dataset.aid===String(aid));});
-        document.querySelectorAll('.msg.note').forEach(function(x){x.classList.toggle('active',x.dataset.aid===String(aid));});
-        if(scroll){const el=document.querySelector('.msg.note[data-aid="'+aid+'"]'); if(el)el.scrollIntoView({block:'nearest'});}
       }
 
       function sendChat(){ const ta=document.getElementById('input'); const text=ta.value.trim(); if(!text)return;
