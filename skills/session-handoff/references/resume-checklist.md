@@ -51,3 +51,8 @@ For each file in "Critical files":
 - Start at "Immediate Next Steps §1"
 - Don't re-litigate decisions in "Decisions made" without a reason
 - If you discover major new context mid-session, update this handoff before the session ends
+
+## 8. Prune
+
+- Once the resume has landed, this handoff is consumed — offer to delete it
+  (and its `continues-from` chain) per the Prune workflow in SKILL.md

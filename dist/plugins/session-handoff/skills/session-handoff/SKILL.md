@@ -1,7 +1,7 @@
 ---
 name: session-handoff
 description: Creates and resumes handoff documents for seamless agentic coding session transitions.
-when_to_use: Trigger when context approaches capacity (>80%), at natural pauses, when switching workstreams, or when resuming prior work. Trigger phrases: "save state", "handoff", "wrap up", "resume", "continue from last session".
+when_to_use: Trigger when context approaches capacity (>80%), at natural pauses, when switching workstreams, or when resuming prior work. Trigger phrases: "save state", "handoff", "wrap up", "resume", "continue from last session", "clear handoffs", "prune handoffs".
 ---
 
 # Session Handoff Skill
@@ -41,6 +41,7 @@ Preserve and restore session context across agentic coding sessions.
    - Next steps are specific (file:line, not "fix the auth")
 5. **Save** to `handoffs/YYYY-MM-DD-HHMMSS-[slug].[md|html]`. For **both**, save the two files under the *same* `YYYY-MM-DD-HHMMSS-[slug]` stem, differing only in extension.
 6. Confirm: "Handoff saved: `handoffs/<filename>`" (list both paths when **both** was chosen)
+7. **Retention check** — after saving, run the Prune workflow below on the remaining files: flag the new handoff's `continues-from` predecessor chain as superseded, plus anything very stale, and offer to delete them.
 
 ## Resume workflow
 
@@ -57,6 +58,29 @@ Preserve and restore session context across agentic coding sessions.
 4. **Run the resume checklist** at `references/resume-checklist.md`
 5. **Report** staleness level and any red flags to the user before touching code
 6. Begin at "Immediate Next Steps §1"
+7. **After the resume has landed** (next steps under way or superseded by new direction), offer to delete the consumed handoff — and any older handoffs it chains to via `continues-from`. A resumed handoff is spent: its context now lives in the session and the next handoff.
+
+## Prune workflow
+
+Handoffs are disposable by design — once consumed or superseded, delete them.
+Runs after a resume (step 7), after a create (step 7), or on request
+("clear handoffs", "prune handoffs").
+
+1. **Identify candidates** in `handoffs/`:
+   - **Consumed** — resumed in this session and the work has moved on
+   - **Superseded** — a newer handoff names it (directly or transitively) in `continues-from`
+   - **Very stale** — >30 days old or >20 commits behind (see Staleness scoring)
+   - **Overflow** — beyond the 5 most recent stems, oldest first
+2. **Present the list** with one reason per file and ask for a single yes/no
+   confirmation for the whole batch (the user can exclude items). Never delete
+   without asking; never ask file-by-file.
+3. **Delete** confirmed files with `rm`. Twin formats share a stem — always
+   remove `.md` and `.html` together. If the file is tracked in git, use
+   `git rm` so the deletion is staged.
+4. Report what was removed and what was kept.
+
+Never prune: the handoff just created, anything the user excluded, or the
+only handoff for a branch with uncommitted work it describes.
 
 ## Staleness scoring
 
