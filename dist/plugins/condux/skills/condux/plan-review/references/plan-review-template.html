@@ -82,6 +82,7 @@
       .nav .tab:last-child { border-right: none; }
       .nav .tab:hover { color: var(--foreground); }
       .nav .tab.active { background: var(--accent); color: var(--foreground); }
+      .nav .group { font: 600 10px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--subtle); margin: 14px 6px 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
       .nav a.doc { font-weight: 600; color: var(--foreground); margin-top: 10px; }
       .nav a.doc.active { border-left-color: var(--primary); background: var(--accent); }
       .nav a.file .t { font-size: 12px; }
@@ -345,11 +346,16 @@
 
       function buildToc(){
         tocEl.innerHTML='';
+        var lastGroup=null;
         docs.forEach(function(doc){
           const st=docState[doc];
           if(DIRMODE){
+            const slash=doc.lastIndexOf('/');
+            const group=slash>=0?doc.slice(0,slash):'';
+            if(group && group!==lastGroup){ const g=document.createElement('div'); g.className='group'; g.title=group; g.textContent=group; tocEl.appendChild(g); }
+            lastGroup=group;
             const d=document.createElement('a'); d.href='#'; d.className='doc'; d.dataset.doc=doc;
-            const t=document.createElement('span'); t.className='t'; t.textContent=doc; d.appendChild(t);
+            const t=document.createElement('span'); t.className='t'; t.textContent=slash>=0?doc.slice(slash+1):doc; d.appendChild(t);
             const bd=document.createElement('span'); bd.className='badge badge-warning'; bd.style.display='none'; bd.dataset.fordoc=doc; d.appendChild(bd);
             d.onclick=function(e){ e.preventDefault(); switchDoc(doc); main.scrollTop=0; };
             tocEl.appendChild(d);

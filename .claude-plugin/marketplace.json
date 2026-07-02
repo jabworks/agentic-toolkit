@@ -51,6 +51,15 @@
       },
       "source": "./dist/plugins/condux",
       "category": "development"
+    },
+    {
+      "name": "spec-browser",
+      "description": "Catalog and browse a growing specs/ tree: a plain-markdown index any agent can reference, plus a folder-grouped doc site reusing the plan-review renderer. No external services or plugins.",
+      "author": {
+        "name": "Hieu Vi"
+      },
+      "source": "./dist/plugins/spec-browser",
+      "category": "development"
     }
   ]
 }

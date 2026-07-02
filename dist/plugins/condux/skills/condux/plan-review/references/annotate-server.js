@@ -83,25 +83,39 @@ function start(planText, sourcePath) {
   listen();
 }
 
-// Directory mode: the reviewable documents — top-level *.md, index.md first,
-// skipping dotfiles and the feedback file this server writes itself.
+// Directory mode: the reviewable documents — every *.md in the tree, as POSIX
+// relative paths. Ordering groups docs by folder (root first), index.md first
+// within each folder. Skips dotfiles/dotdirs and the feedback file we write.
 function listDocs() {
-  try {
-    return fs.readdirSync(planFile)
-      .filter(function (n) { return /\.md$/i.test(n) && !/\.feedback\.md$/i.test(n) && n[0] !== '.'; })
-      .sort(function (a, b) {
-        if (a === 'index.md') return -1;
-        if (b === 'index.md') return 1;
-        return a.localeCompare(b);
-      });
-  } catch (e) { return []; }
+  const out = [];
+  (function walk(rel) {
+    let entries;
+    try { entries = fs.readdirSync(path.join(planFile, rel || '.'), { withFileTypes: true }); }
+    catch (e) { return; }
+    const dirs = [], files = [];
+    entries.forEach(function (e) {
+      if (e.name[0] === '.') return;
+      const r = rel ? rel + '/' + e.name : e.name;
+      if (e.isDirectory()) dirs.push(r);
+      else if (/\.md$/i.test(e.name) && !/\.feedback\.md$/i.test(e.name)) files.push(r);
+    });
+    files.sort(function (a, b) {
+      const ab = path.basename(a), bb = path.basename(b);
+      if (ab === 'index.md') return -1;
+      if (bb === 'index.md') return 1;
+      return ab.localeCompare(bb);
+    });
+    out.push.apply(out, files);
+    dirs.sort().forEach(walk);
+  })('');
+  return out;
 }
 
 function readPlan(doc) {
   try {
     if (DIR_MODE) {
       if (listDocs().indexOf(doc) < 0) return ''; // only enumerated docs are servable
-      return fs.readFileSync(path.join(planFile, doc), 'utf8');
+      return fs.readFileSync(path.join.apply(path, [planFile].concat(doc.split('/'))), 'utf8');
     }
     return fs.readFileSync(planFile, 'utf8');
   } catch (e) { return ''; }
@@ -110,12 +124,20 @@ function readPlan(doc) {
 function watchPlan() {
   try {
     if (DIR_MODE) {
-      // Watch the whole folder; tag events with the doc so the client reloads
-      // (and diffs) only the changed document.
-      fs.watch(planFile, {}, function (_, filename) {
-        if (!filename || !/\.md$/i.test(filename)) return;
-        if (/\.feedback\.md$/i.test(filename) || filename[0] === '.') return;
-        sseClients.forEach(function (res) { try { res.write('data: change:' + filename + '\n\n'); } catch (e) {} });
+      // Watch every folder that holds a doc (fs.watch recursion is unsupported
+      // on Linux). Tag events with the doc's relative path so the client
+      // reloads (and diffs) only the changed document.
+      const dirs = new Set(['']);
+      listDocs().forEach(function (d) { const i = d.lastIndexOf('/'); if (i >= 0) dirs.add(d.slice(0, i)); });
+      dirs.forEach(function (rel) {
+        try {
+          fs.watch(path.join(planFile, rel || '.'), {}, function (_, filename) {
+            if (!filename || !/\.md$/i.test(filename)) return;
+            if (/\.feedback\.md$/i.test(filename) || filename[0] === '.') return;
+            const relpath = rel ? rel + '/' + filename : filename;
+            sseClients.forEach(function (res) { try { res.write('data: change:' + relpath + '\n\n'); } catch (e) {} });
+          });
+        } catch (e) {}
       });
       return;
     }
