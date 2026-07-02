@@ -176,9 +176,7 @@
 
       /* Terminus: Separator + composer */
       .composer { border-top: 1px solid var(--border); padding: 12px 14px; }
-      .composer .send { margin-top: 8px; }
       .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 14px 14px; }
-      .actions .approve-wrap { grid-column: 1 / -1; }
       .count { color: var(--subtle); font-size: 11px; }
 
       /* Post-submit confirmation — replaces the decision buttons once a decision
@@ -236,12 +234,14 @@
         <div class="thread" id="thread"><div class="empty">No notes yet. Select text to comment, or send a message.</div></div>
         <div class="composer">
           <textarea class="ta" id="input" placeholder="Message the agent about this plan…"></textarea>
-          <button class="btn btn-soft btn-block send" id="send">Send message</button>
         </div>
+        <!-- Row 1 = give / send feedback · Row 2 = final decisions. Approve is no
+             longer an oversized top button, so a stray click can't approve early. -->
         <div class="actions" id="actions">
-          <div class="approve-wrap"><button class="btn btn-solid btn-block" data-decision="Approve">Approve &amp; proceed</button></div>
+          <button class="btn btn-soft" id="send">Send message</button>
           <button class="btn btn-outline" data-decision="Request Revisions">Request revisions</button>
-          <button class="btn btn-danger" data-decision="Deny">Deny</button>
+          <button class="btn btn-danger" data-decision="Reject">Reject</button>
+          <button class="btn btn-solid" data-decision="Approve">Approve</button>
         </div>
         <div class="sent" id="sent">
           <div class="h"><span class="ico" id="sent-ico"></span><span id="sent-title"></span></div>
@@ -422,7 +422,7 @@
       const SENT={
         'Approve':          {cls:'approve',ico:'✓',wait:false,title:'Approved',sub:'Sent to the agent — it will proceed and implement the plan.'},
         'Request Revisions':{cls:'revise', ico:'',wait:true, title:'Revisions requested',sub:'Your notes are on their way. The agent will revise the plan; the updated version reloads here when it’s ready.'},
-        'Deny':             {cls:'deny',   ico:'✕',wait:false,title:'Denied',sub:'Sent to the agent — it will step back and rework the approach.'},
+        'Reject':           {cls:'deny',   ico:'✕',wait:false,title:'Rejected',sub:'Sent to the agent — it will not implement this. It steps back to reconsider whether the feature should be built at all.'},
       };
       let submitting=false;
       function clearAllNotes(){
@@ -454,7 +454,7 @@
       }
       document.getElementById('send').onclick=sendChat;
       document.getElementById('input').addEventListener('keydown',function(e){if((e.metaKey||e.ctrlKey)&&e.key==='Enter')sendChat();});
-      document.querySelectorAll('.actions button').forEach(function(b){b.onclick=function(){submit(b.dataset.decision);};});
+      document.querySelectorAll('.actions button[data-decision]').forEach(function(b){b.onclick=function(){submit(b.dataset.decision);};});
 
       // ---- Revision diff (self-contained line-level LCS, no deps) ----
       function lineDiff(a,b){

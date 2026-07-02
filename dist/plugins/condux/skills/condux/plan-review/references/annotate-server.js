@@ -12,10 +12,10 @@
 //            (agent-invoked) Long-lived review server for the iterative loop.
 //            The agent launches it once in the background, then BLOCKS on
 //            GET /api/decision (a long-poll) which resolves when you submit:
-//              {"decision":"Approve|Request Revisions|Deny","feedback":<md>,"feedbackFile":<path>}
+//              {"decision":"Approve|Request Revisions|Reject","feedback":<md>,"feedbackFile":<path>}
 //            On "Request Revisions" the agent edits <plan-file.md> in place — the
 //            SAME browser tab live-reloads over SSE — and re-polls. On Approve or
-//            Deny the review is over and the server exits. Default port 7777 so
+//            Reject the review is over and the server exits. Default port 7777 so
 //            the agent knows the URL without discovery. Diagnostics go to stderr.
 //
 //   Hook:    node annotate-server.js --hook   (Claude Code)
@@ -23,8 +23,8 @@
 //            renders tool_input.plan, blocks until you decide, then prints a
 //            hookSpecificOutput JSON decision to stdout and exits:
 //              Approve          -> permissionDecision "allow"
-//              Request Revisions -> permissionDecision "deny" (reason = feedback)
-//              Deny             -> permissionDecision "deny" (reason = feedback)
+//              Request Revisions -> permissionDecision "deny" (reason: revise this plan)
+//              Reject           -> permissionDecision "deny" (reason: do not implement, reconsider)
 //
 //   Codex:   node annotate-server.js --codex-stop   (Codex Stop hook)
 //            Reads a Codex Stop payload on stdin. Only reviews planning turns
@@ -32,8 +32,8 @@
 //            turn completes untouched. The plan is taken from last_assistant_message
 //            (falling back to transcript_path). On decide it prints a Stop result:
 //              Approve          -> "{}"  (turn completes, plan accepted)
-//              Request Revisions -> {"decision":"block","reason":<feedback>}  (Codex revises)
-//              Deny             -> {"decision":"block","reason":<feedback>}  (Codex revises)
+//              Request Revisions -> {"decision":"block", reason: revise this plan}
+//              Reject           -> {"decision":"block", reason: do not implement, reconsider}
 //
 //            In hook/codex modes all diagnostics go to stderr so stdout stays clean JSON.
 'use strict';
@@ -115,6 +115,19 @@ function feedbackMarkdown(decision, thread) {
   return lines.join('\n');
 }
 
+// The agent-facing reason string. "Reject" and "Request Revisions" are distinct
+// intents: Reject = do not implement, reconsider the whole approach; Request
+// Revisions = iterate on this plan and re-present it.
+function feedbackReason(decision, md) {
+  if (decision === 'Reject') {
+    return 'Plan review: Rejected. Do NOT implement this plan. Step back and ' +
+      'reconsider whether this feature or approach should be built at all — then ' +
+      'propose a fundamentally different approach or stop. Context:\n\n' + md;
+  }
+  return 'Plan review: Request Revisions. Revise the plan to address the ' +
+    'following, then re-present it:\n\n' + md;
+}
+
 // Decide what to do once the user submits in the browser.
 function resolveDecision(decision, thread) {
   const md = feedbackMarkdown(decision, thread);
@@ -129,8 +142,7 @@ function resolveDecision(decision, thread) {
       }
     } else {
       out.hookSpecificOutput.permissionDecision = 'deny';
-      out.hookSpecificOutput.permissionDecisionReason =
-        'Plan review: ' + decision + '. Revise the plan to address:\n\n' + md;
+      out.hookSpecificOutput.permissionDecisionReason = feedbackReason(decision, md);
     }
     process.stdout.write(JSON.stringify(out));
     log('\n  Decision: ' + decision + ' — returned to agent. Stopping.\n');
@@ -143,10 +155,7 @@ function resolveDecision(decision, thread) {
     if (decision === 'Approve') {
       out = {};
     } else {
-      out = {
-        decision: 'block',
-        reason: 'Plan review: ' + decision + '. Revise the plan to address:\n\n' + md,
-      };
+      out = { decision: 'block', reason: feedbackReason(decision, md) };
     }
     process.stdout.write(JSON.stringify(out));
     log('\n  Decision: ' + decision + ' — returned to Codex. Stopping.\n');
@@ -155,7 +164,7 @@ function resolveDecision(decision, thread) {
     // Agent-invoked, long-lived: deliver the decision to the agent's pending
     // GET /api/decision long-poll. The server stays up across rounds so the same
     // browser tab live-reloads when the agent revises the plan on disk. On a
-    // terminal decision (Approve/Deny) the review is over, so we exit after the
+    // terminal decision (Approve/Reject) the review is over, so we exit after the
     // response flushes; on "Request Revisions" we keep serving the next round.
     fs.writeFileSync(feedbackFile, md);
     const payload = { decision: decision, feedback: md, feedbackFile: feedbackFile };
@@ -166,7 +175,7 @@ function resolveDecision(decision, thread) {
       pendingDecision = payload; // agent hasn't polled yet — hand it to the next GET
     }
     log('\n  Decision: ' + decision + ' — delivered to agent.\n');
-    if (decision === 'Approve' || decision === 'Deny') {
+    if (decision === 'Approve' || decision === 'Reject') {
       log('  Review concluded (' + decision + '). Stopping.\n');
       setTimeout(function () { process.exit(0); }, 400);
     }

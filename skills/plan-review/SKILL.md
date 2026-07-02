@@ -9,7 +9,8 @@ when_to_use: When the agent finishes planning (Claude Code ExitPlanMode, or a Co
 Interactive plan review. The agent's plan opens in a local browser; you select
 any text to attach an inline comment, chat with the agent, then submit a decision.
 The decision flows back to the agent — **Approve** lets it proceed, **Request
-Revisions** / **Deny** sends your notes back so it revises and re-presents.
+Revisions** sends your notes back so it revises and re-presents, and **Reject**
+tells it not to implement — reconsider whether the feature should be built.
 
 Inspired by [Plannotator](https://github.com/backnotprop/plannotator), rebuilt
 in-house so it carries **no third-party runtime dependency** and makes **no
@@ -56,8 +57,8 @@ What the hook returns to the agent:
 | Your decision | Hook output | Agent behavior |
 |---|---|---|
 | **Approve** | `permissionDecision: "allow"` (+ notes as `additionalContext` if any) | proceeds to implement |
-| **Request Revisions** | `permissionDecision: "deny"`, reason = your feedback | revises the plan, re-enters plan mode (re-triggers the hook) |
-| **Deny** | `permissionDecision: "deny"`, reason = your feedback | reworks the approach |
+| **Request Revisions** | `permissionDecision: "deny"`, reason = *revise this plan* + feedback | revises the plan, re-enters plan mode (re-triggers the hook) |
+| **Reject** | `permissionDecision: "deny"`, reason = *do not implement, reconsider* + feedback | stops; reconsiders whether the feature should be built, or proposes a different approach |
 
 ### Auto — Codex Stop hook
 
@@ -83,8 +84,8 @@ Codex** and **trust the hook** when prompted.
 | Your decision | Hook output | Codex behavior |
 |---|---|---|
 | **Approve** | `{}` (turn completes) | plan accepted, turn ends |
-| **Request Revisions** | `{"decision":"block","reason":<feedback>}` | revises the plan in the same turn (re-triggers on next stop) |
-| **Deny** | `{"decision":"block","reason":<feedback>}` | reworks the approach |
+| **Request Revisions** | `{"decision":"block","reason":<revise + feedback>}` | revises the plan in the same turn (re-triggers on next stop) |
+| **Reject** | `{"decision":"block","reason":<do not implement, reconsider + feedback>}` | stops; reconsiders whether the feature should be built, or proposes a different approach |
 
 Caveats: Codex hooks are **experimental and disabled on Windows**; the review is
 **post-render** (after Codex prints the plan), not a pre-interception like Claude
@@ -125,7 +126,7 @@ The agent runs the **iterative loop** off that decision:
 3. Branch on `decision`:
    - **Approve** → stop looping, implement the plan (use `feedback` as notes). The server exits.
    - **Request Revisions** → edit `<plan.md>` **in place**; the open tab live-reloads the new plan over SSE (orphaned notes auto-clear). **Go to 2.**
-   - **Deny** → stop; rework the approach or surface the blocker. The server exits.
+   - **Reject** → stop; do not implement — reconsider whether to build this, or surface the blocker. The server exits.
 
 Same steering the hooks give you, available to any agent that can run a command
 and read a file — at the cost of the agent orchestrating the loop itself rather
@@ -146,7 +147,7 @@ notes and messages above the decision buttons.
 │                     a category (Comment / Issue / Question /       │
 │                     Suggestion / Nitpick) → the note input opens.  │
 │                     Or message the agent in the Review rail.       │
-│  Step 3  DECIDE     Approve / Request Revisions / Deny.            │
+│  Step 3  DECIDE     Approve / Request Revisions / Reject.         │
 │  Step 4  RETURN     Decision + notes (each tagged with its        │
 │                     category and quoting its anchor) go back.     │
 └──────────────────────────────────────────────────────────────────┘
