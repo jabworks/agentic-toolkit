@@ -161,7 +161,12 @@ grouped by file — read it and action it:
 
 - **Approve** — the spec is accurate; nothing to do.
 - **Request Revisions** — fix the spec files per the notes.
-- **Reject** — the spec's premise is wrong; discuss before rewriting.
+
+Spec review is accept-or-fix, so the bar shows only these two verdicts (the
+plan-only "Reject / don't build it" verdict is hidden in directory mode). If
+the spec's whole premise is wrong, the user leaves a note saying so and stops
+the server — treat that as a cue to discuss before rewriting, not a routine
+revision.
 
 Tell the user:
 

@@ -280,7 +280,7 @@
          conversational (notes + messages). Reject is isolated on the left. -->
     <footer class="dbar">
       <div class="dbar-live" id="dbar-live">
-        <button class="btn btn-danger" data-decision="Reject">Reject</button>
+        <button class="btn btn-danger" id="btn-reject" data-decision="Reject">Reject</button>
         <span class="dbar-summary" id="dbar-summary"></span>
         <span class="dbar-group">
           <button class="btn btn-outline" data-decision="Request Revisions">Request revisions</button>
@@ -705,6 +705,9 @@
         let meta={dir:false,docs:['plan']};
         try{ meta=await (await fetch('/api/docs')).json(); }catch(e){}
         DIRMODE=!!meta.dir; docs=meta.docs||[];
+        // Directory (spec) review is accept-or-fix — a spec documents work already
+        // decided, so the plan-only "Reject / don't build it" verdict doesn't apply.
+        if(DIRMODE){ const rj=document.getElementById('btn-reject'); if(rj)rj.style.display='none'; }
         planEl.innerHTML='';
         docs.forEach(function(d,i){
           const pane=document.createElement('div'); pane.className='docpane'; pane.style.display='none';
