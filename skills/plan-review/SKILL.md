@@ -69,17 +69,21 @@ from the Stop payload (`last_assistant_message`, falling back to
 `transcript_path`) and opens the same review UI. On any other turn it emits `{}`
 and exits, leaving the turn untouched.
 
-Run the installer once (writes `~/.codex/hooks.json` + sets the feature flag):
+**Installed via the condux plugin?** The `Stop` hook ships with it. The Codex
+manifest (`.codex-plugin/plugin.json`) sets `"hooks": "./hooks/codex-hooks.json"`,
+which Codex loads **instead of** the default `hooks/hooks.json` (that one is
+Claude's `ExitPlanMode` hook, inert on Codex). Just enable `[features] hooks =
+true` in `$CODEX_HOME/config.toml`, then **restart Codex** and **trust the hook**
+when prompted — no installer needed.
+
+**Standalone (no plugin)?** Run the installer once — it writes `~/.codex/hooks.json`
++ sets the feature flag, then restart Codex and trust the hook:
 
 ```bash
 bash /PATH/TO/plan-review/references/install-codex-hook.sh
 # or, after a plugin install:
 find ~/.codex ~/.claude -name install-codex-hook.sh -path '*plan-review*' 2>/dev/null | head -1 | xargs bash
 ```
-
-It enables `[features] hooks = true` in `$CODEX_HOME/config.toml` and merges a
-`Stop` hook pointing at the absolute `annotate-server.js` path. Then **restart
-Codex** and **trust the hook** when prompted.
 
 | Your decision | Hook output | Codex behavior |
 |---|---|---|
@@ -90,8 +94,9 @@ Codex** and **trust the hook** when prompted.
 
 Caveats: Codex hooks are **experimental and disabled on Windows**; the review is
 **post-render** (after Codex prints the plan), not a pre-interception like Claude
-Code; use an **absolute** node/command path (Codex Desktop doesn't inherit `PATH`
-— the installer handles this).
+Code. The plugin hook invokes bare `node` (resolved via `${CLAUDE_PLUGIN_ROOT}`,
+which Codex sets for compatibility) — if Codex Desktop can't find `node` on
+`PATH`, fall back to the installer, which bakes in an **absolute** node path.
 
 ### Manual — on any file or spec directory
 
