@@ -83,7 +83,8 @@ Codex** and **trust the hook** when prompted.
 
 | Your decision | Hook output | Codex behavior |
 |---|---|---|
-| **Approve** | `{}` (turn completes) | plan accepted, turn ends |
+| **Approve** (no notes) | `{}` (turn completes) | plan accepted, turn ends |
+| **Approve** (with notes) | `{"decision":"block","reason":<approved + notes>}` | continues the turn; agent implements while addressing the notes |
 | **Request Revisions** | `{"decision":"block","reason":<revise + feedback>}` | revises the plan in the same turn (re-triggers on next stop) |
 | **Reject** | `{"decision":"block","reason":<do not implement, reconsider + feedback>}` | stops; reconsiders whether the feature should be built, or proposes a different approach |
 

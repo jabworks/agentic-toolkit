@@ -238,12 +238,16 @@ function resolveDecision(decision, thread) {
     log('\n  Decision: ' + decision + ' — returned to agent. Stopping.\n');
     setTimeout(function () { process.exit(0); }, 150);
   } else if (CODEX_STOP_MODE) {
-    // Codex Stop: "block" continues the turn with `reason` as a new prompt; an
-    // empty object lets the turn complete (= approve). Codex has no approve-with-
-    // notes channel, so approval simply completes; the notes are still logged.
+    // Codex Stop: "block" continues the turn with `reason` as a new user prompt;
+    // an empty object lets the turn complete. Codex has no approve-with-notes
+    // channel, so we reuse the continuation prompt to carry the notes: a bare
+    // Approve completes the turn, but Approve *with* notes continues it so the
+    // agent actually receives them (mirrors Claude Code's additionalContext).
     let out;
     if (decision === 'Approve') {
-      out = {};
+      out = (thread && thread.length)
+        ? { decision: 'block', reason: 'Plan approved with notes. Address these while implementing:\n\n' + md }
+        : {};
     } else {
       out = { decision: 'block', reason: feedbackReason(decision, md) };
     }
