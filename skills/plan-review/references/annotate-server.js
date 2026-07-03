@@ -66,6 +66,13 @@ let pendingDecision = null;  // decision that arrived before a waiter (steer)
 let planFile;       // path to the markdown file — or directory — being reviewed
 let feedbackFile;   // manual/steer modes
 let DIR_MODE = false; // reviewing a directory of markdown docs (spec folder)
+let tmpPlanFile = null; // hook-mode temp plan we created and must remove on exit
+
+// Remove the hook-mode temp plan file. Registered on 'exit' so it runs on every
+// termination path (decision delivered, SIGINT, fail()) without repeating cleanup.
+process.on('exit', function () {
+  if (tmpPlanFile) { try { fs.unlinkSync(tmpPlanFile); } catch (e) { /* already gone */ } }
+});
 
 function fail(msg) { console.error('  plan-review: ' + msg); process.exit(1); }
 
@@ -78,6 +85,7 @@ function start(planText, sourcePath) {
     // hook mode: persist the plan to a temp file so render + live-reload work uniformly
     planFile = path.join(os.tmpdir(), 'plan-review-' + process.pid + '.md');
     fs.writeFileSync(planFile, planText || '# (empty plan)\n');
+    tmpPlanFile = planFile; // mark for removal on exit
   }
   watchPlan();
   listen();
