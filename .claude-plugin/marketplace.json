@@ -60,6 +60,24 @@
       },
       "source": "./dist/plugins/spec-browser",
       "category": "development"
+    },
+    {
+      "name": "git-commit",
+      "description": "Craft a conventional-commit message from the diff and run the commit safely — review before staging, no blind `git add .`, multiline bodies via -F, branch check first.",
+      "author": {
+        "name": "Hieu Vi"
+      },
+      "source": "./dist/plugins/git-commit",
+      "category": "development"
+    },
+    {
+      "name": "git-operations",
+      "description": "Decision router for git: given a situation, pick the right operation (undo/discard/stash/merge/push) and run it safely with an undo path. Cross-links to git-commit for committing.",
+      "author": {
+        "name": "Hieu Vi"
+      },
+      "source": "./dist/plugins/git-operations",
+      "category": "development"
     }
   ]
 }
