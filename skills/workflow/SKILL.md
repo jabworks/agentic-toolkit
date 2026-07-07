@@ -1,6 +1,6 @@
 ---
 name: workflow
-description: Routes any dev task into the right execution tier (Small/Medium/Large). Confirms tier with user, then executes the matching flow. Only loads downstream skills (brainstorm, write-plan, finalize) when the tier flow reaches them.
+description: Routes any dev task into the right execution tier (Small/Medium/Large). Confirms tier with user, then executes the matching flow. Only loads downstream skills (discovery, draft-plan, finalize) when the tier flow reaches them.
 when_to_use: Trigger with any implementation request — feature, bug fix, refactor, new endpoint, UI change.
 argument-hint: "<task description>"
 ---
@@ -29,17 +29,17 @@ git log --oneline -5
 │  SMALL — isolated change, 1-3 files, clear requirements         │
 │  e.g. add a button, fix a label, wire a prop, patch a typo      │
 │                                                                  │
-│  implement → /verification → /finalize                          │
+│  implement → /preflight → /finalize                          │
 ├──────────────────────────────────────────────────────────────────┤
 │  MEDIUM — multi-file, some design needed, known boundaries      │
 │  e.g. new form + API route, new procedure, new UI feature       │
 │                                                                  │
-│  quick plan (inline) → implement → /verification → /finalize    │
+│  quick plan (inline) → implement → /preflight → /finalize    │
 ├──────────────────────────────────────────────────────────────────┤
 │  LARGE — cross-cutting, unclear scope, multiple subsystems      │
 │  e.g. new module, auth flow, data model change, new service     │
 │                                                                  │
-│  /brainstorm → /write-plan → implement → /verification →        │
+│  /discovery → /draft-plan → implement → /preflight →        │
 │  /finalize                                                       │
 └──────────────────────────────────────────────────────────────────┘
 ```
@@ -88,7 +88,7 @@ git log --oneline -5
 │  At each phase boundary, stop and present a "what next?" menu   │
 │  (AskUserQuestion), recommended option first. The user drives   │
 │  every transition — never auto-advance. See Checkpoints below.  │
-│  SMALL runs linear: implement → /verification → /finalize.      │
+│  SMALL runs linear: implement → /preflight → /finalize.      │
 └──────────────────────────────────────────────────────────────────┘
 ```
 
@@ -97,15 +97,15 @@ git log --oneline -5
 ### SMALL
 
 ```
-1. Implement directly — no plan doc, no brainstorm
-2. /verification
+1. Implement directly — no plan doc, no discovery
+2. /preflight
 3. /finalize
 ```
 
 ### MEDIUM
 
 ```
-1. Write a short inline plan — same section shape as write-plan, kept lean:
+1. Write a short inline plan — same section shape as draft-plan, kept lean:
    - Overview — goal + approach in 2-3 sentences
    - Files — each file to touch and what changes
    - Interfaces — new types, signatures, or procedures
@@ -114,19 +114,19 @@ git log --oneline -5
 2. CP-1 — "Plan ready. What next?"
 3. Implement top-to-bottom
 4. CP-2 — "Implementation done. What next?"
-5. /verification → /finalize
+5. /preflight → /finalize
 6. CP-3 — "Finalized and green. What next?"
 ```
 
 ### LARGE
 
 ```
-1. Load brainstorm → run it fully, get sign-off
-2. Load write-plan → produce plan doc, get sign-off
+1. Load discovery → run it fully, get sign-off
+2. Load draft-plan → produce plan doc, get sign-off
 3. CP-1 — "Plan ready. What next?"
-4. Implement task by task (sdd if the user picks it)
+4. Implement task by task (subagent-execution if the user picks it)
 5. CP-2 — "Implementation done. What next?"
-6. /verification → /finalize
+6. /preflight → /finalize
 7. CP-3 — "Finalized and green. What next?"
 ```
 
@@ -145,18 +145,19 @@ chooses **Done**.
 
 ### CP-1 — Plan ready
 
-*After write-plan sign-off (LARGE) or the inline plan (MEDIUM).*
+*After draft-plan sign-off (LARGE) or the inline plan (MEDIUM).*
 
 > "Plan is ready. What next?"
 
-Plan review already happened (or was declined) as part of `write-plan`'s own save step — this menu doesn't re-offer it.
+Plan review already happened (or was declined) as part of `draft-plan`'s own save step — this menu doesn't re-offer it.
 
 | Option | What it does |
 | --- | --- |
 | **Start implementing** *(recommended)* | Implement the plan top-to-bottom yourself |
-| **Spawn specialist agents** | Load `subagent-driven-development`; execute the plan task-by-task with named specialist agents |
+| **Write tests first** | Load `test-first`; get one upfront consent, then implement test-first |
+| **Spawn specialist agents** | Load `subagent-execution`; execute the plan task-by-task with named specialist agents |
 | **Dispatch independent tasks in parallel** | Load `subagent-deployment`; fan out N independent tasks across named agents at once |
-| **Revise the plan** | Loop back to `write-plan` with the new direction |
+| **Revise the plan** | Loop back to `draft-plan` with the new direction |
 
 ### CP-2 — Implementation done
 
@@ -164,7 +165,7 @@ Plan review already happened (or was declined) as part of `write-plan`'s own sav
 
 | Option | What it does |
 | --- | --- |
-| **Verify & finalize** *(recommended)* | Run `verification`, then `finalize` (typecheck → lint → format → test) |
+| **Verify & finalize** *(recommended)* | Run `preflight`, then `finalize` (typecheck → lint → format → test) |
 | **Code review first** | Load `code-review` on the diff before finalizing |
 | **Keep building** | More scope remains — re-confirm the tier if it grew |
 
@@ -195,10 +196,10 @@ If mid-task you find the scope is bigger than the confirmed tier:
 ✗ Loading all skills upfront
 ✗ Running tests mid-implementation
 ✗ Lint/format/typecheck during implementation
-✗ Auto-running code-review, commits, or sdd — they're checkpoint
+✗ Auto-running code-review, commits, or subagent-execution — they're checkpoint
   choices; run them only when the user picks them
 ✗ Plan docs for SMALL or MEDIUM tasks
-✗ Brainstorming for SMALL or MEDIUM tasks
+✗ Discovery for SMALL or MEDIUM tasks
 ✗ Auto-advancing past a checkpoint on MEDIUM / LARGE tasks
 ```
 
@@ -207,5 +208,5 @@ If mid-task you find the scope is bigger than the confirmed tier:
 1. Be specific: "add export button to invoice table that calls exportInvoices" → SMALL.
    "improve the invoice flow" → needs clarification before tier can be inferred.
 2. Override anytime: "treat this as LARGE" is always valid.
-3. TDD is opt-in: if you want tests, say so — /tdd will be loaded at the right moment.
+3. Tests-first is opt-in: pick **Write tests first** at CP-1, or say so anytime — /test-first will be loaded at the right moment.
 4. Review is separate: after /finalize, run /code-review if you want a review before merging.

@@ -209,5 +209,5 @@ content with a confirmation that states what the agent does next
 
 ## Related skills
 
-- `write-plan` — produces the plan this skill reviews.
+- `draft-plan` — produces the plan this skill reviews.
 - `technical-spec` — persists decisions/API/quirks; this server (directory mode) is its live preview + review surface.

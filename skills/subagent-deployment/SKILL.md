@@ -1,7 +1,7 @@
 ---
 name: subagent-deployment
 description: Fan out 2+ independent tasks across named agents (explorer/researcher/planner/coder) in a single message when they share no files and no dependencies. Use for ad-hoc independent work discovered outside a formal plan — unrelated bug fixes, parallel lookups, independent small tasks.
-when_to_use: Use when facing 2+ independent tasks that can be worked on without shared files or sequential dependencies — any combination of named agents. Not for executing an ordered plan task-by-task (that's subagent-driven-development).
+when_to_use: Use when facing 2+ independent tasks that can be worked on without shared files or sequential dependencies — any combination of named agents. Not for executing an ordered plan task-by-task (that's subagent-execution).
 argument-hint: "<list of independent tasks>"
 ---
 
@@ -96,11 +96,11 @@ Dispatch all three condux:coder agents in the same message:
 ✗ Issuing dispatches one response at a time and calling it "parallel"
 ✗ Skipping the safety checklist because the tasks "look independent"
 ✗ Using this to execute an ordered plan task-by-task (use
-  /subagent-driven-development instead — this skill is for ad-hoc,
+  /subagent-execution instead — this skill is for ad-hoc,
   not-yet-planned independent work)
 ```
 
 ## See Also
 
-- `references/safety-checklist.md` — the canonical parallel-dispatch safety checklist (also referenced by `subagent-driven-development` and `spawn-rules.md` — this is the one place it lives)
-- `subagent-driven-development` — for executing an ordered plan task-by-task; also uses this checklist internally when a plan's tasks are independent
+- `references/safety-checklist.md` — the canonical parallel-dispatch safety checklist (also referenced by `subagent-execution` and `spawn-rules.md` — this is the one place it lives)
+- `subagent-execution` — for executing an ordered plan task-by-task; also uses this checklist internally when a plan's tasks are independent

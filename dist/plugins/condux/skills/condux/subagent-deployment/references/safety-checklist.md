@@ -1,7 +1,7 @@
 # Parallel Dispatch Safety Checklist
 
 The one place this logic lives. `subagent-deployment`,
-`subagent-driven-development`, and `spawn-rules.md` all point here instead
+`subagent-execution`, and `spawn-rules.md` all point here instead
 of restating it.
 
 ## Is it safe to dispatch these together?
@@ -49,6 +49,6 @@ convention).
 ## Model selection
 
 Same tiering as sequential dispatch — see
-`subagent-driven-development/references/spawn-rules.md` → Model Selection.
+`subagent-execution/references/spawn-rules.md` → Model Selection.
 Parallelizing doesn't change which model tier a given task needs; it only
 changes how many run at once.

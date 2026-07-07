@@ -45,7 +45,7 @@
     },
     {
       "name": "condux",
-      "description": "Lean agentic workflow skills: tiered task routing, brainstorm gate, lean planning, opt-in TDD, subagent coordination, end-of-task quality gate, on-request code review, done-check verification, root-cause-first debugging, and feature spec management.",
+      "description": "Lean agentic workflow skills: tiered task routing, discovery gate, lean plan drafting, opt-in tests-first, subagent coordination, end-of-task quality gate, on-request code review, preflight done-check, root-cause-first debugging, and feature spec management.",
       "author": {
         "name": "Hieu Vi"
       },
