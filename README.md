@@ -13,7 +13,7 @@ Personal collection of agentic coding skills. Compatible with Claude Code, Codex
 
 ### Condux
 
-Lean agentic workflow plugin (`condux`). Install all 11 skills as a unit:
+Lean agentic workflow plugin (`condux`). Install the full workflow bundle as a unit:
 
 ```bash
 /plugin install condux@jabworks-agentic-toolkit
@@ -24,15 +24,15 @@ Lean agentic workflow plugin (`condux`). Install all 11 skills as a unit:
 | Skill | Description |
 |---|---|
 | [/workflow](./skills/workflow/) | Tier router — infer Small/Medium/Large, confirm with user, load only the skills the tier needs |
-| [/brainstorm](./skills/brainstorm/) | Design gate — clarifying questions, alternatives, section-by-section sign-off before planning |
-| [/write-plan](./skills/write-plan/) | Lean task-card plan (what/why/gotchas/deps), Markdown or HTML, LARGE tasks only |
-| [/test-driven-development](./skills/test-driven-development/) | Opt-in TDD — asks before writing tests, running tests, or updating specs |
-| [/subagent-driven-development](./skills/subagent-driven-development/) | Named specialist agents for LARGE plans, only when justified, never to fill time |
+| [/discovery](./skills/discovery/) | Design gate — clarifying questions, alternatives, section-by-section sign-off, saves the design doc before planning |
+| [/draft-plan](./skills/draft-plan/) | Lean task-card plan (what/why/gotchas/deps), Markdown, LARGE tasks only |
+| [/test-first](./skills/test-first/) | Opt-in tests-first — one upfront consent, then red-green-refactor; asks before editing existing specs |
+| [/subagent-execution](./skills/subagent-execution/) | Named specialist agents for LARGE plans, only when justified, never to fill time |
 | [/subagent-deployment](./skills/subagent-deployment/) | Fan out independent tasks across named agents in one message — ad-hoc, not a formal plan |
 | [/finalize](./skills/finalize/) | End-of-task quality gate — typecheck → lint → format → test, once, stop on first failure |
 | [/code-review](./skills/code-review/) | On-request diagnostic report (Critical/Important/Minor), never auto-triggers, never fixes |
-| [/verification](./skills/verification/) | "Am I actually done?" checklist before finalize — catches skipped steps and regressions |
-| [/systematic-debugging](./skills/systematic-debugging/) | Root-cause-first bug investigation — enforces the 4-phase sequence before any fix |
+| [/preflight](./skills/preflight/) | "Am I actually done?" checklist before finalize — catches skipped steps and regressions |
+| [/root-cause-debugging](./skills/root-cause-debugging/) | Root-cause-first bug investigation — enforces the 4-phase sequence before any fix |
 | [/technical-spec](./skills/technical-spec/) | Scaffold and persist feature specs (decisions, API, fields, quirks) with a live HTML preview |
 | [/plan-review](./skills/plan-review/) | Annotate a plan in a local browser with a categorized comment toolbar, then return approve/revise/deny to the agent — auto via a Claude Code ExitPlanMode hook or a Codex Stop hook, or manually. Self-contained, no egress |
 
@@ -119,8 +119,20 @@ cp -r /tmp/agentic-toolkit/skills/<name> <skills-directory>/
 ## Structure
 
 ```text
-skills/<name>/          # Editable source
-dist/plugins/<name>/    # Install source for npx skills add
+skills/<name>/          # Editable source — also what `npx skills add` installs
+dist/plugins/<name>/    # Built plugin dirs — the plugin-marketplace install source
 .claude-plugin/
-  marketplace.json      # Plugin registry
+  marketplace.json      # Plugin registry (Claude Code / Codex marketplace channel)
 ```
+
+Two distribution channels read two different trees:
+
+- **`npx skills add`** (`vercel-labs/skills`, 68+ agents) scans the top-level
+  `skills/<name>/SKILL.md` layout — it installs straight from **`skills/`** and
+  ignores `dist/`.
+- **`/plugin install …@jabworks-agentic-toolkit`** (Claude Code / Codex native)
+  reads `.claude-plugin/marketplace.json`, whose `source` paths point at the
+  assembled plugin dirs under **`dist/`**.
+
+`dist/` is a build artifact mirrored from `skills/` via `scripts/sync.sh` — never
+edit it by hand; `scripts/validate.sh` (run in CI) fails if it drifts from source.
