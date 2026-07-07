@@ -71,7 +71,7 @@ Load each only when its step is reached.
 
 ### Companion: `technical-spec`
 
-`technical-spec` is a separate plugin (`jabworks/technical-spec`) that integrates with condux at two levels:
+`technical-spec` is a condux bundle skill (it ships inside the condux plugin, alongside `plan-review`) that integrates with the workflow at two levels:
 
 **Spec context (cross-cutting — `workflow` + `root-cause-debugging`):** Before any task executes, condux checks `specs/` for a saved spec matching the affected feature or domain. If found, it loads the relevant files as context (decisions, API contracts, field mappings, quirks) so refactors, bug fixes, and new work on that domain start informed rather than cold.
 
@@ -81,7 +81,7 @@ Load each only when its step is reached.
 
 **After any spec changes:** whenever a task modifies spec files (`specs/`, OpenAPI YAMLs, API contracts, field mappings), ask the user: "Want me to open the technical-spec visual companion so you can review the changes?"
 
-Install once; condux uses it silently when present. No spec? No noise — the lookup produces no output if nothing is found.
+It ships with condux, so it's always available; condux uses it silently. No spec? No noise — the lookup produces no output if nothing is found.
 
 ### Interactive plan review: `plan-review`
 
