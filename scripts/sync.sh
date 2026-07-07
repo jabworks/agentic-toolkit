@@ -57,6 +57,14 @@ sync_skill() {
   else
     echo "SKIP    skills/$name — no dist target (scaffold with plugin-foundry first)" >&2
   fi
+
+  # The condux plugin also loads named agents from a plugin-level agents/ dir,
+  # which is NOT reached by the skill copy above. Mirror them from their source
+  # (the subagent-execution skill owns the canonical agent definitions).
+  if [[ "$name" == "subagent-execution" && -d "$src/agents" ]]; then
+    copy_dir "$src/agents" "$DIST_DIR/condux/agents"
+    echo "synced  skills/$name/agents  →  dist/plugins/condux/agents"
+  fi
 }
 
 # ---------------------------------------------------------------------------
