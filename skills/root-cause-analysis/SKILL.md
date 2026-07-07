@@ -1,20 +1,20 @@
 ---
-name: root-cause-debugging
+name: root-cause-analysis
 description: Enforces root-cause-first bug investigation — read the error, reproduce it, trace the data flow backward. Never propose a solution before the investigation phase completes.
 when_to_use: Use when investigating any bug, before proposing fixes or making changes. Load when debugging starts — not proactively.
 argument-hint: "<error message or bug description>"
 effort: high
 ---
 
-# /root-cause-debugging
+# /root-cause-analysis
 
 Investigate first. Fix second. Always.
 
 ## Usage
 
 ```
-/root-cause-debugging $ARGUMENTS
-/root-cause-debugging "TypeError: cannot read property of undefined in checkout"
+/root-cause-analysis $ARGUMENTS
+/root-cause-analysis "TypeError: cannot read property of undefined in checkout"
 ```
 
 ## The Four Phases
@@ -46,7 +46,7 @@ Run in order. Don't skip ahead.
 │  - Change exactly one thing                                     │
 │                                                                  │
 │  Phase 4: IMPLEMENT THE FIX                                     │
-│  - Write a failing test first (if /test-first is active)              │
+│  - Write a failing test first (if /test-first-development is active)              │
 │  - Apply the single targeted fix                                │
 │  - Verify the fix resolves the root cause, not symptoms        │
 └──────────────────────────────────────────────────────────────────┘
@@ -75,7 +75,7 @@ Run in order. Don't skip ahead.
 
 ## Integration with Condux
 
-- **Phase 4 + /test-first active**: write a failing test before the fix
+- **Phase 4 + /test-first-development active**: write a failing test before the fix
 - **After fixing**: run `/preflight` to confirm nothing regressed
 - **Bug reveals architectural issue**: escalate to `/discovery` before patching further
 - **Multiple unrelated failures**: if 2+ failures are independent (different

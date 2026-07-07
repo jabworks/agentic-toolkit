@@ -14,7 +14,7 @@ The operating manual for the condux plugin. Read this first when a dev task arri
 Condux is **lean and proportional**. It is the opposite of "always run every gate." Effort scales to the task — a button label and a new auth flow do not get the same ceremony.
 
 1. **Proportional, not maximal.** Match the workflow tier to the task. Don't discovery a typo. Don't wing a cross-cutting refactor.
-2. **Lazy loading.** Never load `discovery`, `draft-plan`, `test-first`, `subagent-execution`, or `finalize` upfront. Load a skill only when the tier flow reaches the step that needs it.
+2. **Lazy loading.** Never load `discovery`, `draft-plan`, `test-first-development`, `subagent-execution`, or `finalize` upfront. Load a skill only when the tier flow reaches the step that needs it.
 3. **Soft gates, not hard walls.** A gate (e.g. discovery before planning) can be skipped — but only *consciously*. If a gate hasn't run, ask the user whether they want to skip it; don't silently bypass it.
 4. **The user is in control.** Condux skills shape *how* you work, but explicit user instructions (CLAUDE.md, AGENTS.md, direct requests) always win. "Treat this as LARGE" or "skip the plan" is always valid.
 5. **Implement yourself by default.** Spawning agents is the exception, not the default. Only delegate when there's a concrete justification (see Agents below).
@@ -60,20 +60,20 @@ Load each only when its step is reached.
 | `workflow`     | Any implementation request — the router                             | entry point                                |
 | `discovery`   | LARGE tasks, before planning, or when scope is unclear              | **soft gate** — ask before skipping        |
 | `draft-plan`   | LARGE tasks, after discovery sign-off                              | **soft gate** — needs a signed-off design  |
-| `test-first` | Opt-in — user asks, or picks "Write tests first" at CP-1    | one upfront consent; ask before editing existing specs   |
+| `test-first-development` | Opt-in — user asks, or picks "Write tests first" at CP-1    | one upfront consent; ask before editing existing specs   |
 | `subagent-execution` | LARGE plan where agent specialization/parallelism pays off | default is to implement yourself      |
 | `subagent-deployment` | 2+ independent tasks (any agent mix), no shared files/deps | ad-hoc, not tied to a formal plan |
 | `preflight` | End of every tier, before finalize — the "am I actually done?" check | recommended CP-2 choice; automatic on SMALL |
 | `finalize`     | After all implementation — typecheck → lint → format → tests        | automatic, run once, stop on first failure |
 | `code-review`  | On request only — "review this", or after finalize if user says yes | never auto-triggers                        |
-| `root-cause-debugging` | Any bug investigation — before proposing fixes | load when debugging, not proactively  |
+| `root-cause-analysis` | Any bug investigation — before proposing fixes | load when debugging, not proactively  |
 | `plan-review`  | Annotate a plan in the browser before implementation, then return approve/revise/deny to the agent | ExitPlanMode hook or manual |
 
 ### Companion: `technical-spec`
 
 `technical-spec` is a condux bundle skill (it ships inside the condux plugin, alongside `plan-review`) that integrates with the workflow at two levels:
 
-**Spec context (cross-cutting — `workflow` + `root-cause-debugging`):** Before any task executes, condux checks `specs/` for a saved spec matching the affected feature or domain. If found, it loads the relevant files as context (decisions, API contracts, field mappings, quirks) so refactors, bug fixes, and new work on that domain start informed rather than cold.
+**Spec context (cross-cutting — `workflow` + `root-cause-analysis`):** Before any task executes, condux checks `specs/` for a saved spec matching the affected feature or domain. If found, it loads the relevant files as context (decisions, API contracts, field mappings, quirks) so refactors, bug fixes, and new work on that domain start informed rather than cold.
 
 **Discovery integration (`discovery`):**
 - **At start**: if a spec exists for the feature, offers to open the live HTML preview
@@ -95,10 +95,10 @@ no third-party runtime dependency.
 
 - **discovery** is a soft gate before planning. If a LARGE task arrives and discovery hasn't run, ask: "Want to skip discovery and go straight to planning?" — don't assume.
 - **draft-plan** requires a signed-off design. No design → apply the discovery soft gate first.
-- **test-first** is fully opt-in. Get one upfront consent (write tests first + auto-run), then run the cycle without re-asking — but always ask before editing an existing test spec. Never silently rewrite a test to match new behavior.
+- **test-first-development** is fully opt-in. Get one upfront consent (write tests first + auto-run), then run the cycle without re-asking — but always ask before editing an existing test spec. Never silently rewrite a test to match new behavior.
 - **finalize** runs its steps in order, once, and stops on the first failure to fix it before continuing. Check `AGENTS.md` for the project's real commands.
 - **code-review** never fires on its own and never auto-fixes. After finalize, you may ask once: "Want a code review before merging?"
-- **root-cause-debugging** is triggered when investigating a bug — load it then, not upfront. It enforces investigation before fixes: never propose a solution before tracing the root cause.
+- **root-cause-analysis** is triggered when investigating a bug — load it then, not upfront. It enforces investigation before fixes: never propose a solution before tracing the root cause.
 
 ## The Agents
 

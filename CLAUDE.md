@@ -50,7 +50,7 @@ See `skills/plugin-foundry/SKILL.md` for the canonical checklist. Short version:
 | `session-handoff` | Preserve/restore session context at context limits |
 | `session-report` | Generate HTML usage report from session transcripts |
 | `adapting-skills` | Adapt generic skills to Harvey's stack and conventions |
-| `condux` (plugin) | agentic workflow bundle (workflow, discovery, draft-plan, test-first, subagent-execution, subagent-deployment, finalize, code-review, preflight, root-cause-debugging, plan-review, technical-spec, using-condux) |
+| `condux` (plugin) | agentic workflow bundle (workflow, discovery, draft-plan, test-first-development, subagent-execution, subagent-deployment, finalize, code-review, preflight, root-cause-analysis, plan-review, technical-spec, using-condux) |
 
 The `condux` bundle lives at `dist/plugins/condux/` and its sources are in the corresponding `skills/` subdirectories.
 
@@ -60,6 +60,22 @@ The `condux` bundle lives at `dist/plugins/condux/` and its sources are in the c
 - SKILL.md `description` field: triggering conditions only, starts with "Use when...", ≤ 500 chars, frontmatter total ≤ 1024 chars
 - `skills` path in plugin.json must start with `./` (relative to plugin root)
 - Commit style: `fix:` / `feat:` / `chore:` prefix, `-s` signoff, no Co-Authored-By
+
+Most of these are enforced by `node --test` (see `tests/`), so run it before
+committing — it fails the build otherwise:
+
+- `dist-mirror.test.mjs` — `dist/` skill trees match `skills/` byte-for-byte
+- `skill-invariants.test.mjs` — frontmatter budgets, `name` kebab-case and equal
+  to its dir, marketplace/plugin paths resolve on disk, the condux plugin-level
+  `agents/` mirror, and plan-review's no-egress guarantee
+- `plugin-manifests.test.mjs` — `plugin.json` / `marketplace.json` validity and
+  `./`-prefixed paths
+
+Two distribution channels read two different trees (don't conflate them):
+`npx skills add` installs from top-level `skills/`; the plugin marketplace
+(`/plugin install …@jabworks-agentic-toolkit`) installs from `dist/` via
+`marketplace.json`. `dist/` is a build artifact — edit `skills/`, then
+`scripts/sync.sh`.
 
 ## Always look up skills from `skills/`
 

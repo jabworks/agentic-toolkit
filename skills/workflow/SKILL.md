@@ -154,7 +154,7 @@ Plan review already happened (or was declined) as part of `draft-plan`'s own sav
 | Option | What it does |
 | --- | --- |
 | **Start implementing** *(recommended)* | Implement the plan top-to-bottom yourself |
-| **Write tests first** | Load `test-first`; get one upfront consent, then implement test-first |
+| **Write tests first** | Load `test-first-development`; get one upfront consent, then implement test-first |
 | **Spawn specialist agents** | Load `subagent-execution`; execute the plan task-by-task with named specialist agents |
 | **Dispatch independent tasks in parallel** | Load `subagent-deployment`; fan out N independent tasks across named agents at once |
 | **Revise the plan** | Loop back to `draft-plan` with the new direction |
@@ -208,5 +208,5 @@ If mid-task you find the scope is bigger than the confirmed tier:
 1. Be specific: "add export button to invoice table that calls exportInvoices" → SMALL.
    "improve the invoice flow" → needs clarification before tier can be inferred.
 2. Override anytime: "treat this as LARGE" is always valid.
-3. Tests-first is opt-in: pick **Write tests first** at CP-1, or say so anytime — /test-first will be loaded at the right moment.
+3. Tests-first is opt-in: pick **Write tests first** at CP-1, or say so anytime — /test-first-development will be loaded at the right moment.
 4. Review is separate: after /finalize, run /code-review if you want a review before merging.

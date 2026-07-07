@@ -1,17 +1,17 @@
 ---
-name: test-first
+name: test-first-development
 description: Tests-first development — write tests before implementation. Opt-in only. Trigger when the user explicitly asks for tests-first, picks it at a workflow checkpoint, or when implementing logic with clear input/output behavior. Get one upfront consent (write tests first + auto-run), then run the cycle without re-asking. Still always ask before updating existing test specs. Never silently rewrite test specs to match new behavior.
 argument-hint: "<what to test>"
 ---
 
-# /test-first
+# /test-first-development
 
 Tests first, implementation second. But only when you've asked for it.
 
 ## Usage
 
 ```
-/test-first $ARGUMENTS
+/test-first-development $ARGUMENTS
 ```
 
 ## The Ask Rules

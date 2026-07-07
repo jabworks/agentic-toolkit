@@ -122,7 +122,7 @@ substitute for the implementer's judgement. Do **not** sketch:
 
 - ✗ Boilerplate the implementer will obviously write (CRUD, wiring, imports)
 - ✗ Full file bodies — show the part worth reviewing, elide the rest with `…`
-- ✗ Test code (that belongs to `/test-first`)
+- ✗ Test code (that belongs to `/test-first-development`)
 - ✗ The TDD micro-step cycle (write test → run → implement → run → commit)
 
 ## Plan Document Structure
@@ -220,7 +220,7 @@ Ask yourself: could this task be reviewed as a standalone PR? If yes, it's the r
 ```
 ✗ Full implementations or boilerplate (sketch decision-carrying code only — see Code Sketches)
 ✗ Exact commands with expected output
-✗ Test code in the plan (tests are written during /test-first)
+✗ Test code in the plan (tests are written during /test-first-development)
 ✗ Modifying the plan file after it's saved
 ✗ Writing a plan without design sign-off
 ```
