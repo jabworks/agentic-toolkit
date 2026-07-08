@@ -83,7 +83,10 @@ function routeBatch(batch) {
     ...batch.map((c, k) => `${k + 1}. ${c.query}`),
   ].join('\n');
 
-  const res = spawnSync('claude', ['-p', prompt, '--model', MODEL], {
+  // --bare: judge sessions must not load the user's hooks/plugins/MCP servers —
+  // without it, every batch spawns the full plugin stack (chrome-devtools-mcp
+  // launches Chrome windows, etc.) and pays its startup cost.
+  const res = spawnSync('claude', ['-p', prompt, '--model', MODEL, '--bare'], {
     encoding: 'utf8',
     cwd: os.tmpdir(), // avoid loading this repo's project context into the router sim
     timeout: 180000,
