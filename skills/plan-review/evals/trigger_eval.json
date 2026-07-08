@@ -4,7 +4,7 @@
   { "query": "let me annotate before you implement", "should_trigger": true, "expected_skill": "plan-review" },
   { "query": "plan review on docs/plans/2026-07-04-git-skills.md", "should_trigger": true, "expected_skill": "plan-review" },
   { "query": "run the steer mode review loop", "should_trigger": true, "expected_skill": "plan-review" },
-  { "query": "review the spec directory with per-file notes", "should_trigger": true, "expected_skill": "plan-review" },
+  { "query": "review the spec directory with per-file notes", "should_trigger": true, "expected_skill": "plan-review", "accept": ["spec-browser"] },
   { "query": "open live preview of specs/wan-config", "should_trigger": true, "expected_skill": "plan-review" },
   { "query": "approve / request revisions flow for this plan", "should_trigger": true, "expected_skill": "plan-review" },
   { "query": "the exitplanmode hook isnt opening the browser", "should_trigger": true, "expected_skill": "plan-review" },
@@ -15,7 +15,7 @@
   { "query": "something like plannotator?", "should_trigger": true, "expected_skill": "plan-review" },
   { "query": "review this code diff", "should_trigger": true, "expected_skill": "code-review" },
   { "query": "review pr #42 on github", "should_trigger": true, "expected_skill": "code-review" },
-  { "query": "write the plan first", "should_trigger": true, "expected_skill": "draft-plan" },
+  { "query": "write the plan first", "should_trigger": true, "expected_skill": "draft-plan", "accept": ["workflow"] },
   { "query": "browse all our specs as one doc site", "should_trigger": true, "expected_skill": "spec-browser" },
   { "query": "build the spec index catalog", "should_trigger": true, "expected_skill": "spec-browser" },
   { "query": "review this google doc proposal", "should_trigger": false, "expected_skill": null }

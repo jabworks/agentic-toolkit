@@ -1,7 +1,7 @@
 ---
 name: test-first-development
 description: Tests-first development — write tests before implementation. Opt-in only. Get one upfront consent (write tests first + auto-run), then run the cycle without re-asking. Still always ask before updating existing test specs. Never silently rewrite test specs to match new behavior.
-when_to_use: Trigger when the user explicitly asks for tests-first, picks it at a workflow checkpoint, or when implementing logic with clear input/output behavior.
+when_to_use: Trigger when the user explicitly asks for tests-first, picks it at a workflow checkpoint, or when implementing logic with clear input/output behavior. Also triggers whenever an existing test spec is about to be edited to make it pass — that decision runs through this skill.
 argument-hint: "<what to test>"
 ---
 
@@ -119,4 +119,4 @@ Poor candidates (don't force TDD here):
 
 ## See Also
 
-- `references/excuse-table.md` — common excuses for skipping tests-first and why they're wrong
+- `references/rationalization-table.md` — common rationalizations for skipping tests-first and why they're wrong

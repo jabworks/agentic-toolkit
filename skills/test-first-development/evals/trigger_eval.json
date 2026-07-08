@@ -17,6 +17,6 @@
   { "query": "write e2e tests with playwright for the flow", "should_trigger": true, "expected_skill": "workflow" },
   { "query": "run the tests", "should_trigger": true, "expected_skill": "finalize" },
   { "query": "why is this test flaky", "should_trigger": true, "expected_skill": "root-cause-analysis" },
-  { "query": "jest config setup for the monorepo", "should_trigger": false, "expected_skill": null },
+  { "query": "jest config setup for the monorepo", "should_trigger": true, "expected_skill": "workflow" },
   { "query": "wheres the coverage report hosted", "should_trigger": false, "expected_skill": null }
 ]

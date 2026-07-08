@@ -121,4 +121,4 @@ Tests      ✓ 18 passed
 
 ## See Also
 
-- `references/excuse-table.md` — common excuses for skipping finalize and why they're wrong
+- `references/rationalization-table.md` — common rationalizations for skipping finalize and why they're wrong

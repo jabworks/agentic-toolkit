@@ -15,7 +15,7 @@
   { "query": "keep reviewing in a loop until its perfect", "should_trigger": true, "expected_skill": "code-review", "kind": "in-context" },
   { "query": "fix the critical findings from the review", "should_trigger": true, "expected_skill": "workflow" },
   { "query": "review the plan before implementation", "should_trigger": true, "expected_skill": "plan-review" },
-  { "query": "review the spec folder", "should_trigger": true, "expected_skill": "plan-review" },
+  { "query": "review the spec folder", "should_trigger": true, "expected_skill": "plan-review", "accept": ["spec-browser"] },
   { "query": "merge it into main", "should_trigger": true, "expected_skill": "git-operations" },
   { "query": "review my resume", "should_trigger": false, "expected_skill": null },
   { "query": "what is a csrf token", "should_trigger": false, "expected_skill": null }

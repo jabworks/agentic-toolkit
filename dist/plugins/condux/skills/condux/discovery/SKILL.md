@@ -1,7 +1,7 @@
 ---
 name: discovery
 description: Refine a rough idea into a signed-off design. Asks clarifying questions, surfaces alternatives, and presents the design in sections for sign-off before any planning or code begins.
-when_to_use: Trigger for LARGE tasks or when scope is unclear. Acts as a soft gate before /draft-plan — if discovery hasn't run, ask the user if they want to skip it consciously.
+when_to_use: Trigger for LARGE tasks, when scope is unclear, or when the user wants to brainstorm or explore a rough idea. Acts as a soft gate before /draft-plan — if discovery hasn't run, ask the user if they want to skip it consciously.
 argument-hint: "<rough idea or feature description>"
 effort: high
 ---

@@ -1,8 +1,8 @@
-# Tests-First Excuse Table
+# Tests-First Rationalization Table
 
-Common excuses agents (and developers) use to skip writing tests — and why they're wrong.
+Common rationalizations agents (and developers) use to skip writing tests — and why they're wrong.
 
-| Excuse                                                 | Reality                                                                                                                                      | Counter                                                                                         |
+| Rationalization                                        | Reality                                                                                                                                      | Counter                                                                                         |
 | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
 | "This change is too small to need a test"              | Small changes break things too. The test takes 2 minutes.                                                                                    | Write the test. It documents the behavior even if it never catches a regression.                |
 | "I'll write tests after the implementation is working" | Tests written after are biased by the implementation you built. You test what you know works, not what could break.                          | Tests first force you to think about edge cases before you're anchored to an implementation.    |
