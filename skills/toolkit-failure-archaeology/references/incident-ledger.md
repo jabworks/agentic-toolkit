@@ -114,6 +114,28 @@ Doctrine:     re-verify inventory claims immediately before acting; `git log -1`
 Encoded in:   toolkit-orientation (docs trust order),
               distillation/02_expert_distillation_notes.md (audit trail).
 
+## Test suite popped browser windows on every run
+
+Symptom:      Chrome kept opening with http://127.0.0.1:<random-port> during
+              normal repo work on WSL (Windows-side popups, invisible to
+              Linux process checks).
+Wrong path:   first blamed headless eval judge sessions loading the user's
+              chrome-devtools-mcp plugin — plausible, partially isolated
+              (c277174), but the popups recurred after that fix.
+Root cause:   plan-review's annotate-server.js unconditionally exec'd
+              xdg-open on startup, and tests/annotate-server.test.mjs spawns
+              the server twice per `node --test` — two popups per suite run,
+              ~15 runs that day.
+Evidence:     ac3fe76 ("plan-review server gains --no-open"); c277174 (the
+              earlier partial/mistaken attribution, itself a valid judge
+              isolation fix).
+Doctrine:     servers spawned by tests must never open UI — any auto-open
+              behavior needs an off switch, and the test suite uses it.
+              Also: on WSL, verify side effects on the WINDOWS side too;
+              Linux ps cannot see interop-launched processes.
+Encoded in:   annotate-server.js --no-open flag; both test spawn sites pass
+              it; plan-review SKILL.md documents it for headless/CI use.
+
 ---
 
 Categories with NO evidenced incident as of 2026-07-08 (stated per the no-fabrication
