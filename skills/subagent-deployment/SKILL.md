@@ -1,7 +1,7 @@
 ---
 name: subagent-deployment
 description: Fan out 2+ independent tasks across named agents (explorer/researcher/planner/coder) in a single message when they share no files and no dependencies. Use for ad-hoc independent work discovered outside a formal plan — unrelated bug fixes, parallel lookups, independent small tasks.
-when_to_use: Use when facing 2+ independent tasks that can be worked on without shared files or sequential dependencies — any combination of named agents. Not for executing an ordered plan task-by-task (that's subagent-execution).
+when_to_use: Trigger when two or more genuinely independent tasks are on the table — nothing shared between them, no ordering — and any mix of named agents fits. Not for executing an ordered plan task-by-task (that's subagent-execution).
 argument-hint: "<list of independent tasks>"
 ---
 
@@ -80,7 +80,7 @@ Three unrelated test files failing after a refactor:
   - batch-completion-behavior.test.ts (event structure bug)
   - tool-approval-race-conditions.test.ts (execution count wrong)
 
-Checklist: different files, no shared state, no dependency between them → clear.
+Checklist: different files, nothing shared, no dependency between them → clear.
 
 Dispatch all three condux:coder agents in the same message:
   Agent 1 (coder): "Fix the 3 failures in agent-tool-abort.test.ts: ..."

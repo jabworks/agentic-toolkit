@@ -1,8 +1,8 @@
-# Finalize Rationalization Table
+# Finalize Excuse Table
 
-Common reasons agents skip or shortcut the finalize gate — and why they're wrong.
+Common excuses agents use to skip or shortcut the finalize gate — and why they're wrong.
 
-| Rationalization                                     | Reality                                                                                  | Counter                                                                    |
+| Excuse                                              | Reality                                                                                  | Counter                                                                    |
 | --------------------------------------------------- | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
 | "The change was too small to break types"           | Type errors compound. A small change that breaks an import breaks everything downstream. | Run typecheck. It takes seconds.                                           |
 | "I already ran lint during implementation"          | Lint state during implementation is stale. You may have added new violations since.      | Run lint once at the end, clean.                                           |

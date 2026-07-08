@@ -119,4 +119,4 @@ Poor candidates (don't force TDD here):
 
 ## See Also
 
-- `references/rationalization-table.md` — common reasons to skip TDD and why they're wrong
+- `references/excuse-table.md` — common excuses for skipping tests-first and why they're wrong

@@ -51,7 +51,7 @@ Run through this checklist. Every item must be answered honestly — not optimis
 └──────────────────────────────────────────────────────────────────┘
 ```
 
-## Common Rationalizations
+## Common Excuses
 
 | Claim                                          | Reality                                                  |
 | ---------------------------------------------- | -------------------------------------------------------- |

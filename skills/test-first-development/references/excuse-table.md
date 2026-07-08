@@ -1,8 +1,8 @@
-# TDD Rationalization Table
+# Tests-First Excuse Table
 
-Common reasons agents (and developers) use to skip writing tests — and why they're wrong.
+Common excuses agents (and developers) use to skip writing tests — and why they're wrong.
 
-| Rationalization                                        | Reality                                                                                                                                      | Counter                                                                                         |
+| Excuse                                                 | Reality                                                                                                                                      | Counter                                                                                         |
 | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
 | "This change is too small to need a test"              | Small changes break things too. The test takes 2 minutes.                                                                                    | Write the test. It documents the behavior even if it never catches a regression.                |
 | "I'll write tests after the implementation is working" | Tests written after are biased by the implementation you built. You test what you know works, not what could break.                          | Tests first force you to think about edge cases before you're anchored to an implementation.    |

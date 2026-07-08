@@ -1,7 +1,7 @@
 ---
 name: root-cause-analysis
 description: Enforces root-cause-first bug investigation — read the error, reproduce it, trace the data flow backward. Never propose a solution before the investigation phase completes.
-when_to_use: Use when investigating any bug, before proposing fixes or making changes. Load when debugging starts — not proactively.
+when_to_use: Trigger the moment debugging starts — never proactively — and always before any fix is proposed or any change is made.
 argument-hint: "<error message or bug description>"
 effort: high
 ---
