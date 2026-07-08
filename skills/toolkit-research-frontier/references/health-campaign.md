@@ -31,7 +31,20 @@ siblings' prompts.
   seams (preflight↔toolkit-change-control,
   root-cause-analysis↔toolkit-debugging-playbook) are tested from both sides.
 
-### A3. Live model scoring — BASELINE RECORDED 2026-07-08 (target not yet met)
+### A3. Live model scoring — DONE 2026-07-08: 91.7%, criterion met
+
+Three-run progression, same judge (claude-haiku-4-5-20251001), zero failed batches:
+
+| Run | Score | What changed before it |
+|---|---|---|
+| baseline (`eval-baseline-…`) | 76.0% (298/392) | none — raw corpus, full contracts as shipped |
+| round 2 (`eval-rerun-…`) | 85.8% (320/373) | workflow + subagent-execution contract fixes; 19 in-context cases excluded; accepts introduced |
+| round 3 (`eval-round3-…`) | **91.7% (342/373)** | plan-review machinery vocabulary, tfd spec-edit ownership, discovery brainstorm phrasing, change-control retire trigger, one-hop accepts |
+
+Remaining 31 misses are genuine adjacencies (discovery↔session-handoff "resume"
+space, draft-plan↔technical-spec doc-creation space) — seed material for A4.
+
+--- Original phase design (kept for provenance): ---
 - Harness: `node scripts/eval-triggers.mjs [--model <id>] [--limit <n>]` — builds
   the catalog from live SKILL.md frontmatter, batches the corpus through
   `claude -p` (default judge: claude-haiku-4-5-20251001, ~34 calls per full run).

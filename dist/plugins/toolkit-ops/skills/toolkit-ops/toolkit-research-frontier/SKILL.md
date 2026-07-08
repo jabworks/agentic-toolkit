@@ -40,11 +40,10 @@ stale precisely when the work it proposes gets done.
 
 ## Open problems (verified open as of 2026-07-08)
 
-1. **Trigger-eval corpus semantics.** The harness exists
-   (`scripts/eval-triggers.mjs`; Haiku baseline 76.0% on 2026-07-08) but the
-   corpus conflates cold-trigger queries with in-skill follow-ups, and the
-   scorer doesn't accept doctrine-correct `workflow` routing. Split/tag the
-   corpus, teach the scorer alternates, re-run toward ≥90%.
+1. ~~Trigger-eval routing~~ — closed 2026-07-08 at **91.7%** (three-run
+   progression 76.0→85.8→91.7 in `references/health-campaign.md` Front A3).
+   Remaining: A4 collision automation, seeded by the 31 residual misses
+   (discovery↔session-handoff "resume" space is the strongest).
 2. **YAML-strict frontmatter validation.** The invariant test regex-parses
    frontmatter; an `a13e094`-class quoting bug would pass it.
 3. **Docs-catalog enforcement.** Nothing fails when a marketplace plugin is missing
