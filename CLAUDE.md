@@ -28,8 +28,9 @@ dist/plugins/<name>/    # Install mirror — never edit directly; sync from skil
 ## Workflow for editing a skill
 
 1. Edit files under `skills/<name>/`
-2. Sync to dist: `cp -r skills/<name>/. dist/plugins/<name>/skills/<name>/`
-3. Commit with `-s` (signoff) — no `Co-Authored-By:` trailers
+2. Sync to dist: `bash scripts/sync.sh <name>` (auto-detects bundle vs standalone target)
+3. Verify: `node --test`
+4. Commit with `-s` (signoff) — no `Co-Authored-By:` trailers
 
 ## Workflow for creating a new skill
 
@@ -39,8 +40,8 @@ See `skills/plugin-foundry/SKILL.md` for the canonical checklist. Short version:
 2. Write `SKILL.md` with required frontmatter (`name`, `description`)
 3. Write both plugin manifests (`.claude-plugin/plugin.json` + `.codex-plugin/plugin.json`)
 4. Register in `.claude-plugin/marketplace.json`
-5. Sync dist: `cp -r skills/<name>/. dist/plugins/<name>/skills/<name>/`
-6. Commit
+5. Sync dist: `bash scripts/sync.sh <name>`
+6. Verify: `node --test`, then commit
 
 ## Skills in this toolkit
 
@@ -50,14 +51,18 @@ See `skills/plugin-foundry/SKILL.md` for the canonical checklist. Short version:
 | `session-handoff` | Preserve/restore session context at context limits |
 | `session-report` | Generate HTML usage report from session transcripts |
 | `adapting-skills` | Adapt generic skills to Harvey's stack and conventions |
-| `condux` (plugin) | agentic workflow bundle (workflow, discovery, draft-plan, test-first-development, subagent-execution, subagent-deployment, finalize, code-review, preflight, root-cause-analysis, plan-review, technical-spec, using-condux) |
+| `git-commit` | Conventional-commit message from the diff, run safely |
+| `git-operations` | Decision router for git operations with undo paths |
+| `spec-browser` | Catalog and browse a specs/ tree as one doc site |
+| `condux` (plugin) | agentic workflow bundle (workflow, discovery, draft-plan, test-first-development, subagent-execution, subagent-deployment, finalize, code-review, preflight, root-cause-analysis, plan-review, technical-spec) |
+| `toolkit-ops` (plugin) | repo-maintenance bundle (toolkit-orientation, toolkit-change-control, toolkit-skill-standards, toolkit-debugging-playbook, toolkit-failure-archaeology, toolkit-plugin-reference, toolkit-research-frontier) |
 
-The `condux` bundle lives at `dist/plugins/condux/` and its sources are in the corresponding `skills/` subdirectories.
+The `condux` and `toolkit-ops` bundles live at `dist/plugins/<bundle>/` and their sources are in the corresponding `skills/` subdirectories.
 
 ## Key invariants
 
 - `dist/` is a verbatim mirror of `skills/` — never diverge them
-- SKILL.md `description` field: triggering conditions only, starts with "Use when...", ≤ 500 chars, frontmatter total ≤ 1024 chars
+- SKILL.md trigger contract: either `description` starts with "Use when..." (triggering conditions only), or a `when_to_use` field carries the trigger conditions (condux-style). `description` ≤ 500 chars, frontmatter total ≤ 1024 chars
 - `skills` path in plugin.json must start with `./` (relative to plugin root)
 - Commit style: `fix:` / `feat:` / `chore:` prefix, `-s` signoff, no Co-Authored-By
 
@@ -70,12 +75,16 @@ committing — it fails the build otherwise:
   `agents/` mirror, and plan-review's no-egress guarantee
 - `plugin-manifests.test.mjs` — `plugin.json` / `marketplace.json` validity and
   `./`-prefixed paths
+- `manifest-parity.test.mjs` — each plugin's `.claude-plugin`/`.codex-plugin`
+  manifests match on name/version/skills, both carry `interface`, `hooks` stays
+  codex-only, and every skill has a trigger contract
 
 Two distribution channels read two different trees (don't conflate them):
 `npx skills add` installs from top-level `skills/`; the plugin marketplace
 (`/plugin install …@jabworks-agentic-toolkit`) installs from `dist/` via
 `marketplace.json`. `dist/` is a build artifact — edit `skills/`, then
-`scripts/sync.sh`.
+`scripts/sync.sh`. After cloning, `bash scripts/install-hooks.sh` installs the
+pre-commit sync hook (optional — CI's `node --test` guards drift either way).
 
 ## Always look up skills from `skills/`
 

@@ -1,0 +1,22 @@
+[
+  { "query": "am I done?", "should_trigger": true, "expected_skill": "preflight" },
+  { "query": "verify this", "should_trigger": true, "expected_skill": "preflight" },
+  { "query": "did I miss anything before finalize", "should_trigger": true, "expected_skill": "preflight" },
+  { "query": "preflight check", "should_trigger": true, "expected_skill": "preflight" },
+  { "query": "is the feature actually complete", "should_trigger": true, "expected_skill": "preflight" },
+  { "query": "check all the requirements are met", "should_trigger": true, "expected_skill": "preflight" },
+  { "query": "any debug logs left behind?", "should_trigger": true, "expected_skill": "preflight" },
+  { "query": "did we cover the edge cases", "should_trigger": true, "expected_skill": "preflight" },
+  { "query": "ready to finalize?", "should_trigger": true, "expected_skill": "preflight" },
+  { "query": "are all the plan steps done", "should_trigger": true, "expected_skill": "preflight" },
+  { "query": "I tested it manually, ship it", "should_trigger": true, "expected_skill": "preflight" },
+  { "query": "only changed one line, can we skip the checks", "should_trigger": true, "expected_skill": "preflight" },
+  { "query": "done-ness check b4 finalize", "should_trigger": true, "expected_skill": "preflight" },
+  { "query": "double check my work on this feature", "should_trigger": true, "expected_skill": "preflight" },
+  { "query": "run typecheck and the tests now", "should_trigger": true, "expected_skill": "finalize" },
+  { "query": "review the diff quality", "should_trigger": true, "expected_skill": "code-review" },
+  { "query": "am I done shipping this skill to the marketplace", "should_trigger": true, "expected_skill": "toolkit-change-control" },
+  { "query": "verify the deployment is healthy in prod", "should_trigger": false, "expected_skill": null },
+  { "query": "airplane preflight checklist template", "should_trigger": false, "expected_skill": null },
+  { "query": "double check this math for me", "should_trigger": false, "expected_skill": null }
+]

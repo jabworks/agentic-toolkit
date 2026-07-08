@@ -1,0 +1,23 @@
+[
+  { "query": "how is this repo organized", "should_trigger": true, "expected_skill": "toolkit-orientation" },
+  { "query": "where do skills actually live in agentic-toolkit, skills/ or dist?", "should_trigger": true, "expected_skill": "toolkit-orientation" },
+  { "query": "what is the dist folder for", "should_trigger": true, "expected_skill": "toolkit-orientation" },
+  { "query": "which files here are generated vs hand written", "should_trigger": true, "expected_skill": "toolkit-orientation" },
+  { "query": "im new to this repo, give me the lay of the land", "should_trigger": true, "expected_skill": "toolkit-orientation" },
+  { "query": "where should I NOT write files in this repo", "should_trigger": true, "expected_skill": "toolkit-orientation" },
+  { "query": "why is there a skills/condux dir inside dist/plugins/condux", "should_trigger": true, "expected_skill": "toolkit-orientation" },
+  { "query": "can I edit dist/plugins/session-report directly? quick fix", "should_trigger": true, "expected_skill": "toolkit-orientation" },
+  { "query": "readme says one thing but the folder looks different, which do I trust", "should_trigger": true, "expected_skill": "toolkit-orientation" },
+  { "query": "wheres the marketplace json and what reads it", "should_trigger": true, "expected_skill": "toolkit-orientation" },
+  { "query": "whered the .claude/skills folder go", "should_trigger": true, "expected_skill": "toolkit-orientation" },
+  { "query": "explain the two install channels, npx skills add vs plugin install", "should_trigger": true, "expected_skill": "toolkit-plugin-reference" },
+  { "query": "whats the difference between .claude-plugin and .codex-plugin manifests", "should_trigger": true, "expected_skill": "toolkit-plugin-reference" },
+  { "query": "add a new skill to the toolkit", "should_trigger": true, "expected_skill": "plugin-foundry" },
+  { "query": "why isnt my skill triggering", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },
+  { "query": "is this skill fully shipped?", "should_trigger": true, "expected_skill": "toolkit-change-control" },
+  { "query": "adapt this generic skill template to my stack", "should_trigger": true, "expected_skill": "adapting-skills" },
+  { "query": "what does the condux workflow tier system do", "should_trigger": true, "expected_skill": "workflow" },
+  { "query": "help me undo my last commit", "should_trigger": true, "expected_skill": "git-operations" },
+  { "query": "format this markdown table", "should_trigger": false, "expected_skill": null },
+  { "query": "orient me in the maestro-api-gateway repo", "should_trigger": false, "expected_skill": null }
+]

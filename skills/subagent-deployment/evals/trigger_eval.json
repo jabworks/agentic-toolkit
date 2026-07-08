@@ -1,0 +1,22 @@
+[
+  { "query": "fix these 3 unrelated failing test files at once", "should_trigger": true, "expected_skill": "subagent-deployment" },
+  { "query": "in parallel: look up the stripe api and explore the auth module", "should_trigger": true, "expected_skill": "subagent-deployment" },
+  { "query": "two independent bugs in different packages, handle both", "should_trigger": true, "expected_skill": "subagent-deployment" },
+  { "query": "fan out this research across agents", "should_trigger": true, "expected_skill": "subagent-deployment" },
+  { "query": "batch these lookups together", "should_trigger": true, "expected_skill": "subagent-deployment" },
+  { "query": "run these together, theyre totally unrelated", "should_trigger": true, "expected_skill": "subagent-deployment" },
+  { "query": "is it safe to parallelize these two tasks", "should_trigger": true, "expected_skill": "subagent-deployment" },
+  { "query": "spawn a generic subagent with this custom prompt", "should_trigger": true, "expected_skill": "subagent-deployment" },
+  { "query": "dispatch all three coders in the same message", "should_trigger": true, "expected_skill": "subagent-deployment" },
+  { "query": "these fixes are related, one might fix the other — split them anyway?", "should_trigger": true, "expected_skill": "subagent-deployment" },
+  { "query": "kick off explorer and researcher while I keep working", "should_trigger": true, "expected_skill": "subagent-deployment" },
+  { "query": "whats the safety checklist for parallel dispatch", "should_trigger": true, "expected_skill": "subagent-deployment" },
+  { "query": "integrate the results from the agent batch", "should_trigger": true, "expected_skill": "subagent-deployment" },
+  { "query": "independant tasks, no shared files, go", "should_trigger": true, "expected_skill": "subagent-deployment" },
+  { "query": "execute plan tasks 1 through 6 in order with agents", "should_trigger": true, "expected_skill": "subagent-execution" },
+  { "query": "one small task, just do it yourself", "should_trigger": true, "expected_skill": "workflow" },
+  { "query": "deploy the app to production", "should_trigger": false, "expected_skill": null },
+  { "query": "set up the deployment pipeline for staging", "should_trigger": false, "expected_skill": null },
+  { "query": "parallelize the test suite in ci", "should_trigger": false, "expected_skill": null },
+  { "query": "map reduce over these records", "should_trigger": false, "expected_skill": null }
+]

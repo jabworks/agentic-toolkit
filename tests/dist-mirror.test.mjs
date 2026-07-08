@@ -28,9 +28,14 @@ test('every skill with a dist target is a verbatim mirror of its skills/ source'
 
   for (const name of names) {
     const src = path.join(SKILLS_DIR, name);
-    const conduxDst = path.join(DIST_DIR, 'condux', 'skills', 'condux', name);
+    // Bundle target: dist/plugins/<p>/skills/<p>/<name> for any bundle plugin <p>
+    // (condux, toolkit-ops, …); standalone target: dist/plugins/<name>/skills/<name>.
+    const bundleDst = fs.readdirSync(DIST_DIR, { withFileTypes: true })
+      .filter((e) => e.isDirectory())
+      .map((e) => path.join(DIST_DIR, e.name, 'skills', e.name, name))
+      .find((p) => fs.existsSync(p));
     const standaloneDst = path.join(DIST_DIR, name, 'skills', name);
-    const dst = fs.existsSync(conduxDst) ? conduxDst : fs.existsSync(standaloneDst) ? standaloneDst : null;
+    const dst = bundleDst ?? (fs.existsSync(standaloneDst) ? standaloneDst : null);
 
     if (!dst) continue; // matches scripts/sync.sh's own SKIP behavior for un-scaffolded skills
 
@@ -51,4 +56,36 @@ test('every skill with a dist target is a verbatim mirror of its skills/ source'
 
   assert.ok(checked > 0, 'expected at least one skill with a dist target to check');
   assert.deepEqual(mismatches, [], 'dist/ has drifted from skills/ — run scripts/sync.sh:\n' + mismatches.join('\n'));
+});
+
+// Reverse direction: sync.sh and the mirror check above only walk skills/ sources,
+// so a skill deleted from skills/ would leave a live orphan in dist/ that still
+// ships to marketplace installs. Assert every dist skill dir has a skills/ source.
+test('every dist skill dir has a skills/ source (no orphans after a retirement)', () => {
+  const sourceNames = new Set(
+    fs.readdirSync(SKILLS_DIR, { withFileTypes: true })
+      .filter((e) => e.isDirectory())
+      .map((e) => e.name),
+  );
+
+  const orphans = [];
+  for (const plugin of fs.readdirSync(DIST_DIR, { withFileTypes: true })) {
+    if (!plugin.isDirectory()) continue;
+    const skillsRoot = path.join(DIST_DIR, plugin.name, 'skills');
+    if (!fs.existsSync(skillsRoot)) continue;
+    // Bundle layout nests skill dirs under skills/<plugin>/; standalone layout has
+    // the single skill dir directly under skills/.
+    const bundleRoot = path.join(skillsRoot, plugin.name);
+    const isBundle = fs.existsSync(bundleRoot) && !fs.existsSync(path.join(bundleRoot, 'SKILL.md'));
+    const dirsToCheck = isBundle
+      ? fs.readdirSync(bundleRoot, { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => path.join(plugin.name, e.name))
+      : fs.readdirSync(skillsRoot, { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => e.name);
+    for (const rel of dirsToCheck) {
+      const skillName = path.basename(rel);
+      if (!sourceNames.has(skillName)) {
+        orphans.push(`dist/plugins/${plugin.name}/skills/${rel} — no skills/${skillName} source`);
+      }
+    }
+  }
+  assert.deepEqual(orphans, [], 'orphaned dist skill dirs (delete them or restore the source):\n' + orphans.join('\n'));
 });

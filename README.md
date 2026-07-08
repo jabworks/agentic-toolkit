@@ -10,6 +10,9 @@ Personal collection of agentic coding skills. Compatible with Claude Code, Codex
 | [session-handoff](./skills/session-handoff/) | Preserve and restore session context across agentic coding sessions                                   |
 | [plugin-foundry](./skills/plugin-foundry/)   | Create and maintain skills in this toolkit                                                            |
 | [adapting-skills](./skills/adapting-skills/) | Developer profile priors for adapting skills to Harvey's stack _(personal — useful to collaborators)_ |
+| [git-commit](./skills/git-commit/)           | Conventional-commit message from the diff, run safely — review before staging, no blind `git add .`   |
+| [git-operations](./skills/git-operations/)   | Decision router for git — pick the right operation (undo/discard/stash/merge/push) with an undo path  |
+| [spec-browser](./skills/spec-browser/)       | Catalog and browse a specs/ tree — markdown index + folder-grouped doc site                           |
 
 ### Condux
 
@@ -35,6 +38,24 @@ Lean agentic workflow plugin (`condux`). Install the full workflow bundle as a u
 | [/root-cause-analysis](./skills/root-cause-analysis/) | Root-cause-first bug investigation — enforces the 4-phase sequence before any fix |
 | [/technical-spec](./skills/technical-spec/) | Scaffold and persist feature specs (decisions, API, fields, quirks) with a live HTML preview |
 | [/plan-review](./skills/plan-review/) | Annotate a plan in a local browser with a categorized comment toolbar, then return approve/revise/deny to the agent — auto via a Claude Code ExitPlanMode hook or a Codex Stop hook, or manually. Self-contained, no egress |
+
+### Toolkit Ops
+
+Repo-maintenance bundle (`toolkit-ops`) for working on this toolkit itself:
+
+```bash
+/plugin install toolkit-ops@jabworks-agentic-toolkit
+```
+
+| Skill | Description |
+|---|---|
+| [toolkit-orientation](./skills/toolkit-orientation/) | Zero-context map of the repo — trees, bundles, manifest pairing, docs trust order |
+| [toolkit-change-control](./skills/toolkit-change-control/) | Classify a change, pick the version bump, gate on the publish checklist |
+| [toolkit-skill-standards](./skills/toolkit-skill-standards/) | Frontmatter budgets, trigger contract, progressive disclosure, collision scan |
+| [toolkit-debugging-playbook](./skills/toolkit-debugging-playbook/) | Symptom → discriminating command → root cause for skill/plugin problems |
+| [toolkit-failure-archaeology](./skills/toolkit-failure-archaeology/) | Git-evidenced incident ledger — don't re-fight settled battles |
+| [toolkit-plugin-reference](./skills/toolkit-plugin-reference/) | Verified plugin.json / marketplace.json schema, Claude↔Codex divergences |
+| [toolkit-research-frontier](./skills/toolkit-research-frontier/) | Open problems, assets, next steps, and the library-health campaign |
 
 ## Acknowledgments
 
@@ -135,4 +156,6 @@ Two distribution channels read two different trees:
   assembled plugin dirs under **`dist/`**.
 
 `dist/` is a build artifact mirrored from `skills/` via `scripts/sync.sh` — never
-edit it by hand; `scripts/validate.sh` (run in CI) fails if it drifts from source.
+edit it by hand; `node --test` (run in CI) fails if it drifts from source. After
+cloning, `bash scripts/install-hooks.sh` installs a pre-commit hook that syncs and
+stages `dist/` automatically.

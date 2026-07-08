@@ -1,6 +1,7 @@
 ---
 name: subagent-execution
-description: Execute a plan using named specialist agents. Use when implementing a LARGE plan with tasks that benefit from agent specialization or parallel exploration. Default is to implement yourself — only spawn when there is a concrete justification. Agents must be pre-defined; never create generic subagents with injected system prompts.
+description: Execute a plan using named specialist agents. Default is to implement yourself — only spawn when there is a concrete justification. Agents must be pre-defined; never create generic subagents with injected system prompts.
+when_to_use: Trigger when implementing a LARGE plan with tasks that benefit from agent specialization or parallel exploration. Not for ad-hoc independent tasks outside a plan (that's subagent-deployment).
 argument-hint: "<plan file path>"
 ---
 
@@ -150,7 +151,7 @@ instead:
 
 For research/exploration tasks, prefer non-blocking delegation:
 
-1. Spawn the `researcher` or `explore` agent with a clear question
+1. Spawn the `researcher` or `explorer` agent with a clear question
 2. Continue implementing other tasks while it runs
 3. Retrieve the result when you need it
 

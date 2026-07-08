@@ -1,6 +1,6 @@
 {
   "name": "spec-browser",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Catalog and browse a growing specs/ tree: a plain-markdown index any agent can reference, plus a folder-grouped doc site reusing the plan-review renderer.",
   "author": {
     "name": "jabworks"
@@ -8,5 +8,17 @@
   "repository": "https://github.com/jabworks/agentic-toolkit",
   "license": "MIT",
   "keywords": ["specs", "docs", "catalog", "index", "navigation", "browser"],
-  "skills": "./skills"
+  "skills": "./skills/spec-browser",
+  "interface": {
+    "displayName": "Spec Browser",
+    "shortDescription": "Catalog and browse a specs/ tree.",
+    "longDescription": "Generates specs/index.md — a plain-markdown catalog of every tech spec that any agent can read or grep — and launches the plan-review server in recursive directory mode to browse and annotate the whole tree with folder-grouped navigation. No external services or plugins.",
+    "developerName": "jabworks",
+    "category": "Productivity",
+    "defaultPrompt": [
+      "Build the spec index.",
+      "Browse all our specs.",
+      "What specs do we have?"
+    ]
+  }
 }

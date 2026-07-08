@@ -1,6 +1,6 @@
 {
   "name": "spec-browser",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Catalog and browse a growing specs/ tree: a plain-markdown index any agent can reference, plus a folder-grouped doc site reusing the plan-review renderer.",
   "author": {
     "name": "jabworks"

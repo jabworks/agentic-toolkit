@@ -1,6 +1,6 @@
 {
   "name": "plugin-foundry",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Codex skill for creating and maintaining skills in jabworks/agentic-toolkit.",
   "author": {
     "name": "jabworks"
@@ -15,7 +15,7 @@
     "toolkit",
     "dist"
   ],
-  "skills": "./skills/",
+  "skills": "./skills/plugin-foundry",
   "interface": {
     "displayName": "Plugin Foundry",
     "shortDescription": "Maintain skills in agentic-toolkit.",

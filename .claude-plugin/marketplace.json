@@ -78,6 +78,15 @@
       },
       "source": "./dist/plugins/git-operations",
       "category": "development"
+    },
+    {
+      "name": "toolkit-ops",
+      "description": "Operate the toolkit repo itself: repo orientation, change control and publish gating, skill-authoring standards, debugging playbook, failure archaeology, plugin schema reference, and research frontier for jabworks/agentic-toolkit.",
+      "author": {
+        "name": "Hieu Vi"
+      },
+      "source": "./dist/plugins/toolkit-ops",
+      "category": "development"
     }
   ]
 }

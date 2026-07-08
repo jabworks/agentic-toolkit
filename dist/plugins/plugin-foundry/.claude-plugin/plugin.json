@@ -1,6 +1,6 @@
 {
   "name": "plugin-foundry",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Claude Code skill for creating and maintaining skills in jabworks/agentic-toolkit.",
   "author": {
     "name": "jabworks"

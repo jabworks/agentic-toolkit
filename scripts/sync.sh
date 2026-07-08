@@ -6,8 +6,8 @@
 #   scripts/sync.sh <name>       # sync one skill by name
 #
 # Target detection (no config needed):
-#   dist/plugins/condux/skills/condux/<name>/  → condux bundle skill
-#   dist/plugins/<name>/skills/<name>/         → standalone plugin skill
+#   dist/plugins/<bundle>/skills/<bundle>/<name>/  → bundle skill (condux, toolkit-ops, …)
+#   dist/plugins/<name>/skills/<name>/             → standalone plugin skill
 #
 # New skills with no dist target are skipped with a warning — scaffold
 # them first with plugin-foundry, then run sync.
@@ -45,12 +45,20 @@ sync_skill() {
     return 1
   fi
 
-  local condux_dst="$DIST_DIR/condux/skills/condux/$name"
+  # Bundle target: dist/plugins/<p>/skills/<p>/<name> for any bundle plugin <p>.
+  local bundle_dst="" p_dir p
+  for p_dir in "$DIST_DIR"/*/; do
+    p=$(basename "$p_dir")
+    if [[ -d "$DIST_DIR/$p/skills/$p/$name" ]]; then
+      bundle_dst="$DIST_DIR/$p/skills/$p/$name"
+      break
+    fi
+  done
   local standalone_dst="$DIST_DIR/$name/skills/$name"
 
-  if [[ -d "$condux_dst" ]]; then
-    copy_dir "$src" "$condux_dst"
-    echo "synced  skills/$name  →  dist/plugins/condux/skills/condux/$name"
+  if [[ -n "$bundle_dst" ]]; then
+    copy_dir "$src" "$bundle_dst"
+    echo "synced  skills/$name  →  ${bundle_dst#"$REPO_ROOT"/}"
   elif [[ -d "$standalone_dst" ]]; then
     copy_dir "$src" "$standalone_dst"
     echo "synced  skills/$name  →  dist/plugins/$name/skills/$name"

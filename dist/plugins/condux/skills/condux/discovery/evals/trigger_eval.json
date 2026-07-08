@@ -1,0 +1,22 @@
+[
+  { "query": "lets figure out the design for the billing revamp", "should_trigger": true, "expected_skill": "discovery" },
+  { "query": "not sure what the scope is, help me think this through", "should_trigger": true, "expected_skill": "discovery" },
+  { "query": "i have a rough idea for an activity feed", "should_trigger": true, "expected_skill": "discovery" },
+  { "query": "clarify the requirements before we build anything", "should_trigger": true, "expected_skill": "discovery" },
+  { "query": "surface some alternatives for the state management approach", "should_trigger": true, "expected_skill": "discovery" },
+  { "query": "design session for the new onboarding", "should_trigger": true, "expected_skill": "discovery" },
+  { "query": "brainstorm ideas for the notifications feature", "should_trigger": true, "expected_skill": "discovery" },
+  { "query": "whats done look like for this feature? lets align first", "should_trigger": true, "expected_skill": "discovery" },
+  { "query": "resume the design we started yesterday", "should_trigger": true, "expected_skill": "discovery" },
+  { "query": "found an existing design doc for this, continue from it", "should_trigger": true, "expected_skill": "discovery" },
+  { "query": "design a database schema for multi-tenancy", "should_trigger": true, "expected_skill": "discovery" },
+  { "query": "big refactor, unclear boundaries — where do we even start", "should_trigger": true, "expected_skill": "discovery" },
+  { "query": "we already have a signed off design, write the plan", "should_trigger": true, "expected_skill": "draft-plan" },
+  { "query": "skip discovery, just plan it", "should_trigger": true, "expected_skill": "draft-plan" },
+  { "query": "small tweak to the button color", "should_trigger": true, "expected_skill": "workflow" },
+  { "query": "review the plan in the browser", "should_trigger": true, "expected_skill": "plan-review" },
+  { "query": "save what we decided as a spec", "should_trigger": true, "expected_skill": "technical-spec" },
+  { "query": "why does checkout 500 on submit", "should_trigger": true, "expected_skill": "root-cause-analysis" },
+  { "query": "help me write my resume", "should_trigger": false, "expected_skill": null },
+  { "query": "design a logo for the app", "should_trigger": false, "expected_skill": null }
+]

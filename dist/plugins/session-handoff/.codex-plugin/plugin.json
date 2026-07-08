@@ -1,6 +1,6 @@
 {
   "name": "session-handoff",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Codex skill for creating and resuming handoff documents across agentic coding sessions.",
   "author": {
     "name": "jabworks"
@@ -14,7 +14,7 @@
     "resume",
     "development"
   ],
-  "skills": "./skills/",
+  "skills": "./skills/session-handoff",
   "interface": {
     "displayName": "Session Handoff",
     "shortDescription": "Preserve and resume coding-session context.",

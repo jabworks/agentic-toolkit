@@ -1,0 +1,23 @@
+[
+  { "query": "my skill isnt triggering", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },
+  { "query": "why doesn't the plugin show up after install", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },
+  { "query": "dist looks out of date compared to skills/", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },
+  { "query": "the installed version of session-report behaves differently than the repo", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },
+  { "query": "plugin.json fails to parse on install", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },
+  { "query": "condux agents seem stale after I edited explorer.md", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },
+  { "query": "user reports the old bug is still there after the fix shipped", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },
+  { "query": "skill shows up with an empty description in the picker", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },
+  { "query": "why does codex install fail with missing plugin.json", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },
+  { "query": "tests say dist drifted, what do I do", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },
+  { "query": "node --test failing on manifest parity", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },
+  { "query": "skil not trigering help", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },
+  { "query": "plugin install worked in claude code but codex cant see it", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },
+  { "query": "my react app crashes on load", "should_trigger": true, "expected_skill": "root-cause-analysis" },
+  { "query": "debug this failing jest test in my project", "should_trigger": true, "expected_skill": "root-cause-analysis" },
+  { "query": "review the description wording for triggering", "should_trigger": true, "expected_skill": "toolkit-skill-standards" },
+  { "query": "has this drift thing happened before", "should_trigger": true, "expected_skill": "toolkit-failure-archaeology" },
+  { "query": "what fields does plugin.json need", "should_trigger": true, "expected_skill": "toolkit-plugin-reference" },
+  { "query": "is it safe to hand-edit dist to hotfix this", "should_trigger": true, "expected_skill": "toolkit-change-control" },
+  { "query": "browser devtools show a network error on my site", "should_trigger": false, "expected_skill": null },
+  { "query": "fix the 502 on my nginx server", "should_trigger": false, "expected_skill": null }
+]

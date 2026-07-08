@@ -1,0 +1,23 @@
+[
+  { "query": "what fields does plugin.json need", "should_trigger": true, "expected_skill": "toolkit-plugin-reference" },
+  { "query": "claude vs codex manifest differences", "should_trigger": true, "expected_skill": "toolkit-plugin-reference" },
+  { "query": "whats the marketplace entry format", "should_trigger": true, "expected_skill": "toolkit-plugin-reference" },
+  { "query": "does the claude manifest need the interface block", "should_trigger": true, "expected_skill": "toolkit-plugin-reference" },
+  { "query": "where does the hooks field go, claude or codex manifest", "should_trigger": true, "expected_skill": "toolkit-plugin-reference" },
+  { "query": "skills path — ./skills or ./skills/name?", "should_trigger": true, "expected_skill": "toolkit-plugin-reference" },
+  { "query": "is strict a real marketplace field here", "should_trigger": true, "expected_skill": "toolkit-plugin-reference" },
+  { "query": "how does npx skills add find the skills in this repo", "should_trigger": true, "expected_skill": "toolkit-plugin-reference" },
+  { "query": "what frontmatter fields are actually parsed vs just convention", "should_trigger": true, "expected_skill": "toolkit-plugin-reference" },
+  { "query": "hooks is missing from the condux claude manifest, is that a bug", "should_trigger": true, "expected_skill": "toolkit-plugin-reference" },
+  { "query": "whats a valid category value for the marketplace entry", "should_trigger": true, "expected_skill": "toolkit-plugin-reference" },
+  { "query": "keywords differ between the two manifests, does the parity test care", "should_trigger": true, "expected_skill": "toolkit-plugin-reference" },
+  { "query": "what is defaultPrompt for", "should_trigger": true, "expected_skill": "toolkit-plugin-reference" },
+  { "query": "how do plugin caches refresh when I ship a fix", "should_trigger": true, "expected_skill": "toolkit-plugin-reference" },
+  { "query": "what does $schema in marketplace.json actually do", "should_trigger": true, "expected_skill": "toolkit-plugin-reference" },
+  { "query": "is argument-hint a real frontmatter field", "should_trigger": true, "expected_skill": "toolkit-plugin-reference" },
+  { "query": "add the marketplace entry for my new skill", "should_trigger": true, "expected_skill": "plugin-foundry" },
+  { "query": "manifest fails json parse on install", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },
+  { "query": "which version do I bump for this change", "should_trigger": true, "expected_skill": "toolkit-change-control" },
+  { "query": "write an MCP server manifest", "should_trigger": false, "expected_skill": null },
+  { "query": "package.json exports field question", "should_trigger": false, "expected_skill": null }
+]
