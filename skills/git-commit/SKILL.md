@@ -1,6 +1,6 @@
 ---
 name: git-commit
-description: Use when staging changes and creating a git commit — derive a conventional-commit message from the diff and run the commit safely. Review before staging (never blind `git add .`), write multi-paragraph bodies via `-F`/heredoc (never chained `-m`), keep unwanted trailers out, and check the branch first. Covers the full local flow through verify and optional amend; stops before push.
+description: Use when staging changes and creating a git commit — derive a conventional-commit message from the diff and run the commit safely. Review before staging (never blind `git add .`), write multi-paragraph bodies via `-F`/heredoc (never chained `-m`), keep unwanted trailers out, and check the branch first. Covers the full local flow through verify and optional amend; stops before push — hand off to /release for tagging and publishing.
 ---
 
 # git-commit
@@ -124,3 +124,8 @@ The commands above are generic. This toolkit's owner uses these defaults — swa
 - **No co-author trailers** — this is guardrail 3, kept even when adjusting.
 
 If you don't use these, drop `-s` and the `rtk` prefix; everything else stays.
+
+## See also
+
+- `release` — after commits land: machinery detection, dry-run plan, then tag → push → GitHub release.
+- `git-operations` — undoing, discarding, parking, and recovery.

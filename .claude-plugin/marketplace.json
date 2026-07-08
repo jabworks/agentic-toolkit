@@ -87,6 +87,15 @@
       },
       "source": "./dist/plugins/toolkit-ops",
       "category": "development"
+    },
+    {
+      "name": "release",
+      "description": "Cut releases safely: detects the repo's machinery (AGENTS.md overrides, changesets, this toolkit's plugin tagging, plain GitHub tag + release), always dry-runs the full plan, executes on one confirm, and knows the rollback path for every step.",
+      "author": {
+        "name": "Hieu Vi"
+      },
+      "source": "./dist/plugins/release",
+      "category": "development"
     }
   ]
 }

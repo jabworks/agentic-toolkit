@@ -1,0 +1,22 @@
+{
+  "name": "release",
+  "version": "1.0.0",
+  "description": "Claude Code skill for cutting releases safely — detects the repo's machinery (AGENTS.md overrides, changesets, this toolkit's plugin tagging, plain GitHub tag + release), always dry-runs the full plan, executes on one confirm, and knows the rollback path for every step.",
+  "author": { "name": "jabworks" },
+  "repository": "https://github.com/jabworks/agentic-toolkit",
+  "license": "MIT",
+  "keywords": ["release", "tag", "publish", "github", "changesets", "semver"],
+  "skills": "./skills/release",
+  "interface": {
+    "displayName": "Release",
+    "shortDescription": "Dry-run first, one confirm, safe releases.",
+    "longDescription": "Detects how a repo releases — AGENTS.md overrides, changesets, this toolkit's plugin tagging, or plain GitHub tag + release — presents the full plan as a dry-run (version, commits, generated notes, exact commands, rollback paths), and executes only on a single confirmation. Force-pushes and history rewrites are banned throughout.",
+    "developerName": "jabworks",
+    "category": "Productivity",
+    "defaultPrompt": [
+      "Cut a release.",
+      "Whats in the next release?",
+      "Ship a new version of this plugin."
+    ]
+  }
+}

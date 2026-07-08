@@ -130,6 +130,7 @@ happened (or was declined) in draft-plan's own save step — don't re-offer it.*
 |---|---|
 | **Code review** *(recommended)* | `/code-review` the diff before merging |
 | **Commit** | Load the `git-commit` skill if installed (conventional message from the diff, safe staging); otherwise follow the repo's commit conventions |
+| **Cut a release** | Load the `release` skill if installed — machinery detection, dry-run plan, then tag → push → GitHub release; otherwise follow the repo's release conventions |
 | **Done** | Stop here |
 
 ## Skills and Gates

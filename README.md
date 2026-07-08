@@ -13,6 +13,7 @@ Personal collection of agentic coding skills. Compatible with Claude Code, Codex
 | [git-commit](./skills/git-commit/)           | Conventional-commit message from the diff, run safely — review before staging, no blind `git add .`   |
 | [git-operations](./skills/git-operations/)   | Decision router for git — pick the right operation (undo/discard/stash/merge/push) with an undo path  |
 | [spec-browser](./skills/spec-browser/)       | Catalog and browse a specs/ tree — markdown index + folder-grouped doc site                           |
+| [release](./skills/release/)                 | Cut releases safely — machinery detection (changesets/toolkit/GitHub), dry-run first, rollback paths  |
 
 ### Condux
 
