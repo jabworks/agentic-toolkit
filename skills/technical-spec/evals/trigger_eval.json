@@ -6,7 +6,7 @@
   { "query": "write up the field mappings from backend to UI", "should_trigger": true, "expected_skill": "technical-spec" },
   { "query": "update the spec for wan-config", "should_trigger": true, "expected_skill": "technical-spec" },
   { "query": "scaffold a spec folder for this feature", "should_trigger": true, "expected_skill": "technical-spec" },
-  { "query": "whats the format for quirks.md", "should_trigger": true, "expected_skill": "technical-spec" },
+  { "query": "whats the format for quirks.md", "should_trigger": true, "expected_skill": "technical-spec", "kind": "in-context" },
   { "query": "record the decision rationale for future sessions", "should_trigger": true, "expected_skill": "technical-spec" },
   { "query": "bump the index.md changelog for the spec", "should_trigger": true, "expected_skill": "technical-spec" },
   { "query": "save the design as a tech spec with live preview", "should_trigger": true, "expected_skill": "technical-spec" },

@@ -9,7 +9,7 @@
   { "query": "update the failing test to match the new behavior", "should_trigger": true, "expected_skill": "test-first-development" },
   { "query": "the test is failing so just fix the test", "should_trigger": true, "expected_skill": "test-first-development" },
   { "query": "should I tdd ui components", "should_trigger": true, "expected_skill": "test-first-development" },
-  { "query": "you already asked once, dont re-ask each cycle right?", "should_trigger": true, "expected_skill": "test-first-development" },
+  { "query": "you already asked once, dont re-ask each cycle right?", "should_trigger": true, "expected_skill": "test-first-development", "kind": "in-context" },
   { "query": "bug: prove it with a failing test then fix it", "should_trigger": true, "expected_skill": "test-first-development" },
   { "query": "tets first plz", "should_trigger": true, "expected_skill": "test-first-development" },
   { "query": "add tests for the existing legacy code", "should_trigger": true, "expected_skill": "workflow" },
