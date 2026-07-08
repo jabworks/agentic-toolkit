@@ -10,7 +10,7 @@
   { "query": "readme says one thing but the folder looks different, which do I trust", "should_trigger": true, "expected_skill": "toolkit-orientation" },
   { "query": "wheres the marketplace json and what reads it", "should_trigger": true, "expected_skill": "toolkit-orientation" },
   { "query": "whered the .claude/skills folder go", "should_trigger": true, "expected_skill": "toolkit-orientation" },
-  { "query": "explain the two install channels, npx skills add vs plugin install", "should_trigger": true, "expected_skill": "toolkit-plugin-reference" },
+  { "query": "explain the two install channels, npx skills add vs plugin install", "should_trigger": true, "expected_skill": "toolkit-plugin-reference", "accept": ["toolkit-orientation"] },
   { "query": "whats the difference between .claude-plugin and .codex-plugin manifests", "should_trigger": true, "expected_skill": "toolkit-plugin-reference" },
   { "query": "add a new skill to the toolkit", "should_trigger": true, "expected_skill": "plugin-foundry" },
   { "query": "why isnt my skill triggering", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },

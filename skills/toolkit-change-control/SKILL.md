@@ -1,6 +1,6 @@
 ---
 name: toolkit-change-control
-description: Use when deciding whether a change to jabworks/agentic-toolkit is done and safe to ship — classifying the change, picking the version bump, and gating on the publish checklist (mirror synced, both manifests paired, marketplace entry, node --test green, house-style commit). Triggers include "is this skill shipped", "am I done shipping this skill/plugin", "ready to publish", "what version do I bump", "did I register this plugin".
+description: Use when deciding whether a change to jabworks/agentic-toolkit is done and safe to ship — classifying the change (including retiring a skill), picking the version bump, and gating on the publish checklist (mirror synced, manifests paired, marketplace entry, node --test green). Triggers include "is this skill shipped", "am I done shipping this skill/plugin", "ready to publish", "what version do I bump", "did I register this plugin", "retire this skill".
 ---
 
 # Toolkit Change Control
