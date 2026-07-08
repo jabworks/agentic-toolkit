@@ -1,7 +1,7 @@
 ---
 name: subagent-execution
 description: Execute a plan using named specialist agents. Default is to implement yourself — only spawn when there is a concrete justification. Agents must be pre-defined; never create generic subagents with injected system prompts.
-when_to_use: Trigger when implementing a LARGE plan with tasks that benefit from agent specialization or parallel exploration. Not for ad-hoc independent tasks outside a plan (that's subagent-deployment).
+when_to_use: Trigger when implementing a LARGE plan with tasks that benefit from agent specialization or parallel exploration — including task briefs, review packages, spawn rules, and resuming an interrupted plan from the .condux progress ledger (not session-handoff). Not for ad-hoc independent tasks outside a plan (that's subagent-deployment).
 argument-hint: "<plan file path>"
 ---
 
@@ -157,7 +157,25 @@ For research/exploration tasks, prefer non-blocking delegation:
 
 Don't block the main session waiting for research that isn't on the critical path.
 
+## Codex: Installing the Named Agents
+
+Codex plugins cannot bundle agents (the Codex plugin format has no `agents/`
+component) — custom agents live as standalone TOML files under
+`$CODEX_HOME/agents/` (personal) or `<repo>/.codex/agents/` (project).
+Generate or refresh them from the canonical definitions here:
+
+```bash
+node "$(find ~/.claude ~/.codex ~/.agents -name install-codex-agents.mjs -path '*subagent-execution*' 2>/dev/null | head -1)"
+```
+
+Re-run after any agent-definition change (agents ship inside the condux
+plugin, but Codex won't load them from there). Existing TOMLs are backed up
+to `*.bak`; your `model` / `model_reasoning_effort` / `sandbox_mode` /
+`nickname_candidates` tuning is preserved. A custom agent named `explorer`
+takes precedence over Codex's built-in `explorer` (documented behavior).
+
 ## See Also
 
 - `references/spawn-rules.md` — agent cost tiers, capability boundaries, decision tree
 - `references/task-brief.sh`, `references/review-package.sh` — file-handoff scripts (see File Handoffs above)
+- `references/install-codex-agents.mjs` — regenerate Codex agent TOMLs from the canonical `agents/*.md`
