@@ -116,11 +116,13 @@ Goal: no clone can accidentally ship drift.
 - `scripts/install-hooks.sh` writes the pre-commit sync hook; plugin-foundry no longer
   claims the hook is automatic.
 
-### C3. Close the fresh-clone gap — HALF DONE
-- DONE 2026-07-08: setup notes exist in README ("Structure" section) and CLAUDE.md
-  ("After cloning, `bash scripts/install-hooks.sh` installs the pre-commit sync hook").
-- OPEN: optionally, a test that WARNS (not fails) when `.git/hooks/pre-commit` is
-  absent locally.
+### C3. Close the fresh-clone gap — DONE 2026-07-08
+- Setup notes exist in README ("Structure" section) and CLAUDE.md ("After cloning,
+  `bash scripts/install-hooks.sh` installs the pre-commit sync hook").
+- `tests/local-hooks.test.mjs` WARNS (never fails) when `.git/hooks/pre-commit` is
+  missing or doesn't run sync.sh; silent on CI (CI checks drift directly).
+- Success criterion met: a contributor cannot end up hook-less unknowingly —
+  `node --test` tells them even if they skipped the README.
 - Wrong path (fenced): committing anything into `.git/` or requiring husky/deps —
   this repo is dependency-free by policy.
 - Success criterion: documented setup step exists; a contributor following README
@@ -146,6 +148,6 @@ Goal: docs of record never contradict the disk for more than one change cycle.
 
 ---
 
-Last updated: 2026-07-08 (initial campaign; B and C substantially closed; A3/A4,
-C3's warn-test, and D2 open. Post-review fixer pass applied same day — see
+Last updated: 2026-07-08 (B and C closed; A3 baseline recorded with corpus-semantics
+re-run in progress; A4 and D2 open. Post-review fixer pass applied same day — see
 distillation/08_fixer_report.md).

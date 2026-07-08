@@ -78,6 +78,8 @@ committing — it fails the build otherwise:
 - `manifest-parity.test.mjs` — each plugin's `.claude-plugin`/`.codex-plugin`
   manifests match on name/version/skills, both carry `interface`, `hooks` stays
   codex-only, and every skill has a trigger contract
+- `local-hooks.test.mjs` — warn-only (never fails): tells you when this clone
+  is missing the pre-commit sync hook (`bash scripts/install-hooks.sh`)
 
 Two distribution channels read two different trees (don't conflate them):
 `npx skills add` installs from top-level `skills/`; the plugin marketplace

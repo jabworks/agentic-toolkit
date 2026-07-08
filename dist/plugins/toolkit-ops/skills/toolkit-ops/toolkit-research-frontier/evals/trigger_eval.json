@@ -14,7 +14,7 @@
   { "query": "docs catalog test — worth adding?", "should_trigger": true, "expected_skill": "toolkit-research-frontier" },
   { "query": "we shoud probly test frontmater yaml strictly", "should_trigger": true, "expected_skill": "toolkit-research-frontier" },
   { "query": "what did the 2026-07-08 audit leave open", "should_trigger": true, "expected_skill": "toolkit-research-frontier" },
-  { "query": "fix this failing test right now", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },
+  { "query": "fix this failing test right now", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook", "accept": ["workflow", "root-cause-analysis"] },
   { "query": "improve this skill's description", "should_trigger": true, "expected_skill": "toolkit-skill-standards" },
   { "query": "why does sync.sh special-case the agents dir", "should_trigger": true, "expected_skill": "toolkit-failure-archaeology" },
   { "query": "what should we improve next in my saas product", "should_trigger": false, "expected_skill": null },

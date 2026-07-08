@@ -31,6 +31,7 @@ const MODEL = flag('--model', 'claude-haiku-4-5-20251001');
 const BATCH = Number(flag('--batch', '12'));
 const LIMIT = Number(flag('--limit', '0')); // 0 = all
 const OUT = flag('--out', '');
+const INCLUDE_ALL = args.includes('--all'); // also score kind:"in-context" cases
 
 // --- catalog ---------------------------------------------------------------
 function fmField(block, key) {
@@ -59,10 +60,17 @@ for (const name of fs.readdirSync(SKILLS_DIR)) {
     const key = c.query + '||' + expected;
     if (seen.has(key)) continue;
     seen.add(key);
-    cases.push({ query: c.query, expected, source: name });
+    // kind: "cold" (default) = a fresh user message that should route by itself;
+    //       "in-context"     = a follow-up asked while the skill is already
+    //                          loaded — excluded from routing scores unless --all.
+    // accept: alternate skills that count as correct (e.g. doctrine-correct
+    //         `workflow` routing for implementation requests).
+    cases.push({ query: c.query, expected, accept: c.accept || [], kind: c.kind || 'cold', source: name });
   }
 }
-const corpus = LIMIT > 0 ? cases.slice(0, LIMIT) : cases;
+const inContext = cases.filter((c) => c.kind === 'in-context').length;
+const eligible = INCLUDE_ALL ? cases : cases.filter((c) => c.kind !== 'in-context');
+const corpus = LIMIT > 0 ? eligible.slice(0, LIMIT) : eligible;
 
 // --- routing ---------------------------------------------------------------
 const EMPTY_MCP = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'eval-triggers-')), 'empty-mcp.json');
@@ -125,21 +133,23 @@ for (let i = 0; i < corpus.length; i += BATCH) {
 }
 
 // --- score -----------------------------------------------------------------
+const isHit = (r) => (r.got ?? null) === (r.expected ?? null)
+  || (r.got != null && (r.accept || []).includes(r.got));
 const scored = results.filter((r) => r.got !== '(batch-error)');
-const hits = scored.filter((r) => (r.got ?? null) === (r.expected ?? null));
-const misses = scored.filter((r) => (r.got ?? null) !== (r.expected ?? null));
+const hits = scored.filter(isHit);
+const misses = scored.filter((r) => !isHit(r));
 const bySkill = {};
 for (const r of scored) {
   const key = r.expected ?? '(null)';
   bySkill[key] = bySkill[key] || { total: 0, hit: 0 };
   bySkill[key].total++;
-  if ((r.got ?? null) === (r.expected ?? null)) bySkill[key].hit++;
+  if (isHit(r)) bySkill[key].hit++;
 }
 
 const lines = [];
-lines.push(`# Trigger-routing baseline — ${new Date().toISOString().slice(0, 10)}`);
+lines.push(`# Trigger-routing run — ${new Date().toISOString().slice(0, 10)}`);
 lines.push('');
-lines.push(`Model: ${MODEL} · batch ${BATCH} · corpus ${corpus.length} (${scored.length} scored, ${batchErrors} failed batches)`);
+lines.push(`Model: ${MODEL} · batch ${BATCH} · corpus ${corpus.length} cold-trigger cases scored (${inContext} in-context cases ${INCLUDE_ALL ? 'included' : 'excluded'}; ${batchErrors} failed batches). Hits include per-case \`accept\` alternates.`);
 lines.push(`Overall routing accuracy: **${hits.length}/${scored.length} = ${(100 * hits.length / scored.length).toFixed(1)}%**`);
 lines.push('');
 lines.push('## Per expected skill');

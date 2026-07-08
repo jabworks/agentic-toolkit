@@ -51,8 +51,8 @@ stale precisely when the work it proposes gets done.
    from README/CLAUDE.md tables (three plugins were, until 2026-07-08).
 4. **Trigger-collision automation.** Collision review is manual discipline
    (`toolkit-skill-standards` step 4); no mechanical overlap scoring exists.
-5. **Hook parity on clones.** `scripts/install-hooks.sh` exists and README/CLAUDE.md
-   document running it after cloning, but nothing enforces or automates it.
+5. ~~Hook parity on clones~~ — closed 2026-07-08: `tests/local-hooks.test.mjs`
+   warns (never fails) on clones missing the pre-commit sync hook.
 
 ## First three concrete steps
 
@@ -69,7 +69,8 @@ stale precisely when the work it proposes gets done.
 - A command exists that fails CI when a trigger-eval query routes to the wrong skill.
 - `node --test` fails on an unquoted-`:` description (today it passes).
 - `node --test` fails when a registered plugin is absent from either catalog doc.
-- A fresh `git clone` + documented setup leaves no safety net uninstalled.
+- A fresh `git clone` + documented setup leaves no safety net uninstalled
+  (met 2026-07-08: README/CLAUDE.md notes + the local-hooks warn test).
 
 ## The four-front library-health campaign
 
