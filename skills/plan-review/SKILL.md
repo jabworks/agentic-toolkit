@@ -106,7 +106,8 @@ node /PATH/TO/plan-review/references/annotate-server.js <spec-dir>
 ```
 
 Serves the file, writes your decision to `<file>.feedback.md`, and stays running
-(Ctrl+C to stop). Use this for ad-hoc review of a spec or a written plan when you
+(Ctrl+C to stop). Pass `--no-open` to skip the automatic browser launch (used by
+the test suite; also right for headless/CI runs). Use this for ad-hoc review of a spec or a written plan when you
 are not in plan mode. After submitting, read `<file>.feedback.md` to action it.
 
 **Directory mode** reviews a whole spec folder (e.g. `specs/wan-config/` from

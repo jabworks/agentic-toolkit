@@ -52,6 +52,7 @@ const { exec } = require('child_process');
 const HOOK_MODE = process.argv.includes('--hook');
 const CODEX_STOP_MODE = process.argv.includes('--codex-stop');
 const STEER_MODE = process.argv.includes('--steer');
+const NO_OPEN = process.argv.includes('--no-open'); // don't launch the browser (tests, headless)
 const STDOUT_JSON = HOOK_MODE || CODEX_STOP_MODE || STEER_MODE; // these modes emit JSON on stdout
 const log = STDOUT_JSON ? console.error : console.log; // keep stdout clean for hooks
 const sseClients = new Set();
@@ -375,9 +376,11 @@ function listen() {
     if (STEER_MODE) log('  Decisions     →  GET ' + url + '/api/decision (long-poll)');
     if (!STDOUT_JSON) log('  Feedback      →  ' + feedbackFile);
     log('\n  Annotate the plan, then submit your decision. Ctrl+C to stop.\n');
-    const opener = process.platform === 'darwin' ? 'open' :
-                   process.platform === 'win32' ? 'start ""' : 'xdg-open';
-    exec(opener + ' ' + url, function () {});
+    if (!NO_OPEN) {
+      const opener = process.platform === 'darwin' ? 'open' :
+                     process.platform === 'win32' ? 'start ""' : 'xdg-open';
+      exec(opener + ' ' + url, function () {});
+    }
   });
 }
 

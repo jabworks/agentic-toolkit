@@ -15,7 +15,7 @@ test('annotate-server manual mode: serves plan, accepts feedback, writes feedbac
   fs.writeFileSync(fixture, '# Sample Plan\n\nContent for the smoke test.\n');
 
   const { proc, port } = await spawnServer(
-    SERVER, [fixture], /Plan review\s+→\s+http:\/\/127\.0\.0\.1:(\d+)/
+    SERVER, [fixture, '--no-open'], /Plan review\s+→\s+http:\/\/127\.0\.0\.1:(\d+)/
   );
   try {
     const base = 'http://127.0.0.1:' + port;
@@ -58,7 +58,7 @@ test('annotate-server directory mode: doc manifest, per-doc content, grouped fee
   const feedbackFile = path.join(specDir, 'review.feedback.md');
 
   const { proc, port } = await spawnServer(
-    SERVER, [specDir], /Plan review\s+→\s+http:\/\/127\.0\.0\.1:(\d+)/
+    SERVER, [specDir, '--no-open'], /Plan review\s+→\s+http:\/\/127\.0\.0\.1:(\d+)/
   );
   try {
     const base = 'http://127.0.0.1:' + port;
