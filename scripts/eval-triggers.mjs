@@ -65,6 +65,9 @@ for (const name of fs.readdirSync(SKILLS_DIR)) {
 const corpus = LIMIT > 0 ? cases.slice(0, LIMIT) : cases;
 
 // --- routing ---------------------------------------------------------------
+const EMPTY_MCP = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'eval-triggers-')), 'empty-mcp.json');
+fs.writeFileSync(EMPTY_MCP, '{"mcpServers":{}}\n');
+
 function routeBatch(batch) {
   const prompt = [
     'You route user messages to a coding agent\'s skills. For each numbered user',
@@ -83,15 +86,17 @@ function routeBatch(batch) {
     ...batch.map((c, k) => `${k + 1}. ${c.query}`),
   ].join('\n');
 
-  // --bare: judge sessions must not load the user's hooks/plugins/MCP servers —
-  // without it, every batch spawns the full plugin stack (chrome-devtools-mcp
-  // launches Chrome windows, etc.) and pays its startup cost.
-  const res = spawnSync('claude', ['-p', prompt, '--model', MODEL, '--bare'], {
+  // Judge sessions must not load the user's MCP servers — without isolation,
+  // every batch spawns the full MCP stack (chrome-devtools-mcp launches Chrome
+  // windows on localhost debug ports, etc.) and pays its startup cost.
+  // NOTE: --bare would be stronger but skips keychain reads and breaks auth;
+  // --strict-mcp-config + an empty config keeps auth and blocks all servers.
+  const res = spawnSync('claude', ['-p', prompt, '--model', MODEL, '--strict-mcp-config', '--mcp-config', EMPTY_MCP], {
     encoding: 'utf8',
     cwd: os.tmpdir(), // avoid loading this repo's project context into the router sim
     timeout: 180000,
   });
-  if (res.status !== 0) throw new Error('claude -p failed: ' + (res.stderr || res.error));
+  if (res.status !== 0) throw new Error('claude -p failed: ' + (res.stderr || res.stdout || String(res.error)).trim().slice(0, 300));
   const text = res.stdout;
   const start = text.indexOf('[');
   const end = text.lastIndexOf(']');
