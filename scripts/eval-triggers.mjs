@@ -32,6 +32,7 @@ const BATCH = Number(flag('--batch', '12'));
 const LIMIT = Number(flag('--limit', '0')); // 0 = all
 const OUT = flag('--out', '');
 const INCLUDE_ALL = args.includes('--all'); // also score kind:"in-context" cases
+const RUNS = Math.max(1, Number(flag('--runs', '1'))); // trials; >1 reports mean ± 95% CI
 
 // --- catalog ---------------------------------------------------------------
 function fmField(block, key) {
@@ -113,24 +114,31 @@ function routeBatch(batch) {
 }
 
 // --- run -------------------------------------------------------------------
-const results = [];
-let batchErrors = 0;
-for (let i = 0; i < corpus.length; i += BATCH) {
-  const batch = corpus.slice(i, i + BATCH);
-  process.stderr.write(`batch ${i / BATCH + 1}/${Math.ceil(corpus.length / BATCH)}…\n`);
-  try {
-    const routed = routeBatch(batch);
-    for (const c of batch) {
-      const k = batch.indexOf(c) + 1;
-      const hit = routed.find((r) => r.i === k);
-      results.push({ ...c, got: hit ? hit.skill : '(missing)' });
+function runOnce(runIdx) {
+  const results = [];
+  let batchErrors = 0;
+  for (let i = 0; i < corpus.length; i += BATCH) {
+    const batch = corpus.slice(i, i + BATCH);
+    process.stderr.write(`run ${runIdx + 1}/${RUNS} · batch ${i / BATCH + 1}/${Math.ceil(corpus.length / BATCH)}…\n`);
+    try {
+      const routed = routeBatch(batch);
+      for (const c of batch) {
+        const k = batch.indexOf(c) + 1;
+        const hit = routed.find((r) => r.i === k);
+        results.push({ ...c, got: hit ? hit.skill : '(missing)' });
+      }
+    } catch (e) {
+      batchErrors++;
+      process.stderr.write('  batch failed: ' + e.message + '\n');
+      for (const c of batch) results.push({ ...c, got: '(batch-error)' });
     }
-  } catch (e) {
-    batchErrors++;
-    process.stderr.write('  batch failed: ' + e.message + '\n');
-    for (const c of batch) results.push({ ...c, got: '(batch-error)' });
   }
+  return { results, batchErrors };
 }
+const runsData = [];
+for (let r = 0; r < RUNS; r++) runsData.push(runOnce(r));
+const results = runsData[runsData.length - 1].results; // last run drives the miss table
+const batchErrors = runsData.reduce((s, r) => s + r.batchErrors, 0);
 
 // --- score -----------------------------------------------------------------
 const isHit = (r) => (r.got ?? null) === (r.expected ?? null)
@@ -146,10 +154,37 @@ for (const r of scored) {
   if (isHit(r)) bySkill[key].hit++;
 }
 
+// Multi-run statistics: per-run accuracy, mean ± 95% CI (t-distribution), and
+// flaky cases (hit in some runs, missed in others).
+const perRunAcc = runsData.map(({ results: rr }) => {
+  const s = rr.filter((r) => r.got !== '(batch-error)');
+  return s.length ? s.filter(isHit).length / s.length : 0;
+});
+const T95 = { 1: 12.706, 2: 4.303, 3: 3.182, 4: 2.776, 5: 2.571, 6: 2.447, 7: 2.365, 8: 2.306, 9: 2.262 };
+const meanAcc = perRunAcc.reduce((a, b) => a + b, 0) / perRunAcc.length;
+const sd = RUNS > 1 ? Math.sqrt(perRunAcc.reduce((s, a) => s + (a - meanAcc) ** 2, 0) / (RUNS - 1)) : 0;
+const ci95 = RUNS > 1 ? (T95[RUNS - 1] || 1.96) * sd / Math.sqrt(RUNS) : 0;
+const hitCounts = new Map();
+for (const { results: rr } of runsData) {
+  for (const r of rr) {
+    if (r.got === '(batch-error)') continue;
+    const key = r.query + '||' + (r.expected ?? '');
+    const cur = hitCounts.get(key) || { case: r, hit: 0, seen: 0 };
+    cur.seen++;
+    if (isHit(r)) cur.hit++;
+    hitCounts.set(key, cur);
+  }
+}
+const flaky = [...hitCounts.values()].filter((c) => c.hit > 0 && c.hit < c.seen);
+
 const lines = [];
 lines.push(`# Trigger-routing run — ${new Date().toISOString().slice(0, 10)}`);
 lines.push('');
 lines.push(`Model: ${MODEL} · batch ${BATCH} · corpus ${corpus.length} cold-trigger cases scored (${inContext} in-context cases ${INCLUDE_ALL ? 'included' : 'excluded'}; ${batchErrors} failed batches). Hits include per-case \`accept\` alternates.`);
+if (RUNS > 1) {
+  lines.push('');
+  lines.push(`Trials: ${RUNS} · per-run: ${perRunAcc.map((a) => (100 * a).toFixed(1) + '%').join(' / ')} · mean **${(100 * meanAcc).toFixed(1)}% ± ${(100 * ci95).toFixed(1)}pp** (95% CI, t-dist) · flaky cases: ${flaky.length}`);
+}
 lines.push(`Overall routing accuracy: **${hits.length}/${scored.length} = ${(100 * hits.length / scored.length).toFixed(1)}%**`);
 lines.push('');
 lines.push('## Per expected skill');
@@ -168,6 +203,16 @@ for (const r of misses) {
   lines.push(`| ${r.query.replace(/\|/g, '\\|')} | ${r.expected ?? 'null'} | ${r.got ?? 'null'} | ${r.source} |`);
 }
 lines.push('');
+if (RUNS > 1 && flaky.length) {
+  lines.push(`## Flaky cases (${flaky.length} — hit in some trials, missed in others)`);
+  lines.push('');
+  lines.push('| query | expected | hits |');
+  lines.push('|---|---|---|');
+  for (const f of flaky) {
+    lines.push(`| ${f.case.query.replace(/\|/g, '\\|')} | ${f.case.expected ?? 'null'} | ${f.hit}/${f.seen} |`);
+  }
+  lines.push('');
+}
 const report = lines.join('\n');
 
 if (OUT) {
