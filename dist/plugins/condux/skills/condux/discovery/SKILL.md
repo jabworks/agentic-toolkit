@@ -114,7 +114,7 @@ Save to: `docs/plans/YYYY-MM-DD-<feature>-design.md` — always, at sign-off
 (Step 6). The saved file is what `/draft-plan`'s gate check globs for; a
 design that lives only in conversation doesn't count as signed off.
 
-For side-by-side layout comparisons or architecture diagrams during the design phase, see `references/visual-companion.md`.
+For side-by-side layout comparisons or architecture diagrams during the design phase, see `references/mockup-picker.md`.
 
 ## Design Review Loop
 

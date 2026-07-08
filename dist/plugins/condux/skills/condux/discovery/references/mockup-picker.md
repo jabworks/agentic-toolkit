@@ -1,6 +1,8 @@
-# Visual Companion
+# Mockup Picker
 
-Reference for `/discovery`. Use when spatial or visual content communicates better than text alone.
+Reference for `/discovery`. Use when spatial or visual content communicates better
+than text alone — HTML option mockups, plus the click-to-pick server that returns
+the user's choice straight to the agent.
 
 ## When to Go Visual
 

@@ -153,8 +153,8 @@ Load each only when its step is reached.
 **Spec companion (`technical-spec`):** the router's step-2 lookup loads spec context
 silently — no spec, no noise. `discovery` integrates it at sign-off (design doc always;
 optional structured spec + live preview). Whenever a task **modifies** spec files
-(`specs/`, OpenAPI YAMLs, contracts, field mappings), offer: "Want the visual
-companion open to review the spec changes?"
+(`specs/`, OpenAPI YAMLs, contracts, field mappings), offer: "Want the live spec
+preview open to review the changes?"
 
 ## Agents
 
