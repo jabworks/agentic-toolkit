@@ -33,13 +33,18 @@ stale precisely when the work it proposes gets done.
   condux agents mirror, plan-review no-egress, scaffold + annotate-server behavior.
 - `scripts/sync.sh` (multi-bundle target detection), `scripts/install-hooks.sh`.
 - The condux and toolkit-ops bundles; plugin-foundry's authoring runbook.
-- Per-skill trigger evals under `skills/toolkit-*/evals/` + the trigger matrix and
-  model-transfer eval under `distillation/` (2026-07-08 audit).
+- Per-skill trigger evals under `skills/*/evals/` (19 skills, ~390 queries) + the
+  trigger matrix and model-transfer eval under `distillation/` (2026-07-08 audit).
+- `scripts/eval-triggers.mjs` — live routing scorer (`claude -p` judge; baseline
+  76.0% recorded in `references/health-campaign.md` Front A3).
 
 ## Open problems (verified open as of 2026-07-08)
 
-1. **Trigger evals are static JSON, never executed.** No harness runs the
-   `evals/trigger_eval.json` queries against a real model and scores routing.
+1. **Trigger-eval corpus semantics.** The harness exists
+   (`scripts/eval-triggers.mjs`; Haiku baseline 76.0% on 2026-07-08) but the
+   corpus conflates cold-trigger queries with in-skill follow-ups, and the
+   scorer doesn't accept doctrine-correct `workflow` routing. Split/tag the
+   corpus, teach the scorer alternates, re-run toward ≥90%.
 2. **YAML-strict frontmatter validation.** The invariant test regex-parses
    frontmatter; an `a13e094`-class quoting bug would pass it.
 3. **Docs-catalog enforcement.** Nothing fails when a marketplace plugin is missing
@@ -51,9 +56,9 @@ stale precisely when the work it proposes gets done.
 
 ## First three concrete steps
 
-1. Run every `evals/trigger_eval.json` against a weaker model (Haiku-class) and score
-   expected-skill routing; record the scored baseline in
-   `references/health-campaign.md` (Front A status).
+1. Split the eval corpus into cold-trigger vs in-context cases, teach
+   `scripts/eval-triggers.mjs` to accept `workflow` as a valid route for dev-task
+   queries, and re-run toward the ≥90% criterion (baseline: 76.0%, 2026-07-08).
 2. Add a docs-catalog test: every `marketplace.json` plugin name appears in README.md
    and CLAUDE.md; wire into `node --test`.
 3. Replace the frontmatter regex parse with a strict mini-YAML check (quoting-aware,

@@ -31,20 +31,37 @@ siblings' prompts.
   seams (preflight↔toolkit-change-control,
   root-cause-analysis↔toolkit-debugging-playbook) are tested from both sides.
 
-### A3. Live model scoring — OPEN
-- Command (proposed): for each eval query, present the full skill list to a
-  Haiku-class model and record which skill it would invoke; score against
-  `expected_skill`.
-- Expected observation: ≥90% routing accuracy; every miss is a should-not-trigger
-  false positive or a collision pair.
-- Branch: accuracy <90% on a skill → rewrite its trigger contract
-  (`toolkit-skill-standards`) → re-run. Collisions between two skills → add mutual
-  disambiguation clauses → re-run.
-- Wrong path (fenced): tuning descriptions against the eval by keyword-stuffing all
-  20 queries verbatim — the eval must stay a sample, not a spec.
-- Success criterion: a repeatable scored run recorded in this file's Front A status
-  (raw results attached under `references/`), ≥90% accuracy, zero unexplained
-  collisions.
+### A3. Live model scoring — BASELINE RECORDED 2026-07-08 (target not yet met)
+- Harness: `node scripts/eval-triggers.mjs [--model <id>] [--limit <n>]` — builds
+  the catalog from live SKILL.md frontmatter, batches the corpus through
+  `claude -p` (default judge: claude-haiku-4-5-20251001, ~34 calls per full run).
+- Result: **76.0% (298/392)**, 0 failed batches. Full report + raw JSON:
+  `references/eval-baseline-2026-07-08.{md,json}`.
+- Miss taxonomy (94 misses):
+  1. ~60% are judge-nulls on in-context/follow-up phrasings ("is the build
+     green", "whats the task card format again") — the corpus conflates
+     cold-trigger queries with questions asked while the skill is already
+     loaded. Fix the corpus (tag or split in-context cases), not descriptions.
+  2. Doctrine-correct alternates scored as misses — routing dev-task queries to
+     `workflow` IS the condux entry contract; the scorer should accept it as
+     valid for implementation requests.
+  3. Genuine contract gaps, fixed same day: workflow's when_to_use gained the
+     operating-manual vocabulary orphaned by the using-condux merge (all its
+     philosophy queries had judge-nulled); subagent-execution (worst skill,
+     6/15) gained ledger/task-brief/resume vocabulary (two misses had routed to
+     session-handoff).
+  4. Confirmed live collisions, matching the usability review's predictions:
+     plan-review↔spec-browser ("review the spec folder"),
+     subagent-execution↔session-handoff (resume space), and
+     toolkit-change-control's 3-way crowding with orientation/plugin-reference
+     (12/18).
+- Branch taken: <90% → trigger-contract fixes applied for the two worst skills
+  (taxonomy 3). Remaining A3 work: corpus semantics split + scorer alternates
+  (taxonomy 1–2), then re-run.
+- Wrong path (still fenced): keyword-stuffing descriptions with eval queries
+  verbatim — the two fixes above add capability vocabulary the skills genuinely
+  own, not eval phrases.
+- Success criterion unchanged: ≥90% accuracy, zero unexplained collisions.
 
 ### A4. Collision automation — OPEN (after A3)
 - Only worth building if A3 shows recurring drift: a script that flags description/
