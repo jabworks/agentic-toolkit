@@ -62,6 +62,13 @@ A checkout of the repo. Nothing else — this skill assumes zero prior context.
    names, but check SKILL.md exists before treating a dir as a real skill),
    `git log --oneline -5` (recent movement), `node --test` (all invariants).
 
+## Porting this system elsewhere
+
+Standing up another toolkit (e.g. a company fork) from this one? The bundle's
+skills do NOT install elsewhere as-is (their trigger contracts and facts are
+deliberately scoped to this repo) — follow `references/porting.md`: what ports
+verbatim, what ports as doctrine, what must start empty.
+
 ## Evidence required
 
 Answer repo questions from paths and command output produced this session — never from
