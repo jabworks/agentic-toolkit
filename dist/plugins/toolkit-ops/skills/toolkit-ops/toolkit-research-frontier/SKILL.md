@@ -18,7 +18,7 @@ exists, what to do next, and how to know a result is real.
 
 ## When not to use
 
-- Day-to-day authoring/shipping → `plugin-foundry` + `toolkit-change-control`.
+- Day-to-day authoring/shipping → `toolkit-foundry` + `toolkit-change-control`.
 - Fixing a live defect → `toolkit-debugging-playbook`.
 
 ## Inputs required
@@ -32,7 +32,7 @@ stale precisely when the work it proposes gets done.
   budgets/naming, marketplace + plugin.json validity, manifest pair parity,
   condux agents mirror, plan-review no-egress, scaffold + annotate-server behavior.
 - `scripts/sync.sh` (multi-bundle target detection), `scripts/install-hooks.sh`.
-- The condux and toolkit-ops bundles; plugin-foundry's authoring runbook.
+- The condux and toolkit-ops bundles; toolkit-foundry's authoring runbook.
 - Per-skill trigger evals under `skills/*/evals/` (19 skills, ~390 queries) + the
   trigger matrix and model-transfer eval under `distillation/` (2026-07-08 audit).
 - `scripts/eval-triggers.mjs` — live routing scorer (`claude -p` judge; baseline

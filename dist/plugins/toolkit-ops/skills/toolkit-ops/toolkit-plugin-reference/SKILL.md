@@ -18,7 +18,7 @@ repo** — nothing generic, nothing unverified.
 
 ## When not to use
 
-- The end-to-end authoring sequence → `plugin-foundry`.
+- The end-to-end authoring sequence → `toolkit-foundry`.
 - Gating whether a change is shippable → `toolkit-change-control`.
 - Host-tool features beyond what this repo uses (MCP servers, commands dirs) —
   unverified here; consult official plugin docs instead.
@@ -116,7 +116,7 @@ plugin copied a different wrong example. The table + parity test pin one shape.
 
 ## Related skills
 
-`plugin-foundry` (uses these schemas in its templates), `toolkit-change-control`
+`toolkit-foundry` (uses these schemas in its templates), `toolkit-change-control`
 (version-bump rules), `toolkit-debugging-playbook` (manifest-caused symptoms).
 
 ## Provenance and maintenance

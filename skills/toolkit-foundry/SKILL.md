@@ -1,9 +1,9 @@
 ---
-name: plugin-foundry
+name: toolkit-foundry
 description: Use when creating a new skill for jabworks/agentic-toolkit, registering it in the marketplace, syncing the dist mirror, or bumping the toolkit version.
 ---
 
-# Plugin Foundry
+# Toolkit Foundry
 
 > Adapted from [softaworks/agent-toolkit `plugin-forge`](https://github.com/softaworks/agent-toolkit/tree/main/skills/plugin-forge)
 

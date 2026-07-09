@@ -11,7 +11,6 @@ Personal collection of agentic coding skills. Compatible with Claude Code, Codex
 | -------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
 | [session-report](./skills/session-report/)   | Generate an explorable HTML report of session usage — tokens, cache, cost, subagents, skills          |
 | [session-handoff](./skills/session-handoff/) | Preserve and restore session context across agentic coding sessions                                   |
-| [plugin-foundry](./skills/plugin-foundry/)   | Create and maintain skills in this toolkit                                                            |
 | [adapting-skills](./skills/adapting-skills/) | Developer profile priors for adapting skills to Harvey's stack _(personal — useful to collaborators)_ |
 | [git-commit](./skills/git-commit/)           | Conventional-commit message from the diff, run safely — review before staging, no blind `git add .`   |
 | [git-operations](./skills/git-operations/)   | Decision router for git — pick the right operation (undo/discard/stash/merge/push) with an undo path  |
@@ -116,6 +115,7 @@ Repo-maintenance bundle (`toolkit-ops`) for working on this toolkit itself:
 | Skill | Description |
 |---|---|
 | [toolkit-orientation](./skills/toolkit-orientation/) | Zero-context map of the repo — trees, bundles, manifest pairing, docs trust order |
+| [toolkit-foundry](./skills/toolkit-foundry/) | Create and maintain skills — scaffold, register, sync, publish (formerly standalone `plugin-foundry`) |
 | [toolkit-change-control](./skills/toolkit-change-control/) | Classify a change, pick the version bump, gate on the publish checklist |
 | [toolkit-skill-standards](./skills/toolkit-skill-standards/) | Frontmatter budgets, trigger contract, progressive disclosure, collision scan |
 | [toolkit-debugging-playbook](./skills/toolkit-debugging-playbook/) | Symptom → discriminating command → root cause for skill/plugin problems |
@@ -161,7 +161,7 @@ Alternatively, register as a plugin marketplace to install individual skills:
 ```bash
 claude plugin marketplace add jabworks/agentic-toolkit
 claude plugin install session-handoff@jabworks-agentic-toolkit # claude plugin install session-handoff
-claude plugin install plugin-foundry@jabworks-agentic-toolkit # claude plugin install plugin-foundry
+claude plugin install toolkit-ops@jabworks-agentic-toolkit # claude plugin install toolkit-ops
 ```
 
 > Via Claude Code CLI:
@@ -169,7 +169,7 @@ claude plugin install plugin-foundry@jabworks-agentic-toolkit # claude plugin in
 ```bash
 /plugin marketplace add jabworks/agentic-toolkit
 /plugin install session-handoff@jabworks-agentic-toolkit # /plugin install session-handoff
-/plugin install plugin-foundry@jabworks-agentic-toolkit # /plugin install plugin-foundry
+/plugin install toolkit-ops@jabworks-agentic-toolkit # /plugin install toolkit-ops
 ```
 
 > Via Claude Code CLI plugin menu:
@@ -189,7 +189,7 @@ This repo is also Codex plugin compatible:
 ```bash
 codex plugin marketplace add jabworks/agentic-toolkit
 codex plugin add session-handoff@jabworks-agentic-toolkit
-codex plugin add plugin-foundry@jabworks-agentic-toolkit
+codex plugin add toolkit-ops@jabworks-agentic-toolkit
 ```
 
 > Via Codex CLI plugins menu:

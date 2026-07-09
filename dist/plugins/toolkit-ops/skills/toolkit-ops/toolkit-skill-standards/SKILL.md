@@ -18,7 +18,7 @@ structure, and collision discipline.
 
 ## When not to use
 
-- Scaffolding/registering/syncing mechanics → `plugin-foundry`.
+- Scaffolding/registering/syncing mechanics → `toolkit-foundry`.
 - Adapting an externally-sourced skill template to Harvey's stack → `adapting-skills`
   (then return here for this repo's frontmatter/mirror requirements).
 - Triage of a live triggering bug → `toolkit-debugging-playbook` first; it routes back
@@ -56,7 +56,7 @@ structure, and collision discipline.
    subagent-execution") and subagent-execution ("not for ad-hoc independent tasks —
    that's subagent-deployment") do. Known hot zones to check against: the subagent
    pair, plan-review↔spec-browser ("spec directory"), preflight↔finalize ("am I
-   done"), plugin-foundry↔adapting-skills (skill creation vs adaptation).
+   done"), toolkit-foundry↔adapting-skills (skill creation vs adaptation).
 
 5. **Progressive disclosure.** SKILL.md = concise runbook readable in one scan:
    purpose, when (not) to use, procedure, traps, related skills. Long archaeology,
@@ -85,7 +85,7 @@ A pass/fail review with specific rewrites, or ship-ready frontmatter.
 
 ## Bad behavior this prevents
 
-Shipping a second "sync my skills" skill next to plugin-foundry because the author
+Shipping a second "sync my skills" skill next to toolkit-foundry because the author
 never read the sibling descriptions. Three skills in this repo (preflight,
 subagent-execution, test-first-development) shipped with no machine-visible trigger
 contract at all until the 2026-07-08 audit added their `when_to_use` fields — the
@@ -93,7 +93,7 @@ collision scan + trigger-contract check makes both failure shapes visible before
 
 ## Related skills
 
-`plugin-foundry` (mechanics after content passes), `toolkit-change-control` (ship
+`toolkit-foundry` (mechanics after content passes), `toolkit-change-control` (ship
 gate), `adapting-skills` (external templates first), `toolkit-debugging-playbook`
 (live trigger failures).
 

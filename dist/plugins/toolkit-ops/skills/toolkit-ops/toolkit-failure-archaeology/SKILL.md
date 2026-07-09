@@ -79,5 +79,5 @@ Re-verify volatile claims with:
 
 Last generated: 2026-07-08
 Known uncertainty:
-- Pre-toolkit history (skills imported from other repos, e.g. plugin-foundry's
+- Pre-toolkit history (skills imported from other repos, e.g. toolkit-foundry's
   softaworks origin) is not covered — the ledger starts at this repo's own commits.

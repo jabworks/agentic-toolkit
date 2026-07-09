@@ -13,7 +13,7 @@
   { "query": "the tag already exists, now what", "should_trigger": true, "expected_skill": "release", "kind": "in-context" },
   { "query": "undo the release we just cut", "should_trigger": true, "expected_skill": "release", "accept": ["git-operations"] },
   { "query": "npm unpublish the broken version", "should_trigger": true, "expected_skill": "release", "accept": ["git-operations"] },
-  { "query": "publish the plugin to the marketplace", "should_trigger": true, "expected_skill": "release", "accept": ["toolkit-change-control", "plugin-foundry"] },
+  { "query": "publish the plugin to the marketplace", "should_trigger": true, "expected_skill": "release", "accept": ["toolkit-change-control", "toolkit-foundry"] },
   { "query": "cut a releese pls", "should_trigger": true, "expected_skill": "release" },
   { "query": "commit these changes", "should_trigger": true, "expected_skill": "git-commit" },
   { "query": "push my branch up", "should_trigger": true, "expected_skill": "git-operations" },

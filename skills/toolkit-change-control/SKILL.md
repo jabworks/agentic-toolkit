@@ -19,7 +19,7 @@ Gate every change to this toolkit through classification → checklist → evide
 ## When not to use
 
 - End-of-dev-task check for ordinary coding work → condux `preflight` / `finalize`.
-- The mechanics of scaffolding/registering a NEW skill → `plugin-foundry` (this skill
+- The mechanics of scaffolding/registering a NEW skill → `toolkit-foundry` (this skill
   gates; that skill builds).
 - Diagnosing why something already shipped is broken → `toolkit-debugging-playbook`.
 
@@ -97,7 +97,7 @@ checklist makes that state unclaimable.
 
 ## Related skills
 
-`plugin-foundry` (the build steps this skill gates), `toolkit-skill-standards`
+`toolkit-foundry` (the build steps this skill gates), `toolkit-skill-standards`
 (content quality bar), `toolkit-debugging-playbook` (when a shipped thing misbehaves),
 `git-commit` (crafting the commit itself).
 

@@ -17,15 +17,6 @@
       "category": "development"
     },
     {
-      "name": "plugin-foundry",
-      "description": "Create and maintain skills in jabworks/agentic-toolkit: scaffold, register in marketplace, sync dist mirror, and publish.",
-      "author": {
-        "name": "Hieu Vi"
-      },
-      "source": "./dist/plugins/plugin-foundry",
-      "category": "development"
-    },
-    {
       "name": "adapting-skills",
       "description": "Use when adapting a generic skill or scaffolding code to match Harvey's stack, conventions, and working preferences.",
       "author": {

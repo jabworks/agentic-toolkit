@@ -19,7 +19,7 @@ distribution trees, the manifest pairing, bundle nesting, and the trust order of
 
 ## When not to use
 
-- Actually creating/registering/publishing a skill → `plugin-foundry`.
+- Actually creating/registering/publishing a skill → `toolkit-foundry`.
 - Writing or reviewing the SKILL.md content itself → `toolkit-skill-standards`.
 - Diagnosing a misbehaving skill or plugin → `toolkit-debugging-playbook`.
 - Manifest field-level schema questions → `toolkit-plugin-reference`.
@@ -49,7 +49,7 @@ A checkout of the repo. Nothing else — this skill assumes zero prior context.
    version field. Versions live in the paired plugin.json manifests.
 
 4. **Docs trust order** (highest first): the disk itself → `tests/` (executable
-   doctrine, run `node --test`) → `skills/plugin-foundry/SKILL.md` (authoring runbook)
+   doctrine, run `node --test`) → `skills/toolkit-foundry/SKILL.md` (authoring runbook)
    → CLAUDE.md → README.md. Docs here lag disk by hours-to-weeks; skills get renamed
    without warning (commit 0b88ab2 renamed two mid-session on 2026-07-08).
 
@@ -76,7 +76,7 @@ memory of "how it looked last time." This repo demonstrably changes mid-session.
 
 ## Output artifact
 
-None — orientation is knowledge. Route follow-up work to `plugin-foundry` (create),
+None — orientation is knowledge. Route follow-up work to `toolkit-foundry` (create),
 `toolkit-change-control` (ship), or `toolkit-debugging-playbook` (fix).
 
 ## Common traps
@@ -97,7 +97,7 @@ fix; orientation names the special mirror so no session re-discovers it the hard
 
 ## Related skills
 
-`plugin-foundry` (create/register/sync/publish — the canonical checklist),
+`toolkit-foundry` (create/register/sync/publish — the canonical checklist),
 `toolkit-skill-standards` (content and trigger bar for what you author),
 `toolkit-change-control` (is it shipped?), `toolkit-debugging-playbook` (it broke),
 `toolkit-plugin-reference` (manifest schemas), `workflow` (condux router + operating rules).

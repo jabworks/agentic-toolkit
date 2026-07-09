@@ -34,7 +34,7 @@ dist/plugins/<name>/    # Install mirror — never edit directly; sync from skil
 
 ## Workflow for creating a new skill
 
-See `skills/plugin-foundry/SKILL.md` for the canonical checklist. Short version:
+See `skills/toolkit-foundry/SKILL.md` for the canonical checklist. Short version:
 
 1. Scaffold `skills/<name>/` and `dist/plugins/<name>/` trees
 2. Write `SKILL.md` with required frontmatter (`name`, `description`)
@@ -47,7 +47,6 @@ See `skills/plugin-foundry/SKILL.md` for the canonical checklist. Short version:
 
 | Skill | Purpose |
 |---|---|
-| `plugin-foundry` | Scaffold, register, sync, and publish new skills |
 | `session-handoff` | Preserve/restore session context at context limits |
 | `session-report` | Generate HTML usage report from session transcripts |
 | `adapting-skills` | Adapt generic skills to Harvey's stack and conventions |
@@ -56,7 +55,7 @@ See `skills/plugin-foundry/SKILL.md` for the canonical checklist. Short version:
 | `spec-browser` | Catalog and browse a specs/ tree as one doc site |
 | `release` | Cut a release safely — machinery router (changesets/toolkit/GitHub), dry-run first |
 | `condux` (plugin) | agentic workflow bundle (workflow, discovery, draft-plan, test-first-development, subagent-execution, subagent-deployment, finalize, code-review, preflight, root-cause-analysis, plan-review, technical-spec) |
-| `toolkit-ops` (plugin) | repo-maintenance bundle (toolkit-orientation, toolkit-change-control, toolkit-skill-standards, toolkit-debugging-playbook, toolkit-failure-archaeology, toolkit-plugin-reference, toolkit-research-frontier) |
+| `toolkit-ops` (plugin) | repo-maintenance bundle (toolkit-orientation, toolkit-foundry, toolkit-change-control, toolkit-skill-standards, toolkit-debugging-playbook, toolkit-failure-archaeology, toolkit-plugin-reference, toolkit-research-frontier) |
 
 The `condux` and `toolkit-ops` bundles live at `dist/plugins/<bundle>/` and their sources are in the corresponding `skills/` subdirectories.
 

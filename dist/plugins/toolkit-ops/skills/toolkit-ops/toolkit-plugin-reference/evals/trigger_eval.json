@@ -15,7 +15,7 @@
   { "query": "how do plugin caches refresh when I ship a fix", "should_trigger": true, "expected_skill": "toolkit-plugin-reference" },
   { "query": "what does $schema in marketplace.json actually do", "should_trigger": true, "expected_skill": "toolkit-plugin-reference" },
   { "query": "is argument-hint a real frontmatter field", "should_trigger": true, "expected_skill": "toolkit-plugin-reference" },
-  { "query": "add the marketplace entry for my new skill", "should_trigger": true, "expected_skill": "plugin-foundry" },
+  { "query": "add the marketplace entry for my new skill", "should_trigger": true, "expected_skill": "toolkit-foundry" },
   { "query": "manifest fails json parse on install", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },
   { "query": "which version do I bump for this change", "should_trigger": true, "expected_skill": "toolkit-change-control" },
   { "query": "write an MCP server manifest", "should_trigger": false, "expected_skill": null },
