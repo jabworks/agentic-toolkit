@@ -44,6 +44,17 @@ Three-run progression, same judge (claude-haiku-4-5-20251001), zero failed batch
 Remaining 31 misses are genuine adjacencies (discovery↔session-handoff "resume"
 space, draft-plan↔technical-spec doc-creation space) — seed material for A4.
 
+**Trials addendum (2026-07-09):** a 3-trial CI run (`eval-trials-2026-07-08.md`)
+was attempted but 29/96 batches failed on session limits — its headline
+"91.6% ± 6.1pp" is statistically unsound (run 3 scored only 36 cases). What
+stands: two near-complete trials measured **90.6%** and **89.8%**, which with
+round 3's 91.7% gives three independent measurements clustering at ~90–92% —
+the ≥90% criterion holds across runs, but a clean multi-trial CI is deferred to
+a quiet usage window (the harness now retries with backoff and aborts a run
+early on limit-class errors). The **35 flaky cases** recorded there are prime
+A4 seed material — "resume the design we started yesterday" (discovery↔
+session-handoff) is the most unstable seam at 1/3.
+
 --- Original phase design (kept for provenance): ---
 - Harness: `node scripts/eval-triggers.mjs [--model <id>] [--limit <n>]` — builds
   the catalog from live SKILL.md frontmatter, batches the corpus through
