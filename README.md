@@ -1,5 +1,8 @@
 # agentic-toolkit
 
+[![CI](https://github.com/jabworks/agentic-toolkit/actions/workflows/ci.yml/badge.svg)](https://github.com/jabworks/agentic-toolkit/actions/workflows/ci.yml)
+[![Trigger routing](https://img.shields.io/badge/trigger_routing-88.7%25_%C2%B1_4.7pp-blue)](./skills/toolkit-research-frontier/references/eval-trials-2026-07-09.md)
+
 Personal collection of agentic coding skills. Compatible with Claude Code, Codex, OpenCode, Cursor, Gemini CLI, and [40+ other tools](https://github.com/vercel-labs/skills) via `npx skills add`.
 
 ## Skills
@@ -119,6 +122,21 @@ Repo-maintenance bundle (`toolkit-ops`) for working on this toolkit itself:
 | [toolkit-failure-archaeology](./skills/toolkit-failure-archaeology/) | Git-evidenced incident ledger — don't re-fight settled battles |
 | [toolkit-plugin-reference](./skills/toolkit-plugin-reference/) | Verified plugin.json / marketplace.json schema, Claude↔Codex divergences |
 | [toolkit-research-frontier](./skills/toolkit-research-frontier/) | Open problems, assets, next steps, and the library-health campaign |
+
+## Evals
+
+The skills are eval-tested for **trigger routing** — given a user query, does
+the right skill activate (and does nothing activate when nothing should)?
+Latest run (2026-07-09, claude-haiku-4-5, 394 cold-trigger cases, 3 trials):
+
+- **88.7% ± 4.7pp** mean routing accuracy (95% CI, t-distribution); per-run
+  89.8% / 86.5% / 89.8%, 44 flaky cases recorded
+- Per-skill breakdown and the full miss list live in the
+  [trial record](./skills/toolkit-research-frontier/references/eval-trials-2026-07-09.md)
+
+This measures whether skills *activate correctly* — not end-to-end workflow
+quality. Structural invariants (dist mirror, manifests, frontmatter budgets,
+no-egress guarantees) are separately enforced by `node --test` in CI.
 
 ## Acknowledgments
 
