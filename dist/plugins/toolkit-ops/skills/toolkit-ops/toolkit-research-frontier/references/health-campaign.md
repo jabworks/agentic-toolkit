@@ -87,11 +87,20 @@ session-handoff) is the most unstable seam at 1/3.
   own, not eval phrases.
 - Success criterion unchanged: ≥90% accuracy, zero unexplained collisions.
 
-### A4. Collision automation — OPEN (after A3)
-- Only worth building if A3 shows recurring drift: a script that flags description/
-  when_to_use n-gram overlap between skill pairs above a threshold.
-- Success criterion: the script reproduces ≥80% of A3's observed collisions with <20%
-  false alarms; wired into `node --test` as a warning, not a failure.
+### A4. Collision automation — CLOSED 2026-07-09: lexical approach falsified
+- Preregistered criterion: static n-gram overlap reproduces ≥80% of observed
+  collisions with <20% false alarms.
+- Result (`node scripts/collision-scan.mjs --check`): **max recall 5%** at every
+  threshold 0.08–0.18. Two verified reasons: the observed collisions are semantic
+  adjacencies whose contracts share almost no vocabulary (the 2026-07-08
+  disambiguation passes de-overlapped them lexically), and the highest lexical
+  overlaps are mutual cross-reference vocabulary — deliberate disambiguation —
+  partially inverting the signal.
+- Adopted detector instead: the eval harness itself — sibling-miss pairs and the
+  flaky list from periodic `scripts/eval-triggers.mjs` runs (cadence in the
+  maintenance plan). The curated empirical-pair registry lives in
+  `scripts/collision-scan.mjs` (update it per eval round); the script stays as
+  the falsification record and an exploratory lens (`--top`).
 
 ---
 
@@ -163,12 +172,18 @@ Goal: docs of record never contradict the disk for more than one change cycle.
   git-commit, git-operations, toolkit-ops added to README + CLAUDE.md catalogs;
   CLAUDE.md "Use when…" invariant amended to name the two-field trigger contract.
 
-### D2. Enforce catalogs — OPEN
-- Proposed: extend `node --test` with a docs-catalog check — every
-  `marketplace.json` plugin name must appear in README.md and CLAUDE.md.
-- Expected observation on first run: passes (post-D1). Introduce a fake plugin entry
-  locally to confirm it fails.
-- Success criterion: removing any catalog row turns CI red.
+### D2. Enforce catalogs — DONE 2026-07-09
+- `tests/docs-catalog.test.mjs`: every marketplace plugin must appear in README
+  (skill link or install id) and CLAUDE.md (backticked table row) — bare
+  substring matches deliberately rejected. Removing any catalog row turns CI red.
+
+### C4. Publish-surface dry-run in CI — SHIPPED (advisory) 2026-07-09
+- `scripts/validate-plugins.sh`: every plugin must pass `claude plugin validate`
+  with exactly the one known `interface` warning (the tested parity contract);
+  anything else fails. Wired into ci.yml as the `release-dry-run` job —
+  `continue-on-error: true` until the CLI is proven headless-stable on runners,
+  then flip to enforcing. Load-bearing constraint documented in the script:
+  never `--strict` while the interface-parity doctrine stands.
 
 ---
 

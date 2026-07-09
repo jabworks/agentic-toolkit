@@ -80,3 +80,34 @@ test('every skill has a machine-visible trigger contract (Use-when description o
   }
   assert.deepEqual(problems, [], 'skills without a trigger contract:\n' + problems.join('\n'));
 });
+
+// YAML plain scalars cannot contain ": " — an unquoted frontmatter value with
+// one fails to parse, and the host then loads the skill with EMPTY metadata
+// (every field silently dropped). This shipped twice: a13e094, and
+// session-handoff's when_to_use (caught by scripts/validate-plugins.sh on its
+// first run, 2026-07-09). Full YAML validation stays with `claude plugin
+// validate` (CI release-dry-run job); this catches the known lethal class
+// without adding a YAML dependency.
+test('unquoted single-line frontmatter values must not contain ": "', () => {
+  const problems = [];
+  const names = fs.readdirSync(SKILLS_DIR, { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .map((e) => e.name);
+
+  for (const name of names) {
+    const file = path.join(SKILLS_DIR, name, 'SKILL.md');
+    if (!fs.existsSync(file)) continue;
+    const m = fs.readFileSync(file, 'utf8').match(/^---\n([\s\S]*?)\n---/);
+    if (!m) continue;
+    for (const line of m[1].split('\n')) {
+      const kv = line.match(/^([A-Za-z][\w-]*):[ \t]+(.*)$/);
+      if (!kv) continue;
+      const value = kv[2];
+      if (/^['"]/.test(value)) continue; // quoted — safe
+      if (value.includes(': ')) {
+        problems.push(`${name}: unquoted "${kv[1]}" contains ": " — quote the whole value or YAML drops ALL frontmatter at load`);
+      }
+    }
+  }
+  assert.deepEqual(problems, [], 'frontmatter values that break YAML parsing:\n' + problems.join('\n'));
+});

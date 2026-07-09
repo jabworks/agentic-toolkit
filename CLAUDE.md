@@ -81,6 +81,8 @@ committing — it fails the build otherwise:
   codex-only, and every skill has a trigger contract
 - `local-hooks.test.mjs` — warn-only (never fails): tells you when this clone
   is missing the pre-commit sync hook (`bash scripts/install-hooks.sh`)
+- `docs-catalog.test.mjs` — every marketplace plugin appears in README.md and
+  CLAUDE.md's catalogs
 
 Two distribution channels read two different trees (don't conflate them):
 `npx skills add` installs from top-level `skills/`; the plugin marketplace

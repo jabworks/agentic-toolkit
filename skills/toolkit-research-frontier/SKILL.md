@@ -46,10 +46,12 @@ stale precisely when the work it proposes gets done.
    (discovery↔session-handoff "resume" space is the strongest).
 2. **YAML-strict frontmatter validation.** The invariant test regex-parses
    frontmatter; an `a13e094`-class quoting bug would pass it.
-3. **Docs-catalog enforcement.** Nothing fails when a marketplace plugin is missing
-   from README/CLAUDE.md tables (three plugins were, until 2026-07-08).
-4. **Trigger-collision automation.** Collision review is manual discipline
-   (`toolkit-skill-standards` step 4); no mechanical overlap scoring exists.
+3. ~~Docs-catalog enforcement~~ — closed 2026-07-09: `tests/docs-catalog.test.mjs`
+   fails CI when a marketplace plugin is missing from either catalog.
+4. ~~Trigger-collision automation~~ — closed 2026-07-09 as **falsified**: lexical
+   overlap scoring cannot reproduce the observed (semantic) collisions — 5%
+   recall vs the ≥80% criterion (`scripts/collision-scan.mjs --check` is the
+   record). Detection stays empirical: periodic eval runs + the flaky list.
 5. ~~Hook parity on clones~~ — closed 2026-07-08: `tests/local-hooks.test.mjs`
    warns (never fails) on clones missing the pre-commit sync hook.
 

@@ -136,6 +136,22 @@ Doctrine:     servers spawned by tests must never open UI — any auto-open
 Encoded in:   annotate-server.js --no-open flag; both test spawn sites pass
               it; plan-review SKILL.md documents it for headless/CI use.
 
+## Publish-surface dry-run caught silent frontmatter death on day one
+
+Symptom:      session-handoff had been shipping with EMPTY metadata — its
+              frontmatter failed YAML parsing, so hosts silently dropped every
+              field (description, when_to_use, all triggering). Invisible to
+              the regex-based tests, which happily extracted the fields.
+Wrong path:   none — scripts/validate-plugins.sh flagged it on its very first
+              local run (the C4 dry-run built 2026-07-09).
+Root cause:   unquoted when_to_use containing 'Trigger phrases: "…"' — ": " is
+              illegal inside a YAML plain scalar. Same class as a13e094.
+Evidence:     the 2026-07-09 C4 commit (fix + red-green test); precedent a13e094.
+Doctrine:     quote any frontmatter value containing ": "; the official
+              validator is the real YAML oracle — regex tests are not.
+Encoded in:   tests/manifest-parity.test.mjs (unquoted-colon check, red-green
+              proven); scripts/validate-plugins.sh + ci.yml release-dry-run.
+
 ---
 
 Categories with NO evidenced incident as of 2026-07-08 (stated per the no-fabrication

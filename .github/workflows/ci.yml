@@ -17,3 +17,20 @@ jobs:
         run: find skills -name '*.js' -print0 | xargs -0 -n1 node --check
       - name: Run test suite
         run: node --test
+
+  # Advisory publish-surface dry-run (claude-sdlc-wizard pattern): catch
+  # release regressions at PR time, not tag time. continue-on-error until
+  # `claude plugin validate` is proven headless-stable on runners — then flip
+  # to enforcing. Keep node-version in parity with the job above.
+  release-dry-run:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+      - name: Validate publish surface
+        run: bash scripts/validate-plugins.sh
