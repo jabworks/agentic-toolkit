@@ -53,6 +53,9 @@ test('annotate-server manual mode: serves plan, accepts feedback, writes feedbac
 
 test('annotate-server directory mode: doc manifest, per-doc content, grouped feedback', async () => {
   const specDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ci-spec-review-'));
+  // Pin the git root to the fixture: gitRoot() walks upward from the reviewed
+  // dir, and a stray .git anywhere above the tmpdir would hijack resolution.
+  fs.mkdirSync(path.join(specDir, '.git'));
   fs.writeFileSync(path.join(specDir, 'index.md'), '# Sample Spec\n');
   fs.writeFileSync(path.join(specDir, 'decisions.md'), '# Decisions\n\nBody.\n');
   const feedbackFile = path.join(specDir, 'review.feedback.md');
@@ -73,7 +76,7 @@ test('annotate-server directory mode: doc manifest, per-doc content, grouped fee
     const escapeRes = await fetch(base + '/api/plan?doc=' + encodeURIComponent('../outside.md'));
     assert.equal(await escapeRes.text(), '');
 
-    // Files-tab path verification resolves against the reviewed dir (no git root above tmp)
+    // Files-tab path verification resolves against the reviewed dir (its .git pins the root)
     const verifyRes = await fetch(base + '/api/verify-paths', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
