@@ -121,7 +121,16 @@ function runOnce(runIdx) {
     const batch = corpus.slice(i, i + BATCH);
     process.stderr.write(`run ${runIdx + 1}/${RUNS} · batch ${i / BATCH + 1}/${Math.ceil(corpus.length / BATCH)}…\n`);
     try {
-      const routed = routeBatch(batch);
+      let routed;
+      try {
+        routed = routeBatch(batch);
+      } catch (e) {
+        // One retry with backoff — transient CLI errors and brief limit windows
+        // recover; a second failure propagates.
+        process.stderr.write('  batch error, retrying in 60s: ' + e.message.slice(0, 120) + '\n');
+        spawnSync('sleep', ['60']);
+        routed = routeBatch(batch);
+      }
       for (const c of batch) {
         const k = batch.indexOf(c) + 1;
         const hit = routed.find((r) => r.i === k);
@@ -129,8 +138,14 @@ function runOnce(runIdx) {
       }
     } catch (e) {
       batchErrors++;
-      process.stderr.write('  batch failed: ' + e.message + '\n');
+      process.stderr.write('  batch failed: ' + e.message.slice(0, 200) + '\n');
       for (const c of batch) results.push({ ...c, got: '(batch-error)' });
+      if (/limit|overloaded|429/i.test(e.message)) {
+        // Session/rate limit: every remaining batch is doomed — don't burn them.
+        process.stderr.write('  limit-class error — aborting the remaining batches of this run\n');
+        for (const c of corpus.slice(i + BATCH)) results.push({ ...c, got: '(batch-error)' });
+        break;
+      }
     }
   }
   return { results, batchErrors };
