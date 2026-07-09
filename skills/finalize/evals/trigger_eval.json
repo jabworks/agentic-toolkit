@@ -18,5 +18,5 @@
   { "query": "review the diff before merge", "should_trigger": true, "expected_skill": "code-review" },
   { "query": "format this sql query nicely for the doc", "should_trigger": false, "expected_skill": null },
   { "query": "what does the no-unused-vars eslint rule mean", "should_trigger": false, "expected_skill": null },
-  { "query": "release the package to npm", "should_trigger": false, "expected_skill": null }
+  { "query": "release the package to npm", "should_trigger": true, "expected_skill": "release" }
 ]

@@ -31,7 +31,7 @@ siblings' prompts.
   seams (preflight↔toolkit-change-control,
   root-cause-analysis↔toolkit-debugging-playbook) are tested from both sides.
 
-### A3. Live model scoring — DONE 2026-07-08: 91.7%, criterion met
+### A3. Live model scoring — DONE 2026-07-08 (verdict refined 2026-07-09: operating band ~89–92%, borderline vs the 90% bar)
 
 Three-run progression, same judge (claude-haiku-4-5-20251001), zero failed batches:
 
@@ -54,6 +54,17 @@ a quiet usage window (the harness now retries with backoff and aborts a run
 early on limit-class errors). The **35 flaky cases** recorded there are prime
 A4 seed material — "resume the design we started yesterday" (discovery↔
 session-handoff) is the most unstable seam at 1/3.
+
+**Clean trials (2026-07-09,** `eval-trials-2026-07-09.md`, post-release-skill
+corpus of 394 cold cases, limit-resilient harness, **0 failed batches):**
+3 trials at 89.8 / 86.5 / 89.8 → mean **88.7% ± 4.7pp** (95% CI, t-dist).
+Honest read: round 3's single-run 91.7% sat at the top of the noise band; the
+operating rate is high-80s-to-low-90s and the CI *straddles* the ≥90% criterion
+rather than clearing it. Dominant error mode is judge variance (44 flaky cases,
+mostly one-hop adjacencies). Bright spot: the brand-new `release` skill routed
+**15/15** with zero contract tuning — the authoring standards hold. Standing
+claim going forward: **~89–92%, criterion borderline-met**; further gains come
+from flaky-seam contract work (discovery↔session-handoff first), not more runs.
 
 --- Original phase design (kept for provenance): ---
 - Harness: `node scripts/eval-triggers.mjs [--model <id>] [--limit <n>]` — builds
