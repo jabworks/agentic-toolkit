@@ -125,4 +125,4 @@ If a task needs one of these, say so and stop — don't improvise.
 
 ## ⚙ Adjust these (defaults)
 
-Commands above are generic. This toolkit's owner runs all git through `rtk` (e.g. `rtk git switch <branch>`) and signs off commits with `-s`. Drop the `rtk` prefix if you don't use it; nothing else changes.
+Commands above are generic. This toolkit's owner signs off commits with `-s` — drop it if you don't use signoff; nothing else changes.

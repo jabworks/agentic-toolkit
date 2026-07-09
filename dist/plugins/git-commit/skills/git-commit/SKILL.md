@@ -120,10 +120,9 @@ Each commit should stand on its own and pass review independently.
 The commands above are generic. This toolkit's owner uses these defaults — swap them for your own:
 
 - **Signoff:** add `-s` to every commit (`git commit -s -F …`) for a `Signed-off-by` trailer.
-- **Command prefix:** all git runs through `rtk` (e.g. `rtk git status`).
 - **No co-author trailers** — this is guardrail 3, kept even when adjusting.
 
-If you don't use these, drop `-s` and the `rtk` prefix; everything else stays.
+If you don't use signoff, drop `-s`; everything else stays.
 
 ## See also
 
