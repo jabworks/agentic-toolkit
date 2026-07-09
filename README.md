@@ -25,6 +25,68 @@ Lean agentic workflow plugin (`condux`). Install the full workflow bundle as a u
 
 > Inspired by [obra/superpowers](https://github.com/obra/superpowers) — condux reworks its skill-orchestration ideas around a lean, proportional-effort philosophy (tiered routing, lazy loading, soft gates) rather than always-on maximalism.
 
+#### Why condux
+
+Most workflow frameworks are maximal — every gate runs on every task, so a typo
+fix pays the same ceremony as a cross-cutting refactor. Condux inverts that with
+five operating rules:
+
+1. **Proportional, not maximal** — the process tier matches the task size.
+2. **Lazy loading** — downstream skills load only when their step is reached,
+   keeping context (and cost) small.
+3. **Soft gates, not hard walls** — a gate can be skipped, but only consciously:
+   the agent asks before bypassing, never silently.
+4. **The user is in control** — explicit instructions always beat the framework;
+   "treat this as LARGE" or "skip the plan" is always valid.
+5. **Implement yourself by default** — subagents are the exception and need a
+   concrete justification, never spawned to fill time.
+
+The payoff: no over-engineered button changes, no under-planned refactors,
+predictable checkpoints where *you* drive every transition, and a small context
+footprint because only the skills a tier actually needs ever load.
+
+#### The flow
+
+Every dev task enters through `/workflow`. It infers a tier from the task
+(file count, design clarity, boundary crossings), confirms it with you, then
+runs the matching pipeline:
+
+| Tier | Looks like | Flow |
+|---|---|---|
+| **SMALL** | isolated change, 1–3 files, clear requirements | implement → `/preflight` → `/finalize` |
+| **MEDIUM** | multi-file, some design needed, known boundaries | inline plan → implement → `/preflight` → `/finalize` |
+| **LARGE** | cross-cutting, unclear scope, multiple subsystems | `/discovery` → `/draft-plan` → implement → `/preflight` → `/finalize` |
+
+```mermaid
+flowchart TD
+    T([dev task]) --> W{"/workflow — infer tier, confirm"}
+    W -->|SMALL| S[implement]
+    W -->|MEDIUM| M["inline plan"] --> M2[implement]
+    W -->|LARGE| L["/discovery"] --> L2["/draft-plan"] --> L3[implement]
+    S --> F["/preflight → /finalize"]
+    M2 --> F
+    L3 --> F
+```
+
+Every tier ends with `/preflight` (an "am I actually done?" checklist) and
+`/finalize` (typecheck → lint → format → test, in order, once, stopping on the
+first failure) — quality checks run at the end, not scattered mid-implementation.
+
+**Checkpoints** (MEDIUM/LARGE only): at each phase boundary the agent stops and
+presents a menu — after the plan (start implementing / tests-first / spawn
+agents / revise), after implementation (verify & finalize / code review / keep
+building), and after everything is green (review / commit / release / done).
+The agent never auto-advances past a checkpoint; SMALL runs linear with no menus.
+
+**Named agents**: four specialists ship with the bundle — `explorer` (read-only
+codebase navigation), `researcher` (external API/library verification),
+`planner` (design → executable plan), and `coder` (executes a provided plan).
+Pipeline: explorer/researcher gather → planner plans → coder executes →
+finalize validates. The default is still to implement directly — agents are
+opt-in at checkpoints or justified by genuinely parallel work.
+
+#### The skills
+
 | Skill | Description |
 |---|---|
 | [/workflow](./skills/workflow/) | Tier router — infer Small/Medium/Large, confirm with user, load only the skills the tier needs |
