@@ -10,7 +10,8 @@ How to keep the library at the standard the 2026-07-08 audit left it at.
 | After ANY skills/ edit | `bash scripts/sync.sh <name>` then `node --test` | the mirror is current |
 | After cloning | `bash scripts/install-hooks.sh` | pre-commit auto-sync exists on this clone |
 | Any skill rename/add/retire | re-read `distillation/03_trigger_matrix.md` seams + update the affected `evals/trigger_eval.json` | trigger space still partitioned |
-| Quarterly (or when the library grows by ~5 skills) | campaign phase A3 (see `skills/toolkit-research-frontier/references/health-campaign.md`) | descriptions still route correctly on a real model |
+| Quarterly (or when the library grows by ~5 skills) | re-run the routing eval (`node scripts/eval-triggers.mjs --runs 3`; see health-campaign Front A3) | descriptions still route correctly on a real model |
+| Quarterly — upstream review (adopted from claude-sdlc-wizard's analyze-release pattern) | read Claude Code + Codex release notes and ask "does an official feature now REPLACE our custom one?" — check the `interface` doctrine (campaign B3 tripwire), `claude plugin eval` vs `scripts/eval-triggers.mjs`, hooks wiring, and `claude plugin validate --strict` viability | custom machinery isn't silently obsolete; the parity doctrine still matches host reality |
 
 ## Drift checks (manual spot-checks, faster than the suite)
 
