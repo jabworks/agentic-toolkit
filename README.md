@@ -1,7 +1,7 @@
 # agentic-toolkit
 
-[![CI](https://github.com/jabworks/agentic-toolkit/actions/workflows/ci.yml/badge.svg)](https://github.com/jabworks/agentic-toolkit/actions/workflows/ci.yml)
-[![Trigger routing](https://img.shields.io/badge/trigger_routing-88.7%25_%C2%B1_4.7pp-blue)](./skills/toolkit-research-frontier/references/eval-trials-2026-07-09.md)
+[![CI](https://img.shields.io/github/actions/workflow/status/jabworks/agentic-toolkit/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/jabworks/agentic-toolkit/actions/workflows/ci.yml)
+[![Trigger routing](https://img.shields.io/badge/trigger_routing-88.7%25_%C2%B1_4.7pp-blue?style=flat-square)](./skills/toolkit-research-frontier/references/eval-trials-2026-07-09.md)
 
 Personal collection of agentic coding skills. Compatible with Claude Code, Codex, OpenCode, Cursor, Gemini CLI, and [40+ other tools](https://github.com/vercel-labs/skills) via `npx skills add`.
 
