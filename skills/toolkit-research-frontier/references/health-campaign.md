@@ -66,6 +66,15 @@ mostly one-hop adjacencies). Bright spot: the brand-new `release` skill routed
 claim going forward: **~89–92%, criterion borderline-met**; further gains come
 from flaky-seam contract work (discovery↔session-handoff first), not more runs.
 
+**Post-foundry-rename trials (2026-07-09,** `eval-trials-2026-07-09-post-foundry.md`,
+same 394-case corpus with the 4 foundry cases renamed after plugin-foundry was
+absorbed into toolkit-ops as `toolkit-foundry`, **0 failed batches):**
+3 trials at 87.1 / 90.1 / 88.6 → mean **88.6% ± 3.8pp** (95% CI, t-dist).
+Statistically identical to the same-day baseline (88.7% ± 4.7pp) — the rename
+cost nothing: **toolkit-foundry routed 4/4**, matching plugin-foundry's record.
+Flaky count 37 (vs 44); discovery↔session-handoff remains the worst seam.
+Standing claim unchanged.
+
 --- Original phase design (kept for provenance): ---
 - Harness: `node scripts/eval-triggers.mjs [--model <id>] [--limit <n>]` — builds
   the catalog from live SKILL.md frontmatter, batches the corpus through
