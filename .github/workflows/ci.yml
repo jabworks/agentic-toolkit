@@ -16,7 +16,24 @@ jobs:
       - name: Syntax-check reference scripts
         run: find skills -name '*.js' -print0 | xargs -0 -n1 node --check
       - name: Run test suite
-        run: node --test
+        # Force the spec reporter: off-TTY the default is tap, and the summary
+        # step below parses spec's "ℹ tests / ✖" lines.
+        run: |
+          set -o pipefail
+          node --test --test-reporter=spec --test-reporter-destination=stdout 2>&1 | tee test-output.txt
+      - name: Write test summary
+        if: always()
+        run: |
+          {
+            echo "## Test suite"
+            echo ""
+            grep -E '^ℹ (tests|pass|fail|skipped|duration_ms) ' test-output.txt | sed 's/^ℹ /- **/; s/ \([0-9.]*\)$/**: \1/' || echo "_no test output captured_"
+            if grep -q '^✖ failing tests:' test-output.txt; then
+              echo ""
+              echo "### Failing"
+              grep -E '^✖ .+\(.+ms\)$' test-output.txt | sed 's/^✖ /- ❌ /' | sort -u
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
 
   # Advisory publish-surface dry-run (claude-sdlc-wizard pattern): catch
   # release regressions at PR time, not tag time. continue-on-error until
