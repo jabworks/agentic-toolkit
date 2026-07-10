@@ -94,9 +94,11 @@ find ~/.codex ~/.claude -name install-codex-hook.sh -path '*plan-review*' 2>/dev
 
 Caveats: Codex hooks are **experimental and disabled on Windows**; the review is
 **post-render** (after Codex prints the plan), not a pre-interception like Claude
-Code. The plugin hook invokes bare `node` (resolved via `${CLAUDE_PLUGIN_ROOT}`,
-which Codex sets for compatibility) — if Codex Desktop can't find `node` on
-`PATH`, fall back to the installer, which bakes in an **absolute** node path.
+Code. The plugin hook invokes bare `node` (resolved via `${PLUGIN_ROOT}`, the
+variable Codex substitutes in plugin hook commands — it does **not** set Claude's
+`${CLAUDE_PLUGIN_ROOT}`, so never use that in `codex-hooks.json`) — if Codex
+Desktop can't find `node` on `PATH`, fall back to the installer, which bakes in
+an **absolute** node path.
 
 ### Manual — on any file or spec directory
 

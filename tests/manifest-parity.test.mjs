@@ -55,6 +55,30 @@ test('every dist plugin ships a Claude/Codex manifest pair with matching identit
   assert.deepEqual(problems, [], 'manifest pair parity violations:\n' + problems.join('\n'));
 });
 
+// Hook commands must use the variable their host actually substitutes: Claude Code
+// sets ${CLAUDE_PLUGIN_ROOT}; Codex sets ${PLUGIN_ROOT} and does NOT set Claude's
+// variable — an unexpanded one made the condux Stop hook exit 1 on every Codex turn
+// (diagnosed 2026-07-10 against Codex 0.144.1).
+test('plugin hook files use the plugin-root variable of the host that runs them', () => {
+  const problems = [];
+  for (const p of pluginDirs()) {
+    const claudeHooks = path.join(DIST_DIR, p, 'hooks', 'hooks.json');
+    if (fs.existsSync(claudeHooks) && fs.readFileSync(claudeHooks, 'utf8').includes('${PLUGIN_ROOT}')) {
+      problems.push(p + ': hooks/hooks.json runs under Claude Code — use ${CLAUDE_PLUGIN_ROOT}, not ${PLUGIN_ROOT}');
+    }
+    const codexFile = path.join(DIST_DIR, p, '.codex-plugin', 'plugin.json');
+    if (!fs.existsSync(codexFile)) continue;
+    const codex = JSON.parse(fs.readFileSync(codexFile, 'utf8'));
+    if (typeof codex.hooks !== 'string') continue;
+    const codexHooks = path.join(DIST_DIR, p, codex.hooks);
+    if (!fs.existsSync(codexHooks)) { problems.push(p + ': codex manifest "hooks" points at missing file ' + codex.hooks); continue; }
+    if (fs.readFileSync(codexHooks, 'utf8').includes('${CLAUDE_PLUGIN_ROOT}')) {
+      problems.push(p + ': ' + codex.hooks + ' runs under Codex — use ${PLUGIN_ROOT}, not ${CLAUDE_PLUGIN_ROOT}');
+    }
+  }
+  assert.deepEqual(problems, [], 'hook plugin-root variable violations:\n' + problems.join('\n'));
+});
+
 // Trigger contract (owner-ratified 2026-07-08): a skill is triggerable only if its
 // description starts with "Use when" OR it carries a when_to_use field. Three skills
 // once shipped with neither and were invisible to trigger matching.
