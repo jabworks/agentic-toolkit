@@ -1,6 +1,6 @@
 ---
 name: adapting-skills
-description: Use when adapting a generic skill, cloning a skill template, scaffolding new code, or generating any output that should match Harvey's stack, conventions, and working preferences.
+description: Use when adapting a generic skill, cloning a skill template, scaffolding new code, or generating output that should match Harvey's stack and conventions. Not for creating, registering, or syncing toolkit skills; use toolkit-foundry.
 ---
 
 # Adapting Skills to Harvey's Stack

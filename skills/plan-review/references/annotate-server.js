@@ -287,13 +287,19 @@ function sendJson(res, code, obj) {
   res.end(JSON.stringify(obj));
 }
 
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+
 function handler(req, res) {
   const url = new URL(req.url, 'http://127.0.0.1');
   const p = url.pathname;
 
   if (req.method === 'GET' && p === '/') {
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-    return res.end(TEMPLATE.replace(/\{\{PLAN_NAME\}\}/g, path.basename(planFile)));
+    return res.end(TEMPLATE.replace(/\{\{PLAN_NAME\}\}/g, escapeHtml(path.basename(planFile))));
   }
   if (req.method === 'GET' && p === '/api/plan') {
     res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });

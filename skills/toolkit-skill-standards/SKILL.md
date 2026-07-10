@@ -63,7 +63,9 @@ structure, and collision discipline.
    catalogs, templates, ledgers → `references/`. Executable helpers → `scripts/` or
    references (see plan-review's `references/annotate-server.js`).
 
-6. **Every skill must state when NOT to use it** and name the sibling to use instead.
+6. **Every skill with a plausible sibling overlap must state when NOT to use it**
+   and name that sibling instead. Keep unrelated skills concise; do not invent a
+   false alternative merely to fill a section.
 
 ## Evidence required
 

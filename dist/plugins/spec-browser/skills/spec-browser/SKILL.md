@@ -1,7 +1,7 @@
 ---
 name: spec-browser
 description: Use when there are many tech specs under specs/ and you need to navigate them as one doc site, generate a catalog agents can reference, or answer "what specs do we have / where is the spec for X". Triggers include "browse specs", "spec index", "list all specs", "spec site", "navigate specs".
-when_to_use: Reach for this once a repo accumulates several specs and a single spec folder view (technical-spec's own preview) is no longer enough — you want the whole specs/ tree at once, plus a plain-markdown catalog for agents that have no search plugin.
+when_to_use: Reach for this once a repo accumulates several specs and a single spec folder view (technical-spec's own preview) is no longer enough — you want the whole specs/ tree at once, plus a plain-markdown catalog for agents that have no search plugin. Not for an approve/revise decision on one plan; use plan-review.
 argument-hint: "[specs-root]"
 effort: low
 ---

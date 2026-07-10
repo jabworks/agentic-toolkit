@@ -50,7 +50,7 @@ function fmField(block, key) {
   return m ? m[1].trim().replace(/^['"]|['"]$/g, '') : null;
 }
 
-fs.mkdirSync(DEST, { recursive: true });
+if (!DRY) fs.mkdirSync(DEST, { recursive: true });
 
 for (const file of fs.readdirSync(AGENTS_DIR).filter((f) => f.endsWith('.md'))) {
   const src = fs.readFileSync(path.join(AGENTS_DIR, file), 'utf8');

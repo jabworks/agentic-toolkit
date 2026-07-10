@@ -32,6 +32,11 @@ SLUG=$(echo "$INPUT" \
   | tr -s '-' \
   | sed 's/^-//; s/-$//')
 
+if [[ -z "$SLUG" || ! "$SLUG" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]]; then
+  echo "ERROR: feature name must produce a kebab-case slug (letters, numbers, and hyphens only): $INPUT" >&2
+  exit 1
+fi
+
 DATE=$(date +%Y-%m-%d)
 COMMIT=$(git rev-parse --short HEAD 2>/dev/null || echo "no-git")
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
@@ -64,6 +69,11 @@ if [[ -n "$PKG_REL" ]]; then
 else
   SPEC_DIR="$REPO_ROOT/specs/$SLUG"
 fi
+
+case "$SPEC_DIR" in
+  "$REPO_ROOT/specs/"*) ;;
+  *) echo "ERROR: resolved spec path escapes $REPO_ROOT/specs: $SPEC_DIR" >&2; exit 1 ;;
+esac
 
 if [[ -d "$SPEC_DIR" ]]; then
   echo "exists:$SPEC_DIR commit:$COMMIT date:$DATE"

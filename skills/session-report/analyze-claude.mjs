@@ -716,6 +716,7 @@ function hrs(ms) {
 function efficiencyScore(s) {
   const inTotal = s.inputUncached + s.inputCacheCreate + s.inputCacheRead
   const grand = inTotal + s.outputTokens
+  if (grand === 0) return null
   const cacheScore = inTotal > 0 ? s.inputCacheRead / inTotal : 0
   const tokPerMsg = s.humanMessages > 0 ? grand / s.humanMessages : 0
   const msgScore = 1 - Math.min(1, tokPerMsg / 10000)
@@ -798,7 +799,7 @@ function printJson({ overall, perProject, perSubagent, perSkill }) {
     by_day: buildByDay(),
     prompt_size_histogram: buildPromptHistogram(),
   }
-  process.stdout.write(JSON.stringify(out, null, 2) + '\n')
+  process.stdout.write(JSON.stringify(out, null, 2).replace(/</g, '\\u003c') + '\n')
 }
 
 // Group sessions into local-date buckets for the timeline view. A session is

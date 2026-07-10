@@ -1,6 +1,6 @@
 ---
 name: toolkit-foundry
-description: Use when creating a new skill for jabworks/agentic-toolkit, registering it in the marketplace, syncing the dist mirror, or bumping the toolkit version.
+description: Use when creating a new skill for jabworks/agentic-toolkit, registering it in the marketplace, syncing the dist mirror, or bumping the toolkit version. Not for adapting a generic skill to Harvey's stack; use adapting-skills.
 ---
 
 # Toolkit Foundry

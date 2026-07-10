@@ -1,6 +1,6 @@
 {
   "name": "adapting-skills",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Codex skill with stack and style priors for adapting generated work to Harvey's conventions.",
   "author": {
     "name": "jabworks"
