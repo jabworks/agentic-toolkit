@@ -37,6 +37,11 @@ Run through this checklist. Every item must be answered honestly — not optimis
 │    concurrent requests, missing permissions, expired tokens?    │
 │    Have the relevant ones been considered?                      │
 │                                                                  │
+│  □ SPEC DRIFT (when a spec exists)                              │
+│    Locate specs/<slug>/ (same lookup as the /workflow router).  │
+│    Compare the diff against each existing concern file —        │
+│    both directions count. No spec → N/A, no commentary.         │
+│                                                                  │
 │  □ NO REGRESSIONS INTRODUCED                                    │
 │    Did the change touch anything outside the stated scope?      │
 │    Could it affect adjacent features or shared utilities?       │
@@ -50,6 +55,41 @@ Run through this checklist. Every item must be answered honestly — not optimis
 │    Any are no → fix first, then re-check                        │
 └──────────────────────────────────────────────────────────────────┘
 ```
+
+## Drift Check
+
+Runs only when the task has a spec. Locate it the way the `/workflow`
+router does: detect the package root, then check both scopes —
+`<package-root>/specs/<slug>/` and `<git-root>/specs/<slug>/` (fuzzy
+kebab-case match of the task subject; nearest match wins). No spec dir →
+mark `N/A` and move on, without comment.
+
+Compare the implementation against each concern file that exists — a
+missing or scaffold-only file makes no claim, skip it:
+
+| Concern file | Check the implementation against |
+|---|---|
+| `api.md` | contracts touched — shapes, error forms, external calls |
+| `fields.md` | source-to-UI mappings and transformations |
+| `quirks.md` | edge cases and failure modes the spec says are handled |
+| `implementation.md` | key files and patterns the spec says to follow |
+
+**Both directions count.** Code that violates a spec'd contract is drift;
+a spec gone stale because the implementation legitimately evolved is drift
+too. Scope stays at the *task's* spec dir — this is never a whole-`specs/`
+staleness audit.
+
+**Findings are a soft gate.** Report each divergence in the findings table
+(see Output) and let the user decide per finding — one batched question,
+not one at a time:
+
+- **fix code** — the spec is right; the implementation changes
+- **update spec** — reality is right; update the spec file visibly (never
+  silently — that's technical-spec's standing rule)
+- **accept** — knowingly ship the divergence; record it in the output
+
+Drift never blocks `/finalize` by itself — but an unreported divergence is
+a preflight failure like any other.
 
 ## Common Rationalizations
 
@@ -69,10 +109,21 @@ Run through this checklist. Every item must be answered honestly — not optimis
 □ Requirements met     ✓ / ✗ [notes]
 □ Plan steps complete  ✓ / ✗ [notes]  (or N/A for SMALL/MEDIUM)
 □ Edge cases handled   ✓ / ✗ [notes]
+□ Spec drift           ✓ / ✗ / N/A [notes]  (N/A = no spec for this task)
 □ No regressions       ✓ / ✗ [notes]
 □ Nothing left behind  ✓ / ✗ [notes]
 
 → Ready for /finalize  [YES / NO — list blockers if NO]
 ```
+
+When Spec drift is ✗, list the findings and collect one decision per row:
+
+```
+| concern file | spec says | implementation does | decision |
+|---|---|---|---|
+| api.md | error shape {code, msg} | throws bare string | fix code / update spec / accept |
+```
+
+Accepted findings stay in the output — they ship knowingly, not silently.
 
 If any item is NO: fix it first. Do not proceed to /finalize with known gaps.

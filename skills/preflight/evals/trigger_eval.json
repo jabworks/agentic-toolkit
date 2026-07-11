@@ -16,6 +16,10 @@
   { "query": "run typecheck and the tests now", "should_trigger": true, "expected_skill": "finalize" },
   { "query": "review the diff quality", "should_trigger": true, "expected_skill": "code-review" },
   { "query": "am I done shipping this skill to the marketplace", "should_trigger": true, "expected_skill": "toolkit-change-control" },
+  { "query": "does the code still match the spec", "should_trigger": true, "expected_skill": "preflight" },
+  { "query": "check for spec drift", "should_trigger": true, "expected_skill": "preflight" },
+  { "query": "did the implementation diverge from what we specced", "should_trigger": true, "expected_skill": "preflight" },
+  { "query": "update the spec with what we built", "should_trigger": true, "expected_skill": "technical-spec" },
   { "query": "verify the deployment is healthy in prod", "should_trigger": false, "expected_skill": null },
   { "query": "airplane preflight checklist template", "should_trigger": false, "expected_skill": null },
   { "query": "double check this math for me", "should_trigger": false, "expected_skill": null }

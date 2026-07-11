@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 ## Overview
 
-Persists feature decisions, API contracts, implementation details, and quirks into a structured, queryable spec tree. One folder per feature, one file per concern — future sessions load only what they need.
+Persists feature decisions, API contracts, implementation details, and quirks into a structured, queryable spec tree. One folder per feature, one file per concern — future sessions load only what they need. Specs are living contracts: `/preflight`'s Drift Check compares the implementation against them at end-of-task.
 
 ## Spec Folder Layout
 

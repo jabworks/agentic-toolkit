@@ -12,6 +12,7 @@
   { "query": "save the design as a tech spec with live preview", "should_trigger": true, "expected_skill": "technical-spec" },
   { "query": "sepc this out pls", "should_trigger": true, "expected_skill": "technical-spec" },
   { "query": "write up what we decided about the milestone", "should_trigger": true, "expected_skill": "technical-spec" },
+  { "query": "update the spec with what we built", "should_trigger": true, "expected_skill": "technical-spec" },
   { "query": "load the spec for checkout before we start the task", "should_trigger": true, "expected_skill": "workflow" },
   { "query": "browse the specs tree", "should_trigger": true, "expected_skill": "spec-browser" },
   { "query": "where is the spec for the auth feature", "should_trigger": true, "expected_skill": "spec-browser" },

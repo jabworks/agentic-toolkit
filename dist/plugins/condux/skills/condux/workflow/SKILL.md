@@ -153,7 +153,9 @@ Load each only when its step is reached.
 
 **Spec companion (`technical-spec`):** the router's step-2 lookup loads spec context
 silently — no spec, no noise. `discovery` integrates it at sign-off (design doc always;
-structured spec default-on, opt-out + live preview). Whenever a task **modifies** spec files
+structured spec default-on, opt-out + live preview). `preflight` closes the loop — its
+Drift Check compares the implementation against the task's spec before finalize.
+Whenever a task **modifies** spec files
 (`specs/`, OpenAPI YAMLs, contracts, field mappings), offer: "Want the live spec
 preview open to review the changes?"
 
