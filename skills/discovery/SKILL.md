@@ -1,6 +1,6 @@
 ---
 name: discovery
-description: Refine a rough idea into a signed-off design. Asks clarifying questions, surfaces alternatives, and presents the design in sections for sign-off before any planning or code begins.
+description: Refine a rough idea into a signed-off design. Asks goal-level questions, surfaces alternatives, then runs a post-approach detail round (contracts, mappings, edge cases) that feeds the tech spec; presents the design in sections for sign-off before any planning or code begins.
 when_to_use: Trigger for LARGE tasks, when scope is unclear, or when the user wants to brainstorm or explore a rough idea. Acts as a soft gate before /draft-plan — if discovery hasn't run, ask the user if they want to skip it consciously.
 argument-hint: "<rough idea or feature description>"
 effort: high
@@ -38,32 +38,49 @@ as any other soft gate in this skill.
 │    - Is the scope genuinely unclear?                            │
 │      → Proceed to Step 2                                        │
 │                                                                  │
-│  Step 2: CLARIFY                                                │
+│  Step 2: CLARIFY — GOAL ROUND                                   │
 │  Ask targeted questions — one batch, not one at a time.        │
 │  Focus on: goals, constraints, what "done" looks like,         │
 │  known unknowns, and what should explicitly NOT be built.      │
+│  No implementation detail yet — that's Step 4's job.           │
 │                                                                  │
 │  Step 3: PROPOSE                                                │
 │  Present 2-3 approaches with tradeoffs.                        │
 │  Show design in sections — get acknowledgment per section      │
 │  before moving on.                                              │
 │                                                                  │
-│  Step 4: INLINE SELF-REVIEW                                     │
+│  Step 4: DETAIL ROUND — feed the spec                           │
+│  With the approach chosen, ask ONE more batch, grouped by      │
+│  spec concern — only concerns this feature touches,            │
+│  max ~2 questions each:                                         │
+│    api.md → contracts, error shapes, external calls            │
+│    fields.md → source-to-UI mappings, transformations          │
+│    quirks.md → edge cases, failure modes, known gotchas        │
+│    implementation.md → key files, patterns to follow           │
+│  Skip the round entirely if nothing is decidable yet.           │
+│                                                                  │
+│  Step 5: INLINE SELF-REVIEW                                     │
 │  Before presenting the final design for sign-off, silently      │
 │  check — and fix anything that fails:                           │
 │    ✓ No placeholders or TBDs in the design                     │
 │    ✓ All requirements covered                                   │
 │    ✓ Out-of-scope items explicitly noted                        │
 │    ✓ No subsystems that should be separate tasks               │
+│    ✓ Every contract, mapping, or edge case named in the        │
+│      design has a home in a spec concern file                   │
+│    ✓ Unanswered detail questions surface as open questions,    │
+│      never silently dropped                                     │
 │                                                                  │
-│  Step 5: SIGN-OFF                                               │
+│  Step 6: SIGN-OFF                                               │
 │  Get explicit approval: "Looks good, proceed to planning"      │
 │  Do not proceed to /draft-plan without this.                    │
 │                                                                  │
-│  Step 6: SAVE THE DESIGN (mandatory)                            │
+│  Step 7: SAVE DESIGN + SPEC (mandatory)                         │
 │  Write the design summary to                                    │
 │  docs/plans/YYYY-MM-DD-<feature>-design.md — this is the       │
 │  artifact /draft-plan's gate check globs for.                   │
+│  Spec write-back is default-on: persist the concern files       │
+│  too (Spec Integration below) unless the user opts out.         │
 │  Then offer the browser review loop (Design Review Loop).       │
 └──────────────────────────────────────────────────────────────────┘
 ```
@@ -82,6 +99,15 @@ Bad (too detailed too early):
   ✗ "What exact file should this go in?"
   ✗ "Should we use useCallback here?"
 ```
+
+**Two rounds, two altitudes.** The examples above govern Step 2 — goal
+altitude only. Step 4's detail round is the deliberate exception: once an
+approach is chosen, contract/mapping/edge-case questions ("what shape does
+the API error return?", "which field feeds the status badge?", "what happens
+when the upstream times out?") are exactly right, and their answers land in
+the matching spec concern file. What stays bad at *every* stage:
+micro-decisions the agent should make itself (button variants, hook choices,
+file placement).
 
 ## Soft Gate Behavior
 
@@ -110,8 +136,11 @@ A short design summary covering:
 - Key constraints and out-of-scope items
 - Open questions (if any remain after sign-off)
 
+Detail-round answers (Step 4) belong in the spec concern files, not the
+summary — the summary stays short; the spec carries the detail.
+
 Save to: `docs/plans/YYYY-MM-DD-<feature>-design.md` — always, at sign-off
-(Step 6). The saved file is what `/draft-plan`'s gate check globs for; a
+(Step 7). The saved file is what `/draft-plan`'s gate check globs for; a
 design that lives only in conversation doesn't count as signed off.
 
 For side-by-side layout comparisons or architecture diagrams during the design phase, see `references/mockup-picker.md`.
@@ -164,12 +193,14 @@ If yes, go straight to **Launch preview** below (skip scaffold + write — spec 
 
 ### At sign-off
 
-The Markdown design doc (Step 6) is always written. Additionally offer:
+The Markdown design doc (Step 7) is always written. The spec write-back is
+**default-on** — announce it rather than ask:
 
-> "Also save the design as a tech spec and open the live preview? [y/n]"
+> "Saving this as a tech spec too (decisions + the concern files from the
+> detail round) and opening the live preview — say no to skip."
 
-If yes (the spec directory then becomes the target for the Design Review
-Loop above, in directory mode):
+Unless the user opts out (the spec directory then becomes the target for the
+Design Review Loop above, in directory mode):
 
 1. **Find scripts** — the scaffold from technical-spec, the preview from
    plan-review (its annotate server renders spec directories):
@@ -188,9 +219,11 @@ Loop above, in directory mode):
    The scaffold script places specs under `<git-root>/specs/`, mirroring the
    repo structure, automatically.
 
-3. **Write initial spec files** from the design summary into `$SPEC_PATH/`.
-   At minimum, write `decisions.md` with the chosen approach and rationale.
-   Add `api.md` or `fields.md` if the design covers contracts or field mappings.
+3. **Write initial spec files** from the design into `$SPEC_PATH/`.
+   `decisions.md` always (chosen approach + rationale). Then every concern
+   the detail round produced answers for gets its file: `api.md`,
+   `fields.md`, `quirks.md`, `implementation.md`. A detail-round answer
+   that never lands in a spec file is a bug in the flow, not a judgment call.
 
 4. **Launch preview** in the background, pointing at the absolute spec path:
    ```bash
