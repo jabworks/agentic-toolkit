@@ -11,6 +11,8 @@
   { "query": "found an existing design doc for this, continue from it", "should_trigger": true, "expected_skill": "discovery" },
   { "query": "design a database schema for multi-tenancy", "should_trigger": true, "expected_skill": "discovery" },
   { "query": "big refactor, unclear boundaries — where do we even start", "should_trigger": true, "expected_skill": "discovery" },
+  { "query": "resume where we left off last session", "should_trigger": true, "expected_skill": "session-handoff" },
+  { "query": "pick up from the handoff doc", "should_trigger": true, "expected_skill": "session-handoff" },
   { "query": "we already have a signed off design, write the plan", "should_trigger": true, "expected_skill": "draft-plan" },
   { "query": "skip discovery, just plan it", "should_trigger": true, "expected_skill": "draft-plan" },
   { "query": "small tweak to the button color", "should_trigger": true, "expected_skill": "workflow" },
