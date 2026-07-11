@@ -75,6 +75,16 @@ cost nothing: **toolkit-foundry routed 4/4**, matching plugin-foundry's record.
 Flaky count 37 (vs 44); discovery↔session-handoff remains the worst seam.
 Standing claim unchanged.
 
+**Post-discovery-rewrite trials (2026-07-11,** `eval-trials-2026-07-11.md`,
+same 394-case corpus after discovery's description gained the two-round
+detail-questioning wording (condux 2.4.0), **0 failed batches):**
+3 trials at 88.1 / 88.6 / 88.6 → mean **88.4% ± 0.7pp** (95% CI, t-dist) —
+the tightest trial spread recorded. Statistically identical to post-foundry
+(88.6% ± 3.8pp): the rewrite cost nothing. Discovery routed 11/15; its misses
+are the *same* pre-existing cases (the discovery↔session-handoff "resume"
+seam, the technical-spec "design before documenting" adjacency). Flaky count
+39. Standing claim unchanged.
+
 --- Original phase design (kept for provenance): ---
 - Harness: `node scripts/eval-triggers.mjs [--model <id>] [--limit <n>]` — builds
   the catalog from live SKILL.md frontmatter, batches the corpus through
