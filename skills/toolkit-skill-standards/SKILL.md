@@ -96,7 +96,8 @@ collision scan + trigger-contract check makes both failure shapes visible before
 ## Related skills
 
 `toolkit-foundry` (mechanics after content passes), `toolkit-change-control` (ship
-gate), `adapting-skills` (external templates first), `toolkit-debugging-playbook`
+gate), `adapting-skills` (external templates first — and the owner of these
+standards applied to skills in *other* projects), `toolkit-debugging-playbook`
 (live trigger failures).
 
 ## Provenance and maintenance

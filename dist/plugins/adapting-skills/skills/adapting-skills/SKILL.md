@@ -1,6 +1,6 @@
 ---
 name: adapting-skills
-description: Use when adapting a generic skill, cloning a skill template, scaffolding new code, or generating output that should match Harvey's stack and conventions. Not for creating, registering, or syncing toolkit skills; use toolkit-foundry.
+description: Use when adapting a generic skill, cloning a skill template, scaffolding new code, or generating output that should match Harvey's stack and conventions. Also when improving or updating an existing skill in any project — its trigger contract, eval cases, or structure — to Harvey's authoring standards. Not for creating, registering, or syncing toolkit skills (toolkit-foundry) or reviewing this toolkit's own SKILL.md files (toolkit-skill-standards).
 ---
 
 # Adapting Skills to Harvey's Stack
@@ -65,6 +65,42 @@ These repo files override everything here:
 - **Minimal diff** — change only what the task requires; no drive-by reformats
 - **Reasoned recommendations** — lay out tradeoffs, give a clear recommendation with the *why*
 - **Honest pushback** — say so if an approach is wrong or overkill
+
+## Improving an Existing Skill (any project)
+
+Harvey's authoring standards travel; the toolkit's machinery does not. When
+improving a skill in another repo (`.claude/skills/`, `.codex/skills/`, a
+plugin's skills tree), apply the standards below and defer to that repo's own
+conventions for everything else — same ground-truth rule as the stack profile.
+
+**Trigger contract.** Either `description` starts with "Use when…" (triggering
+conditions only), or a `when_to_use` field carries them. Budgets: description
+≤ 500 chars, frontmatter total ≤ 1024. Natural user phrasing, never
+skill-internal vocabulary — a cold user types "why does checkout 500", not
+"run the four-phase investigation".
+
+**One owner per query space.** Before widening a description, check which
+existing skill (or global skill, e.g. skill-creator) already claims the
+phrasing. Overlap makes routing worse for both sides. Carve explicit "Not
+for X; use Y" boundaries — both directions when possible.
+
+**Seam discipline.** When two skills share a boundary, sharpen *both* sides:
+the loser drops the ambiguous vocabulary, the winner claims it explicitly.
+Mirror the seam's eval cases into both skills' corpora so it stays measured.
+
+**Eval cases.** If the repo has a trigger-eval setup, add cases for any new
+vocabulary (positives + hard negatives). If not, note the untested change —
+description edits without measurement are how trigger spaces rot. The
+toolkit's harness (`scripts/eval-triggers.mjs`) is repo-agnostic if they
+want one.
+
+**Structure.** Body ≤ ~150 lines; move templates, checklists, and long
+reference material into `references/` (progressive disclosure). One skill =
+one job — split before a skill grows a second trigger surface.
+
+**Boundary:** generic scaffolding and eval *tooling* belong to skill-creator
+(if installed); this section is for applying Harvey's standards. Skills in
+*this* toolkit route to toolkit-foundry / toolkit-skill-standards instead.
 
 ## Common Mistakes
 
