@@ -85,6 +85,21 @@ are the *same* pre-existing cases (the discovery↔session-handoff "resume"
 seam, the technical-spec "design before documenting" adjacency). Flaky count
 39. Standing claim unchanged.
 
+**Design-resume seam fix (2026-07-11/12,** `eval-trial3-2026-07-12.md`,
+corpus grown to 418 with preflight drift-check vocabulary +
+session-handoff's first corpus, 21 cases): sharpened both sides of the
+discovery↔session-handoff boundary (session-handoff dropped the bare
+"resume" phrase and claims handoff-document resumption only; discovery
+claims design resumption explicitly — condux 2.5.1 / session-handoff
+1.5.3). Measurements: 90.0% (complete), 88.3% (30/35 batches,
+limit-aborted), 88.5% (complete, 0 failed batches) — in band. The seam
+itself: "resume the design we started yesterday" hit **3/3 valid trials**
+(was 1/3 since 07-08); discovery 14/15, session-handoff 16/16.
+Next-worst seams now: discovery↔technical-spec ("design before
+documenting") and the new drift-check vocabulary (preflight↔technical-spec,
+flaky in the limit-crashed run, clean in trial 3) — same treatment
+available if they stay noisy. Standing claim unchanged (~89–92%).
+
 --- Original phase design (kept for provenance): ---
 - Harness: `node scripts/eval-triggers.mjs [--model <id>] [--limit <n>]` — builds
   the catalog from live SKILL.md frontmatter, batches the corpus through
