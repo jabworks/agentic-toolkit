@@ -54,6 +54,7 @@ See `skills/toolkit-foundry/SKILL.md` for the canonical checklist. Short version
 | `git-operations` | Decision router for git operations with undo paths |
 | `spec-browser` | Catalog and browse a specs/ tree as one doc site |
 | `release` | Cut a release safely — machinery router (changesets/toolkit/GitHub), dry-run first |
+| `coding-directive` | Harvey's house style — TS/React/formatting/imports/naming/CSS, enforced tier + judgment tier |
 | `condux` (plugin) | agentic workflow bundle (workflow, discovery, draft-plan, test-first-development, subagent-execution, subagent-deployment, finalize, code-review, preflight, root-cause-analysis, plan-review, technical-spec) |
 | `toolkit-ops` (plugin) | repo-maintenance bundle (toolkit-orientation, toolkit-foundry, toolkit-change-control, toolkit-skill-standards, toolkit-debugging-playbook, toolkit-failure-archaeology, toolkit-plugin-reference, toolkit-research-frontier) |
 

@@ -87,6 +87,15 @@
       },
       "source": "./dist/plugins/release",
       "category": "development"
+    },
+    {
+      "name": "coding-directive",
+      "description": "Write code that matches Harvey's (@jabworks) house style the first time: enforced rules from the style-guide configs (TypeScript, ESLint/oxlint, Prettier/oxfmt, Stylelint) plus a confidence-marked judgment layer for naming, error handling, React anatomy, monorepo boundaries, and Tailwind.",
+      "author": {
+        "name": "Hieu Vi"
+      },
+      "source": "./dist/plugins/coding-directive",
+      "category": "development"
     }
   ]
 }
