@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import {
   SKILLS_DIR,
   OPENCODE_SKILLS_DIR,
@@ -44,7 +45,7 @@ test('dist/opencode/skills matches the generator output for every skill', () => 
     for (const rel of srcFiles) {
       const srcContent = fs.readFileSync(path.join(src, rel));
       const dstContent = fs.readFileSync(path.join(dst, rel));
-      if (path.basename(rel) === 'SKILL.md') {
+      if (rel === 'SKILL.md') {
         const expected = transformSkill(srcContent.toString('utf8'), `skills/${name}`);
         if (dstContent.toString('utf8') !== expected) {
           mismatches.push(`${name}: ${rel} differs from transform output`);
@@ -109,7 +110,7 @@ test('condux-opencode package is loadable and consistent', async () => {
   assert.ok(fs.existsSync(path.join(pkgDir, pkg.main)), 'package.json main does not resolve');
   assert.ok(pkg.files.includes('agents/'), 'agents/ missing from package files array');
 
-  const mod = await import(path.join(pkgDir, pkg.main));
+  const mod = await import(pathToFileURL(path.join(pkgDir, pkg.main)).href);
   const hooks = await mod.ConduxPlugin({ worktree: pkgDir });
   assert.equal(typeof hooks.config, 'function');
 

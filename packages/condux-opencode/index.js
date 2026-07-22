@@ -63,6 +63,7 @@ function findAnnotateServer(worktree) {
 export const ConduxPlugin = async ({ worktree }) => {
   const bundled = loadBundledAgents();
   const activeAgent = new Map();
+  let warnedPayloadShape = false;
 
   return {
     config: async (cfg) => {
@@ -84,14 +85,28 @@ export const ConduxPlugin = async ({ worktree }) => {
     event: async ({ event }) => {
       if (process.env.CONDUX_PLAN_REVIEW !== '1') return;
       if (event.type !== 'session.idle') return;
-      if (activeAgent.get(event.properties?.sessionID) !== 'plan') return;
+      const sessionID = event.properties?.sessionID;
+      if (sessionID === undefined) {
+        // Payload shape drifted from what this plugin expects — say so once,
+        // so "listener not wired" is distinguishable from "plan agent not active".
+        if (!warnedPayloadShape) {
+          warnedPayloadShape = true;
+          console.error('condux-opencode: session.idle carried no properties.sessionID — plan-review listener inactive');
+        }
+        return;
+      }
+      if (activeAgent.get(sessionID) !== 'plan') return;
       const server = findAnnotateServer(worktree);
       if (!server) return;
-      spawn('node', [server, '--codex-stop'], {
+      const child = spawn('node', [server, '--codex-stop'], {
         cwd: worktree,
         detached: true,
         stdio: 'ignore',
-      }).unref();
+      });
+      // Fail silent if `node` is missing (OpenCode itself only needs Bun) —
+      // an unhandled 'error' event would crash the plugin host.
+      child.on('error', () => {});
+      child.unref();
     },
   };
 };

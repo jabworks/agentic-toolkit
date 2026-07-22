@@ -70,8 +70,10 @@ export function transformSkill(text, label) {
   if (!description) throw new Error(`${label}: has when_to_use but no description`);
 
   const merged = decodeScalar(description.raw) + ' ' + decodeScalar(whenToUse.raw);
+  // Function-form replacement: a plain string here would have $-sequences in the
+  // description ($&, $', $1, …) interpreted as replacement patterns.
   return text
-    .replace(description.line + '\n', 'description: ' + encodeScalar(merged) + '\n')
+    .replace(description.line + '\n', () => 'description: ' + encodeScalar(merged) + '\n')
     .replace(whenToUse.line + '\n', '');
 }
 
@@ -91,14 +93,17 @@ export function translateAgent(text, label) {
 // Generation
 // --------------------------------------------------------------------------
 
-function copyTransformed(srcDir, dstDir, label) {
+// Only the skill's own top-level SKILL.md is transformed (depth 0) — a nested
+// SKILL.md (e.g. an eval fixture under references/ or evals/) is data and must
+// copy byte-for-byte.
+function copyTransformed(srcDir, dstDir, label, depth = 0) {
   fs.mkdirSync(dstDir, { recursive: true });
   for (const entry of fs.readdirSync(srcDir, { withFileTypes: true })) {
     const src = path.join(srcDir, entry.name);
     const dst = path.join(dstDir, entry.name);
     if (entry.isDirectory()) {
-      copyTransformed(src, dst, label);
-    } else if (entry.name === 'SKILL.md') {
+      copyTransformed(src, dst, label, depth + 1);
+    } else if (entry.name === 'SKILL.md' && depth === 0) {
       fs.writeFileSync(dst, transformSkill(fs.readFileSync(src, 'utf8'), label));
     } else {
       fs.copyFileSync(src, dst);
