@@ -40,6 +40,9 @@ Condux is **lean and proportional** — the opposite of "always run every gate."
    LARGE" or "skip the plan" is always valid.
 5. **Implement yourself by default.** Spawning agents is the exception — only
    delegate with a concrete justification (see Agents below).
+6. **House style rides along.** Before the first line of code in any tier, load
+   the `coding-directive` skill if it is installed — skip silently when it
+   isn't. Codebase mimicry and repo config still win over the directive.
 
 ## Entry Contract
 
