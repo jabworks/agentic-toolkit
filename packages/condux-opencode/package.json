@@ -1,0 +1,26 @@
+{
+  "name": "condux-opencode",
+  "version": "0.1.0",
+  "description": "OpenCode plugin for the condux workflow toolkit — injects the condux specialist agents (coder, explorer, planner, researcher) and an opt-in plan-review listener.",
+  "type": "module",
+  "main": "./index.js",
+  "exports": "./index.js",
+  "files": [
+    "index.js",
+    "agents/"
+  ],
+  "keywords": [
+    "opencode",
+    "opencode-plugin",
+    "condux",
+    "workflow",
+    "agents"
+  ],
+  "author": "jabworks",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jabworks/agentic-toolkit",
+    "directory": "packages/condux-opencode"
+  },
+  "license": "MIT"
+}

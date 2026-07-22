@@ -1,0 +1,99 @@
+// condux-opencode — OpenCode plugin for the condux workflow toolkit.
+//
+// Injects the four condux specialist agents (coder, explorer, planner,
+// researcher) into the loaded config via the `config` hook, reading their
+// definitions from the bundled agents/*.md (generated from the canonical
+// Claude-dialect sources by scripts/build-opencode.mjs in the toolkit repo).
+// User-defined agents with the same name always win — injection is skip-if-present.
+//
+// Optional plan-review listener (CONDUX_PLAN_REVIEW=1): when the primary
+// `plan` agent finishes a turn (session.idle), spawns the plan-review annotate
+// server from an installed condux skill tree. Best-effort only — OpenCode does
+// not await event hooks, so unlike the Codex Stop hook this cannot gate the
+// next turn on the review outcome.
+
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { spawn } from 'node:child_process';
+import path from 'node:path';
+import os from 'node:os';
+import { fileURLToPath } from 'node:url';
+
+const PKG_DIR = path.dirname(fileURLToPath(import.meta.url));
+const AGENTS_DIR = path.join(PKG_DIR, 'agents');
+
+// Bundled agent files use exactly the frontmatter the toolkit generator emits:
+// a JSON-quoted `description`, a plain `mode`, body = system prompt.
+function parseAgent(text, name) {
+  const match = text.match(/^---\ndescription: (".*")\nmode: (\S+)\n---\n/);
+  if (!match) throw new Error(`condux-opencode: malformed bundled agent ${name}`);
+  return {
+    description: JSON.parse(match[1]),
+    mode: match[2],
+    prompt: text.slice(match[0].length).trim(),
+  };
+}
+
+function loadBundledAgents() {
+  const agents = {};
+  for (const file of readdirSync(AGENTS_DIR).sort()) {
+    if (!file.endsWith('.md')) continue;
+    const name = file.slice(0, -3);
+    agents[name] = parseAgent(readFileSync(path.join(AGENTS_DIR, file), 'utf8'), name);
+  }
+  return agents;
+}
+
+// The annotate server ships inside the plan-review skill; look for it in every
+// skill tree OpenCode discovers (project then global).
+function findAnnotateServer(worktree) {
+  const roots = [
+    path.join(worktree, '.opencode', 'skills'),
+    path.join(worktree, '.agents', 'skills'),
+    path.join(worktree, '.claude', 'skills'),
+    path.join(os.homedir(), '.config', 'opencode', 'skills'),
+    path.join(os.homedir(), '.claude', 'skills'),
+  ];
+  for (const root of roots) {
+    const candidate = path.join(root, 'plan-review', 'references', 'annotate-server.js');
+    if (existsSync(candidate)) return candidate;
+  }
+  return null;
+}
+
+export const ConduxPlugin = async ({ worktree }) => {
+  const bundled = loadBundledAgents();
+  const activeAgent = new Map();
+
+  return {
+    config: async (cfg) => {
+      cfg.agent ??= {};
+      for (const [name, def] of Object.entries(bundled)) {
+        if (cfg.agent[name]) continue;
+        cfg.agent[name] = {
+          description: def.description,
+          mode: def.mode,
+          prompt: def.prompt,
+        };
+      }
+    },
+
+    'chat.params': async (input) => {
+      if (input.sessionID && input.agent) activeAgent.set(input.sessionID, input.agent);
+    },
+
+    event: async ({ event }) => {
+      if (process.env.CONDUX_PLAN_REVIEW !== '1') return;
+      if (event.type !== 'session.idle') return;
+      if (activeAgent.get(event.properties?.sessionID) !== 'plan') return;
+      const server = findAnnotateServer(worktree);
+      if (!server) return;
+      spawn('node', [server, '--codex-stop'], {
+        cwd: worktree,
+        detached: true,
+        stdio: 'ignore',
+      }).unref();
+    },
+  };
+};
+
+export default ConduxPlugin;

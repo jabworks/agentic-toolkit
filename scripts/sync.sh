@@ -80,6 +80,7 @@ sync_skill() {
 # ---------------------------------------------------------------------------
 if [[ $# -gt 0 ]]; then
   sync_skill "$1"
+  node "$REPO_ROOT/scripts/build-opencode.mjs"
 else
   synced=0
   skipped=0
@@ -93,6 +94,7 @@ else
       ((failed++)) || true
     fi
   done
+  node "$REPO_ROOT/scripts/build-opencode.mjs"
   echo ""
   echo "done — ${synced} synced, ${skipped} skipped, ${failed} failed"
   [[ $failed -eq 0 ]]
