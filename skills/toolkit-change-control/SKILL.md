@@ -51,22 +51,59 @@ change (git `a4f4aa8`).
 
 ```bash
 bash scripts/sync.sh            # 1. mirror is current
+git status --porcelain          #    ...and stayed clean — output here means drift
 node --test                     # 2. parity + invariants + manifests green
-for m in dist/plugins/*/.claude-plugin/plugin.json \
-         dist/plugins/*/.codex-plugin/plugin.json; do
-  jq . "$m" >/dev/null || echo "BAD JSON: $m"                 # 3. spot-check all
-done
-jq -r '.plugins[].name' .claude-plugin/marketplace.json       # 4. entry present
+
+# 3+4. manifests parse, marketplace entries present, version pairs equal
+node -e '
+const fs=require("fs");
+const mp=JSON.parse(fs.readFileSync(".claude-plugin/marketplace.json","utf8"));
+const reg=new Set(mp.plugins.map(p=>p.name));
+let bad=0;
+for(const d of fs.readdirSync("dist/plugins")){
+  const v={};
+  for(const h of [".claude-plugin",".codex-plugin"]){
+    const f=`dist/plugins/${d}/${h}/plugin.json`;
+    if(!fs.existsSync(f)){bad++;console.log(`MISSING  ${f}`);continue}
+    try{v[h]=JSON.parse(fs.readFileSync(f,"utf8")).version}
+    catch(e){bad++;console.log(`BAD JSON ${f}: ${e.message}`)}
+  }
+  if(v[".claude-plugin"]!==v[".codex-plugin"]){
+    bad++;console.log(`VERSION MISMATCH ${d}: ${v[".claude-plugin"]} vs ${v[".codex-plugin"]}`)}
+  if(!reg.has(d)){bad++;console.log(`UNREGISTERED ${d} — not in marketplace.json`)}
+}
+console.log(bad?`${bad} problem(s)`:"all manifests valid, paired, and registered");
+'
 ```
 
-5. Version bumped in both manifests (if the class requires it).
+**Use `node`, not `jq`.** `jq` is not installed everywhere, and
+`jq . "$m" || echo "BAD JSON: $m"` fires its `||` on the *missing-binary* exit
+code — a machine without `jq` reports every manifest corrupt while a version
+comparison between two empty strings reports `OK`. False failures and false
+passes from the same run. `node` is already a hard dependency (`node --test`),
+so the gate can rely on it. Same doctrine as `sed` over `grep -P` (`dc1e221`).
+
+5. Version bumped in both manifests (if the class requires it) — the script
+   above proves the pair is equal, not that it *changed*; confirm against
+   `git diff` when the class requires a bump.
 6. Commit — only if the user asked: `feat:`/`fix:`/`chore:` prefix, `-s` signoff,
    no `Co-Authored-By` trailer.
+7. **Push.** Nothing is shipped until it is pushed: `/plugin install` reads a
+   clone of the *remote*, so an unpushed commit installs as the previous
+   version and the user gets a stale skill with no error.
 
 ### 3. Say what the evidence shows — nothing more
 
 "Shipped" requires all checklist items with command output. Anything less is
 "authored but not shipped" — say which items remain.
+
+Green tests on a local clone prove the *repo* is correct, not that anyone can
+install it. Before claiming shipped, confirm the remote actually has it:
+
+```bash
+git status -sb | head -1                                   # ahead of origin?
+git -C ~/.claude/plugins/marketplaces/<marketplace> log --oneline -1
+```
 
 ## Evidence required
 
@@ -88,6 +125,11 @@ that proved it.
   been edited unevenly across the pair).
 - Trusting the pre-commit hook to sync — it's developer-local; fresh clones don't have
   it (install via `bash scripts/install-hooks.sh`).
+- Calling it shipped while the commit is still local. `/plugin install` clones the
+  remote, so an unpushed change installs as the *previous* version silently — the
+  same shape as the stale-cache incident in the ledger, self-inflicted.
+- Reaching for `jq` in the checklist — see step 2. It is not a dependency of this
+  repo and its absence produces confidently wrong output in both directions.
 
 ## Bad behavior this prevents
 
@@ -105,8 +147,8 @@ checklist makes that state unclaimable.
 
 Re-verify volatile claims with:
 - `node --test` — the gate itself
-- `jq -r '.plugins[].name' .claude-plugin/marketplace.json` — registration reality
-- `grep -h '"version"' dist/plugins/<p>/.claude-plugin/plugin.json dist/plugins/<p>/.codex-plugin/plugin.json` — pair equality
+- the step-2 `node -e` script — registration reality and pair equality in one pass
+- `git status -sb | head -1` — whether the work has actually left this machine
 
 Last generated: 2026-07-08
 Known uncertainty:
