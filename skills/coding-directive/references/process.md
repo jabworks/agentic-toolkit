@@ -72,7 +72,7 @@ hold regardless:
   rather than copying the example.
 - **Byte-exact file content goes through Write/Edit, never a shell redirect
   through a display wrapper.** rtk (mandatory prefix for all shell commands
-  in Harvey's environment) decorates and truncates output; `rtk jq … > file`
+  in Harvey's environment) decorates and truncates output; `jq … > file`
   has corrupted manifests. Keep rtk command lines simple — it also rewrites
   some pipelines.
 - **Stay inside the current repo.** Never read or modify files in other

@@ -39,8 +39,8 @@ The rules agents get wrong most often — internalize before writing a line:
 - **Inline type imports** — `import { type Config } from 'prettier'`, never a
   separate `import type` line
 - `console.error` / `console.warn` only — never leave `console.log` behind
-- Single quotes (JSX too), 120-char lines, trailing commas everywhere,
-  single-arg arrows without parens, one JSX attribute per line
+- Semicolons always; single quotes (JSX too), 120-char lines, trailing commas
+  everywhere, single-arg arrows without parens, one JSX attribute per line
 - `unknown` over `any`; narrowing and `satisfies` over `as`; unions and
   `as const` objects over `enum`
 - Props types are `ButtonProps`, never `Props`; interfaces never prefixed `I`
