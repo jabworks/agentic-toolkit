@@ -18,7 +18,7 @@ One quality gate at the end. Typecheck → lint → format → test. In that ord
 
 ## Before Running
 
-Check `AGENTS.md` for the project's finalize commands. If `AGENTS.md` defines a `finalize` script or step sequence, use that. Otherwise fall back to reading `package.json` scripts and infer the right commands. If no `docs/plans/*<slug>*.md` exists for the inferred feature slug, note it in the output below — don't block. This is informational only, surfacing when a task ran without going through `/workflow` or `/draft-plan`, not a gate.
+Check `AGENTS.md` for the project's finalize commands. If `AGENTS.md` defines a `finalize` script or step sequence, use that. Otherwise fall back to reading `package.json` scripts and infer the right commands. If no `.condux/plans/*<slug>*.md` exists for the inferred feature slug, note it in the output below — don't block. This is informational only, surfacing when a task ran without going through `/workflow` or `/draft-plan`, not a gate.
 
 ## How It Works
 

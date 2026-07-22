@@ -2,7 +2,7 @@
   { "query": "review the plan in the browser", "should_trigger": true, "expected_skill": "plan-review" },
   { "query": "open the annotation ui for this plan", "should_trigger": true, "expected_skill": "plan-review" },
   { "query": "let me annotate before you implement", "should_trigger": true, "expected_skill": "plan-review" },
-  { "query": "plan review on docs/plans/2026-07-04-git-skills.md", "should_trigger": true, "expected_skill": "plan-review" },
+  { "query": "plan review on .condux/plans/2026-07-04-git-skills.md", "should_trigger": true, "expected_skill": "plan-review" },
   { "query": "run the steer mode review loop", "should_trigger": true, "expected_skill": "plan-review" },
   { "query": "review the spec directory with per-file notes", "should_trigger": true, "expected_skill": "plan-review", "accept": ["spec-browser"] },
   { "query": "open live preview of specs/wan-config", "should_trigger": true, "expected_skill": "plan-review" },

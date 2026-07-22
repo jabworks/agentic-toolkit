@@ -159,6 +159,35 @@ Whenever a task **modifies** spec files
 (`specs/`, OpenAPI YAMLs, contracts, field mappings), offer: "Want the live spec
 preview open to review the changes?"
 
+## Artifacts
+
+Two tiers, split by durability — not by which skill produced them.
+
+| Tier | Where | Contents | Git |
+|---|---|---|---|
+| **Durable** | `<git-root>/specs/` | tech specs (`technical-spec`), browsable via `spec-browser` | committed |
+| **Working state** | `<git-root>/.condux/` | `designs/` · `plans/` · `progress/` · `scratch/` | gitignored |
+
+The spec is what you keep; the design and plan are scaffolding for building
+it. Don't promote working state into `docs/` or the repo root — a project's
+`docs/` belongs to the project, not to condux.
+
+**Bootstrap.** `.condux/` is created on demand at the git root by the first
+skill that writes there. Before that first write, check it's ignored:
+
+```bash
+git check-ignore -q .condux/ || echo "not ignored"
+```
+
+If it isn't, offer once: "condux keeps its working files in `.condux/` — add
+it to `.gitignore` so they stay out of your commits?" On yes, append
+`.condux/` to the repo's `.gitignore`. If the user would rather not touch a
+tracked file, write it to `.git/info/exclude` instead. Never edit either file
+without asking. Not a git repo → fall back to CWD and say so once.
+
+**Override.** A project can relocate either tier in `AGENTS.md`; an explicit
+override always wins over these defaults.
+
 ## Agents
 
 Four **named specialist agents** ship with condux — never invent a generic subagent

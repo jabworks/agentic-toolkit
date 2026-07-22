@@ -20,7 +20,7 @@ Both can run in parallel if they don't depend on each other's output.
 
 ## Relationship with /discovery
 
-For LARGE tasks (cross-cutting, unclear scope, multiple subsystems), `/discovery` should have already run before you are invoked — it produces the signed-off design you turn into an executable plan. That design is a saved artifact: glob `docs/plans/*<slug>*-design.md` (and `specs/<slug>/` for a tech-spec) and **read it first** — it is your source of truth for scope, chosen approach, and out-of-scope items. Do not re-derive or second-guess design decisions already settled there; if the file is missing for a large task, ask whether discovery has run rather than filling in the design yourself.
+For LARGE tasks (cross-cutting, unclear scope, multiple subsystems), `/discovery` should have already run before you are invoked — it produces the signed-off design you turn into an executable plan. That design is a saved artifact: glob `.condux/designs/*<slug>*.md` (and `specs/<slug>/` for a tech-spec) and **read it first** — it is your source of truth for scope, chosen approach, and out-of-scope items. Do not re-derive or second-guess design decisions already settled there; if the file is missing for a large task, ask whether discovery has run rather than filling in the design yourself.
 
 ## Task Size Classification
 

@@ -18,7 +18,7 @@ Turn a rough idea into a clear, agreed-upon design. Nothing gets planned or buil
 
 ## How It Works
 
-Before Step 1, check for an existing design: glob `docs/plans/*<slug>*-design.md`
+Before Step 1, check for an existing design: glob `.condux/designs/*<slug>*.md`
 and `specs/<slug>/` (slug = kebab-case of the feature name). If either
 exists, offer: "Found an existing design for this feature at `<path>` —
 resume from there, or start a fresh discovery?" Accept either answer, same
@@ -77,7 +77,7 @@ as any other soft gate in this skill.
 │                                                                  │
 │  Step 7: SAVE DESIGN + SPEC (mandatory)                         │
 │  Write the design summary to                                    │
-│  docs/plans/YYYY-MM-DD-<feature>-design.md — this is the       │
+│  .condux/designs/YYYY-MM-DD-<feature>.md — this is the         │
 │  artifact /draft-plan's gate check globs for.                   │
 │  Spec write-back is default-on: persist the concern files       │
 │  too (Spec Integration below) unless the user opts out.         │
@@ -139,9 +139,14 @@ A short design summary covering:
 Detail-round answers (Step 4) belong in the spec concern files, not the
 summary — the summary stays short; the spec carries the detail.
 
-Save to: `docs/plans/YYYY-MM-DD-<feature>-design.md` — always, at sign-off
+Save to: `.condux/designs/YYYY-MM-DD-<feature>.md` — always, at sign-off
 (Step 7). The saved file is what `/draft-plan`'s gate check globs for; a
 design that lives only in conversation doesn't count as signed off.
+
+`.condux/` is gitignored working state, created on demand at the git root
+(see `/workflow` → Artifacts). Before the first write, make sure it's
+ignored — see the bootstrap step there. Honour an `AGENTS.md` path override
+if the project defines one.
 
 For side-by-side layout comparisons or architecture diagrams during the design phase, see `references/mockup-picker.md`.
 
@@ -159,7 +164,7 @@ it in `--steer` mode against the saved design file (or the spec directory,
 if the design was saved as a tech spec — see Spec Integration below):
 
 ```bash
-node /path/to/plan-review/references/annotate-server.js docs/plans/<file>-design.md --steer
+node /path/to/plan-review/references/annotate-server.js .condux/designs/<file>.md --steer
 ```
 
 Poll `GET http://127.0.0.1:7777/api/decision` (long-poll — blocks until a

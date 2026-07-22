@@ -75,7 +75,10 @@ Symptom:      per-package plan saving broke expectations; `grep -oP` failed on m
 Wrong path:   shipping the layout change before validating it across environments.
 Root cause:   premature design + GNU-only flag (BSD grep has no -P).
 Evidence:     b782719 (the change) → dc1e221 (the same-day revert + sed replacement).
-Doctrine:     centralized docs/plans/ stands; portable tools only (sed over grep -P).
+Doctrine:     a single centralized plan dir stands (per-package is settled-no);
+              portable tools only (sed over grep -P). The dir has since moved
+              docs/plans/ → .condux/plans/ — centralization is the doctrine, the
+              path is not.
 Encoded in:   this ledger ("do not re-fight"); dc1e221 itself as precedent.
 
 ## Stale plugin cache served a fixed bug

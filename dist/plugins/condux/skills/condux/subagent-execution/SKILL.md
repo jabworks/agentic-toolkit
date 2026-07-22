@@ -1,7 +1,7 @@
 ---
 name: subagent-execution
 description: Execute a plan using named specialist agents. Default is to implement yourself — only spawn when there is a concrete justification. Agents must be pre-defined; never create generic subagents with injected system prompts.
-when_to_use: Trigger when implementing a LARGE plan with tasks that benefit from agent specialization or parallel exploration — including task briefs, review packages, spawn rules, and resuming an interrupted plan from the .condux progress ledger (not session-handoff). Not for ad-hoc independent tasks outside a plan (that's subagent-deployment).
+when_to_use: Trigger when implementing a LARGE plan with tasks that benefit from agent specialization or parallel exploration — including task briefs, review packages, spawn rules, and resuming an interrupted plan from the `.condux/progress/` ledger (not session-handoff). Not for ad-hoc independent tasks outside a plan (that's subagent-deployment).
 argument-hint: "<plan file path>"
 ---
 
@@ -12,7 +12,7 @@ Execute a plan using specialist agents. Default is to do the work yourself. Spaw
 ## Usage
 
 ```
-/subagent-execution docs/plans/YYYY-MM-DD-<feature>.md
+/subagent-execution .condux/plans/YYYY-MM-DD-<feature>.md
 ```
 
 ## Core Principle
@@ -43,7 +43,7 @@ ledger file, not only in todos.
   ```
   # Subagent Execution Progress: <feature-slug>
 
-  Plan: docs/plans/<plan-file>.md
+  Plan: .condux/plans/<plan-file>.md
 
   ```
 - When a task's review comes back clean, append one line in the same
@@ -53,8 +53,10 @@ ledger file, not only in todos.
   names exist in git even if context no longer remembers creating them.
   After compaction or a new session, trust the ledger and `git log` over
   your own recollection.
-- `.condux/` is gitignored scratch. If it's ever deleted, recover progress
-  from `git log` against the plan's task list.
+- `.condux/` is gitignored working state (see `/workflow` → Artifacts). If
+  it's ever deleted, recover progress from `git log` against the plan's task
+  list — and note the plan itself lived there too, so re-derive scope from
+  the spec in `specs/` if the plan is gone as well.
 
 ## How It Works
 

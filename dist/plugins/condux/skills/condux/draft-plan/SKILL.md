@@ -19,7 +19,7 @@ Turn a signed-off design into a clear, executable plan. Lean task cards, not mic
 ## Before Writing
 
 1. Confirm discovery has run and design is signed off. First glob
-   `docs/plans/*<slug>*-design.md` and `specs/<slug>/` (slug = kebab-case
+   `.condux/designs/*<slug>*.md` and `specs/<slug>/` (slug = kebab-case
    of the feature name) for an existing signed-off design — if found,
    treat this check as satisfied without asking. Otherwise ask: "We
    haven't aligned on the design yet — run /discovery first, or confirm
@@ -56,7 +56,7 @@ no separate HTML file is produced.
 │  Show plan in sections, get sign-off before saving.             │
 │                                                                  │
 │  Step 5: SAVE                                                   │
-│  Write the file to docs/plans/ per AGENTS.md or default path.  │
+│  Write to .condux/plans/ per AGENTS.md or default path.        │
 │  Do NOT modify the plan file after saving.                      │
 └──────────────────────────────────────────────────────────────────┘
 ```
@@ -161,7 +161,11 @@ Task 1…N`). Do not reinvent the section set or reorder it.
 
 ## Save Path
 
-Write the plan to `docs/plans/YYYY-MM-DD-<feature>.md`.
+Write the plan to `.condux/plans/YYYY-MM-DD-<feature>.md`.
+
+`.condux/` is gitignored working state, created on demand at the git root
+(see `/workflow` → Artifacts). Before the first write, make sure it's
+ignored — see the bootstrap step there.
 
 Check `AGENTS.md` for project-specific overrides.
 
@@ -180,7 +184,7 @@ Accept either answer, same as any other soft gate in this skill.
 annotate-server.js -path '*plan-review*' 2>/dev/null | head -1`) and
 launch it in `--steer` mode against the saved plan file:
 ```bash
-node /path/to/plan-review/references/annotate-server.js docs/plans/<file>.md --steer
+node /path/to/plan-review/references/annotate-server.js .condux/plans/<file>.md --steer
 ```
 Poll `GET http://127.0.0.1:7777/api/decision` (long-poll — blocks until a
 decision is submitted) and branch on the result:
