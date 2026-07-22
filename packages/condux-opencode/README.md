@@ -1,4 +1,4 @@
-# condux-opencode
+# @jabworks/condux
 
 OpenCode plugin for the [condux](https://github.com/jabworks/agentic-toolkit)
 workflow toolkit. Complements the condux skills (installed separately, see
@@ -19,7 +19,7 @@ below) with the pieces OpenCode cannot pick up from a skill tree:
 ```jsonc
 // opencode.json
 {
-  "plugin": ["condux-opencode"]
+  "plugin": ["@jabworks/condux"]
 }
 ```
 

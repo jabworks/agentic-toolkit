@@ -238,12 +238,12 @@ npx skills add https://github.com/jabworks/agentic-toolkit/tree/main/dist/openco
 ```
 
 For the condux agents (coder / explorer / planner / researcher) and an opt-in
-plan-review listener, add the [`condux-opencode`](packages/condux-opencode/)
+plan-review listener, add the [`@jabworks/condux`](packages/condux-opencode/)
 plugin to `opencode.json`:
 
 ```jsonc
 {
-  "plugin": ["condux-opencode"]
+  "plugin": ["@jabworks/condux"]
 }
 ```
 
