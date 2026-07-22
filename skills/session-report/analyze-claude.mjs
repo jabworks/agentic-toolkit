@@ -35,22 +35,64 @@ import { createRequire } from 'module'
 const require = createRequire(import.meta.url)
 const LOCAL_PRICES = require('./model-prices.json')
 const LITELLM_URL = 'https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json'
+const PRICE_CACHE = path.join(
+  process.env.XDG_CACHE_HOME || path.join(os.homedir(), '.cache'),
+  'agentic-toolkit',
+  'litellm-prices.json',
+)
+
+// Which price table actually priced this run — surfaced in the report footer so a
+// wrong number is attributable instead of silently authoritative.
+const PRICING = { source: 'bundled', fetched_at: null, models_priced: 0 }
+
+function normalizeUpstream(raw) {
+  const out = {}
+  for (const [key, val] of Object.entries(raw)) {
+    if (!val || typeof val.input_cost_per_token !== 'number') continue
+    out[key] = {
+      input: val.input_cost_per_token,
+      cache_create: val.cache_creation_input_token_cost ?? val.input_cost_per_token,
+      cache_read: val.cache_read_input_token_cost ?? 0,
+      output: val.output_cost_per_token ?? 0,
+    }
+  }
+  return out
+}
+
+// Upstream overrides the bundled table: hand-maintained prices drift silently, and
+// a stale rate still renders a confident-looking cost. The bundled table is kept as
+// the offline fallback and as the only source for retired models upstream dropped.
+function applyUpstream(prices, source, fetchedAt) {
+  let n = 0
+  for (const [key, val] of Object.entries(prices)) {
+    LOCAL_PRICES[key] = val
+    n++
+  }
+  PRICING.source = source
+  PRICING.fetched_at = fetchedAt
+  PRICING.models_priced = n
+}
 
 async function refreshPricesFromLiteLLM() {
   try {
     const r = await fetch(LITELLM_URL, { signal: AbortSignal.timeout(3000) })
-    const d = await r.json()
-    for (const [key, val] of Object.entries(d)) {
-      if (!LOCAL_PRICES[key] && val.input_cost_per_token) {
-        LOCAL_PRICES[key] = {
-          input: val.input_cost_per_token,
-          cache_create: val.cache_creation_input_token_cost ?? val.input_cost_per_token,
-          cache_read: val.cache_read_input_token_cost ?? 0,
-          output: val.output_cost_per_token ?? 0,
-        }
-      }
+    if (!r.ok) throw new Error(`HTTP ${r.status}`)
+    const prices = normalizeUpstream(await r.json())
+    if (!Object.keys(prices).length) throw new Error('empty price table')
+    const fetchedAt = new Date().toISOString()
+    applyUpstream(prices, 'live', fetchedAt)
+    try {
+      fs.mkdirSync(path.dirname(PRICE_CACHE), { recursive: true })
+      fs.writeFileSync(PRICE_CACHE, JSON.stringify({ fetched_at: fetchedAt, prices }))
+    } catch { /* cache write is best-effort */ }
+    return
+  } catch { /* offline, timeout, or bad payload — fall through to the cache */ }
+  try {
+    const cached = JSON.parse(fs.readFileSync(PRICE_CACHE, 'utf8'))
+    if (cached?.prices && Object.keys(cached.prices).length) {
+      applyUpstream(cached.prices, 'cache', cached.fetched_at ?? null)
     }
-  } catch { /* offline or timeout — local prices only */ }
+  } catch { /* no usable cache — bundled prices, which is already the default */ }
 }
 
 function lookupPrice(model) {
@@ -778,6 +820,7 @@ function printJson({ overall, perProject, perSubagent, perSkill }) {
     tool: 'claude',
     root: ROOT,
     generated_at: new Date().toISOString(),
+    pricing: PRICING,
     overall: summarize(overall),
     cache_breaks: overall.cacheBreaks
       .sort((a, b) => b.uncached - a.uncached)

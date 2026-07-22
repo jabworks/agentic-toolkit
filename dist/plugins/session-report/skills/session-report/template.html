@@ -995,8 +995,17 @@
         $("meta-line").textContent =
           (span ? `${span.from.slice(0, 10)} → ${span.to.slice(0, 10)}` : "") +
           ` · ${DATA.root || ""}`;
+        const priceNote = (() => {
+          const p = DATA.pricing;
+          if (!p) return "";
+          if (p.source === "live") return " · prices: live";
+          if (p.source === "cache")
+            return ` · prices: cached ${p.fetched_at?.slice(0, 10) || "?"}`;
+          return " · prices: bundled (offline — may be stale)";
+        })();
         $("foot-gen").textContent =
-          `generated ${DATA.generated_at?.slice(0, 16).replace("T", " ") || ""}`;
+          `generated ${DATA.generated_at?.slice(0, 16).replace("T", " ") || ""}` +
+          priceNote;
         $("foot-stats").textContent =
           `${o.sessions} sessions · ${o.api_calls} api calls · ${o.human_messages} prompts`;
 
