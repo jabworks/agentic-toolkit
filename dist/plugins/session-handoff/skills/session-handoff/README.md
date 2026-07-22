@@ -20,7 +20,7 @@ Or install a specific plugin:
 > "Save state" / "Handoff" / "Context is getting full"
 
 Claude will gather git state, scaffold a handoff document from the template,
-validate it, and save it to `.claude/handoffs/`.
+validate it, and save it to `.session-handoff/`.
 
 **Resume:**
 > "Resume from last session" / "Pick up from the handoff"
@@ -38,5 +38,7 @@ walk through the resume checklist before touching any code.
 
 ## Storage
 
-Handoffs live in `.claude/handoffs/YYYY-MM-DD-HHMMSS-[slug].md` and support
-chaining across long sessions.
+Handoffs live in `.session-handoff/YYYY-MM-DD-HHMMSS-[slug].md` at the git
+root and support chaining across long sessions. The directory is gitignored
+working state — handoffs are disposable, and the skill offers to add the
+ignore entry the first time it writes to a repo.

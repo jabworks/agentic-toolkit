@@ -67,6 +67,41 @@ structure, and collision discipline.
    and name that sibling instead. Keep unrelated skills concise; do not invent a
    false alternative merely to fill a section.
 
+## Artifact location contract
+
+Any skill that writes a file into the user's project follows this. Two tiers,
+split by durability — not by which skill produced them.
+
+| Tier | Where | Git |
+|---|---|---|
+| **Durable** — the user asked for this and will keep it | a normal project path (`specs/`, `docs/`) | committed |
+| **Working state** — scaffolding the durable thing was built from | `<git-root>/.<plugin-name>/`, subdivided by artifact type | gitignored |
+
+The directory is named for the **owning plugin**, never the skill and never the
+artifact. condux has 12 skills and one `.condux/` — the install unit is the
+plugin, so it's the thing that owns a directory and the thing a user removes to
+stop the directory reappearing. `.handoffs/` names content, not owner: two
+plugins can both produce handoffs, and the name doesn't say what to uninstall.
+
+Current owners: `.condux/` (`designs/ plans/ progress/ scratch/`),
+`.session-handoff/`, `.session-report/`.
+
+**Bootstrap** — the first write in a repo runs this, once:
+
+1. Resolve `<git-root>` via `git rev-parse --show-toplevel`. Not a git repo →
+   fall back to CWD and say so once.
+2. `git check-ignore -q .<plugin-name>/` — if already ignored, proceed silently.
+3. Otherwise ask once: "`<skill>` keeps its working files in
+   `.<plugin-name>/` — add it to `.gitignore` so they stay out of your
+   commits?" On yes, append. If the user would rather not touch a tracked file,
+   write it to `.git/info/exclude` instead.
+4. Never edit `.gitignore` or `.git/info/exclude` without asking.
+
+**Override** — an explicit `AGENTS.md` path always beats these defaults.
+
+Never write working state into the repo root, into CWD, or into a project's
+`docs/`: those belong to the project, not to the tool.
+
 ## Evidence required
 
 For "the description is fine": show budget numbers and the collision scan result

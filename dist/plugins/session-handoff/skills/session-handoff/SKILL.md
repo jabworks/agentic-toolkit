@@ -18,7 +18,7 @@ Preserve and restore session context across agentic coding sessions.
 
 **Resume from a handoff when:**
 - User says "resume", "pick up from", or "continue from last session"
-- Starting a session on a branch that has handoffs in `handoffs/`
+- Starting a session on a branch that has handoffs in `.session-handoff/`
 
 ## Create workflow
 
@@ -28,7 +28,7 @@ Preserve and restore session context across agentic coding sessions.
    git log --oneline -5
    git status --short
    git diff --name-only HEAD
-   ls -lt handoffs/ 2>/dev/null | head -10
+   ls -lt .session-handoff/ 2>/dev/null | head -10
    ```
 2. **Ask the user:** "Save handoff as **markdown** (.md), **HTML** (.html), or **both**? Default: markdown."
 3. **Scaffold** using the chosen template — `references/handoff-template.md` or `references/handoff-template.html`. For **both**, fill the markdown template once, then mirror the same content into the HTML template — identical sections, no divergence. Fill every section — no `[FILL]` placeholders left.
@@ -39,15 +39,15 @@ Preserve and restore session context across agentic coding sessions.
      "Current State Summary", "Important Context", "Immediate Next Steps"
    - Referenced file paths exist on disk
    - Next steps are specific (file:line, not "fix the auth")
-5. **Save** to `handoffs/YYYY-MM-DD-HHMMSS-[slug].[md|html]`. For **both**, save the two files under the *same* `YYYY-MM-DD-HHMMSS-[slug]` stem, differing only in extension.
-6. Confirm: "Handoff saved: `handoffs/<filename>`" (list both paths when **both** was chosen)
+5. **Save** to `.session-handoff/YYYY-MM-DD-HHMMSS-[slug].[md|html]`. For **both**, save the two files under the *same* `YYYY-MM-DD-HHMMSS-[slug]` stem, differing only in extension.
+6. Confirm: "Handoff saved: `.session-handoff/<filename>`" (list both paths when **both** was chosen)
 7. **Retention check** — after saving, run the Prune workflow below on the remaining files: flag the new handoff's `continues-from` predecessor chain as superseded, plus anything very stale, and offer to delete them.
 
 ## Resume workflow
 
 1. **List and pick** the relevant handoff:
    ```bash
-   ls -lt handoffs/ | head -10
+   ls -lt .session-handoff/ | head -10
    ```
 2. **Check freshness** relative to the handoff timestamp:
    ```bash
@@ -66,7 +66,7 @@ Handoffs are disposable by design — once consumed or superseded, delete them.
 Runs after a resume (step 7), after a create (step 7), or on request
 ("clear handoffs", "prune handoffs").
 
-1. **Identify candidates** in `handoffs/`:
+1. **Identify candidates** in `.session-handoff/`:
    - **Consumed** — resumed in this session and the work has moved on
    - **Superseded** — a newer handoff names it (directly or transitively) in `continues-from`
    - **Very stale** — >30 days old or >20 commits behind (see Staleness scoring)
@@ -101,7 +101,26 @@ only handoff for a branch with uncommitted work it describes.
 
 ## Storage
 
-`handoffs/YYYY-MM-DD-HHMMSS-[slug].md` and/or `handoffs/YYYY-MM-DD-HHMMSS-[slug].html`. When **both** formats are saved, they share one timestamp-slug stem and differ only in extension.
+`.session-handoff/YYYY-MM-DD-HHMMSS-[slug].md` and/or `.session-handoff/YYYY-MM-DD-HHMMSS-[slug].html`. When **both** formats are saved, they share one timestamp-slug stem and differ only in extension.
+
+Handoffs are gitignored working state, not project docs — they're disposable
+by design (see Prune workflow). The directory lives at the git root and is
+created on demand. Before the first write in a repo, run the bootstrap once:
+
+1. Resolve the root with `git rev-parse --show-toplevel`. Not a git repo →
+   fall back to CWD and say so once.
+2. `git check-ignore -q .session-handoff/` — already ignored, proceed silently.
+3. Otherwise ask once: "Handoffs are scratch — add `.session-handoff/` to
+   `.gitignore` so they stay out of your commits?" On yes, append it. If the
+   user would rather not touch a tracked file, write it to
+   `.git/info/exclude` instead. Never edit either file without asking.
+
+Check `AGENTS.md` for a project-specific override; an explicit path wins.
+
+**Migrating an existing repo:** older handoffs may sit in `handoffs/` at the
+repo root (the pre-2.0 location) and may be committed. On resume, check both
+paths. Offer to move them once — `git mv handoffs/ .session-handoff/` if
+tracked, plain `mv` otherwise — but never move them silently.
 
 If continuing prior work, set `continues-from` in the metadata header and reference the predecessor filename.
 

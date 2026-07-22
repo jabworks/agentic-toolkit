@@ -8,7 +8,8 @@ disable-model-invocation: true
 
 # Session Report
 
-Produce a self-contained HTML report of session usage and save it to the current working directory.
+Produce a self-contained HTML report of session usage and save it to
+`<git-root>/.session-report/`.
 
 ## Steps
 
@@ -43,10 +44,19 @@ Produce a self-contained HTML report of session usage and save it to the current
 
 4. **Read** `/tmp/session-report-${TOOL}.json`. Skim `overall`, `by_project`, `by_subagent_type`, `by_skill`, `cache_breaks`, `top_prompts`.
 
-5. **Copy the template** to the output path in the current working directory:
+5. **Copy the template** into the report directory:
    ```sh
-   cp <skill-dir>/template.html ./session-report-$(date +%Y%m%d-%H%M).html
+   OUT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || pwd)/.session-report"
+   mkdir -p "$OUT_DIR"
+   cp <skill-dir>/template.html "$OUT_DIR/session-report-$(date +%Y%m%d-%H%M).html"
    ```
+   Reports are gitignored working state, not project docs. Before the first
+   write in a repo, run the bootstrap once: `git check-ignore -q
+   .session-report/` — if it isn't ignored, ask once ("Reports are scratch —
+   add `.session-report/` to `.gitignore`?") and append on yes, or write to
+   `.git/info/exclude` if the user would rather not touch a tracked file.
+   Never edit either file without asking. Outside a git repo the path falls
+   back to `./.session-report/` — say so once. An `AGENTS.md` override wins.
 
 6. **Edit the output file** (use Edit, not Write — preserve the template's JS/CSS):
    - Replace the contents of `<script id="report-data" type="application/json">` with the full JSON from step 3. The analyzers serialize `<` as `\u003c`, so transcript text cannot close the script element; preserve those escapes exactly. The page's JS renders everything automatically from this blob. **IMPORTANT: the script tag must contain only valid JSON — no comments, no debug lines, no analysis notes. Any non-JSON text before or after the `{...}` will break `JSON.parse()` and leave all sections blank.**

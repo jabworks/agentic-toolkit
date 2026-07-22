@@ -65,6 +65,12 @@ The `condux` and `toolkit-ops` bundles live at `dist/plugins/<bundle>/` and thei
 - `dist/` is a verbatim mirror of `skills/` — never diverge them
 - SKILL.md trigger contract: either `description` starts with "Use when..." (triggering conditions only), or a `when_to_use` field carries the trigger conditions (condux-style). `description` ≤ 500 chars, frontmatter total ≤ 1024 chars
 - `skills` path in plugin.json must start with `./` (relative to plugin root)
+- Artifact locations: durable output → a normal project path (`specs/`); working
+  state → `<git-root>/.<plugin-name>/`, gitignored, named for the owning *plugin*
+  (not the skill, not the artifact). Never the repo root, never CWD, never the
+  project's `docs/`. Full contract in `skills/toolkit-skill-standards/SKILL.md`
+  — shipping skills restate the bootstrap inline rather than referencing it,
+  since toolkit-ops isn't installed alongside them
 - Commit style: `fix:` / `feat:` / `chore:` prefix, `-s` signoff, no Co-Authored-By
 
 Most of these are enforced by `node --test` (see `tests/`), so run it before

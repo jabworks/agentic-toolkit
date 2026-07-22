@@ -124,6 +124,31 @@ Repo-maintenance bundle (`toolkit-ops`) for working on this toolkit itself:
 | [toolkit-plugin-reference](./skills/toolkit-plugin-reference/) | Verified plugin.json / marketplace.json schema, Claude↔Codex divergences |
 | [toolkit-research-frontier](./skills/toolkit-research-frontier/) | Open problems, assets, next steps, and the library-health campaign |
 
+## Where artifacts land
+
+Skills that write files into your project follow one rule: **durable output goes
+to a normal project path; working state goes to `.<plugin-name>/` at the git
+root, gitignored.**
+
+```text
+<git-root>/
+  specs/              # durable — tech specs, committed, browsable via spec-browser
+  .condux/            # working state — designs/ plans/ progress/ scratch/
+  .session-handoff/   # working state — handoff docs
+  .session-report/    # working state — generated HTML usage reports
+```
+
+The spec is what you keep; the design and plan are scaffolding it was built
+from. Directories are named for the **owning plugin**, not the skill and not the
+artifact — condux has 12 skills and one `.condux/`, so uninstalling condux tells
+you exactly which directory stops appearing.
+
+Nothing is written to your repo root or CWD, and nothing lands in `docs/` — that
+belongs to your project, not to the toolkit. The first time a skill writes to a
+repo it checks `git check-ignore` and asks once before adding the entry to
+`.gitignore` (or `.git/info/exclude` if you'd rather not touch a tracked file).
+An `AGENTS.md` path override always wins.
+
 ## Evals
 
 The skills are eval-tested for **trigger routing** — given a user query, does
