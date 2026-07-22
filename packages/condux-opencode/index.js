@@ -110,5 +110,5 @@ export const ConduxPlugin = async ({ worktree }) => {
     },
   };
 };
-
-export default ConduxPlugin;
+// No default export: OpenCode's loader invokes every exported plugin function,
+// so a default re-export of ConduxPlugin would register all hooks twice.
