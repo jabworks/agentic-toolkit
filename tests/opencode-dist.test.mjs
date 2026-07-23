@@ -103,6 +103,32 @@ test('packages/condux-opencode/agents matches the generator output', () => {
   }
 });
 
+test('restricted agents keep their tool restrictions on OpenCode', () => {
+  // The canonical sources make explorer/researcher read-only and deny planner a
+  // shell; OpenCode grants bash/edit/write by default, so the translation has to
+  // carry the denials or the guarantee becomes prompt-only. It must express them
+  // as `permission` — OpenCode's `tools` field is deprecated and only folded into
+  // permissions during config parsing, which is over before the plugin's config
+  // hook runs, so a `tools` map injected there has no effect at all.
+  const expected = {
+    'explorer.md': { bash: 'deny', edit: 'deny' },
+    'researcher.md': { bash: 'deny', edit: 'deny' },
+    'planner.md': { bash: 'deny' },
+    'coder.md': undefined,
+  };
+  for (const [file, denied] of Object.entries(expected)) {
+    const { entries } = splitFrontmatter(fs.readFileSync(path.join(AGENTS_DST_DIR, file), 'utf8'), file);
+    assert.equal(entries.find((e) => e.key === 'tools'), undefined, `${file}: must not use the deprecated tools field`);
+    const permission = entries.find((e) => e.key === 'permission');
+    if (denied === undefined) {
+      assert.equal(permission, undefined, `${file}: unrestricted agent should carry no permission line`);
+      continue;
+    }
+    assert.ok(permission, `${file}: missing permission line`);
+    assert.deepEqual(JSON.parse(permission.raw), denied, `${file}: permission denials differ`);
+  }
+});
+
 test('condux-opencode package is loadable and consistent', async () => {
   const pkgDir = path.dirname(AGENTS_DST_DIR);
   const pkg = JSON.parse(fs.readFileSync(path.join(pkgDir, 'package.json'), 'utf8'));
@@ -122,4 +148,12 @@ test('condux-opencode package is loadable and consistent', async () => {
     assert.equal(cfg.agent[name].mode, 'subagent');
     assert.ok(cfg.agent[name].prompt.length > 0, `agent ${name} has empty prompt`);
   }
+  assert.equal(cfg.agent.explorer.permission.edit, 'deny', 'explorer must not be able to modify files');
+  assert.equal(cfg.agent.explorer.permission.bash, 'deny', 'explorer must not be able to run shell commands');
+  assert.equal(cfg.agent.planner.permission.bash, 'deny', 'planner must not be able to run shell commands');
+
+  // coder above is the user-defined one, so check injection into a clean config.
+  const fresh = {};
+  await hooks.config(fresh);
+  assert.equal(fresh.agent.coder.permission, undefined, 'unrestricted agent must not gain a permission block');
 });
