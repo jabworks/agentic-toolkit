@@ -239,6 +239,8 @@ trigger conditions folded into each description:
 npx skills add https://github.com/jabworks/agentic-toolkit/tree/main/dist/opencode/skills -a opencode
 ```
 
+This copies skills into `~/.config/opencode/skills/`.
+
 For the condux agents (coder / explorer / planner / researcher) and an opt-in
 plan-review listener, add the [`@jabworks/condux`](packages/condux-opencode/)
 plugin to `opencode.json`:

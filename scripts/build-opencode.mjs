@@ -10,9 +10,12 @@
 // lines, body, auxiliary files — is copied byte-for-byte.
 //
 // Agent translation: OpenCode agents carry `description` + `mode` frontmatter
-// and use the markdown body as the system prompt. Claude-only fields (tools,
-// model, color, memory) are dropped; the <example> blocks are stripped from the
+// and use the markdown body as the system prompt. Claude-only fields (model,
+// color, memory) are dropped; the <example> blocks are stripped from the
 // description. No model pin — injected agents inherit the session default.
+// A Claude `tools:` allowlist becomes OpenCode `permission` denials — see
+// RESTRICTED_PERMISSIONS for why it is `permission` and not `tools`, and why
+// only the mutation/execution gates carry across.
 //
 // Both outputs are regenerated from scratch on every run; scripts/sync.sh calls
 // this after mirroring dist/plugins. tests/opencode-dist.test.mjs re-runs the
@@ -81,12 +84,49 @@ export function transformSkill(text, label) {
 // Agent translation: Claude agent dialect → OpenCode agent dialect.
 // --------------------------------------------------------------------------
 
+// Claude's `tools:` frontmatter is an allowlist; the OpenCode equivalent is
+// `permission`, NOT `tools`. OpenCode's `tools` field is deprecated and is
+// folded into `permission` while the config file is parsed — a plugin injecting
+// agents through the `config` hook runs after that, so a `tools` map there is
+// silently inert. `permission` is merged at agent-resolution time and does take
+// effect. OpenCode's `edit` permission covers edit/write/patch as one gate.
+//
+// Only these two carry across — they are what an agent's stated guarantee rests
+// on ("never modify files", "no bash execution"). Read-side tools deliberately
+// keep OpenCode's defaults: several Claude allowlists omit Grep/Glob while their
+// prompts still direct the agent to search, so denying those would break the
+// agent rather than constrain it.
+const RESTRICTED_PERMISSIONS = [
+  { permission: 'bash', claude: ['Bash'] },
+  { permission: 'edit', claude: ['Edit', 'Write', 'NotebookEdit'] },
+];
+
+// Returns the OpenCode permission denials for a Claude allowlist, or null when
+// the agent is unrestricted (no `tools:` line, or a wildcard) — matching Claude,
+// where an absent allowlist means every tool is available.
+export function agentPermissionPolicy(entries) {
+  const tools = entries.find((e) => e.key === 'tools');
+  if (!tools) return null;
+  const raw = decodeScalar(tools.raw).trim();
+  if (raw === '*' || /^all tools$/i.test(raw)) return null;
+  const allowed = new Set(raw.split(',').map((t) => t.trim()));
+  const denied = {};
+  for (const { permission, claude } of RESTRICTED_PERMISSIONS) {
+    if (!claude.some((name) => allowed.has(name))) denied[permission] = 'deny';
+  }
+  return Object.keys(denied).length > 0 ? denied : null;
+}
+
 export function translateAgent(text, label) {
   const { entries, body } = splitFrontmatter(text, label);
   const description = entries.find((e) => e.key === 'description');
   if (!description) throw new Error(`${label}: agent has no description`);
   const summary = decodeScalar(description.raw).split('\n\n<example>')[0].trim();
-  return '---\ndescription: ' + encodeScalar(summary) + '\nmode: subagent\n---\n' + body;
+  const denied = agentPermissionPolicy(entries);
+  // JSON is a valid YAML flow mapping, and keeps the value on one line so it
+  // stays inside splitFrontmatter's single-line-scalar contract.
+  const permissionLine = denied ? 'permission: ' + JSON.stringify(denied) + '\n' : '';
+  return '---\ndescription: ' + encodeScalar(summary) + '\nmode: subagent\n' + permissionLine + '---\n' + body;
 }
 
 // --------------------------------------------------------------------------

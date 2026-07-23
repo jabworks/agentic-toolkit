@@ -3,7 +3,8 @@
 // Injects the four condux specialist agents (coder, explorer, planner,
 // researcher) into the loaded config via the `config` hook, reading their
 // definitions from the bundled agents/*.md (generated from the canonical
-// Claude-dialect sources by scripts/build-opencode.mjs in the toolkit repo).
+// Claude-dialect sources by scripts/build-opencode.mjs in the toolkit repo),
+// including the tool restrictions those sources declare.
 // User-defined agents with the same name always win — injection is skip-if-present.
 //
 // Optional plan-review listener (CONDUX_PLAN_REVIEW=1): when the primary
@@ -22,13 +23,15 @@ const PKG_DIR = path.dirname(fileURLToPath(import.meta.url));
 const AGENTS_DIR = path.join(PKG_DIR, 'agents');
 
 // Bundled agent files use exactly the frontmatter the toolkit generator emits:
-// a JSON-quoted `description`, a plain `mode`, body = system prompt.
+// a JSON-quoted `description`, a plain `mode`, an optional `permission` deny map
+// (JSON object), body = system prompt.
 function parseAgent(text, name) {
-  const match = text.match(/^---\ndescription: (".*")\nmode: (\S+)\n---\n/);
+  const match = text.match(/^---\ndescription: (".*")\nmode: (\S+)\n(?:permission: (\{.*\})\n)?---\n/);
   if (!match) throw new Error(`condux-opencode: malformed bundled agent ${name}`);
   return {
     description: JSON.parse(match[1]),
     mode: match[2],
+    permission: match[3] ? JSON.parse(match[3]) : undefined,
     prompt: text.slice(match[0].length).trim(),
   };
 }
@@ -74,6 +77,13 @@ export const ConduxPlugin = async ({ worktree }) => {
           description: def.description,
           mode: def.mode,
           prompt: def.prompt,
+          // Only present for agents whose canonical definition restricts them
+          // (explorer/researcher are read-only, planner cannot run shell) —
+          // without it OpenCode's defaults grant bash/edit/write to all four.
+          // Must be `permission`, not the deprecated `tools`: `tools` is folded
+          // into permissions while the config file is parsed, which has already
+          // happened by the time this hook runs.
+          ...(def.permission ? { permission: def.permission } : {}),
         };
       }
     },
