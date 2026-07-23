@@ -151,6 +151,6 @@ Last generated: 2026-07-08 (three-channel + packages/ revision 2026-07-23)
 Known uncertainty:
 - `.claude/skills/` does not exist today; a future third-party plugin install could
   create it — it would be an installed-plugin mirror, still not this repo's source.
-- `dist/opencode/` is named for the only host that reads it today; a Pi channel
-  (`.agents/skills/`) is designed but unbuilt and would likely force a
-  host-neutral rename.
+- `dist/opencode/` is named for the only host that reads it today. A second
+  generated skill channel would force a host-neutral rename of that tree —
+  none is planned, so the name stands.
