@@ -4,7 +4,8 @@
   "description": "OpenCode plugin for the condux workflow toolkit — injects the condux specialist agents (coder, explorer, planner, researcher) and an opt-in plan-review listener.",
   "type": "module",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   },
   "main": "./index.js",
   "exports": "./index.js",

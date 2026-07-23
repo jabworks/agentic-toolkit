@@ -228,29 +228,51 @@ injects the condux specialist agents. Its `agents/` dir is generated (edit
 `skills/subagent-execution/agents/` instead); `index.js` and `package.json` are
 hand-edited.
 
+**Condux changes go on a branch — never straight to `main`.** A push to `main` is
+what arms the release, so committing there does the review and the release
+trigger in one irreversible step. Branch, PR, merge.
+
 ```bash
-# 1. Edit packages/condux-opencode/index.js (or the agent sources + sync)
-# 2. Describe the release
+# 1. Branch first
+git switch -c <type>/condux-<what>
+# 2. Edit packages/condux-opencode/index.js (or the agent sources + sync)
+# 3. Describe the release
 pnpm changeset          # pick @jabworks/condux, pick the bump, write the summary
-# 3. Verify
+# 4. Verify
 node --test
-# 4. Commit the changeset alongside the change
+# 5. Commit the changeset alongside the change
 git add packages/ .changeset/
 git commit -s -m "fix(opencode): <what changed>"
-git push origin main
+git push -u origin HEAD
+gh pr create --fill
 ```
 
-Pushing to `main` triggers `.github/workflows/release.yml`: changesets opens (or
-updates) a version PR; merging that PR publishes to npm via OIDC trusted
-publishing — there is no `NPM_TOKEN`. **Never hand-edit `version` in
-`packages/condux-opencode/package.json`** — changesets owns it.
+Merging that PR into `main` triggers `.github/workflows/release.yml`: changesets
+opens (or updates) a **version PR** that consumes the `.changeset/*.md` files and
+bumps `version`. Merging *that* second PR is what actually publishes to npm, via
+OIDC trusted publishing — there is no `NPM_TOKEN`. Two merges, not one.
+**Never hand-edit `version` in `packages/condux-opencode/package.json`** —
+changesets owns it.
 
-Two constraints that are easy to break:
+A change with no changeset still merges and still ships to the marketplace
+channel — it just never reaches npm. Nothing warns you. If the change alters what
+the published tarball contains, it needs a changeset.
+
+That includes **editing `skills/subagent-execution/agents/*.md`**: those regenerate
+`packages/condux-opencode/agents/`, which is inside the package's `files` array, so
+an agent-wording tweak is a published change like any other.
+
+Constraints that are easy to break:
 
 - `index.js` must export the plugin **named only**. OpenCode calls every export as
   a plugin function, so a default re-export registers the hooks twice (`08cc554`).
 - Keep generated `agents/` in the package's `files` array, or the published
   tarball ships a plugin with no agents.
+- Keep `publishConfig.provenance` set to `true`. It is what makes releases carry a
+  signed attestation tying the tarball to the workflow run and commit; the
+  workflow's `id-token: write` permission is necessary but not sufficient on its
+  own. `0.1.0` predates it and has none — verify with
+  `npm view @jabworks/condux dist.attestations`.
 
 ## Version Bump
 
@@ -294,7 +316,9 @@ in this repo's marketplace.json).
 | Editing `packages/condux-opencode/agents/` | Generated too — edit `skills/subagent-execution/agents/`, then sync |
 | Forgetting to sync after edits | Run `bash scripts/sync.sh` — the pre-commit hook does it only if installed (`bash scripts/install-hooks.sh`); never assume it's present |
 | Staging only `dist/plugins/` after a sync | Stage `dist/` and `packages/` — the same sync regenerated the OpenCode tree and the package agents |
+| Committing a condux change straight to `main` | Branch first — a push to `main` arms the release, so main-first collapses review and release into one irreversible step |
 | Shipping a `packages/` change with no changeset | Run `pnpm changeset` and commit the `.changeset/*.md` with the change, or nothing publishes |
+| Assuming an agent-wording tweak needs no changeset | It regenerates `packages/condux-opencode/agents/`, which is published — it does |
 | Hand-bumping `@jabworks/condux` version | Changesets owns that field — a manual bump collides with the version PR |
 | Adding `"type": "module"` to the root `package.json` | Breaks every CommonJS reference script — the package is ESM-scoped at `packages/`, not repo-wide |
 | `references/*.js` with no `references/package.json` | Add `{ "type": "commonjs" }` beside it |
