@@ -28,6 +28,13 @@ Everything below is sorted by what actually transfers. The one-line summary:
   (only if manifests ship in pairs), dist-mirror + reverse-orphan (**only if
   the layout is mirrored — a single-tree toolkit skips these entirely, and
   simpler is correct**).
+- The **generated-channel pattern**: one build script owns its output trees
+  outright (`rm -rf` then rebuild — `build-opencode.mjs` owns two), and its
+  drift test re-runs the same transforms in memory and diffs against disk, so
+  a stale commit fails CI instead of shipping.
+  `scripts/build-opencode.mjs` + `tests/opencode-dist.test.mjs` are the
+  reference pair. Port that shape; the transform inside it is host doctrine to
+  re-derive per host, not code to reuse.
 
 ## Layer 2 — Ports as doctrine (re-instantiate against the new repo's facts)
 
@@ -51,6 +58,10 @@ Everything below is sorted by what actually transfers. The one-line summary:
 - Release discipline: no port needed — install the `release` plugin; its
   router (AGENTS.md override → changesets → toolkit → generic GitHub) already
   handles any repo. Cut baseline tags early so future releases diff cleanly.
+  If the new toolkit also publishes npm packages, run those on changesets +
+  OIDC trusted publishing (this repo's `.github/workflows/release.yml` ports
+  near-verbatim) and keep them in a `packages/` workspace — one versioning
+  scheme per artifact kind, never one scheme stretched across both.
 
 ## Layer 3 — Never ports (start empty, or re-earn)
 
@@ -68,8 +79,12 @@ Everything below is sorted by what actually transfers. The one-line summary:
 
 ## Path A checklist — one pass
 
-1. Decide **mirrored vs single-tree FIRST** — it determines which tests and
-   sync machinery exist at all.
+1. Decide **how many channels, and mirrored vs single-tree, FIRST** — it
+   determines which tests and sync machinery exist at all. One channel needs
+   none of it; each additional host adds a generated tree, a transform, and a
+   drift test. This repo reached three (npx / marketplace / OpenCode) plus an
+   npm package incrementally, and every channel added after the first cost
+   more in doc drift than in code.
 2. Copy Layer 1; adjust paths; empty the data registries.
 3. Re-derive the seven meta-skills with `adapting-skills` + this bundle open
    as reference; scope every description to the new repo's name.

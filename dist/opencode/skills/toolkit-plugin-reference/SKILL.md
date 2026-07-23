@@ -1,6 +1,6 @@
 ---
 name: toolkit-plugin-reference
-description: Use when writing or editing plugin.json or marketplace.json in jabworks/agentic-toolkit and the exact schema matters — required fields, the .claude-plugin/.codex-plugin pairing and where the two diverge (interface, hooks), the skills-path form, how npx skills add vs /plugin install consume the repo, and which SKILL.md frontmatter fields are real. Triggers include "what fields does plugin.json need", "claude vs codex manifest", "marketplace entry format".
+description: Use when writing or editing plugin.json, marketplace.json, or package manifests in jabworks/agentic-toolkit and the exact schema matters — required fields, the .claude-plugin/.codex-plugin pairing and where it diverges (interface, hooks), the skills-path form, how the three install channels consume the repo, and which SKILL.md frontmatter fields are real. Triggers include "what fields does plugin.json need", "claude vs codex manifest", "marketplace entry format", "how opencode loads skills".
 ---
 
 # Toolkit Plugin Reference
@@ -12,9 +12,10 @@ repo** — nothing generic, nothing unverified.
 
 ## When to use
 
-- Writing or editing any `plugin.json` (either variant) or `marketplace.json`.
+- Writing or editing any `plugin.json` (either variant), `marketplace.json`, or
+  `packages/condux-opencode/package.json`.
 - Deciding whether a field difference between the two manifests is a bug or by design.
-- Explaining how the two install channels consume this repo.
+- Explaining how the three install channels consume this repo.
 
 ## When not to use
 
@@ -25,8 +26,9 @@ repo** — nothing generic, nothing unverified.
 
 ## Inputs required
 
-The plugin/manifest in question, plus `tests/plugin-manifests.test.mjs` and
-`tests/manifest-parity.test.mjs` as the executable source of truth.
+The plugin/manifest in question, plus `tests/plugin-manifests.test.mjs`,
+`tests/manifest-parity.test.mjs`, and — for the OpenCode channel and the npm
+package — `tests/opencode-dist.test.mjs` as the executable source of truth.
 
 ## Procedure — the schema facts
 
@@ -72,21 +74,50 @@ none of this repo's entries. Note: `author` is `{ "name": "Hieu Vi" }` in market
 entries but `{ "name": "jabworks" }` in plugin.json manifests — historical convention,
 consistent within each file kind.
 
-### The two install channels
+### The three install channels
 
-- `npx skills add jabworks/agentic-toolkit` (vercel-labs/skills) reads **top-level
-  `skills/<name>/SKILL.md`** and ignores `dist/` and all manifests.
-- `/plugin install <name>@jabworks-agentic-toolkit` reads `marketplace.json` →
-  `source` → the dist plugin dir → its manifest → its `skills` path.
-- Consequence: a broken manifest is invisible to `npx skills add` users and vice
-  versa — test both channels' inputs, don't infer one from the other.
+| Channel | Reads | Ignores |
+|---|---|---|
+| `npx skills add jabworks/agentic-toolkit` (vercel-labs/skills) | top-level `skills/<name>/SKILL.md` | `dist/`, all manifests |
+| `/plugin install <name>@jabworks-agentic-toolkit` | `marketplace.json` → `source` → the dist plugin dir → its manifest → its `skills` path | `skills/`, `dist/opencode/` |
+| OpenCode | `dist/opencode/skills/<name>/SKILL.md` | every manifest in the repo |
+
+Consequence: a broken manifest is invisible to two of the three channels — test each
+channel's own inputs, never infer one from another.
+
+### OpenCode (`dist/opencode/`, generated)
+
+No manifest exists or is read. The host surfaces **`description` only** in its
+`<available_skills>` listing and ignores unknown frontmatter, so
+`scripts/build-opencode.mjs` folds `when_to_use` into `description` and drops the
+field; everything else copies byte-for-byte. Two hard limits follow:
+
+- The **merged** `description` must fit OpenCode's 1024-char cap
+  (`tests/opencode-dist.test.mjs` enforces it). A skill can pass the 500-char
+  source budget and still blow this — check both after editing either field.
+- Only the skill's own top-level `SKILL.md` is transformed. A nested `SKILL.md`
+  (eval fixture under `references/` or `evals/`) is data and copies verbatim.
+
+### The npm package (`packages/condux-opencode/` → `@jabworks/condux`)
+
+A fourth surface, not a skills channel — it ships the OpenCode *plugin* (agent
+injection via the config hook, opt-in `CONDUX_PLAN_REVIEW=1` session.idle
+listener), not skills. Standard npm manifest; the repo-specific constraints are:
+
+| Constraint | Why |
+|---|---|
+| `index.js` exports the plugin **named only** — no default re-export | OpenCode calls every export as a plugin function; a default doubles hook registration (`08cc554`) |
+| `agents/` is generated, listed in `files` | built from `skills/subagent-execution/agents/*.md`; `tests/opencode-dist.test.mjs` fails on drift |
+| root `package.json` has no `"type": "module"` | it would break the CommonJS reference scripts under `skills/*/references/`; those self-protect with their own `references/package.json` since `f1e4b53` |
+| version bumps go through changesets, not by hand | `pnpm changeset` → release.yml opens the version PR → publishes via npm OIDC trusted publishing (no `NPM_TOKEN`) |
 
 ### SKILL.md frontmatter
 
 Parsed by every host: `name`, `description`. House convention fields observed in this
 repo: `when_to_use` (second half of the trigger contract), `argument-hint`, `effort`,
 `disable-model-invocation`, `user-invocable`. Budgets: description ≤ 500 chars,
-frontmatter ≤ 1024 (test-enforced).
+frontmatter ≤ 1024 (test-enforced) — plus the merged-description cap above for the
+OpenCode channel.
 
 ### Cache behavior
 
@@ -107,6 +138,10 @@ A correct manifest (or a field-level diff of what to change), pair-consistent.
 - "Fixing" the missing claude-side `hooks` field on condux — it's by design.
 - Copying `strict`/`skills` arrays into marketplace entries from upstream examples.
 - Editing one manifest of the pair (`ba69d2b` precedent).
+- Looking for a manifest to register a skill with OpenCode — there isn't one;
+  the skill appears the moment `dist/opencode/skills/<name>/` is generated.
+- Hand-editing `version` in `packages/condux-opencode/package.json` — changesets
+  owns that field; a manual bump collides with the version PR.
 
 ## Bad behavior this prevents
 
@@ -122,12 +157,15 @@ plugin copied a different wrong example. The table + parity test pin one shape.
 ## Provenance and maintenance
 
 Re-verify volatile claims with:
-- `node --test tests/plugin-manifests.test.mjs tests/manifest-parity.test.mjs`
+- `node --test tests/plugin-manifests.test.mjs tests/manifest-parity.test.mjs tests/opencode-dist.test.mjs`
 - `for m in dist/plugins/*/.{claude,codex}-plugin/plugin.json; do jq -r '.skills' "$m"; done`
 - `claude plugin validate dist/plugins/<p>` — official validator (expect exactly one
   warning per plugin: the Codex-native `interface` field)
+- `node scripts/build-opencode.mjs && git status --short` — clean tree means the
+  OpenCode channel and the package's `agents/` are in sync with source
 
-Last generated: 2026-07-08 (host-support matrix verified same day)
+Last generated: 2026-07-08 (host-support matrix verified same day; OpenCode +
+npm-package sections added 2026-07-23)
 Known uncertainty:
 - Codex's tolerance of fields IT doesn't recognize is untested — this repo's manifests
   contain only Codex-documented fields, so it's never exercised. No codex-side
@@ -135,3 +173,9 @@ Known uncertainty:
 - `interface.shortDescription` ≤125 chars is docs-stated, not validator-verified
   (this repo's max is 55).
 - The `$schema` URL in marketplace.json is not fetched/validated by anything here.
+- OpenCode's 1024-char description cap is enforced locally by
+  `tests/opencode-dist.test.mjs`; the host's own behaviour past that limit
+  (truncate vs reject) was never observed — the repo has stayed under it.
+- No OpenCode-side manifest validator exists to check against, and the
+  description-only routing claim comes from the host's `<available_skills>`
+  listing, not from a schema.
