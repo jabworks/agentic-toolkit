@@ -3,6 +3,15 @@
 //
 //   skills/<name>/                        → dist/opencode/skills/<name>/
 //   skills/subagent-execution/agents/*.md → packages/condux-opencode/agents/*.md
+//   skills/<condux-member>/               → packages/condux-opencode/skills/<name>/
+//
+// The third output bundles the 12 condux-member skills *inside* the npm
+// package so the plugin can auto-register them via config.skills.paths — one
+// `plugin: ["@jabworks/condux"]` line installs both agents and skills, no
+// separate `npx skills add` step. Membership is read from the committed condux
+// bundle tree (the same source sync.sh uses), not hardcoded here. The transform
+// is identical to dist/opencode/skills, so these copies are byte-for-byte the
+// same as their dist/opencode counterparts — just scoped to the condux subset.
 //
 // OpenCode surfaces only `description` in its <available_skills> listing and
 // ignores unknown frontmatter, so the skill transform folds `when_to_use` into
@@ -31,6 +40,19 @@ export const SKILLS_DIR = path.join(REPO_ROOT, 'skills');
 export const OPENCODE_SKILLS_DIR = path.join(REPO_ROOT, 'dist', 'opencode', 'skills');
 export const AGENTS_SRC_DIR = path.join(SKILLS_DIR, 'subagent-execution', 'agents');
 export const AGENTS_DST_DIR = path.join(REPO_ROOT, 'packages', 'condux-opencode', 'agents');
+// Condux bundle membership lives in the committed dist tree — the same source
+// sync.sh reads to route a skill into the bundle. Deriving the list from here
+// (rather than a second hardcoded list) keeps the npm-bundled subset in lockstep
+// with the marketplace bundle.
+export const CONDUX_BUNDLE_DIR = path.join(REPO_ROOT, 'dist', 'plugins', 'condux', 'skills', 'condux');
+export const CONDUX_OPENCODE_SKILLS_DIR = path.join(REPO_ROOT, 'packages', 'condux-opencode', 'skills');
+
+export function conduxSkillNames() {
+  return fs.readdirSync(CONDUX_BUNDLE_DIR, { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .map((e) => e.name)
+    .sort();
+}
 
 // --------------------------------------------------------------------------
 // Frontmatter — all toolkit frontmatter values are single-line scalars
@@ -170,10 +192,24 @@ export function build() {
     agentCount++;
   }
 
-  return { skillCount, agentCount };
+  // Bundle the condux-member skills inside the npm package (same transform as
+  // dist/opencode/skills, scoped to the bundle) so the plugin can auto-register
+  // them via config.skills.paths.
+  fs.rmSync(CONDUX_OPENCODE_SKILLS_DIR, { recursive: true, force: true });
+  let conduxSkillCount = 0;
+  for (const name of conduxSkillNames()) {
+    copyTransformed(path.join(SKILLS_DIR, name), path.join(CONDUX_OPENCODE_SKILLS_DIR, name), `skills/${name}`);
+    conduxSkillCount++;
+  }
+
+  return { skillCount, agentCount, conduxSkillCount };
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  const { skillCount, agentCount } = build();
-  console.log(`built  dist/opencode/skills (${skillCount} skills), packages/condux-opencode/agents (${agentCount} agents)`);
+  const { skillCount, agentCount, conduxSkillCount } = build();
+  console.log(
+    `built  dist/opencode/skills (${skillCount} skills), ` +
+      `packages/condux-opencode/agents (${agentCount} agents), ` +
+      `packages/condux-opencode/skills (${conduxSkillCount} condux skills)`,
+  );
 }

@@ -7,6 +7,12 @@
 // including the tool restrictions those sources declare.
 // User-defined agents with the same name always win — injection is skip-if-present.
 //
+// The same `config` hook registers the bundled skills/ tree (the 12 condux
+// skills, generated alongside the agents) onto config.skills.paths, so
+// `plugin: ["@jabworks/condux"]` alone installs both agents and skills — no
+// separate `npx skills add` step for condux. This works because the config hook
+// mutates the cached config before OpenCode lazily discovers skills.
+//
 // Optional plan-review listener (CONDUX_PLAN_REVIEW=1): when the primary
 // `plan` agent finishes a turn (session.idle), spawns the plan-review annotate
 // server from an installed condux skill tree. Best-effort only — OpenCode does
@@ -21,6 +27,7 @@ import { fileURLToPath } from 'node:url';
 
 const PKG_DIR = path.dirname(fileURLToPath(import.meta.url));
 const AGENTS_DIR = path.join(PKG_DIR, 'agents');
+const SKILLS_DIR = path.join(PKG_DIR, 'skills');
 
 // Bundled agent files use exactly the frontmatter the toolkit generator emits:
 // a JSON-quoted `description`, a plain `mode`, an optional `permission` deny map
@@ -55,6 +62,9 @@ function findAnnotateServer(worktree) {
     path.join(worktree, '.claude', 'skills'),
     path.join(os.homedir(), '.config', 'opencode', 'skills'),
     path.join(os.homedir(), '.claude', 'skills'),
+    // The plan-review skill now also ships bundled in this package, so the
+    // listener works even when the user never ran a separate skills install.
+    SKILLS_DIR,
   ];
   for (const root of roots) {
     const candidate = path.join(root, 'plan-review', 'references', 'annotate-server.js');
@@ -85,6 +95,17 @@ export const ConduxPlugin = async ({ worktree }) => {
           // happened by the time this hook runs.
           ...(def.permission ? { permission: def.permission } : {}),
         };
+      }
+
+      // Register the bundled condux skills so OpenCode discovers them without a
+      // separate install. Guarded on existsSync because a source checkout runs
+      // this file before the generator has produced skills/. Idempotent — the
+      // includes() check keeps re-fires (the hook runs per config load) from
+      // pushing duplicates, and never disturbs a user-provided paths entry.
+      if (existsSync(SKILLS_DIR)) {
+        cfg.skills ??= {};
+        cfg.skills.paths ??= [];
+        if (!cfg.skills.paths.includes(SKILLS_DIR)) cfg.skills.paths.push(SKILLS_DIR);
       }
     },
 
