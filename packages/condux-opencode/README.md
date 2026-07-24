@@ -1,37 +1,30 @@
 # @jabworks/condux
 
 OpenCode plugin for the [condux](https://github.com/jabworks/agentic-toolkit)
-workflow toolkit. It provides two pieces that OpenCode cannot pick up from a
-skill tree alone:
+workflow toolkit. One plugin line installs everything condux needs:
 
+- **Skills** — bundles the 12 condux workflow skills (`workflow`, `discovery`,
+  `draft-plan`, `test-first-development`, `subagent-execution`,
+  `subagent-deployment`, `finalize`, `code-review`, `preflight`,
+  `root-cause-analysis`, `plan-review`, `technical-spec`) and registers them on
+  `config.skills.paths` via the `config` hook — no separate `npx skills add`
+  step. A skill you install yourself under the same name still wins; OpenCode
+  dedupes by name.
 - **Agents** — injects the four condux specialist agents (`coder`, `explorer`,
-  `planner`, `researcher`) as subagents via the `config` hook, carrying the tool
+  `planner`, `researcher`) as subagents via the same hook, carrying the tool
   restrictions their canonical definitions declare: `explorer` and `researcher`
   are read-only (no `edit`, `write`, or `bash`) and `planner` cannot run shell
   commands. If your `opencode.json` already defines an agent with the same name,
   yours wins — injection is skip-if-present.
 - **Plan-review listener (opt-in)** — with `CONDUX_PLAN_REVIEW=1`, when the
   primary `plan` agent finishes a turn, spawns the plan-review annotate server
-  from your installed condux skills. Best-effort: OpenCode does not await event
-  hooks, so this cannot block the next turn on the review outcome (unlike the
-  Codex Stop hook).
+  (from the bundled skills, or any discoverable skill tree). Best-effort:
+  OpenCode does not await event hooks, so this cannot block the next turn on the
+  review outcome (unlike the Codex Stop hook).
 
 ## Install
 
-### 1. Install skills
-
-Install the OpenCode-facing skill variants (trigger conditions folded into each
-description):
-
-```sh
-npx skills add https://github.com/jabworks/agentic-toolkit/tree/main/dist/opencode/skills -a opencode
-```
-
-This copies skills into `~/.config/opencode/skills/`.
-
-### 2. Add the plugin
-
-Add `@jabworks/condux` to your `opencode.json`:
+Add `@jabworks/condux` to your `opencode.json` and restart OpenCode:
 
 ```jsonc
 // opencode.json
@@ -40,7 +33,13 @@ Add `@jabworks/condux` to your `opencode.json`:
 }
 ```
 
-Restart OpenCode after adding the plugin.
+That's the whole install — skills and agents come with the plugin. The other
+agentic-toolkit skills (git-commit, session-handoff, release, spec-browser, …)
+are not part of condux; install those separately if you want them:
+
+```sh
+npx skills add https://github.com/jabworks/agentic-toolkit/tree/main/dist/opencode/skills -a opencode
+```
 
 ## Notes
 
@@ -54,12 +53,11 @@ Restart OpenCode after adding the plugin.
   (`edit` covers edit/write/patch). Read-side tools keep OpenCode's defaults,
   because the Claude allowlists omit `Grep`/`Glob` while the prompts still expect
   to search — denying those would break the agents rather than constrain them.
-- The plan-review listener needs the `plan-review` skill installed in a
-  discoverable skill tree (`.opencode/skills/`, `.agents/skills/`,
-  `.claude/skills/`, or their global equivalents) — it runs
-  `plan-review/references/annotate-server.js` from there.
+- The plan-review listener finds `plan-review/references/annotate-server.js` in
+  the bundled skills first, then any discoverable skill tree (`.opencode/skills/`,
+  `.agents/skills/`, `.claude/skills/`, or their global equivalents).
 - OpenCode caches npm plugins under `~/.cache/opencode/`. If an upgrade seems
   to have no effect, clear that cache and restart OpenCode.
-- The agent definitions in `agents/` are generated from the toolkit's canonical
-  sources — edit them in `skills/subagent-execution/agents/` in the toolkit
-  repo, not here.
+- The `agents/` and `skills/` trees are generated from the toolkit's canonical
+  sources by `scripts/build-opencode.mjs` — edit the sources in the toolkit repo
+  (`skills/subagent-execution/agents/` and `skills/<name>/`), not here.

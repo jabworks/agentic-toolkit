@@ -1,0 +1,23 @@
+[
+  { "query": "save spec", "should_trigger": true, "expected_skill": "technical-spec" },
+  { "query": "document what we decided", "should_trigger": true, "expected_skill": "technical-spec" },
+  { "query": "spec this out", "should_trigger": true, "expected_skill": "technical-spec" },
+  { "query": "persist the api contract and the quirks we found", "should_trigger": true, "expected_skill": "technical-spec" },
+  { "query": "write up the field mappings from backend to UI", "should_trigger": true, "expected_skill": "technical-spec" },
+  { "query": "update the spec for wan-config", "should_trigger": true, "expected_skill": "technical-spec" },
+  { "query": "scaffold a spec folder for this feature", "should_trigger": true, "expected_skill": "technical-spec" },
+  { "query": "whats the format for quirks.md", "should_trigger": true, "expected_skill": "technical-spec", "kind": "in-context" },
+  { "query": "record the decision rationale for future sessions", "should_trigger": true, "expected_skill": "technical-spec" },
+  { "query": "bump the index.md changelog for the spec", "should_trigger": true, "expected_skill": "technical-spec" },
+  { "query": "save the design as a tech spec with live preview", "should_trigger": true, "expected_skill": "technical-spec" },
+  { "query": "sepc this out pls", "should_trigger": true, "expected_skill": "technical-spec" },
+  { "query": "write up what we decided about the milestone", "should_trigger": true, "expected_skill": "technical-spec" },
+  { "query": "update the spec with what we built", "should_trigger": true, "expected_skill": "technical-spec" },
+  { "query": "load the spec for checkout before we start the task", "should_trigger": true, "expected_skill": "workflow" },
+  { "query": "browse the specs tree", "should_trigger": true, "expected_skill": "spec-browser" },
+  { "query": "where is the spec for the auth feature", "should_trigger": true, "expected_skill": "spec-browser" },
+  { "query": "design the feature first before documenting", "should_trigger": true, "expected_skill": "discovery" },
+  { "query": "generate openapi yaml from the routes", "should_trigger": false, "expected_skill": null },
+  { "query": "write jsdoc comments for this module", "should_trigger": false, "expected_skill": null },
+  { "query": "host our swagger docs somewhere", "should_trigger": false, "expected_skill": null }
+]

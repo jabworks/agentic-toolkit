@@ -1,0 +1,22 @@
+[
+  { "query": "execute the plan with specialist agents", "should_trigger": true, "expected_skill": "subagent-execution" },
+  { "query": "run the plan task by task with subagents", "should_trigger": true, "expected_skill": "subagent-execution" },
+  { "query": "use the coder agent to implement the plan", "should_trigger": true, "expected_skill": "subagent-execution" },
+  { "query": "resume plan execution from the ledger", "should_trigger": true, "expected_skill": "subagent-execution" },
+  { "query": "spawn agents for the LARGE plan", "should_trigger": true, "expected_skill": "subagent-execution" },
+  { "query": "whats in spawn-rules for picking an agent", "should_trigger": true, "expected_skill": "subagent-execution" },
+  { "query": "prepare a task brief for task 4", "should_trigger": true, "expected_skill": "subagent-execution" },
+  { "query": "build the review package for the implementer's commits", "should_trigger": true, "expected_skill": "subagent-execution" },
+  { "query": "which model should the coder agent get for this task", "should_trigger": true, "expected_skill": "subagent-execution" },
+  { "query": "continue the wave, tasks 5 and 6 are unblocked", "should_trigger": true, "expected_skill": "subagent-execution" },
+  { "query": "we compacted mid-plan, where were we with the agents", "should_trigger": true, "expected_skill": "subagent-execution" },
+  { "query": "dont re-dispatch tasks that are already done", "should_trigger": true, "expected_skill": "subagent-execution" },
+  { "query": "sdd the plan", "should_trigger": true, "expected_skill": "subagent-execution" },
+  { "query": "dispatch these three unrelated fixes in parallel", "should_trigger": true, "expected_skill": "subagent-deployment" },
+  { "query": "fan out independent lookups across agents", "should_trigger": true, "expected_skill": "subagent-deployment" },
+  { "query": "three independent bugs, fix them concurrently", "should_trigger": true, "expected_skill": "subagent-deployment" },
+  { "query": "ill implement the plan myself top to bottom", "should_trigger": true, "expected_skill": "workflow" },
+  { "query": "the plan is fully implemented, verify it", "should_trigger": true, "expected_skill": "preflight" },
+  { "query": "orchestrate the ci pipeline stages", "should_trigger": false, "expected_skill": null },
+  { "query": "kubernetes pod scheduling question", "should_trigger": false, "expected_skill": null }
+]

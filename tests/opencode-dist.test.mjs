@@ -8,6 +8,8 @@ import {
   OPENCODE_SKILLS_DIR,
   AGENTS_SRC_DIR,
   AGENTS_DST_DIR,
+  CONDUX_OPENCODE_SKILLS_DIR,
+  conduxSkillNames,
   splitFrontmatter,
   decodeScalar,
   transformSkill,
@@ -129,12 +131,42 @@ test('restricted agents keep their tool restrictions on OpenCode', () => {
   }
 });
 
+test('packages/condux-opencode/skills is the dist/opencode subset for the condux bundle', () => {
+  const bundled = fs.readdirSync(CONDUX_OPENCODE_SKILLS_DIR, { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .map((e) => e.name)
+    .sort();
+  // Membership must equal the marketplace bundle — no more, no less.
+  assert.deepEqual(bundled, conduxSkillNames(), 'bundled skill set differs from the condux bundle — run scripts/build-opencode.mjs');
+
+  // Each bundled tree is the exact same transform output as its dist/opencode
+  // counterpart — the package ships a scoped copy, never a divergent one.
+  const mismatches = [];
+  for (const name of bundled) {
+    const opencodeDir = path.join(OPENCODE_SKILLS_DIR, name);
+    const bundledDir = path.join(CONDUX_OPENCODE_SKILLS_DIR, name);
+    const a = listFilesRelative(opencodeDir);
+    const b = listFilesRelative(bundledDir);
+    if (JSON.stringify(a) !== JSON.stringify(b)) {
+      mismatches.push(`${name}: file lists differ`);
+      continue;
+    }
+    for (const rel of a) {
+      if (!fs.readFileSync(path.join(opencodeDir, rel)).equals(fs.readFileSync(path.join(bundledDir, rel)))) {
+        mismatches.push(`${name}: ${rel} not byte-identical to dist/opencode`);
+      }
+    }
+  }
+  assert.deepEqual(mismatches, [], 'bundled condux skills drifted from dist/opencode — run scripts/build-opencode.mjs:\n' + mismatches.join('\n'));
+});
+
 test('condux-opencode package is loadable and consistent', async () => {
   const pkgDir = path.dirname(AGENTS_DST_DIR);
   const pkg = JSON.parse(fs.readFileSync(path.join(pkgDir, 'package.json'), 'utf8'));
   assert.equal(pkg.type, 'module');
   assert.ok(fs.existsSync(path.join(pkgDir, pkg.main)), 'package.json main does not resolve');
   assert.ok(pkg.files.includes('agents/'), 'agents/ missing from package files array');
+  assert.ok(pkg.files.includes('skills/'), 'skills/ missing from package files array');
 
   const mod = await import(pathToFileURL(path.join(pkgDir, pkg.main)).href);
   const hooks = await mod.ConduxPlugin({ worktree: pkgDir });
@@ -156,4 +188,20 @@ test('condux-opencode package is loadable and consistent', async () => {
   const fresh = {};
   await hooks.config(fresh);
   assert.equal(fresh.agent.coder.permission, undefined, 'unrestricted agent must not gain a permission block');
+
+  // The hook also auto-registers the bundled skills dir so one plugin line
+  // installs both agents and skills.
+  const skillsDir = path.join(pkgDir, 'skills');
+  assert.ok(cfg.skills?.paths?.includes(skillsDir), 'bundled skills path not registered');
+  assert.ok(fs.existsSync(path.join(skillsDir, 'workflow', 'SKILL.md')), 'bundled skills dir missing the workflow skill');
+
+  // Registration is idempotent across re-fires and never disturbs a user path.
+  const userCfg = { skills: { paths: ['/tmp/my-skills'] } };
+  await hooks.config(userCfg);
+  await hooks.config(userCfg);
+  assert.deepEqual(
+    userCfg.skills.paths,
+    ['/tmp/my-skills', skillsDir],
+    'skills path registration must be idempotent and preserve user-provided paths',
+  );
 });

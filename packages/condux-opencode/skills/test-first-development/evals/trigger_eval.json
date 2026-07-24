@@ -1,0 +1,22 @@
+[
+  { "query": "write tests first for this", "should_trigger": true, "expected_skill": "test-first-development" },
+  { "query": "tdd this feature", "should_trigger": true, "expected_skill": "test-first-development" },
+  { "query": "test-first for the parser module", "should_trigger": true, "expected_skill": "test-first-development" },
+  { "query": "write failing tests before implementing", "should_trigger": true, "expected_skill": "test-first-development" },
+  { "query": "red green refactor cycle please", "should_trigger": true, "expected_skill": "test-first-development" },
+  { "query": "can you do this test driven", "should_trigger": true, "expected_skill": "test-first-development" },
+  { "query": "write unit tests for the date helpers before you code them", "should_trigger": true, "expected_skill": "test-first-development" },
+  { "query": "update the failing test to match the new behavior", "should_trigger": true, "expected_skill": "test-first-development" },
+  { "query": "the test is failing so just fix the test", "should_trigger": true, "expected_skill": "test-first-development" },
+  { "query": "should I tdd ui components", "should_trigger": true, "expected_skill": "test-first-development" },
+  { "query": "you already asked once, dont re-ask each cycle right?", "should_trigger": true, "expected_skill": "test-first-development", "kind": "in-context" },
+  { "query": "bug: prove it with a failing test then fix it", "should_trigger": true, "expected_skill": "test-first-development" },
+  { "query": "tets first plz", "should_trigger": true, "expected_skill": "test-first-development" },
+  { "query": "add tests for the existing legacy code", "should_trigger": true, "expected_skill": "workflow" },
+  { "query": "implement the currency formatter utility", "should_trigger": true, "expected_skill": "workflow" },
+  { "query": "write e2e tests with playwright for the flow", "should_trigger": true, "expected_skill": "workflow" },
+  { "query": "run the tests", "should_trigger": true, "expected_skill": "finalize" },
+  { "query": "why is this test flaky", "should_trigger": true, "expected_skill": "root-cause-analysis" },
+  { "query": "jest config setup for the monorepo", "should_trigger": true, "expected_skill": "workflow" },
+  { "query": "wheres the coverage report hosted", "should_trigger": false, "expected_skill": null }
+]
