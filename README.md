@@ -19,6 +19,7 @@ Personal collection of agentic coding skills. Compatible with Claude Code, Codex
 | [spec-browser](./skills/spec-browser/)       | Catalog and browse a specs/ tree — markdown index + folder-grouped doc site                           |
 | [release](./skills/release/)                 | Cut releases safely — machinery detection (changesets/toolkit/GitHub), dry-run first, rollback paths  |
 | [coding-directive](./skills/coding-directive/) | House style for @jabworks repos — TypeScript, React, formatting, imports, naming, CSS _(personal)_  |
+| [concord](./skills/concord/)                 | Continuous memory for Codex — captures each session from the rollout, ages it into tiers, recalls it |
 
 ### Condux
 
