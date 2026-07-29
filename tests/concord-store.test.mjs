@@ -262,6 +262,30 @@ test('recent.md is derived from the surviving day files, so it cannot drift', ()
   assert.equal(readTier(p.recent).match(/day one/g).length, 1);
 });
 
+test("recent.md excludes today, so recall does not inject today's entries twice", () => {
+  // "Recent" and "Today" are separate recall sections. If recent.md included
+  // today's day file, every session start would spend budget rendering the same
+  // entries in both.
+  const p = freshPaths();
+  appendBuffer(p, [entry('user', 'yesterday work', daysAgo(1).toISOString())], NOW);
+  appendBuffer(p, [entry('user', 'today work', NOW.toISOString())], NOW);
+  promote(p, NOW);
+
+  const recent = readTier(p.recent);
+  assert.match(recent, /yesterday work/, 'earlier days are the point of recent.md');
+  assert.doesNotMatch(recent, /today work/, "today is rendered by readToday, not recent.md");
+
+  // Today is still reachable — just from the tier that owns it.
+  assert.match(readToday(p, NOW), /today work/);
+});
+
+test('recent.md is empty when today is the only day of history', () => {
+  const p = freshPaths();
+  appendBuffer(p, [entry('user', 'today work', NOW.toISOString())], NOW);
+  promote(p, NOW);
+  assert.equal(readTier(p.recent).trim(), '');
+});
+
 test('recent.md drops content once it ages into the archive', () => {
   const p = freshPaths();
   appendBuffer(p, [entry('user', 'ancient work', daysAgo(RECENT_DAYS + 1).toISOString())], NOW);

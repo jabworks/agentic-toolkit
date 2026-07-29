@@ -321,7 +321,12 @@ function ageDays(paths, now) {
 
   // recent.md is DERIVED, never appended to — regenerating it makes drift and
   // duplication structurally impossible.
-  const remaining = dayFiles(paths);
+  //
+  // Today's day file is excluded: recall renders "Today" as its own section from
+  // the day file plus the live buffer, so including it here too would inject
+  // today's entries twice and spend the budget on duplicates. "Recent" means the
+  // days *before* today.
+  const remaining = dayFiles(paths).filter((n) => n !== `${today}.md`);
   const parts = remaining.map((n) => readIfExists(path.join(paths.days, n)).trimEnd()).filter(Boolean);
   atomicWrite(paths.recent, parts.length ? parts.join('\n\n') + '\n' : '');
 
