@@ -96,8 +96,8 @@ committing — it fails the build otherwise:
 - `plugin-manifests.test.mjs` — `plugin.json` / `marketplace.json` validity and
   `./`-prefixed paths
 - `manifest-parity.test.mjs` — each plugin's `.claude-plugin`/`.codex-plugin`
-  manifests match on name/version/skills, both carry `interface`, `hooks` stays
-  codex-only, and every skill has a trigger contract
+  manifests match on name/version/skills, `interface` and `hooks` stay codex-only,
+  and every skill has a trigger contract
 - `opencode-dist.test.mjs` — `dist/opencode/skills/`,
   `packages/condux-opencode/agents/`, and the bundled
   `packages/condux-opencode/skills/` all match `scripts/build-opencode.mjs`

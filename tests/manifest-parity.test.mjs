@@ -16,12 +16,14 @@ function pluginDirs() {
 }
 
 // Doctrine (see skills/toolkit-plugin-reference/SKILL.md): the two manifests of a
-// plugin are a PAIR. Identity fields must match; `description` and `interface`
-// content may carry platform wording; `hooks` is codex-only (both hosts default to
-// hooks/hooks.json; the codex manifest field overrides that default — commit 95425c8).
-// `interface` is Codex-native; Claude Code ignores it at load time (verified via
-// `claude plugin validate`, 2026-07-08) — kept in both for parity. If strict
-// validation ever lands in CI, flip to codex-only first (campaign B3 has the recipe).
+// plugin are a PAIR. Identity fields must match; `description` content may carry
+// platform wording; `hooks` is codex-only (both hosts default to hooks/hooks.json;
+// the codex manifest field overrides that default — commit 95425c8).
+// `interface` is codex-only as of 2026-07-29. It is Codex-native and Claude Code
+// ignores it at load time, but `claude plugin validate --strict` reports the
+// unknown field as an error — a red X for anyone reviewing a directory submission.
+// Keeping it out of the Claude manifest costs nothing (the field was never read
+// there) and buys a clean strict pass.
 test('every dist plugin ships a Claude/Codex manifest pair with matching identity fields', () => {
   const problems = [];
   for (const p of pluginDirs()) {
@@ -45,7 +47,9 @@ test('every dist plugin ships a Claude/Codex manifest pair with matching identit
       problems.push(`${p}: skills path ${JSON.stringify(claude.skills)} — must be ${JSON.stringify(expectedSkills)}`);
     }
 
-    if (!claude.interface) problems.push(p + ': .claude-plugin manifest missing "interface" (required in both variants by house doctrine)');
+    if ('interface' in claude) {
+      problems.push(p + ': "interface" belongs only in the codex manifest — it fails `claude plugin validate --strict`');
+    }
     if (!codex.interface) problems.push(p + ': .codex-plugin manifest missing "interface"');
 
     if ('hooks' in claude) {

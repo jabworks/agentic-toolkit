@@ -1,6 +1,6 @@
 {
   "name": "coding-directive",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Write code that matches Harvey's (@jabworks) house style the first time — TypeScript, React/Next.js, formatting, import order, monorepo boundaries, naming, error handling, CSS/Tailwind.",
   "author": {
     "name": "jabworks"
@@ -8,17 +8,5 @@
   "repository": "https://github.com/jabworks/agentic-toolkit",
   "license": "MIT",
   "keywords": ["style-guide", "typescript", "react", "eslint", "prettier", "conventions"],
-  "skills": "./skills/coding-directive",
-  "interface": {
-    "displayName": "Coding Directive",
-    "shortDescription": "House style for @jabworks repos, first time.",
-    "longDescription": "Encodes the @jabworks coding directive so agents get it right before CI does: enforced rules extracted from the style-guide configs (ESLint/oxlint, Prettier/oxfmt, TypeScript, Stylelint) plus a confidence-marked judgment layer for naming, error handling, React anatomy, monorepo boundaries, and Tailwind discipline. Codebase mimicry wins over the directive; repo config wins over both.",
-    "developerName": "jabworks",
-    "category": "Productivity",
-    "defaultPrompt": [
-      "What's our convention for naming boolean props?",
-      "Review this file against our house style.",
-      "Set up Prettier and ESLint to match our style guide."
-    ]
-  }
+  "skills": "./skills/coding-directive"
 }
