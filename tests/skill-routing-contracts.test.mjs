@@ -18,6 +18,10 @@ test('known trigger-collision pairs disambiguate each other mutually', () => {
   const pairs = [
     ['adapting-skills', 'toolkit-foundry'],
     ['preflight', 'finalize'],
+    ['live-verification', 'finalize'],
+    ['live-verification', 'preflight'],
+    ['release', 'toolkit-change-control'],
+    ['root-cause-analysis', 'toolkit-debugging-playbook'],
     ['plan-review', 'spec-browser'],
     ['subagent-deployment', 'subagent-execution'],
   ];

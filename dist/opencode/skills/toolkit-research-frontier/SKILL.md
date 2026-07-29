@@ -1,6 +1,6 @@
 ---
 name: toolkit-research-frontier
-description: Use when planning improvement work on jabworks/agentic-toolkit itself — open problems (trigger-collision automation, YAML-strict frontmatter checks, docs-catalog enforcement), existing assets, the next three concrete steps, and the four-front library-health campaign with commands and success criteria. Triggers include "what should we improve next", "toolkit roadmap", "open problems", "run the health campaign".
+description: Use when planning improvement work on jabworks/agentic-toolkit itself — open problems (trigger-collision automation, YAML-strict frontmatter checks, docs-catalog enforcement), existing assets, the next three concrete steps, and the four-front library-health campaign with commands and success criteria. Triggers include "let's improve our toolkit", "let's improve this repo", "what should we improve next", "toolkit roadmap", "open problems", "run the health campaign".
 ---
 
 # Toolkit Research Frontier

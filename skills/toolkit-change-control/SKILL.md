@@ -1,6 +1,7 @@
 ---
 name: toolkit-change-control
 description: Use when deciding whether a change to jabworks/agentic-toolkit is done and safe to ship — classifying the change (including retiring a skill), picking the version bump, and gating on the publish checklist (mirror synced, manifests paired, marketplace entry, node --test green). Triggers include "is this skill shipped", "am I done shipping this skill/plugin", "ready to publish", "what version do I bump", "did I register this plugin", "retire this skill".
+when_to_use: Also fires on the imperative form, not just the question — "bump the condux version", "sync dist and bump". Self-trigger right after any edit to a plugin.json, marketplace.json, or a shipped SKILL.md, before the user asks. Run this gate before `release`, which ships the version this one picks.
 ---
 
 # Toolkit Change Control

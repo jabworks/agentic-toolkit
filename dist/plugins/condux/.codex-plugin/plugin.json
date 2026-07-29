@@ -1,7 +1,7 @@
 {
   "name": "condux",
-  "version": "2.7.2",
-  "description": "Codex skills for lean agentic workflow: tier routing, discovery, plan drafting, tests-first, subagent coordination, finalize, code review, preflight, root-cause debugging, interactive plan review, and feature spec management.",
+  "version": "2.8.0",
+  "description": "Codex skills for lean agentic workflow: tier routing, discovery, plan drafting, tests-first, subagent coordination, finalize, live verification, code review, preflight, root-cause debugging, interactive plan review, and feature spec management.",
   "author": {
     "name": "jabworks"
   },
@@ -12,6 +12,7 @@
     "condux",
     "tier",
     "finalize",
+    "live-verification",
     "discovery",
     "test-first-development",
     "code-review",

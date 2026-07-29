@@ -131,6 +131,7 @@ happened (or was declined) in draft-plan's own save step — don't re-offer it.*
 
 | Option | What it does |
 |---|---|
+| **Verify it live** *(recommended when the change has a runnable surface)* | Load `live-verification` — drive the real UI or endpoint and check each claim against observed behaviour |
 | **Code review** *(recommended)* | `/code-review` the diff before merging |
 | **Commit** | Load the `git-commit` skill if installed (conventional message from the diff, safe staging); otherwise follow the repo's commit conventions |
 | **Cut a release** | Load the `release` skill if installed — machinery detection, dry-run plan, then tag → push → GitHub release; otherwise follow the repo's release conventions |
@@ -149,6 +150,7 @@ Load each only when its step is reached.
 | `subagent-deployment` | 2+ independent tasks, no shared files/deps | ad-hoc work, not ordered plans |
 | `preflight` | end of every tier, before finalize | automatic on SMALL; recommended CP-2 choice |
 | `finalize` | after all implementation | runs in order, once, stops on first failure; check AGENTS.md for the real commands |
+| `live-verification` | after finalize, when the change has a runnable surface | offer at CP-3; one pass, no loop; skipping is fine, silent skipping is not |
 | `code-review` | on request only | never auto-triggers, never fixes; after finalize you may ask ONCE |
 | `root-cause-analysis` | any bug investigation | load when debugging starts, not proactively; investigation before fixes |
 | `plan-review` | plan/spec annotation in the browser | via ExitPlanMode/Stop hook, draft-plan's save step, or manually |
