@@ -1,5 +1,11 @@
 # @jabworks/condux
 
+## 0.3.1
+
+### Patch Changes
+
+- [#9](https://github.com/jabworks/agentic-toolkit/pull/9) [`f9f7c98`](https://github.com/jabworks/agentic-toolkit/commit/f9f7c988a16fcc094ce7bf81581d7e300d7d4ee4) Thanks [@vi-hieu](https://github.com/vi-hieu)! - Ship the MIT LICENSE file with the package. The manifest has declared `"license": "MIT"` since 0.1.0, but no license text was ever included — npm showed the SPDX identifier with nothing granting the rights behind it.
+
 ## 0.3.0
 
 ### Minor Changes
