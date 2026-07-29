@@ -44,6 +44,10 @@ The rules agents get wrong most often — internalize before writing a line:
 - `unknown` over `any`; narrowing and `satisfies` over `as`; unions and
   `as const` objects over `enum`
 - Props types are `ButtonProps`, never `Props`; interfaces never prefixed `I`
+- **Every mutation and fetch ships four states** — pending indicator, trigger
+  disabled while in flight, error surfaced where it was triggered, empty state
+- **Dark mode first** — build and verify dark before light; never hardcode a
+  color the theme tokens cover
 
 ## Topic References
 

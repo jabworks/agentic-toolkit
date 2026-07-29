@@ -1,6 +1,6 @@
 ---
 name: preflight
-description: "Lightweight \"am I actually done?\" checklist before calling /finalize. Prevents premature completion — catches skipped steps, missing behavior, and silent regressions. Runs before /finalize at the end of every /workflow tier (automatic on SMALL; the recommended CP-2 choice on MEDIUM/LARGE). Also trigger standalone on \"verify this\", \"am I done?\", or \"preflight\". Not for executing typecheck, lint, format, and tests; use finalize."
+description: "Lightweight \"am I actually done?\" checklist before calling /finalize. Prevents premature completion — catches skipped steps, missing behavior, and silent regressions. Runs before /finalize at the end of every /workflow tier (automatic on SMALL; the recommended CP-2 choice on MEDIUM/LARGE). Also trigger standalone on \"verify this\", \"am I done?\", or \"preflight\". Not for executing typecheck, lint, format, and tests; use finalize. Not for actually running the change and observing it work in a browser or CLI; that's live-verification, after finalize."
 argument-hint: "[task or feature name]"
 ---
 

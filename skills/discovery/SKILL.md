@@ -85,6 +85,24 @@ as any other soft gate in this skill.
 └──────────────────────────────────────────────────────────────────┘
 ```
 
+## Scope Lock (part of Step 1)
+
+The scope check runs in both directions. Decomposition catches a request that
+is secretly several features; the scope lock catches the opposite failure —
+quietly discovering against a wider surface than the one asked about, e.g.
+auditing a whole repo when one plugin was named.
+
+Before Step 2, state the target surface back in one line:
+
+> "Reading this as scoped to `<the named package / plugin / directory>` — the
+> rest of the repo is out of scope unless you say otherwise."
+
+Then hold it. If the design starts to need something outside that surface,
+name the crossing and get agreement before widening — do not widen silently
+because the adjacent thing looked related. Narrowing works the same way: if
+the user names a narrower target mid-discovery, that is the new surface, and
+work already done against the wider one is dropped, not folded in.
+
 ## Clarifying Questions — Good vs Bad
 
 ```
@@ -125,6 +143,7 @@ Accept either answer. Never block. Never lecture.
 ✗ Asking questions one at a time in a long back-and-forth
 ✗ Proceeding to planning without explicit sign-off
 ✗ Treating a well-defined ticket as needing full discovery
+✗ Widening past the named target surface without saying so
 ```
 
 ## Output

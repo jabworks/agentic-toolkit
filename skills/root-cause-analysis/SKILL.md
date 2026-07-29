@@ -1,7 +1,7 @@
 ---
 name: root-cause-analysis
 description: Enforces root-cause-first bug investigation — read the error, reproduce it, trace the data flow backward. Never propose a solution before the investigation phase completes.
-when_to_use: Trigger the moment debugging starts — never proactively — and always before any fix is proposed or any change is made.
+when_to_use: Trigger the moment debugging starts — never proactively — and always before any fix is proposed or any change is made. Phrases include "why is this failing", "this bug", "unexpected behavior", "error when I…". Not for a jabworks/agentic-toolkit skill or plugin misbehaving (won't trigger, won't show up, dist drift); that's toolkit-debugging-playbook.
 argument-hint: "<error message or bug description>"
 effort: high
 ---

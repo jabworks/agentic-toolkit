@@ -1,6 +1,6 @@
 ---
 name: release
-description: Use when cutting a release — tagging a version, pushing tags, publishing a GitHub release, or shipping this toolkit's plugins. Detects the repo's release machinery (AGENTS.md release section, changesets, claude plugin tag, plain git tag + gh release), always shows a dry-run plan first, and executes only on one confirm. Triggers include "cut a release", "release v1.2.3", "tag and publish", "ship a new version", "whats in the next release".
+description: "Use when cutting a release — tagging a version, pushing tags, publishing a GitHub release, or shipping this toolkit's plugins. Detects the repo's release machinery (AGENTS.md release section, changesets, claude plugin tag, plain git tag + gh release), always shows a dry-run plan first, and executes only on one confirm. Triggers include \"cut a release\", \"release v1.2.3\", \"tag and publish\", \"ship a new version\", \"whats in the next release\". Cutting the release itself. Not for deciding a plugin or skill's semver bump beforehand — that's toolkit-change-control; in jabworks/agentic-toolkit, run that gate first and release the version it picks."
 ---
 
 # /release

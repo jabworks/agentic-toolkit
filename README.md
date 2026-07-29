@@ -102,6 +102,7 @@ opt-in at checkpoints or justified by genuinely parallel work.
 | [/subagent-execution](./skills/subagent-execution/) | Named specialist agents for LARGE plans, only when justified, never to fill time |
 | [/subagent-deployment](./skills/subagent-deployment/) | Fan out independent tasks across named agents in one message — ad-hoc, not a formal plan |
 | [/finalize](./skills/finalize/) | End-of-task quality gate — typecheck → lint → format → test, once, stop on first failure |
+| [/live-verification](./skills/live-verification/) | Run the change and watch it work — drives the real UI or endpoint after finalize, dark mode first, reports claim → evidence → verdict and names what it couldn't verify |
 | [/code-review](./skills/code-review/) | On-request diagnostic report (Critical/Important/Minor), never auto-triggers, never fixes |
 | [/preflight](./skills/preflight/) | "Am I actually done?" checklist before finalize — catches skipped steps and regressions, and drift-checks the implementation against the task's spec |
 | [/root-cause-analysis](./skills/root-cause-analysis/) | Root-cause-first bug investigation — enforces the 4-phase sequence before any fix |
@@ -232,7 +233,7 @@ codex plugin add toolkit-ops@jabworks-agentic-toolkit
 ### OpenCode — condux plugin + merged-trigger skill variants
 
 For the **condux** workflow, one plugin line is the whole install. The
-[`@jabworks/condux`](packages/condux-opencode/) plugin bundles the 12 condux
+[`@jabworks/condux`](packages/condux-opencode/) plugin bundles the 13 condux
 skills, injects the specialist agents (coder / explorer / planner / researcher),
 and wires an opt-in plan-review listener:
 

@@ -1,7 +1,7 @@
 ---
 name: finalize
 description: End-of-task quality gate — typecheck → lint → format → tests. Runs in order, once. Stops on first failure and fixes before continuing.
-when_to_use: Run after all implementation is complete. Called automatically by /workflow, or standalone. Check AGENTS.md for the project's actual commands. Not for auditing whether requirements and plan steps are complete; use preflight first.
+when_to_use: Run after all implementation is complete. Called automatically by /workflow, or standalone. Check AGENTS.md for the project's actual commands. Not for auditing whether requirements and plan steps are complete (preflight, first); not for running the change and watching it work (live-verification, after).
 argument-hint: "[package or path to scope — optional]"
 ---
 
@@ -87,6 +87,7 @@ Typecheck  ✓ clean
 Lint       ✓ clean  (2 warnings — not blocking)
 Format     ✓ 2 files auto-fixed (Button.tsx, invoice.router.ts)
 Tests      ✓ 18 passed, 0 failed
+Env        ✓ 1 new var → .env.example updated (STRIPE_WEBHOOK_SECRET)
 Plan       (none found for this task — treating as standalone scope)
 
 Ready to commit.
@@ -107,6 +108,18 @@ Lint       ✓ clean
 Format     ✓ clean
 Tests      ✓ 18 passed
 ```
+
+## Companion Files
+
+One cheap scan of the diff, reported alongside the gate. It never blocks —
+it exists because "remember to update the env example for newly added env vars"
+should not have to be said again.
+
+- A new env var anywhere in the diff (`process.env.X`, `import.meta.env.X`, a
+  new key in an env schema, a new `docker-compose`/CI variable) ⇒ the project's
+  example file (`.env.example`, `.env.sample`, or whatever it uses) gains the
+  same key in the same change — placeholder value only, never a real secret.
+- Report `Env  ✓ n/a` when the diff adds none, so the check is visibly running.
 
 ## What Does NOT Happen
 
