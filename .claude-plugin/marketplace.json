@@ -96,6 +96,15 @@
       },
       "source": "./dist/plugins/coding-directive",
       "category": "development"
+    },
+    {
+      "name": "concord",
+      "description": "Continuous memory for Codex: three hooks share one idempotent rollout sync, so capture is exactly-once regardless of hook order and a hard-killed session is recovered at next start. Memory ages through buffer, daily, recent, and archive tiers; explicitly pinned facts are never auto-compressed.",
+      "author": {
+        "name": "Hieu Vi"
+      },
+      "source": "./dist/plugins/concord",
+      "category": "development"
     }
   ]
 }
