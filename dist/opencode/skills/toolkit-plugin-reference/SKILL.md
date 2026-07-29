@@ -38,11 +38,11 @@ package — `tests/opencode-dist.test.mjs` as the executable source of truth.
 |---|---|
 | `name` | required (test-enforced), == plugin dir name |
 | `version` | required (test-enforced); the pair must match — bump policy (which bump when, cache rationale) has its home in `toolkit-change-control` |
-| `description` | required (test-enforced); may carry platform wording ("Claude Code skill for…" / "Codex skill for…"), as may `interface` content — identity fields `name`/`version`/`skills` must match across the pair |
+| `description` | required (test-enforced); may carry platform wording ("Claude Code skill for…" / "Codex skill for…") — identity fields `name`/`version`/`skills` must match across the pair |
 | `author.name` | required (test-enforced) |
 | `repository`, `license`, `keywords` | convention — present in every manifest (18 at the 2026-07-08 audit) |
 | `skills` | required (test-enforced), must be `"./skills/<plugin-dir-name>"` — same rule for standalone AND bundle plugins |
-| `interface` | required in BOTH variants by house doctrine (parity-test-enforced). Codex-native install-surface block (displayName, shortDescription ≤125 chars per Codex docs, longDescription, developerName, category, defaultPrompt; optionally capabilities/websiteURL/logo/screenshots — 4 of 9 codex manifests carry capabilities). **Verified 2026-07-08: unknown to Claude Code** — ignored at load, validator warns (see host-support matrix below) |
+| `interface` | **codex manifest only** since 2026-07-29 (parity-test-enforced: present in codex, absent in claude). Codex-native install-surface block (displayName, shortDescription ≤125 chars per Codex docs, longDescription, developerName, category, defaultPrompt; optionally capabilities/websiteURL/logo/screenshots). **Verified 2026-07-08: unknown to Claude Code** — ignored at load, validator warns, `--strict` errors. Previously duplicated into the claude manifest for parity; dropped so `claude plugin validate --strict` passes clean, since Claude Code never read the field anyway |
 | `hooks` | **codex manifest only** (condux carries `"hooks": "./hooks/codex-hooks.json"`). BOTH hosts default to loading `hooks/hooks.json` when no manifest field exists (verified in both hosts' docs); the codex-side field overrides that default so Codex loads the Stop-only file instead of Claude's PreToolUse file (commit 95425c8). A missing claude-side `hooks` field is BY DESIGN, not a parity bug. **Hook commands use the host's own plugin-root variable** — Claude Code substitutes `${CLAUDE_PLUGIN_ROOT}`, Codex substitutes `${PLUGIN_ROOT}` and does NOT set Claude's (verified 2026-07-10, Codex 0.144.1: the unexpanded variable made condux's Stop hook exit 1 on every turn; parity-test-enforced) |
 
 ### Verified host field support (2026-07-08)
@@ -60,9 +60,12 @@ real manifests, plus both official schema docs
 | `displayName` (top-level) | recognized (v2.1.143+; names the plugin in the `/plugin` picker) | not documented top-level — Codex uses `interface.displayName` |
 | unknown fields generally | ignored at runtime; validate warns; `--strict` errors | tolerance undocumented/untested |
 
-Consequence of the parity doctrine: every claude manifest carries one known validator
-warning (`interface`). Do NOT wire `claude plugin validate --strict` into CI without
-flipping the doctrine first (campaign B3 records the flip recipe).
+The doctrine was flipped on 2026-07-29: `interface` now lives only in the codex
+manifest, so every claude manifest validates clean under `--strict`. The trigger was
+the official plugin directory — submissions are reviewed against unstated "quality and
+security standards", and a `--strict` failure is the most visible thing a reviewer can
+run. Wiring `claude plugin validate --strict` into CI is now safe; it is not wired yet
+(it would add a `claude` CLI dependency to the test job).
 
 ### marketplace.json (`.claude-plugin/marketplace.json`, repo root)
 
@@ -146,8 +149,10 @@ A correct manifest (or a field-level diff of what to change), pair-consistent.
 ## Bad behavior this prevents
 
 The pre-2026-07-08 state this table replaced: 7 of 8 plugin pairs disagreed on the
-`skills` path form and 5 Claude manifests lacked `interface` entirely — each new
-plugin copied a different wrong example. The table + parity test pin one shape.
+`skills` path form and the Claude manifests carried `interface` inconsistently — each
+new plugin copied a different wrong example. The table + parity test pin one shape.
+Since 2026-07-29 that shape is: `interface` in the codex manifest, never the claude
+one, so `--strict` stays clean for directory submissions.
 
 ## Related skills
 
@@ -159,8 +164,8 @@ plugin copied a different wrong example. The table + parity test pin one shape.
 Re-verify volatile claims with:
 - `node --test tests/plugin-manifests.test.mjs tests/manifest-parity.test.mjs tests/opencode-dist.test.mjs`
 - `for m in dist/plugins/*/.{claude,codex}-plugin/plugin.json; do jq -r '.skills' "$m"; done`
-- `claude plugin validate dist/plugins/<p>` — official validator (expect exactly one
-  warning per plugin: the Codex-native `interface` field)
+- `claude plugin validate dist/plugins/<p> --strict` — official validator (expect a
+  clean pass, no warnings, since `interface` moved to the codex manifest on 2026-07-29)
 - `node scripts/build-opencode.mjs && git status --short` — clean tree means the
   OpenCode channel and the package's `agents/` are in sync with source
 

@@ -1,6 +1,6 @@
 {
   "name": "concord",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Continuous memory for Codex: captures each session from the rollout, ages it into tiers, and injects the relevant slice back at the next session start.",
   "author": {
     "name": "jabworks"
@@ -8,17 +8,5 @@
   "repository": "https://github.com/jabworks/agentic-toolkit",
   "license": "MIT",
   "keywords": ["memory", "context", "persistence", "session", "codex", "recall"],
-  "skills": "./skills/concord",
-  "interface": {
-    "displayName": "Concord",
-    "shortDescription": "Continuous session memory for Codex.",
-    "longDescription": "Concord gives Codex memory that survives the session. Three hooks share one idempotent operation — sync the rollout forward from its recorded position — so capture is exactly-once regardless of hook order, and a hard-killed session is recovered at next start rather than lost. Memory ages through buffer, daily, recent, and archive tiers; explicitly pinned facts are never auto-compressed.",
-    "developerName": "jabworks",
-    "category": "Productivity",
-    "defaultPrompt": [
-      "Remember that deploys need the VPN.",
-      "What did we work on yesterday?",
-      "Search my memory for the auth refactor."
-    ]
-  }
+  "skills": "./skills/concord"
 }

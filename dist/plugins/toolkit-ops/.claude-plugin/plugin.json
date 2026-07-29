@@ -1,19 +1,10 @@
 {
   "name": "toolkit-ops",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "Claude Code skills for operating the jabworks/agentic-toolkit repo itself: orientation, skill foundry (create/register/publish), change control, skill-authoring standards, debugging playbook, failure archaeology, plugin schema reference, and research frontier.",
   "author": { "name": "jabworks" },
   "repository": "https://github.com/jabworks/agentic-toolkit",
   "license": "MIT",
   "keywords": ["toolkit", "maintenance", "skill-authoring", "plugins", "claude-code", "codex"],
-  "skills": "./skills/toolkit-ops",
-  "interface": {
-    "displayName": "Toolkit Ops",
-    "shortDescription": "Operate and maintain the agentic-toolkit skill library.",
-    "longDescription": "Seven skills for maintaining jabworks/agentic-toolkit: repo orientation, change control and publish gating, skill-authoring standards, a symptom-driven debugging playbook, git-evidenced failure archaeology, the Claude/Codex plugin schema reference, and the research frontier with the library-health campaign.",
-    "developerName": "jabworks",
-    "category": "Productivity",
-    "capabilities": ["Skills"],
-    "defaultPrompt": ["How is this repo organized?", "Is this skill fully shipped?"]
-  }
+  "skills": "./skills/toolkit-ops"
 }

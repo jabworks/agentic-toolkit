@@ -1,6 +1,6 @@
 {
   "name": "coding-directive",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Write code that matches Harvey's (@jabworks) house style the first time — TypeScript, React/Next.js, formatting, import order, monorepo boundaries, naming, error handling, CSS/Tailwind.",
   "author": {
     "name": "jabworks"

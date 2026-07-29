@@ -1,6 +1,6 @@
 {
   "name": "session-handoff",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "Claude Code skill for creating and resuming handoff documents across agentic coding sessions.",
   "author": {
     "name": "jabworks"
@@ -14,21 +14,5 @@
     "resume",
     "development"
   ],
-  "skills": "./skills/session-handoff",
-  "interface": {
-    "displayName": "Session Handoff",
-    "shortDescription": "Preserve and resume coding-session context.",
-    "longDescription": "Session Handoff helps Claude Code create validated handoff documents and resume prior work with freshness checks, red flags, and concrete next steps.",
-    "developerName": "jabworks",
-    "category": "Productivity",
-    "capabilities": [
-      "Skills",
-      "Documentation"
-    ],
-    "defaultPrompt": [
-      "Create a session handoff.",
-      "Resume from the latest handoff.",
-      "Check whether this handoff is stale."
-    ]
-  }
+  "skills": "./skills/session-handoff"
 }

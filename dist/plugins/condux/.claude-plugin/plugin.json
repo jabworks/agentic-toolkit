@@ -1,6 +1,6 @@
 {
   "name": "condux",
-  "version": "2.7.1",
+  "version": "2.7.2",
   "description": "Claude Code skills for lean agentic workflow: tier routing, discovery, plan drafting, tests-first, subagent coordination, finalize, code review, preflight, root-cause debugging, interactive plan review, and feature spec management.",
   "author": {
     "name": "jabworks"
@@ -25,17 +25,5 @@
     "technical-spec",
     "plan-review"
   ],
-  "skills": "./skills/condux",
-  "interface": {
-    "displayName": "Condux",
-    "shortDescription": "Lean agentic workflow skills.",
-    "longDescription": "Condux gives Claude Code a tiered workflow system — Small, Medium, or Large — with lean task cards, opt-in tests-first, on-request code review, and a single end-of-task quality gate. No runaway reviews, no mid-task tests, no monstrous plans.",
-    "developerName": "jabworks",
-    "category": "Productivity",
-    "defaultPrompt": [
-      "Route this task with /workflow.",
-      "Finalize this implementation.",
-      "Code review before merging."
-    ]
-  }
+  "skills": "./skills/condux"
 }

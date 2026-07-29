@@ -1,6 +1,6 @@
 {
   "name": "git-operations",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Decision router for git: given a situation, pick the right operation (undo/discard/stash/merge/push) and run it safely with an undo path. Favours modern porcelain over legacy checkout; cross-links to git-commit.",
   "author": {
     "name": "jabworks"
@@ -8,17 +8,5 @@
   "repository": "https://github.com/jabworks/agentic-toolkit",
   "license": "MIT",
   "keywords": ["git", "vcs", "undo", "reflog", "recovery", "workflow"],
-  "skills": "./skills/git-operations",
-  "interface": {
-    "displayName": "Git Operations",
-    "shortDescription": "Pick the right git operation, run it safely.",
-    "longDescription": "A decision router for git — given a situation (undo a commit, discard changes, park work, integrate upstream, recover a mistake), it picks the safest modern command and always gives the undo path. Everyday + recovery scope only; cross-links to git-commit for committing.",
-    "developerName": "jabworks",
-    "category": "Productivity",
-    "defaultPrompt": [
-      "How do I undo my last commit?",
-      "Throw away these changes safely.",
-      "I think I lost a commit — help."
-    ]
-  }
+  "skills": "./skills/git-operations"
 }

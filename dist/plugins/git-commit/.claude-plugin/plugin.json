@@ -1,6 +1,6 @@
 {
   "name": "git-commit",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Craft a conventional-commit message from the diff and run the commit safely: review before staging, no blind `git add .`, multiline bodies via -F, branch check first.",
   "author": {
     "name": "jabworks"
@@ -8,17 +8,5 @@
   "repository": "https://github.com/jabworks/agentic-toolkit",
   "license": "MIT",
   "keywords": ["git", "commit", "conventional-commits", "staging", "vcs"],
-  "skills": "./skills/git-commit",
-  "interface": {
-    "displayName": "Git Commit",
-    "shortDescription": "Safe conventional commits from the diff.",
-    "longDescription": "Derives a conventional-commit message from the actual diff and runs the commit safely — reviewing before staging, banning blind `git add .`, writing multiline bodies via -F, keeping unwanted trailers out, and checking the branch first. Covers the full local flow through verify and optional amend; stops before push.",
-    "developerName": "jabworks",
-    "category": "Productivity",
-    "defaultPrompt": [
-      "Commit these changes.",
-      "Stage and commit my work.",
-      "Split this into clean commits."
-    ]
-  }
+  "skills": "./skills/git-commit"
 }
