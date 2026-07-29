@@ -1,6 +1,7 @@
 {
   "name": "agentic-toolkit",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "changeset": "changeset",
     "release": "changeset publish",
