@@ -47,5 +47,5 @@
   exists in the monorepo first; if a new package is genuinely needed, name it
   and say why.
 - Prefer the platform and existing deps over new abstractions.
-- Security-conscious: verify a package/MCP server before adopting (Harvey has
-  vetted CVEs before choosing tools).
+- Security-conscious: verify a package/MCP server before adopting — checking
+  CVEs before choosing a tool is expected here, not optional diligence.

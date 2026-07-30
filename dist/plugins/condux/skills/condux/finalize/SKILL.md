@@ -111,9 +111,9 @@ Tests      ✓ 18 passed
 
 ## Companion Files
 
-One cheap scan of the diff, reported alongside the gate. It never blocks —
-it exists because "remember to update the env example for newly added env vars"
-should not have to be said again.
+One cheap scan of the diff, reported alongside the gate. It never blocks — it
+exists because a new env var that never reaches the example file is invisible
+until it breaks someone else's checkout.
 
 - A new env var anywhere in the diff (`process.env.X`, `import.meta.env.X`, a
   new key in an env schema, a new `docker-compose`/CI variable) ⇒ the project's

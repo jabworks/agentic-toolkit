@@ -19,7 +19,7 @@ structure, and collision discipline.
 ## When not to use
 
 - Scaffolding/registering/syncing mechanics → `toolkit-foundry`.
-- Adapting an externally-sourced skill template to Harvey's stack → `adapting-skills`
+- Adapting an externally-sourced skill template to the jabworks stack → `adapting-skills`
   (then return here for this repo's frontmatter/mirror requirements).
 - Triage of a live triggering bug → `toolkit-debugging-playbook` first; it routes back
   here when the cause is wording.

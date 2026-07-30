@@ -13,7 +13,7 @@ Personal collection of agentic coding skills. Compatible with Claude Code, Codex
 | -------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
 | [session-report](./skills/session-report/)   | Generate an explorable HTML report of session usage — tokens, cache, cost, subagents, skills          |
 | [session-handoff](./skills/session-handoff/) | Preserve and restore session context across agentic coding sessions                                   |
-| [adapting-skills](./skills/adapting-skills/) | Developer profile priors for adapting skills to Harvey's stack _(personal — useful to collaborators)_ |
+| [adapting-skills](./skills/adapting-skills/) | Stack and style priors for adapting skills to the jabworks conventions _(opinionated — fork the priors for your own stack)_ |
 | [git-commit](./skills/git-commit/)           | Conventional-commit message from the diff, run safely — review before staging, no blind `git add .`   |
 | [git-operations](./skills/git-operations/)   | Decision router for git — pick the right operation (undo/discard/stash/merge/push) with an undo path  |
 | [spec-browser](./skills/spec-browser/)       | Catalog and browse a specs/ tree — markdown index + folder-grouped doc site                           |
@@ -102,7 +102,7 @@ opt-in at checkpoints or justified by genuinely parallel work.
 | [/subagent-execution](./skills/subagent-execution/) | Named specialist agents for LARGE plans, only when justified, never to fill time |
 | [/subagent-deployment](./skills/subagent-deployment/) | Fan out independent tasks across named agents in one message — ad-hoc, not a formal plan |
 | [/finalize](./skills/finalize/) | End-of-task quality gate — typecheck → lint → format → test, once, stop on first failure |
-| [/live-verification](./skills/live-verification/) | Run the change and watch it work — drives the real UI or endpoint after finalize, dark mode first, reports claim → evidence → verdict and names what it couldn't verify |
+| [/live-verification](./skills/live-verification/) | Run the change and watch it work — drives the real UI or endpoint after finalize, light mode then dark, reports claim → evidence → verdict and names what it couldn't verify |
 | [/code-review](./skills/code-review/) | On-request diagnostic report (Critical/Important/Minor), never auto-triggers, never fixes |
 | [/preflight](./skills/preflight/) | "Am I actually done?" checklist before finalize — catches skipped steps and regressions, and drift-checks the implementation against the task's spec |
 | [/root-cause-analysis](./skills/root-cause-analysis/) | Root-cause-first bug investigation — enforces the 4-phase sequence before any fix |

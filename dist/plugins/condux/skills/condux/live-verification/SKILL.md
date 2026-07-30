@@ -1,6 +1,6 @@
 ---
 name: live-verification
-description: Verify a change by actually running it — drive the real UI or endpoint, check each claim against observed behaviour, and capture evidence before pushing. Detects what's runnable, verifies dark mode first, and reports claim → evidence → verdict with unverifiable claims named rather than hidden.
+description: Verify a change by actually running it — drive the real UI or endpoint, check each claim against observed behaviour, and capture evidence before pushing. Detects what's runnable, checks light mode then dark, and reports claim → evidence → verdict with unverifiable claims named rather than hidden.
 when_to_use: After /finalize, before committing or pushing a change that has a runnable surface — UI, page, component, endpoint, CLI. Triggers include "verify it live", "did this actually work", "check it in the browser", "live verify before pushing", "does it render right". Not for typecheck/lint/test (that's finalize), not for auditing plan completeness (preflight), not for reading code to judge it (code-review).
 argument-hint: "[what to verify — optional; defaults to the current diff]"
 ---
@@ -63,8 +63,8 @@ honestly: report what could not be driven rather than inventing a result.
 
 Order of checks, because this is where the defects were:
 
-1. **Dark mode first.** Then light. A themed change is not verified until it
-   has been seen in both.
+1. **Light mode first.** Then dark. A themed change is not verified until it
+   has been seen in both — that part is the gate, not the order.
 2. **The interactive states**, not just the resting one — hover, focus,
    disabled, selected, and the in-flight state of every mutation.
 3. **The failure path.** Make the thing fail on purpose if you can (offline,
@@ -117,7 +117,7 @@ Two failed attempts on the same claim is the ceiling. Report and move on.
 ## Live verification: <change>
 
 Target     http://localhost:3000 (pnpm dev — started by this run)
-Themes     dark ✓  light ✓
+Themes     light ✓  dark ✓
 
 Claim                                          Evidence            Verdict
 Save disabled while mutation in flight         save-pending.png    ✓

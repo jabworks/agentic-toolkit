@@ -1,13 +1,13 @@
 ---
 name: adapting-skills
-description: Use when adapting a generic skill, cloning a skill template, scaffolding new code, or generating output that should match Harvey's stack and conventions. Also when improving or updating an existing skill in any project — its trigger contract, eval cases, or structure — to Harvey's authoring standards. Not for creating, registering, or syncing toolkit skills (toolkit-foundry) or reviewing this toolkit's own SKILL.md files (toolkit-skill-standards).
+description: Use when adapting a generic skill, cloning a skill template, scaffolding new code, or generating output that should match the jabworks stack and conventions. Also when improving or updating an existing skill in any project — its trigger contract, eval cases, or structure — to the jabworks authoring standards. Not for creating, registering, or syncing toolkit skills (toolkit-foundry) or reviewing this toolkit's own SKILL.md files (toolkit-skill-standards).
 ---
 
-# Adapting Skills to Harvey's Stack
+# Adapting Skills to the jabworks Stack
 
 ## Overview
 
-Use this as priors when tailoring any skill or generated output to Harvey's context. Config files in the repo always win — read them first; this fills gaps and explains intent.
+Use this as priors when tailoring any skill or generated output to this stack. Config files in the repo always win — read them first; this fills gaps and explains intent.
 
 ## Ground Truth Rule
 
@@ -68,7 +68,7 @@ These repo files override everything here:
 
 ## Improving an Existing Skill (any project)
 
-Harvey's authoring standards travel; the toolkit's machinery does not. When
+These authoring standards travel; the toolkit's machinery does not. When
 improving a skill in another repo (`.claude/skills/`, `.codex/skills/`, a
 plugin's skills tree), apply the standards below and defer to that repo's own
 conventions for everything else — same ground-truth rule as the stack profile.
@@ -99,7 +99,7 @@ reference material into `references/` (progressive disclosure). One skill =
 one job — split before a skill grows a second trigger surface.
 
 **Boundary:** generic scaffolding and eval *tooling* belong to skill-creator
-(if installed); this section is for applying Harvey's standards. Skills in
+(if installed); this section is for applying these standards. Skills in
 *this* toolkit route to toolkit-foundry / toolkit-skill-standards instead.
 
 ## Common Mistakes

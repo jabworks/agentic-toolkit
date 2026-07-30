@@ -1,7 +1,7 @@
 {
   "name": "adapting-skills",
-  "version": "1.3.2",
-  "description": "Codex skill with stack and style priors for adapting generated work to Harvey's conventions.",
+  "version": "1.3.3",
+  "description": "Codex skill with stack and style priors for adapting generated work to the jabworks conventions.",
   "author": {
     "name": "jabworks"
   },
@@ -31,7 +31,7 @@
       "Development"
     ],
     "defaultPrompt": [
-      "Adapt this to Harvey stack.",
+      "Adapt this to the jabworks stack.",
       "Check this against local conventions.",
       "Scaffold this in the preferred style."
     ]
