@@ -72,6 +72,14 @@ structure, and collision discipline.
    and name that sibling instead. Keep unrelated skills concise; do not invent a
    false alternative merely to fill a section.
 
+7. **Interaction contracts.** A skill that prescribes a user-facing menu or
+   checkpoint must mark the option set as exhaustive ("present every row, every
+   time") and state that behavioral defaults shape the *recommendation marker*,
+   never which options appear — an un-defended menu erodes toward the default
+   over sessions (CP-1 incident, `2cc080d`). If another skill's prompt can absorb
+   the menu (e.g. a sign-off step doubling as the what-next menu), both skills
+   carry the requirement, on both sides of the seam.
+
 ## Artifact location contract
 
 Any skill that writes a file into the user's project follows this. Two tiers,

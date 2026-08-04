@@ -74,13 +74,15 @@ stale precisely when the work it proposes gets done.
 - A fresh `git clone` + documented setup leaves no safety net uninstalled
   (met 2026-07-08: README/CLAUDE.md notes + the local-hooks warn test).
 
-## The four-front library-health campaign
+## The library-health campaign (five fronts)
 
 Full phased campaign — commands, expected observations, branch conditions, wrong paths
 fenced off, publish protocol, success criteria — lives in
 `references/health-campaign.md`. Fronts: A trigger precision, B manifest parity,
-C sync/publish automation, D docs staleness (all four selected by the owner,
-2026-07-08; B–D substantially executed in the same audit, A's execution half remains).
+C sync/publish automation, D docs staleness (all selected by the owner,
+2026-07-08; B–D substantially executed in the same audit), E contract adherence
+(added 2026-08-04 after the CP-1 menu-erosion miss — transcripts audited against
+what loaded skills *prescribe*, not just whether they fire).
 
 ## Evidence required
 

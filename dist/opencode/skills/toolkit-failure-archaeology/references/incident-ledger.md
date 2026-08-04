@@ -155,6 +155,51 @@ Doctrine:     quote any frontmatter value containing ": "; the official
 Encoded in:   tests/manifest-parity.test.mjs (unquoted-colon check, red-green
               proven); scripts/validate-plugins.sh + ci.yml release-dry-run.
 
+## Checkpoint menu eroded at runtime while the SKILL.md stayed correct
+
+Symptom:      post-planning approval prompts increasingly omitted the two
+              subagent options; workflow's CP-1 table on disk listed all five
+              rows the whole time. Owner noticed the drift before any audit
+              did (2026-08-04).
+Wrong path:   none pursued, but the same-day 30-skill re-eval — static content
+              review + transcript mining for trigger defects — walked straight
+              past it: the content was correct and the skill *did* fire.
+Root cause:   draft-plan's sign-off step defined no option list, so when its
+              prompt doubled as the what-next menu the option set was
+              improvised — and implement-yourself-by-default biased the
+              improvisation toward dropping the subagent rows. A merged
+              sign-off/CP-1 prompt meant CP-1's defined menu never rendered.
+Evidence:     2cc080d ("CP-1 must always present the full menu"); the
+              2026-08-04 re-eval report (35 findings, zero about this).
+Doctrine:     a prescribed menu is contract, not suggestion — mark option sets
+              exhaustive and defend them against doctrine bias on BOTH sides
+              of any prompt-merging seam. Audits must check contract
+              adherence in transcripts, not just content and firing.
+Encoded in:   workflow CP-1 "the menu is the full menu" + red-flags row;
+              draft-plan step 4; toolkit-skill-standards procedure step 7;
+              toolkit-debugging-playbook symptom row; health-campaign Front E.
+
+## Mechanism declared dead after checking the wrong output location
+
+Symptom:      transcript-mining audit reported "concord capture inert: ~46
+              codex rollouts, one 304-byte manual note" — an ERROR-severity
+              finding that led the maintenance queue (2026-08-04).
+Wrong path:   the finding itself. The miner (and the re-eval before it)
+              checked only ~/.codex/concord/ — concord's GLOBAL tier, which
+              holds manual notes by design.
+Root cause:   per-repo capture writes to <git-root>/.concord/ in each
+              project; all three codex-active projects had live, healthy
+              stores (syncs minutes old, tier promotions logged). Measurement
+              looked where the auditor assumed output lived, not where the
+              skill's own paths contract says it lives.
+Evidence:     4ba3ac6 (the diagnosis commit — its real payload is the
+              codex-exec session_id fallback found WHILE disproving the
+              finding); skills/concord/lib/paths.mjs (the contract).
+Doctrine:     verify the negative — before declaring a mechanism dead, read
+              its contract for where output should live and look there.
+              "Nothing at X" indicts nothing unless X is the write target.
+Encoded in:   health-campaign Front E measurement rule; this entry.
+
 ---
 
 Categories with NO evidenced incident as of 2026-07-08 (stated per the no-fabrication

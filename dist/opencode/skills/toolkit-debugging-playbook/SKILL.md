@@ -39,6 +39,7 @@ Run the discriminating command FIRST; don't theorize before it returns.
 | Manifest fails to parse / install errors | `node -e 'for (const s of ["claude","codex"]) console.log(s, JSON.parse(require("fs").readFileSync("dist/plugins/<p>/." + s + "-plugin/plugin.json")).name)'` | Invalid JSON; missing required field; `skills` path not `./`-prefixed |
 | Skill renders empty/garbled in listings | `node --test tests/skill-invariants.test.mjs` then eyeball YAML quoting | Unquoted YAML with `:` in description (`a13e094`); over-budget frontmatter |
 | condux agents behave stale | `node --test tests/skill-invariants.test.mjs` (agents-mirror test) | Plugin-level `agents/` not mirrored — sync's special case (`6ba6572`) |
+| Skill loads and runs, but its prescribed menu/steps degrade over sessions | diff the skill's contract against a recent transcript of it running — which prescribed options or steps actually appeared? | 1. Two skills' prompts merged and the option set got improvised (CP-1 menu erosion, `2cc080d`) 2. A behavioral default read as license to omit options rather than shape the recommendation 3. The instruction buried too deep in a long body |
 
 ## False friends
 
