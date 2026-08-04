@@ -1,5 +1,11 @@
 # @jabworks/condux
 
+## 0.5.0
+
+### Minor Changes
+
+- [#16](https://github.com/jabworks/agentic-toolkit/pull/16) [`627d95f`](https://github.com/jabworks/agentic-toolkit/commit/627d95ff96442040f99d39baa7178a4558d1cad1) Thanks [@vi-hieu](https://github.com/vi-hieu)! - From the 2026-08-04 re-eval: annotate-server gains `--no-reject` so discovery's design review is genuinely accept-or-fix (the Reject verdict was only hidden in directory mode — file-mode design review showed a button the agent had no branch for, and clicking it killed the server). Also trigger-contract fixes: code-review, plan-review, discovery, technical-spec, and live-verification frontmatter gained mutual "not for X" guards and restored trigger phrasing. Both flow into the bundled OpenCode skills.
+
 ## 0.4.1
 
 ### Patch Changes
