@@ -43,7 +43,7 @@ A checkout of the repo. Nothing else — this skill assumes zero prior context.
    `scripts/sync.sh` invokes the OpenCode build itself (both the one-skill and the
    sync-everything branch), so one command refreshes every generated destination —
    the two dist trees above, `dist/plugins/condux/agents/`, and the npm package's
-   `agents/` (step 2). The only
+   `agents/` and bundled `skills/` (step 2). The only
    hand-edited files under `dist/` are the paired plugin manifests
    (`.claude-plugin/plugin.json` + `.codex-plugin/plugin.json`), which have no
    `skills/` source. The OpenCode tree has no manifests at all — that host routes
@@ -52,7 +52,8 @@ A checkout of the repo. Nothing else — this skill assumes zero prior context.
 2. **The npm workspace.** `packages/condux-opencode/` publishes `@jabworks/condux`,
    the OpenCode plugin that injects the condux specialist agents via the config
    hook. Its `index.js` and `package.json` are hand-edited; its `agents/` dir is
-   generated from `skills/subagent-execution/agents/*.md` by the same
+   generated from `skills/subagent-execution/agents/*.md` and its `skills/` dir
+   (the 13 bundled condux skills) from `skills/<name>/`, both by the same
    `scripts/build-opencode.mjs`. Publishing runs on changesets — add a
    `.changeset/*.md` with `pnpm changeset`, and `.github/workflows/release.yml`
    opens the version PR and publishes to npm via OIDC trusted publishing (no
@@ -78,10 +79,12 @@ A checkout of the repo. Nothing else — this skill assumes zero prior context.
 
 6. **Where not to write.** `~/.claude/` (user config), repo-root `.claude/`
    (local settings only), `.remember/` (session history), and every generated
-   tree — the next `scripts/sync.sh` clobbers all four:
+   tree — the next `scripts/sync.sh` clobbers all five:
    `dist/plugins/*/skills/`, `dist/plugins/condux/agents/` (the plugin-level
    agent mirror — the `6ba6572` drift lived exactly here),
-   `dist/opencode/skills/`, and `packages/condux-opencode/agents/`.
+   `dist/opencode/skills/`, `packages/condux-opencode/agents/`, and
+   `packages/condux-opencode/skills/` (the bundled condux skills —
+   `rm -rf`'d and rebuilt on every run).
    `docs/plans/` holds design docs; `distillation/` holds the 2026-07-08 audit
    trail.
 
@@ -110,7 +113,8 @@ None — orientation is knowledge. Route follow-up work to `toolkit-foundry` (cr
 
 - Editing a dist/ skill tree because "that's where the plugin is" — the next
   `scripts/sync.sh` silently overwrites it (rsync `--delete`, and
-  `build-opencode.mjs` `rm -rf`s its two outputs before regenerating).
+  `build-opencode.mjs` `rm -rf`s its three outputs — including
+  `packages/condux-opencode/skills/` — before regenerating).
 - Treating a directory's existence as proof a skill exists — check for SKILL.md; git
   doesn't track empty dirs, so `git status` won't warn you.
 - Assuming "skills synced = everything synced" — condux also mirrors a plugin-level
@@ -147,7 +151,8 @@ Re-verify volatile claims with:
 - `git status --short` after `bash scripts/sync.sh` — anything dirty was a tree
   someone hand-edited
 
-Last generated: 2026-07-08 (three-channel + packages/ revision 2026-07-23)
+Last generated: 2026-07-08 (three-channel + packages/ revision 2026-07-23; bundled
+condux skills tree added to the generated list 2026-08-04)
 Known uncertainty:
 - `.claude/skills/` does not exist today; a future third-party plugin install could
   create it — it would be an installed-plugin mirror, still not this repo's source.

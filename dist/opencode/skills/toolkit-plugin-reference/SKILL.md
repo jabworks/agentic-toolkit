@@ -40,10 +40,10 @@ package — `tests/opencode-dist.test.mjs` as the executable source of truth.
 | `version` | required (test-enforced); the pair must match — bump policy (which bump when, cache rationale) has its home in `toolkit-change-control` |
 | `description` | required (test-enforced); may carry platform wording ("Claude Code skill for…" / "Codex skill for…") — identity fields `name`/`version`/`skills` must match across the pair |
 | `author.name` | required (test-enforced) |
-| `repository`, `license`, `keywords` | convention — present in every manifest (18 at the 2026-07-08 audit) |
+| `repository`, `license`, `keywords` | convention — present in every manifest (22 at the 2026-08-04 re-eval; 11 plugin pairs) |
 | `skills` | required (test-enforced), must be `"./skills/<plugin-dir-name>"` — same rule for standalone AND bundle plugins |
 | `interface` | **codex manifest only** since 2026-07-29 (parity-test-enforced: present in codex, absent in claude). Codex-native install-surface block (displayName, shortDescription ≤125 chars per Codex docs, longDescription, developerName, category, defaultPrompt; optionally capabilities/websiteURL/logo/screenshots). **Verified 2026-07-08: unknown to Claude Code** — ignored at load, validator warns, `--strict` errors. Previously duplicated into the claude manifest for parity; dropped so `claude plugin validate --strict` passes clean, since Claude Code never read the field anyway |
-| `hooks` | **codex manifest only** (condux carries `"hooks": "./hooks/codex-hooks.json"`). BOTH hosts default to loading `hooks/hooks.json` when no manifest field exists (verified in both hosts' docs); the codex-side field overrides that default so Codex loads the Stop-only file instead of Claude's PreToolUse file (commit 95425c8). A missing claude-side `hooks` field is BY DESIGN, not a parity bug. **Hook commands use the host's own plugin-root variable** — Claude Code substitutes `${CLAUDE_PLUGIN_ROOT}`, Codex substitutes `${PLUGIN_ROOT}` and does NOT set Claude's (verified 2026-07-10, Codex 0.144.1: the unexpanded variable made condux's Stop hook exit 1 on every turn; parity-test-enforced) |
+| `hooks` | **codex manifest only** — two carriers with two path shapes: condux points at plugin root (`"hooks": "./hooks/codex-hooks.json"`), concord points into its skill dir (`"hooks": "./skills/concord/hooks/codex-hooks.json"`); both resolve relative to the plugin root, so either shape is valid. BOTH hosts default to loading `hooks/hooks.json` when no manifest field exists (verified in both hosts' docs); the codex-side field overrides that default so Codex loads the Stop-only file instead of Claude's PreToolUse file (commit 95425c8). A missing claude-side `hooks` field is BY DESIGN, not a parity bug. **Hook commands use the host's own plugin-root variable** — Claude Code substitutes `${CLAUDE_PLUGIN_ROOT}`, Codex substitutes `${PLUGIN_ROOT}` and does NOT set Claude's (verified 2026-07-10, Codex 0.144.1: the unexpanded variable made condux's Stop hook exit 1 on every turn; parity-test-enforced) |
 
 ### Verified host field support (2026-07-08)
 
@@ -118,7 +118,7 @@ listener), not skills. Standard npm manifest; the repo-specific constraints are:
 
 Parsed by every host: `name`, `description`. House convention fields observed in this
 repo: `when_to_use` (second half of the trigger contract), `argument-hint`, `effort`,
-`disable-model-invocation`, `user-invocable`. Budgets: description ≤ 500 chars,
+`disable-model-invocation`. Budgets: description ≤ 500 chars,
 frontmatter ≤ 1024 (test-enforced) — plus the merged-description cap above for the
 OpenCode channel.
 
@@ -163,14 +163,14 @@ one, so `--strict` stays clean for directory submissions.
 
 Re-verify volatile claims with:
 - `node --test tests/plugin-manifests.test.mjs tests/manifest-parity.test.mjs tests/opencode-dist.test.mjs`
-- `for m in dist/plugins/*/.{claude,codex}-plugin/plugin.json; do jq -r '.skills' "$m"; done`
+- `node -e 'for (const m of require("fs").globSync("dist/plugins/*/.{claude,codex}-plugin/plugin.json")) console.log(m, require("./" + m).skills)'`
 - `claude plugin validate dist/plugins/<p> --strict` — official validator (expect a
   clean pass, no warnings, since `interface` moved to the codex manifest on 2026-07-29)
 - `node scripts/build-opencode.mjs && git status --short` — clean tree means the
   OpenCode channel and the package's `agents/` are in sync with source
 
 Last generated: 2026-07-08 (host-support matrix verified same day; OpenCode +
-npm-package sections added 2026-07-23)
+npm-package sections added 2026-07-23; hooks row + counts refreshed 2026-08-04)
 Known uncertainty:
 - Codex's tolerance of fields IT doesn't recognize is untested — this repo's manifests
   contain only Codex-documented fields, so it's never exercised. No codex-side

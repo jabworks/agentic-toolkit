@@ -41,6 +41,7 @@ Gate every change to this toolkit through classification → checklist → evide
 | Marketplace-only fix | `.claude-plugin/marketplace.json` | none (no version field there) |
 | Doc-only fix | README.md / CLAUDE.md / skill README.md | none, unless the doc ships inside a plugin (then patch) |
 | Dist-only resync | `dist/` via `scripts/sync.sh` | none — but ask WHY it drifted first |
+| Retired skill | remove `skills/<n>/`, its dist tree (standalone: whole `dist/plugins/<n>/`; bundle-member: its subdir), its marketplace entry (standalone only), then `bash scripts/sync.sh` to regenerate the OpenCode + package trees | standalone: entry gone, no bump target; bundle-member: bundle **major** (an installed skill disappearing is a breaking change to the install surface) |
 
 **Rules that override everything:** `skills/` is the only editable skill source;
 `dist/` skill trees are generated (edit manifests only). Version bumps go in **both**
@@ -150,7 +151,10 @@ Re-verify volatile claims with:
 - the step-2 `node -e` script — registration reality and pair equality in one pass
 - `git status -sb | head -1` — whether the work has actually left this machine
 
-Last generated: 2026-07-08
+Last generated: 2026-07-08 (retired-skill class added 2026-08-04)
 Known uncertainty:
 - Whether marketplace `category` values beyond "development" are meaningful to any
   installer is unverified — every entry currently uses "development".
+- No skill has actually been retired yet — the retired-skill row is doctrine, not
+  precedent; expect to refine it on first use (e.g. whether `npx skills add`
+  installs prune removed skills).

@@ -49,14 +49,19 @@ structure, and collision discipline.
    words users type ("sync dist", "am I done", "browse specs"). Workflow summaries
    belong in the body, not the description.
 
-4. **Collision scan (manual, mandatory).** Read every sibling description +
+4. **Collision scan (mandatory).** Read every sibling description +
    `when_to_use`. If the new skill's trigger space overlaps, either merge into the
    sibling or add explicit mutual disambiguation — both skills name each other, the
    way subagent-deployment ("not for executing an ordered plan — that's
    subagent-execution") and subagent-execution ("not for ad-hoc independent tasks —
    that's subagent-deployment") do. Known hot zones to check against: the subagent
    pair, plan-review↔spec-browser ("spec directory"), preflight↔finalize ("am I
-   done"), toolkit-foundry↔adapting-skills (skill creation vs adaptation).
+   done"), toolkit-foundry↔adapting-skills (skill creation vs adaptation),
+   concord↔toolkit-failure-archaeology ("has this happened before").
+   Enforcement: `tests/skill-routing-contracts.test.mjs` asserts each guarded pair
+   names the other in frontmatter — **add every new pair there** so the guard can't
+   silently erode. `scripts/collision-scan.mjs --check` exists but lexical scoring
+   was falsified (5% recall, 2026-07-09) — the reading, and the test, are the scan.
 
 5. **Progressive disclosure.** SKILL.md = concise runbook readable in one scan:
    purpose, when (not) to use, procedure, traps, related skills. Long archaeology,
@@ -78,13 +83,13 @@ split by durability — not by which skill produced them.
 | **Working state** — scaffolding the durable thing was built from | `<git-root>/.<plugin-name>/`, subdivided by artifact type | gitignored |
 
 The directory is named for the **owning plugin**, never the skill and never the
-artifact. condux has 12 skills and one `.condux/` — the install unit is the
+artifact. condux has 13 skills and one `.condux/` — the install unit is the
 plugin, so it's the thing that owns a directory and the thing a user removes to
 stop the directory reappearing. `.handoffs/` names content, not owner: two
 plugins can both produce handoffs, and the name doesn't say what to uninstall.
 
-Current owners: `.condux/` (`designs/ plans/ progress/ scratch/`),
-`.session-handoff/`, `.session-report/`.
+Current owners: `.condux/` (`designs/ plans/ progress/ scratch/ verification/`),
+`.concord/`, `.session-handoff/`, `.session-report/`.
 
 **Bootstrap** — the first write in a repo runs this, once:
 
@@ -139,9 +144,10 @@ standards applied to skills in *other* projects), `toolkit-debugging-playbook`
 
 Re-verify volatile claims with:
 - `node --test tests/skill-invariants.test.mjs` — budgets/name enforcement
+- `node --test tests/skill-routing-contracts.test.mjs` — the guarded collision pairs
 - `grep -l 'when_to_use' skills/*/SKILL.md` — which skills use the two-field contract
 
-Last generated: 2026-07-08
+Last generated: 2026-07-08 (owners/counts + routing-test enforcement noted 2026-08-04)
 Known uncertainty:
 - How each host tool weights `description` vs `when_to_use` for auto-triggering is
   unverified — treat front-loading BOTH fields as the safe default.
