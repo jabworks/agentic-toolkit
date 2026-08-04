@@ -67,7 +67,7 @@ test('annotate-server directory mode: doc manifest, per-doc content, grouped fee
     const base = 'http://127.0.0.1:' + port;
 
     const docsRes = await fetch(base + '/api/docs');
-    assert.deepEqual(await docsRes.json(), { dir: true, docs: ['index.md', 'decisions.md'] });
+    assert.deepEqual(await docsRes.json(), { dir: true, docs: ['index.md', 'decisions.md'], noReject: true });
 
     const docRes = await fetch(base + '/api/plan?doc=decisions.md');
     assert.equal(await docRes.text(), fs.readFileSync(path.join(specDir, 'decisions.md'), 'utf8'));

@@ -1,7 +1,7 @@
 ---
 name: code-review
 description: 'One-shot code review. Produces a diagnostic report categorized by severity (Critical / Important / Minor). Never fixes issues automatically.'
-when_to_use: 'On-request only — never auto-triggers. After /finalize, ask once: "Want a code review before merging?" Trigger phrases: "review this", "review before merge", "check this PR".'
+when_to_use: 'On-request only — never auto-triggers. At workflow CP-2 (pre-finalize, on request) or after /finalize, ask once: "Want a code review before merging?" Trigger phrases: "review this", "review before merge", "check this PR". Not for reviewing a plan or spec before implementation — that's plan-review. Not for running the change to watch it work — that's live-verification.'
 argument-hint: "<PR URL, diff, branch, or file path>"
 ---
 
@@ -18,7 +18,11 @@ One review pass. Categorized findings. You decide what to action. No fixing, no 
 
 ## When This Runs
 
-After `/finalize` completes, ask once:
+Two sanctioned entry points:
+
+- **Workflow CP-2** ("Implementation done") — the user picks "Code review first"
+  and this skill runs on the diff before preflight/finalize.
+- **After `/finalize` completes** — ask once:
 
 > "Want a code review before merging?"
 

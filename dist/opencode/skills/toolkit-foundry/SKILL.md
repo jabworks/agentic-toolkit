@@ -1,6 +1,6 @@
 ---
 name: toolkit-foundry
-description: Use when creating a new skill for jabworks/agentic-toolkit, registering it in the marketplace, syncing the generated dist trees, changing the @jabworks/condux npm package, or bumping the toolkit version. Not for adapting a generic skill to the jabworks stack; use adapting-skills.
+description: Use when creating a new skill for jabworks/agentic-toolkit, registering it, or shipping the generated trees — "scaffold a new skill", "register this skill", "sync dist", "bump the toolkit version" — plus changes to the @jabworks/condux npm package. Not for adapting a generic skill to the jabworks stack (adapting-skills), nor for reviewing a SKILL.md's content and trigger wording (toolkit-skill-standards).
 ---
 
 # Toolkit Foundry
@@ -38,6 +38,7 @@ One source, three generated distributions — `scripts/sync.sh` produces all of 
 | `dist/plugins/<name>/skills/<name>/` | `/plugin install` (marketplace) | mirrors `skills/<name>/` byte-for-byte |
 | `dist/opencode/skills/<name>/` | OpenCode | same files, but `SKILL.md` has `when_to_use` folded into `description` |
 | `packages/condux-opencode/agents/` | `@jabworks/condux` on npm | translated from `skills/subagent-execution/agents/*.md` |
+| `packages/condux-opencode/skills/` | `@jabworks/condux` on npm | the 13 condux skills, byte-identical to their `dist/opencode/skills/` form |
 
 `npx skills add` is the fourth channel and needs no generation — it installs from
 top-level `skills/` directly and ignores everything above.
@@ -115,7 +116,7 @@ Both agents read from the same plugin root (`dist/plugins/<name>/`) but look in 
 }
 ```
 
-**Claude Code** — `dist/plugins/<name>/.claude-plugin/plugin.json`: identical structure; `description` (and `interface` wording) may carry the platform prefix ("Claude Code skill for..."), while `name`/`version`/`skills` must match the Codex manifest exactly (enforced by tests/manifest-parity.test.mjs).
+**Claude Code** — `dist/plugins/<name>/.claude-plugin/plugin.json`: same structure **minus `interface`** — that field is codex-manifest-only (since 2026-07-29; `manifest-parity` fails if the Claude manifest carries it). `description` may carry the platform prefix ("Claude Code skill for..."), while `name`/`version`/`skills` must match the Codex manifest exactly (enforced by tests/manifest-parity.test.mjs).
 
 The `skills` path is relative to the plugin root and must start with `./`.
 
@@ -146,9 +147,10 @@ standalone plugin and copies to the right target. Run without arguments to sync
 everything.
 
 Either way it then runs `node scripts/build-opencode.mjs`, which regenerates
-**all** of `dist/opencode/skills/` and `packages/condux-opencode/agents/` from
-scratch — one command covers every generated tree, so never invoke the two
-separately expecting different results.
+**all** of `dist/opencode/skills/`, `packages/condux-opencode/agents/`, and
+`packages/condux-opencode/skills/` from scratch (the last two are `rm -rf`'d
+first) — one command covers every generated tree, so never invoke the pieces
+separately expecting different results, and never hand-edit any of the three.
 
 A brand-new skill has no `dist/plugins/` target until step 1 scaffolds one; sync
 prints `SKIP` and moves on. The OpenCode build has no such gate — it picks up
@@ -168,8 +170,11 @@ Runs the invariant suite. What each file guards:
 | `opencode-dist` | `dist/opencode/skills/` + `packages/condux-opencode/agents/` match the build script's output; merged descriptions within OpenCode's 1024-char cap; the plugin loads and never clobbers user-defined agents |
 | `skill-invariants` | frontmatter budgets, kebab-case `name` == dir, marketplace/plugin paths resolve, condux `agents/` mirror, plan-review no-egress |
 | `plugin-manifests` | `plugin.json` / `marketplace.json` validity, `./`-prefixed paths |
-| `manifest-parity` | the `.claude-plugin`/`.codex-plugin` pair agrees on name/version/skills; `interface` in both; `hooks` codex-only; trigger contract per skill |
+| `manifest-parity` | the `.claude-plugin`/`.codex-plugin` pair agrees on name/version/skills; `interface` codex-only (absent from the Claude manifest); `hooks` codex-only; trigger contract per skill |
 | `docs-catalog` | every marketplace plugin appears in README.md and CLAUDE.md |
+| `skill-routing-contracts` | mutually-guarded trigger pairs name each other in frontmatter |
+| `scaffold` / `script-safety` / `annotate-server` / `browser-security` / `session-report` | shipped reference scripts: syntax, no-egress, server behavior |
+| `concord-*` (4 files) | the concord plugin's store, rollout sync, paths, budget |
 | `local-hooks` | warn-only — tells you this clone lacks the pre-commit hook |
 
 CI runs the same command — a red suite here is a red build there.
@@ -177,13 +182,12 @@ CI runs the same command — a red suite here is a red build there.
 Optionally also run the official validator:
 
 ```bash
-claude plugin validate dist/plugins/<name>
+claude plugin validate dist/plugins/<name> --strict
 ```
 
-Expect exactly one warning — the Codex-native `interface` field is unknown to Claude
-Code and ignored at load time (verified 2026-07-08; see `toolkit-plugin-reference`).
-Anything else it reports is a real problem. Don't use `--strict` (it fails on that
-known warning).
+Use `--strict` — expect a clean pass, no warnings. (`interface` moved to the Codex
+manifest on 2026-07-29 precisely so `--strict` passes clean; see
+`toolkit-plugin-reference`.) Anything it reports is a real problem.
 
 ### 7. Commit and push
 

@@ -77,7 +77,7 @@ Before Step 1, check the **Progress Ledger** (above) for already-completed tasks
 │                                                                  │
 │  Step 3: GROUP INTO A WAVE                                      │
 │  Among this round's unblocked tasks needing an agent, check     │
-│  references/safety-checklist.md (subagent-deployment skill);    │
+│  subagent-deployment/references/safety-checklist.md;            │
 │  tasks that clear it form one wave.                             │
 │                                                                  │
 │  Step 4: DISPATCH THE WAVE                                      │

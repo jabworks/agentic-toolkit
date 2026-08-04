@@ -19,8 +19,10 @@ Turn a signed-off design into a clear, executable plan. Lean task cards, not mic
 ## Before Writing
 
 1. Confirm discovery has run and design is signed off. First glob
-   `.condux/designs/*<slug>*.md` and `specs/<slug>/` (slug = kebab-case
-   of the feature name) for an existing signed-off design — if found,
+   `.condux/designs/*<slug>*.md` and both spec scopes —
+   `<package-root>/specs/<slug>/` and `<git-root>/specs/<slug>/`, same
+   two-scope lookup as the workflow router (slug = kebab-case of the
+   feature name) — for an existing signed-off design; if found,
    treat this check as satisfied without asking. Otherwise ask: "We
    haven't aligned on the design yet — run /discovery first, or confirm
    you want to skip it."

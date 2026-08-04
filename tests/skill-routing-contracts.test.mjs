@@ -24,6 +24,15 @@ test('known trigger-collision pairs disambiguate each other mutually', () => {
     ['root-cause-analysis', 'toolkit-debugging-playbook'],
     ['plan-review', 'spec-browser'],
     ['subagent-deployment', 'subagent-execution'],
+    ['concord', 'toolkit-failure-archaeology'],
+    ['concord', 'session-handoff'],
+    ['session-handoff', 'session-report'],
+    ['session-handoff', 'subagent-execution'],
+    ['git-operations', 'release'],
+    ['toolkit-foundry', 'toolkit-skill-standards'],
+    ['code-review', 'plan-review'],
+    ['code-review', 'live-verification'],
+    ['discovery', 'technical-spec'],
   ];
 
   for (const [a, b] of pairs) {

@@ -1,6 +1,6 @@
 ---
 name: toolkit-failure-archaeology
-description: Use when about to re-fight an old battle in jabworks/agentic-toolkit — checking whether a mistake happened before, mining git history for precedent, or recording a new incident. Holds the evidenced incident ledger (dist drift, YAML breakage, missed registration, stale plugin caches) with commit hashes and the doctrine each produced. Triggers include "has this happened before", "why do we do it this way", "add this to the ledger".
+description: Use when about to re-fight an old battle in jabworks/agentic-toolkit — checking whether a mistake happened before, mining git history for precedent, or recording a new incident. Holds the evidenced incident ledger (dist drift, YAML breakage, missed registration, stale plugin caches) with commit hashes and the doctrine each produced. Triggers include "has this happened before", "why do we do it this way", "add this to the ledger". Not for recalling past sessions; use concord.
 ---
 
 # Toolkit Failure Archaeology
@@ -40,8 +40,9 @@ so no session re-fights a settled battle.
 4. **"Do not re-fight this battle" check**: the ledger's settled decisions include
    hand-editing dist/ (settled: never), monorepo-local plan paths (reverted,
    `dc1e221`), GNU-only grep flags (banned for portability, `dc1e221`), and a separate
-   html-artifacts skill (folded into plan-review — recorded in root `PLAN.md`, the
-   plan-review design doc).
+   html-artifacts skill (folded into plan-review — the fold's design record lives
+   in `docs/plans/2026-07-02-plan-review-spec-fold-design.md`; the root `PLAN.md`
+   that once recorded it is gone).
 
 ## Evidence required
 
@@ -74,10 +75,11 @@ entry blocks the retry before design work starts.
 ## Provenance and maintenance
 
 Re-verify volatile claims with:
-- `git log --oneline --all | wc -l` — history size (98 commits at last audit)
+- `git log --oneline --all | wc -l` — history size (50 on main at the 2026-08-04
+  re-eval; squash-merges keep it small, so a jump means unmerged branches)
 - `git log --oneline -5` — anything new worth a ledger entry
 
-Last generated: 2026-07-08
+Last generated: 2026-07-08 (pointers refreshed 2026-08-04)
 Known uncertainty:
 - Pre-toolkit history (skills imported from other repos, e.g. toolkit-foundry's
   softaworks origin) is not covered — the ledger starts at this repo's own commits.

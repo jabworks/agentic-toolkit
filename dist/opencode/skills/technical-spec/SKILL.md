@@ -1,6 +1,6 @@
 ---
 name: technical-spec
-description: Use when a feature plan, design session, or implementation milestone is complete and the decisions, API contracts, implementation details, and quirks should be persisted for future reference. Also use when the user says "save spec", "document this", "write up what we decided", or "spec this out".
+description: "Persists feature decisions, API contracts, implementation details, and quirks into a structured, queryable spec tree — one folder per feature, one file per concern. Invoke-only — discovery runs it at design sign-off and preflight's drift check reads its output; the user runs it via /technical-spec when they say \"save spec\", \"document this\", \"write up what we decided\", or \"spec this out\". Not for turning a rough idea into a design first — that's discovery."
 disable-model-invocation: true
 ---
 
@@ -46,42 +46,10 @@ Only create files that have actual content. Don't create empty files.
 
 ## Workflow
 
-```dot
-digraph save_spec {
-    rankdir=TB;
-    "Infer feature name from context" [shape=box];
-    "Feature name clear?" [shape=diamond];
-    "Ask user for feature name" [shape=box];
-    "Notify user — confirm before writing" [shape=box];
-    "User approves?" [shape=diamond];
-    "Stop" [shape=box];
-    "Run scaffold.sh <feature>" [shape=box];
-    "Output: exists or created?" [shape=diamond];
-    "Write content files, update index.md Contents" [shape=box];
-    "Read index.md, update changed files only" [shape=box];
-    "Ask: open live HTML preview?" [shape=diamond];
-    "Locate + run plan-review annotate-server.js on the spec dir" [shape=box];
-    "Tell user: Ctrl+C when done reviewing" [shape=box];
-    "Done" [shape=doublecircle];
-
-    "Infer feature name from context" -> "Feature name clear?";
-    "Feature name clear?" -> "Notify user — confirm before writing" [label="yes"];
-    "Feature name clear?" -> "Ask user for feature name" [label="no"];
-    "Ask user for feature name" -> "Notify user — confirm before writing";
-    "Notify user — confirm before writing" -> "User approves?";
-    "User approves?" -> "Stop" [label="no"];
-    "User approves?" -> "Run scaffold.sh <feature>" [label="yes"];
-    "Run scaffold.sh <feature>" -> "Output: exists or created?";
-    "Output: exists or created?" -> "Write content files, update index.md Contents" [label="created"];
-    "Output: exists or created?" -> "Read index.md, update changed files only" [label="exists"];
-    "Write content files, update index.md Contents" -> "Ask: open live HTML preview?";
-    "Read index.md, update changed files only" -> "Ask: open live HTML preview?";
-    "Ask: open live HTML preview?" -> "Locate + run plan-review annotate-server.js on the spec dir" [label="yes"];
-    "Ask: open live HTML preview?" -> "Done" [label="no"];
-    "Locate + run plan-review annotate-server.js on the spec dir" -> "Tell user: Ctrl+C when done reviewing";
-    "Tell user: Ctrl+C when done reviewing" -> "Done";
-}
-```
+Infer the feature name (ask if unclear) → confirm with the user before
+writing → run the scaffold script → write or update the concern files and
+`index.md` → offer the live HTML preview. Each step is specified in the
+sections below.
 
 ## Required Notifications
 

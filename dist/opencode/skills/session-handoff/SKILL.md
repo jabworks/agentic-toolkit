@@ -1,6 +1,6 @@
 ---
 name: session-handoff
-description: "Creates and resumes handoff documents for seamless agentic coding session transitions. Trigger when context approaches capacity (>80%), at natural pauses, when switching workstreams, or when resuming a previous session from a handoff document. Trigger phrases: \"save state\", \"handoff\", \"wrap up\", \"resume from handoff\", \"continue from last session\", \"clear handoffs\", \"prune handoffs\". Not for resuming work on a design or plan artifact — that is discovery/draft-plan territory."
+description: "Creates and resumes handoff documents for seamless agentic coding session transitions. Trigger when context approaches capacity (>80%), at natural pauses, when switching workstreams, or when resuming a previous session from a handoff document. Trigger phrases: \"save state\", \"handoff\", \"wrap up\", \"resume from handoff\", \"continue from last session\", \"clear handoffs\", \"prune handoffs\". Not for resuming work on a design or plan artifact — that is discovery/draft-plan territory. Not for resuming an in-flight plan from the .condux/progress/ ledger — that is subagent-execution. Not for a usage/cost report — that is session-report. Not for remembering facts across Codex sessions — that is concord."
 ---
 
 # Session Handoff Skill

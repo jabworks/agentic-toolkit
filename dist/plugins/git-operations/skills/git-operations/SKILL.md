@@ -1,6 +1,6 @@
 ---
 name: git-operations
-description: Use when deciding which git operation fits a situation and running it safely — undoing a commit, discarding or unstaging changes, parking work-in-progress, integrating upstream, or recovering from a mistake. A decision router (situation → operation → safe command + undo path) favouring modern porcelain (`switch`, `restore`) over legacy `checkout`. Cross-links to git-commit for committing. Everyday + recovery only.
+description: Use when deciding which git operation fits a situation and running it safely — undoing a commit, discarding or unstaging changes, parking work-in-progress, integrating upstream, or recovering from a mistake. A decision router (situation → operation → safe command + undo path) favouring modern porcelain (`switch`, `restore`) over legacy `checkout`. Cross-links to git-commit for committing. Not for tagging or publishing a version — that's release. Everyday + recovery only.
 ---
 
 # git-operations

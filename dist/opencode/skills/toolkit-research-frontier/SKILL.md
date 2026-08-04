@@ -33,7 +33,7 @@ stale precisely when the work it proposes gets done.
   condux agents mirror, plan-review no-egress, scaffold + annotate-server behavior.
 - `scripts/sync.sh` (multi-bundle target detection), `scripts/install-hooks.sh`.
 - The condux and toolkit-ops bundles; toolkit-foundry's authoring runbook.
-- Per-skill trigger evals under `skills/*/evals/` (19 skills, ~390 queries) + the
+- Per-skill trigger evals under `skills/*/evals/` (23 skills, 398 queries) + the
   trigger matrix and model-transfer eval under `distillation/` (2026-07-08 audit).
 - `scripts/eval-triggers.mjs` — live routing scorer (`claude -p` judge; baseline
   76.0% recorded in `references/health-campaign.md` Front A3).
@@ -57,13 +57,14 @@ stale precisely when the work it proposes gets done.
 
 ## First three concrete steps
 
-1. Split the eval corpus into cold-trigger vs in-context cases, teach
-   `scripts/eval-triggers.mjs` to accept `workflow` as a valid route for dev-task
-   queries, and re-run toward the ≥90% criterion (baseline: 76.0%, 2026-07-08).
-2. Add a docs-catalog test: every `marketplace.json` plugin name appears in README.md
-   and CLAUDE.md; wire into `node --test`.
-3. Replace the frontmatter regex parse with a strict mini-YAML check (quoting-aware,
-   still dependency-free) in `tests/skill-invariants.test.mjs`.
+1. A4 follow-up: work down the 31 residual eval misses empirically — periodic
+   `scripts/eval-triggers.mjs` runs plus targeted guard clauses for the strongest
+   collision spaces (discovery↔session-handoff "resume" first); lexical automation
+   is falsified, so this stays manual-with-evals.
+2. Replace the frontmatter regex parse with a strict mini-YAML check (quoting-aware,
+   still dependency-free) in `tests/skill-invariants.test.mjs` — open problem 2.
+3. Run the trigger evals against a weaker model to test transfer (the known
+   uncertainty below — needs owner confirmation on which model/harness).
 
 ## You have a result when…
 
@@ -117,7 +118,7 @@ Re-verify volatile claims with:
 - `ls skills/*/evals/ 2>/dev/null` — which skills carry trigger evals
 - `git log --oneline -10` — whether a frontier item has since been done
 
-Last generated: 2026-07-08
+Last generated: 2026-07-08 (steps/counts refreshed 2026-08-04)
 Known uncertainty:
 - No weaker-model eval run has happened yet; trigger-eval quality is untested against
   a real model (owner-confirmation-needed for which model/harness to use).

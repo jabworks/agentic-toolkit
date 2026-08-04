@@ -706,9 +706,11 @@
         let meta={dir:false,docs:['plan']};
         try{ meta=await (await fetch('/api/docs')).json(); }catch(e){}
         DIRMODE=!!meta.dir; docs=meta.docs||[];
-        // Directory (spec) review is accept-or-fix — a spec documents work already
-        // decided, so the plan-only "Reject / don't build it" verdict doesn't apply.
-        if(DIRMODE){ const rj=document.getElementById('btn-reject'); if(rj)rj.style.display='none'; }
+        // Accept-or-fix reviews hide the plan-only "Reject / don't build it"
+        // verdict: directory (spec) review always — a spec documents work already
+        // decided — and single-file review when the server was started with
+        // --no-reject (discovery's design stage).
+        if(DIRMODE||meta.noReject){ const rj=document.getElementById('btn-reject'); if(rj)rj.style.display='none'; }
         planEl.innerHTML='';
         docs.forEach(function(d,i){
           const pane=document.createElement('div'); pane.className='docpane'; pane.style.display='none';

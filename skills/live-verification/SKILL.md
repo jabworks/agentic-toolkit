@@ -1,7 +1,7 @@
 ---
 name: live-verification
 description: Verify a change by actually running it — drive the real UI or endpoint, check each claim against observed behaviour, and capture evidence before pushing. Detects what's runnable, checks light mode then dark, and reports claim → evidence → verdict with unverifiable claims named rather than hidden.
-when_to_use: After /finalize, before committing or pushing a change that has a runnable surface — UI, page, component, endpoint, CLI. Triggers include "verify it live", "did this actually work", "check it in the browser", "live verify before pushing", "does it render right". Not for typecheck/lint/test (that's finalize), not for auditing plan completeness (preflight), not for reading code to judge it (code-review).
+when_to_use: After /finalize, before committing, pushing, or merging a change that has a runnable surface — UI, page, component, endpoint, CLI. Triggers include "verify it live", "did this actually work", "check it in the browser", "verify on preview", "check the preview env then merge", "live verify before pushing", "does it render right". Not for typecheck/lint/test (that's finalize), not for auditing plan completeness (preflight), not for reading code to judge it (code-review).
 argument-hint: "[what to verify — optional; defaults to the current diff]"
 ---
 
@@ -157,18 +157,7 @@ Evidence is **working state**: `<git-root>/.condux/verification/`, gitignored,
 alongside condux's `designs/` and `plans/`. Never the repo root, never the
 project's `docs/`.
 
-**Bootstrap.** `.condux/` is created on demand at the git root by the first
-skill that writes there. Before the first write, check it's ignored:
-
-```bash
-git check-ignore -q .condux/ || echo "not ignored"
-```
-
-If it isn't, offer once: "condux keeps its working files in `.condux/` — add
-it to `.gitignore` so they stay out of your commits?" On yes, append
-`.condux/` to the repo's `.gitignore`. If the user would rather not touch a
-tracked file, write it to `.git/info/exclude` instead. Never edit either file
-without asking. Not a git repo → fall back to CWD and say so once.
-
-**Override.** A project can relocate this in `AGENTS.md`; an explicit
-override always wins.
+**Bootstrap.** Same contract as every condux skill — run the `.condux/`
+bootstrap from `/workflow` → Artifacts (check `git check-ignore -q .condux/`,
+offer the `.gitignore` line once, `AGENTS.md` override wins) before the first
+write.

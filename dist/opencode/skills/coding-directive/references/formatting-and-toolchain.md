@@ -12,7 +12,7 @@ Tier 1 — extracted from the `github.com/jabworks/style-guide` configs
   `import`/`export` only. No CommonJS in new code.
 - **Monorepo:** Turborepo + pnpm workspaces. Internal deps use the
   `workspace:*` protocol. Versioning via Changesets. Packages are scoped
-  (`@jabworks/*`; `@haven/*` in Haven).
+  (`@jabworks/*`; other monorepos use their own scope, e.g. `@acme/*`).
 - **Dual lint/format toolchain, kept in parity:** ESLint + Prettier is the
   canonical pair; oxlint + oxfmt is the fast mirror. Both must produce
   equivalent results. When editing configs, any rule change in one toolchain

@@ -33,10 +33,10 @@ Run the discriminating command FIRST; don't theorize before it returns.
 | Symptom | First command | Likely root causes (ranked) |
 |---|---|---|
 | Skill doesn't trigger | `sed -n '1,10p' skills/<n>/SKILL.md` — does a trigger contract exist (description "Use when…" or `when_to_use`)? | 1. No/weak trigger contract (three skills shipped that way until 2026-07-08) 2. Stale installed cache (see below) 3. Collision — a sibling wins the trigger |
-| Plugin doesn't show up after install | `jq -r '.plugins[] \| .name + " " + .source' .claude-plugin/marketplace.json` | 1. Never registered (technical-spec, `66a71eb`) 2. `source` path doesn't resolve 3. Missing one of the two plugin.json manifests |
+| Plugin doesn't show up after install | `node -e 'for (const p of require("./.claude-plugin/marketplace.json").plugins) console.log(p.name, p.source)'` | 1. Never registered (technical-spec, `66a71eb`) 2. `source` path doesn't resolve 3. Missing one of the two plugin.json manifests |
 | dist looks out of date | `node --test tests/dist-mirror.test.mjs` | 1. Sync not run after a skills/ edit (hook is local-only) 2. Someone hand-edited dist/ (it gets clobbered next sync) |
-| Installed copy differs from repo | compare versions: `jq -r .version dist/plugins/<p>/.claude-plugin/plugin.json` vs what the user's tool reports | Stale plugin cache — caches refresh only on version bump (`a4f4aa8`). Fix: bump both manifests, re-release |
-| Manifest fails to parse / install errors | `jq . dist/plugins/<p>/.claude-plugin/plugin.json && jq . dist/plugins/<p>/.codex-plugin/plugin.json` | Invalid JSON; missing required field; `skills` path not `./`-prefixed |
+| Installed copy differs from repo | compare versions: `node -p 'require("./dist/plugins/<p>/.claude-plugin/plugin.json").version'` vs what the user's tool reports | Stale plugin cache — caches refresh only on version bump (`a4f4aa8`). Fix: bump both manifests, re-release |
+| Manifest fails to parse / install errors | `node -e 'for (const s of ["claude","codex"]) console.log(s, JSON.parse(require("fs").readFileSync("dist/plugins/<p>/." + s + "-plugin/plugin.json")).name)'` | Invalid JSON; missing required field; `skills` path not `./`-prefixed |
 | Skill renders empty/garbled in listings | `node --test tests/skill-invariants.test.mjs` then eyeball YAML quoting | Unquoted YAML with `:` in description (`a13e094`); over-budget frontmatter |
 | condux agents behave stale | `node --test tests/skill-invariants.test.mjs` (agents-mirror test) | Plugin-level `agents/` not mirrored — sync's special case (`6ba6572`) |
 
@@ -95,7 +95,8 @@ Re-verify volatile claims with:
 - `node --test` — which invariants currently exist and pass
 - `git log --oneline -10` — whether new incident classes have appeared
 
-Last generated: 2026-07-08
+Last generated: 2026-07-08 (jq commands converted to node 2026-08-04 — jq is not
+installed everywhere; see toolkit-change-control)
 Known uncertainty:
 - Exact cache-refresh behavior of each host tool (Claude Code vs Codex) is inferred
   from one evidenced incident (`a4f4aa8`), not from tool documentation.
