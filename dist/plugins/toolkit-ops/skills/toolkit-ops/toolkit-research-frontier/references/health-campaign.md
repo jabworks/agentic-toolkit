@@ -227,11 +227,42 @@ Goal: docs of record never contradict the disk for more than one change cycle.
   with exactly the one known `interface` warning (the tested parity contract);
   anything else fails. Wired into ci.yml as the `release-dry-run` job —
   `continue-on-error: true` until the CLI is proven headless-stable on runners,
-  then flip to enforcing. Load-bearing constraint documented in the script:
-  never `--strict` while the interface-parity doctrine stands.
+  then flip to enforcing. [Superseded 2026-07-29: `interface` moved to the
+  codex manifest, so `--strict` now passes clean and is the expected mode —
+  see toolkit-plugin-reference.]
+
+## Front E — Contract adherence (transcript audit) — added 2026-08-04
+
+The 2026-08-04 re-eval audited artifacts (SKILL.md content vs standards) and
+firing (trigger evals, transcript mining for missed/wrong triggers) — and still
+missed a live defect: workflow's CP-1 menu was *correct on disk* but eroding at
+runtime (subagent options silently dropped from merged sign-off prompts; fixed
+`2cc080d`). The same audit also produced a false positive: concord capture
+declared inert after checking only `~/.codex/concord/`, when per-repo stores
+live at each project's git root (corrected `4ba3ac6`). Front E closes both
+holes.
+
+**Method — transcript mining runs FIVE defect categories, not four:**
+
+1. Trigger defects — skill should have fired and didn't, or the wrong one won.
+2. In-skill failures — errors right after a skill loads.
+3. Abandonment — flows started but never completed.
+4. New pain points — recurring uncovered manual workflows.
+5. **Contract adherence** — for sessions where a checkpoint- or menu-bearing
+   skill loaded, diff the skill's prescribed interaction (menus, gates,
+   mandatory steps) against what the transcript shows was actually presented.
+   Loaded-and-degraded is a distinct failure from didn't-fire.
+
+**Measurement rule — verify the negative.** Before declaring a mechanism dead
+or missing, confirm from its own contract where the output should live and
+look there. "No output at location X" only indicts the mechanism if X is where
+it writes.
+
+Status: method recorded; first Front E pass pending the next transcript audit
+(due with the post-#16 trigger re-measure, ~2026-08-11).
 
 ---
 
-Last updated: 2026-07-08 (B and C closed; A3 baseline recorded with corpus-semantics
-re-run in progress; A4 and D2 open. Post-review fixer pass applied same day — see
+Last updated: 2026-08-04 (Front E added; C4 --strict note superseded. Previous:
+2026-07-08 — B and C closed; A3 baseline recorded; A4 and D2 open; see
 distillation/08_fixer_report.md).
