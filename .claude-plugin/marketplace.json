@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "jabworks-agentic-toolkit",
-  "description": "Hieu Vi's personal Claude Code toolkit: session handoff, plugin scaffolding, and stack-specific skill adapting.",
+  "description": "Agentic coding toolkit for Claude Code and Codex: session handoff, plugin scaffolding, and stack-specific skill adapting.",
   "owner": {
     "name": "Hieu Vi",
     "email": "hieu1871998@gmail.com"
@@ -18,7 +18,7 @@
     },
     {
       "name": "adapting-skills",
-      "description": "Use when adapting a generic skill or scaffolding code to match Harvey's stack, conventions, and working preferences.",
+      "description": "Use when adapting a generic skill or scaffolding code to match the jabworks stack, conventions, and working preferences.",
       "author": {
         "name": "Hieu Vi"
       },
@@ -90,7 +90,7 @@
     },
     {
       "name": "coding-directive",
-      "description": "Write code that matches Harvey's (@jabworks) house style the first time: enforced rules from the style-guide configs (TypeScript, ESLint/oxlint, Prettier/oxfmt, Stylelint) plus a confidence-marked judgment layer for naming, error handling, React anatomy, monorepo boundaries, and Tailwind.",
+      "description": "Write code that matches the jabworks house style the first time: enforced rules from the style-guide configs (TypeScript, ESLint/oxlint, Prettier/oxfmt, Stylelint) plus a confidence-marked judgment layer for naming, error handling, React anatomy, monorepo boundaries, and Tailwind.",
       "author": {
         "name": "Hieu Vi"
       },

@@ -74,7 +74,7 @@ Nothing in the skill mentions any of it.
 **Proposal:** amend `coding-directive` — judgment tier, since a11y needs are
 component-specific.
 
-### B4. Theme correctness — dark-mode-first
+### B4. Theme correctness — themed changes shipped checked in only one mode
 
 Repeated black-on-dark and token-desync defects, corrected mid-session more
 than once in the same session.
@@ -83,9 +83,16 @@ than once in the same session.
 > '… border-radii, popover offsets, text colors, spacing, paddings, dropdown
 > options hover state, etc… Go from dark mode first'"
 
-**Proposal:** amend `coding-directive` CSS tier — build and verify dark first;
-never hardcode a color that a token covers; stroke and background radii must
-come from one source.
+**Proposal:** amend `coding-directive` CSS tier — build and verify one theme
+first; never hardcode a color that a token covers; stroke and background radii
+must come from one source.
+
+**Correction, 2026-07-30:** the shipped rule is **light mode first**. Harvey
+corrected the order directly; the transcript quote above is left as-is because
+it is the evidence, not the rule. Note what this does and does not invalidate —
+the *ordering* claim was mine to get wrong, but the finding that produced it
+(themed changes shipping checked in only one mode) stands untouched, and
+"both themes before done" was always the part doing the work.
 
 ### B5. Env example upkeep
 

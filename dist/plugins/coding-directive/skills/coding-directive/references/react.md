@@ -39,11 +39,9 @@
 
 ## Async boundaries _(High)_
 
-Every mutation and every fetch is a UI state machine, not a call. Shipping the
-happy path alone is the single most-corrected omission in Harvey's reviews —
-_"we should show some pending indicator, maybe a spinner next to it, and
-disable the checkbox while pending, remember to do this from now on, we are
-missing quite some UX implementation for mutations and fetchs"_.
+Every mutation and every fetch is a UI state machine, not a call. Shipping only
+the happy path is the most common omission in review — a bulk toggle with no
+spinner and no disabled state looks finished and isn't.
 
 Four states, every time — name the one you are deliberately skipping:
 

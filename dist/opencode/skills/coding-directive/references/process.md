@@ -16,7 +16,7 @@ assuming script names; scope with `pnpm --filter <pkg>` in the monorepo.
 
 ## Communication & handoff style _(High)_
 
-When producing plans, handoff prompts, or explanations for Harvey:
+When producing plans, handoff prompts, or explanations for a reviewer:
 
 - **Exact file paths and package scopes**, always — never "in the appropriate
   file."
@@ -71,10 +71,10 @@ hold regardless:
   context, and writing it back reproduces the corruption. Retype the escape
   rather than copying the example.
 - **Byte-exact file content goes through Write/Edit, never a shell redirect
-  through a display wrapper.** rtk (mandatory prefix for all shell commands
-  in Harvey's environment) decorates and truncates output; `jq … > file`
-  has corrupted manifests. Keep rtk command lines simple — it also rewrites
-  some pipelines.
+  through a display wrapper.** Where a display wrapper prefixes shell commands
+  (rtk, in this setup) it decorates and truncates output; `jq … > file` has
+  corrupted manifests that way. Keep such command lines simple — the wrapper
+  may also rewrite pipelines.
 - **Stay inside the current repo.** Never read or modify files in other
   projects without explicit permission — even read-only, even "just to check
   a pattern."

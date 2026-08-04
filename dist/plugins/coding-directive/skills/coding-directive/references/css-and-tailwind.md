@@ -21,9 +21,10 @@
 
 ## Theme correctness _(High)_
 
-- **Dark mode first.** Build and check dark before light — _"Go from dark mode
-  first"_. Light-first work ships black-on-dark text that survives to review.
-- **Both themes before done.** A color change is not finished until it has been
+- **Light mode first.** Build and check light before dark.
+- **Both themes before done.** This is the rule that actually catches the
+  defects — the invisible-text and desynced-token bugs came from work that
+  stopped after one theme. A color change is not finished until it has been
   looked at in both. Foreground and background are set together, never one
   alone.
 - **Never hardcode a color a token covers.** Themed surfaces inherit from the

@@ -61,12 +61,12 @@ See `skills/toolkit-foundry/SKILL.md` for the canonical checklist. Short version
 |---|---|
 | `session-handoff` | Preserve/restore session context at context limits |
 | `session-report` | Generate HTML usage report from session transcripts |
-| `adapting-skills` | Adapt generic skills to Harvey's stack and conventions |
+| `adapting-skills` | Adapt generic skills to the jabworks stack and conventions |
 | `git-commit` | Conventional-commit message from the diff, run safely |
 | `git-operations` | Decision router for git operations with undo paths |
 | `spec-browser` | Catalog and browse a specs/ tree as one doc site |
 | `release` | Cut a release safely — machinery router (changesets/toolkit/GitHub), dry-run first |
-| `coding-directive` | Harvey's house style — TS/React/formatting/imports/naming/CSS, enforced tier + judgment tier |
+| `coding-directive` | The jabworks house style — TS/React/formatting/imports/naming/CSS, enforced tier + judgment tier |
 | `concord` | Continuous memory for Codex — rollout-sync capture, aging tiers, session-start recall (Codex-only hooks) |
 | `condux` (plugin) | agentic workflow bundle (workflow, discovery, draft-plan, test-first-development, subagent-execution, subagent-deployment, finalize, live-verification, code-review, preflight, root-cause-analysis, plan-review, technical-spec) |
 | `toolkit-ops` (plugin) | repo-maintenance bundle (toolkit-orientation, toolkit-foundry, toolkit-change-control, toolkit-skill-standards, toolkit-debugging-playbook, toolkit-failure-archaeology, toolkit-plugin-reference, toolkit-research-frontier) |
