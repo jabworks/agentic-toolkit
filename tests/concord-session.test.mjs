@@ -159,7 +159,15 @@ function runHookScript(script, args, payload, env = {}) {
   return execFileSync('node', [script, ...args], {
     input: JSON.stringify(payload),
     encoding: 'utf8',
-    env: { ...process.env, ...env },
+    // The hooks resolve the global tier out of CODEX_HOME. Inherited unset, that
+    // is the developer's real ~/.codex — so a machine where concord has actually
+    // captured preferences fails the assertions about an empty store, while CI
+    // passes only for want of a home directory. Give every run its own.
+    env: {
+      ...process.env,
+      CODEX_HOME: fs.mkdtempSync(path.join(os.tmpdir(), 'concord-home-')),
+      ...env,
+    },
   });
 }
 
@@ -201,7 +209,20 @@ test('capture --session-end promotes tiers', () => {
 
   const paths = tierPaths(path.join(fs.realpathSync(repo), '.concord'));
   assert.equal(readTier(paths.buffer), '', 'buffer flushed');
-  assert.ok(fs.readdirSync(paths.days).length > 0, 'day file written');
+
+  // Which tier it lands in depends on how old the fixture's entries are today:
+  // promote() writes the day file and ages it in the same call, so once the
+  // fixture drifts past the 7-day window the day file is created and rolled
+  // straight out, leaving days/ empty. Asserting on days/ specifically was
+  // really asserting the aging window — which ageDays' own tests own. What
+  // promotion guarantees here is that the entry left the buffer for a durable
+  // tier, whichever one that is.
+  const durable = [
+    ...fs.readdirSync(paths.days).map((f) => readTier(path.join(paths.days, f))),
+    readTier(paths.recent),
+    readTier(paths.archive),
+  ].join('\n');
+  assert.match(durable, /Add a health check endpoint/, 'entry reached a durable tier');
 });
 
 test('recall writes the memory block, and only that, to stdout', () => {
