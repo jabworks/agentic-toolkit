@@ -1,6 +1,6 @@
 ---
 name: technical-spec
-description: Use when a feature plan, design session, or implementation milestone is complete and the decisions, API contracts, implementation details, and quirks should be persisted for future reference. Also use when the user says "save spec", "document this", "write up what we decided", or "spec this out".
+description: "Persists feature decisions, API contracts, implementation details, and quirks into a structured, queryable spec tree — one folder per feature, one file per concern. Invoke-only — discovery runs it at design sign-off and preflight's drift check reads its output; the user runs it via /technical-spec when they say \"save spec\", \"document this\", \"write up what we decided\", or \"spec this out\". Not for turning a rough idea into a design first — that's discovery."
 disable-model-invocation: true
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: toolkit-foundry
-description: Use when creating a new skill for jabworks/agentic-toolkit, registering it in the marketplace, syncing the generated dist trees, changing the @jabworks/condux npm package, or bumping the toolkit version. Not for adapting a generic skill to the jabworks stack; use adapting-skills.
+description: Use when creating a new skill for jabworks/agentic-toolkit, registering it, or shipping the generated trees — "scaffold a new skill", "register this skill", "sync dist", "bump the toolkit version" — plus changes to the @jabworks/condux npm package. Not for adapting a generic skill to the jabworks stack (adapting-skills), nor for reviewing a SKILL.md's content and trigger wording (toolkit-skill-standards).
 ---
 
 # Toolkit Foundry

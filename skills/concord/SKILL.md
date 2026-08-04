@@ -1,6 +1,6 @@
 ---
 name: concord
-description: Use when the user asks you to remember something ("remember that…", "note for next time", "keep this in mind"), asks what you remember or what happened in a past session ("what did we do last time", "have we hit this before"), or asks about Concord's own memory files, tiers, or hooks. Also when a question reaches past the memory injected at session start and the older tiers need searching. Not for saving state to resume an interrupted task mid-flight — that is session-handoff.
+description: Use when running under Codex and the user asks you to remember something ("remember that…", "note for next time", "keep this in mind"), asks what happened in a past session ("what did we do last time"), or asks about Concord's memory files, tiers, or hooks. Also when a question reaches past the memory injected at session start. Not for saving state to resume a task mid-flight — that is session-handoff. Not for whether a toolkit mistake happened before — that's toolkit-failure-archaeology.
 ---
 
 # Concord

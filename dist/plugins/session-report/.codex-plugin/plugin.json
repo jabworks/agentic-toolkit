@@ -1,13 +1,20 @@
 {
   "name": "session-report",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "Generate an explorable HTML report of Codex session usage — tokens, cache efficiency, subagent costs, and slash-command frequency — from local transcripts.",
   "author": {
     "name": "jabworks"
   },
   "repository": "https://github.com/jabworks/agentic-toolkit",
   "license": "MIT",
-  "keywords": ["usage", "tokens", "cache", "sessions", "analytics", "report"],
+  "keywords": [
+    "usage",
+    "tokens",
+    "cache",
+    "sessions",
+    "analytics",
+    "report"
+  ],
   "skills": "./skills/session-report",
   "interface": {
     "displayName": "Session Report",

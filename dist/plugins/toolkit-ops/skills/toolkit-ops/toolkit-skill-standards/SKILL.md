@@ -1,6 +1,6 @@
 ---
 name: toolkit-skill-standards
-description: Use when writing or reviewing a SKILL.md for jabworks/agentic-toolkit — frontmatter budgets, the trigger contract ("Use when…" description or when_to_use field), progressive disclosure into references/, and keeping a new description out of existing skills' trigger space. Triggers include "review this skill description", "write the frontmatter", "does this collide with an existing skill", "where should this content live".
+description: Use when writing or reviewing a SKILL.md for jabworks/agentic-toolkit — frontmatter budgets, the trigger contract ("Use when…" description or when_to_use field), progressive disclosure into references/, and keeping a new description out of existing skills' trigger space. Triggers include "review this skill description", "write the frontmatter", "does this collide with an existing skill", "where should this content live". Not for scaffold/sync mechanics; use toolkit-foundry.
 ---
 
 # Toolkit Skill Standards

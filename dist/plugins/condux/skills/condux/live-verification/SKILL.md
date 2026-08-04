@@ -1,7 +1,7 @@
 ---
 name: live-verification
 description: Verify a change by actually running it — drive the real UI or endpoint, check each claim against observed behaviour, and capture evidence before pushing. Detects what's runnable, checks light mode then dark, and reports claim → evidence → verdict with unverifiable claims named rather than hidden.
-when_to_use: After /finalize, before committing or pushing a change that has a runnable surface — UI, page, component, endpoint, CLI. Triggers include "verify it live", "did this actually work", "check it in the browser", "live verify before pushing", "does it render right". Not for typecheck/lint/test (that's finalize), not for auditing plan completeness (preflight), not for reading code to judge it (code-review).
+when_to_use: After /finalize, before committing, pushing, or merging a change that has a runnable surface — UI, page, component, endpoint, CLI. Triggers include "verify it live", "did this actually work", "check it in the browser", "verify on preview", "check the preview env then merge", "live verify before pushing", "does it render right". Not for typecheck/lint/test (that's finalize), not for auditing plan completeness (preflight), not for reading code to judge it (code-review).
 argument-hint: "[what to verify — optional; defaults to the current diff]"
 ---
 
