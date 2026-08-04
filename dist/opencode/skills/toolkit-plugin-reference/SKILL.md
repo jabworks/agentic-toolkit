@@ -77,6 +77,11 @@ none of this repo's entries. Note: `author` is `{ "name": "Hieu Vi" }` in market
 entries but `{ "name": "jabworks" }` in plugin.json manifests — historical convention,
 consistent within each file kind.
 
+**Description divergence is by design** (ratified 2026-08-04): a marketplace
+entry's `description` is storefront copy for the `/plugin` picker; the
+plugin.json `description` is install metadata and may carry platform wording.
+They are not kept in sync and no test enforces parity — don't "fix" the drift.
+
 ### The three install channels
 
 | Channel | Reads | Ignores |
