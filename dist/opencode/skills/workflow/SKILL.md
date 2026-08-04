@@ -118,6 +118,13 @@ happened (or was declined) in draft-plan's own save step — don't re-offer it.*
 | **Dispatch independent tasks in parallel** | Load `subagent-deployment`; fan out N independent tasks |
 | **Revise the plan** | Loop back to `draft-plan` with the new direction |
 
+**The menu is the full menu.** Present every row above, every time — including
+both subagent options. Implement-yourself-by-default governs the
+*recommendation* marker, never which options appear: the user decides whether
+agents pay off, and an option they never see is a decision made for them. If
+plan sign-off and CP-1 get combined into one prompt (common in plan-approval
+UIs), the combined menu must still carry the full CP-1 option set.
+
 ### CP-2 — Implementation done
 
 | Option | What it does |
@@ -228,6 +235,7 @@ Stop if you catch yourself doing any of these:
 | Discovery or a plan doc for a SMALL/MEDIUM task | Implement directly; verify; finalize |
 | Tests / lint / typecheck mid-implementation | Save it all for `finalize` |
 | Spawning agents for a task you can just do | Default is to implement yourself |
+| Omitting the subagent options from a checkpoint menu | The default shapes the recommendation, never the menu — present every CP-1 row |
 | Silently skipping discovery on a LARGE task | Ask — it's a soft gate, not a free pass |
 | Rewriting a test spec to make it pass | Stop and ask — never silently edit specs |
 | Auto-running code-review, commits, or agents | They're checkpoint choices; run only when picked |
