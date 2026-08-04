@@ -183,12 +183,14 @@ it in `--steer` mode against the saved design file (or the spec directory,
 if the design was saved as a tech spec — see Spec Integration below):
 
 ```bash
-node /path/to/plan-review/references/annotate-server.js .condux/designs/<file>.md --steer
+node /path/to/plan-review/references/annotate-server.js .condux/designs/<file>.md --steer --no-reject
 ```
 
 Poll `GET http://127.0.0.1:7777/api/decision` (long-poll — blocks until a
 decision is submitted) and branch on the result. Design review is
-**accept-or-fix** — there is no Reject at this stage:
+**accept-or-fix** — `--no-reject` hides the Reject verdict, which belongs to
+plan review, not the design stage (directory/spec review hides it on its own;
+the flag matters for single-file design review):
 
 - **Approve** → design is signed off; proceed to `/draft-plan`, carrying any
   feedback notes into the plan.

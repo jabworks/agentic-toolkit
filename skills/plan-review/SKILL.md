@@ -206,7 +206,7 @@ content with a confirmation that states what the agent does next
 
 | File | Role |
 |---|---|
-| `references/annotate-server.js` | Local server. `--hook` (Claude ExitPlanMode), `--codex-stop` (Codex Stop), `<file> --steer` (agent-invoked blocking loop), or `<file|dir>` alone for manual mode. A directory argument reviews every top-level `*.md` in it. |
+| `references/annotate-server.js` | Local server. `--hook` (Claude ExitPlanMode), `--codex-stop` (Codex Stop), `<file> --steer` (agent-invoked blocking loop), or `<file|dir>` alone for manual mode. A directory argument reviews every top-level `*.md` in it. `--no-reject` hides the Reject verdict for accept-or-fix reviews (discovery's design stage passes it; directory mode implies it). |
 | `references/install-codex-hook.sh` | Registers the Codex `Stop` hook in `~/.codex` and enables the hooks feature flag. |
 | `references/plan-review-template.html` | Self-contained review UI (renderer + annotation surface). |
 

@@ -53,6 +53,7 @@ const HOOK_MODE = process.argv.includes('--hook');
 const CODEX_STOP_MODE = process.argv.includes('--codex-stop');
 const STEER_MODE = process.argv.includes('--steer');
 const NO_OPEN = process.argv.includes('--no-open'); // don't launch the browser (tests, headless)
+const NO_REJECT = process.argv.includes('--no-reject'); // accept-or-fix review (design stage) — hide the Reject verdict
 const STDOUT_JSON = HOOK_MODE || CODEX_STOP_MODE || STEER_MODE; // these modes emit JSON on stdout
 const log = STDOUT_JSON ? console.error : console.log; // keep stdout clean for hooks
 const sseClients = new Set();
@@ -309,8 +310,8 @@ function handler(req, res) {
     // Document manifest. Single-file reviews report dir:false so the client
     // keeps the classic one-document layout.
     return sendJson(res, 200, DIR_MODE
-      ? { dir: true, docs: listDocs() }
-      : { dir: false, docs: [path.basename(planFile)] });
+      ? { dir: true, docs: listDocs(), noReject: true }
+      : { dir: false, docs: [path.basename(planFile)], noReject: NO_REJECT });
   }
   if (req.method === 'POST' && p === '/api/verify-paths') {
     // Files tab: check which mentioned paths exist in the repo under review.
