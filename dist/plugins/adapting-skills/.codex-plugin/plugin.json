@@ -1,6 +1,6 @@
 {
   "name": "adapting-skills",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "description": "Codex skill with stack and style priors for adapting generated work to the jabworks conventions.",
   "author": {
     "name": "jabworks"

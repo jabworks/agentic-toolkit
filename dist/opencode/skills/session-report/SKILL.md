@@ -32,21 +32,22 @@ Produce a self-contained HTML report of session usage and save it to
 
 2. **Parse time range** from `$ARGUMENTS` (e.g. `7d`, `30d`, `24h`). Default: `7d`. If `all` — omit `--since`.
 
-3. **Run the analyzer.** Both scripts live alongside this SKILL.md — use the absolute path. Output to `/tmp/session-report-${TOOL}.json` (e.g. `session-report-claude.json`) so concurrent runs from different tools never collide:
-   ```sh
-   # With --since:
-   node <skill-dir>/$ANALYZER --json --since 7d > /tmp/session-report-${TOOL}.json
-
-   # All-time:
-   node <skill-dir>/$ANALYZER --json > /tmp/session-report-${TOOL}.json
-   ```
-
-4. **Read** `/tmp/session-report-${TOOL}.json`. Skim `overall`, `by_project`, `by_subagent_type`, `by_skill`, `cache_breaks`, `top_prompts`.
-
-5. **Copy the template** into the report directory:
+3. **Run the analyzer.** Both scripts live alongside this SKILL.md — use the absolute path. Resolve the report directory first and write the JSON there too (it is this skill's working-state home, already gitignored — `/tmp` would strand the intermediate outside the artifact contract). The `${TOOL}` suffix keeps concurrent runs from different tools from colliding:
    ```sh
    OUT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || pwd)/.session-report"
    mkdir -p "$OUT_DIR"
+   # With --since:
+   node <skill-dir>/$ANALYZER --json --since 7d > "$OUT_DIR/session-report-${TOOL}.json"
+
+   # All-time:
+   node <skill-dir>/$ANALYZER --json > "$OUT_DIR/session-report-${TOOL}.json"
+   ```
+
+4. **Read** `$OUT_DIR/session-report-${TOOL}.json`. Skim `overall`, `by_project`, `by_subagent_type`, `by_skill`, `cache_breaks`, `top_prompts`.
+
+5. **Copy the template** into the report directory:
+   ```sh
+   # $OUT_DIR was resolved in step 3
    cp <skill-dir>/template.html "$OUT_DIR/session-report-$(date +%Y%m%d-%H%M).html"
    ```
    Reports are gitignored working state, not project docs. Before the first

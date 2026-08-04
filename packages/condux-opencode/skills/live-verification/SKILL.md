@@ -156,18 +156,7 @@ Evidence is **working state**: `<git-root>/.condux/verification/`, gitignored,
 alongside condux's `designs/` and `plans/`. Never the repo root, never the
 project's `docs/`.
 
-**Bootstrap.** `.condux/` is created on demand at the git root by the first
-skill that writes there. Before the first write, check it's ignored:
-
-```bash
-git check-ignore -q .condux/ || echo "not ignored"
-```
-
-If it isn't, offer once: "condux keeps its working files in `.condux/` — add
-it to `.gitignore` so they stay out of your commits?" On yes, append
-`.condux/` to the repo's `.gitignore`. If the user would rather not touch a
-tracked file, write it to `.git/info/exclude` instead. Never edit either file
-without asking. Not a git repo → fall back to CWD and say so once.
-
-**Override.** A project can relocate this in `AGENTS.md`; an explicit
-override always wins.
+**Bootstrap.** Same contract as every condux skill — run the `.condux/`
+bootstrap from `/workflow` → Artifacts (check `git check-ignore -q .condux/`,
+offer the `.gitignore` line once, `AGENTS.md` override wins) before the first
+write.

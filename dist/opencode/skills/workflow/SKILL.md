@@ -170,7 +170,7 @@ Two tiers, split by durability — not by which skill produced them.
 | Tier | Where | Contents | Git |
 |---|---|---|---|
 | **Durable** | `<git-root>/specs/` | tech specs (`technical-spec`), browsable via `spec-browser` | committed |
-| **Working state** | `<git-root>/.condux/` | `designs/` · `plans/` · `progress/` · `scratch/` | gitignored |
+| **Working state** | `<git-root>/.condux/` | `designs/` · `plans/` · `progress/` · `scratch/` · `verification/` (live-verification evidence) | gitignored |
 
 The spec is what you keep; the design and plan are scaffolding for building
 it. Don't promote working state into `docs/` or the repo root — a project's

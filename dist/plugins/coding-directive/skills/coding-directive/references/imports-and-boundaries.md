@@ -32,7 +32,7 @@
 ## Monorepo boundaries _(High)_
 
 - Cross-package imports go through the package name
-  (`@haven/terminus-trpc`), never relative paths that escape the package,
+  (`@jabworks/api-client`), never relative paths that escape the package,
   never deep file paths into another package's `src/`.
 - Internal-only modules stay internal: if something is daemon-only (parsers,
   buffers), do not export it from a shared package.

@@ -47,11 +47,18 @@ in directory mode against the specs root — it now recurses the tree and groups
 the Contents nav by spec folder, with `index.md` (the catalog) as the landing
 page:
 
+This step needs the **condux plugin's plan-review skill installed** — the
+server ships with it, not with spec-browser. Step 1 (the catalog) works
+without it.
+
 ```bash
 # find the server shipped with the plan-review skill
 find ~/.claude ~/.codex ~/.agents -name annotate-server.js -path '*plan-review*' 2>/dev/null | head -1
 node /path/to/plan-review/references/annotate-server.js specs
 ```
+
+If the `find` prints nothing, plan-review isn't installed — say so and offer
+the catalog (`specs/index.md`) instead of silently skipping the browse step.
 
 Same annotation UI as plan/spec review: notes land in
 `specs/review.feedback.md`. This is browsing, not a decision gate — no
@@ -63,7 +70,8 @@ approve/deny polling needed unless you want it.
   hand." Editing a spec means editing that spec's own files, then re-running
   step 1.
 - Pairs with `technical-spec` (which writes individual specs) — this skill is
-  the index over all of them. Use technical-spec's own preview for a single
-  spec; use spec-browser when you have many.
+  the index over all of them. For a single spec, use plan-review's directory
+  mode (technical-spec's old standalone preview is retired); use spec-browser
+  when you have many.
 - Keep `specs/index.md` committed so agents in a fresh checkout can reference
   the catalog without running anything.

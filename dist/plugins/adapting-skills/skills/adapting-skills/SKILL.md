@@ -91,8 +91,8 @@ Mirror the seam's eval cases into both skills' corpora so it stays measured.
 **Eval cases.** If the repo has a trigger-eval setup, add cases for any new
 vocabulary (positives + hard negatives). If not, note the untested change —
 description edits without measurement are how trigger spaces rot. The
-toolkit's harness (`scripts/eval-triggers.mjs`) is repo-agnostic if they
-want one.
+jabworks/agentic-toolkit repo's harness (`scripts/eval-triggers.mjs`, at that
+repo's root — not shipped with this plugin) is repo-agnostic if they want one.
 
 **Structure.** Body ≤ ~150 lines; move templates, checklists, and long
 reference material into `references/` (progressive disclosure). One skill =
