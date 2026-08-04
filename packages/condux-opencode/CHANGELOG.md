@@ -1,5 +1,11 @@
 # @jabworks/condux
 
+## 0.4.1
+
+### Patch Changes
+
+- [#14](https://github.com/jabworks/agentic-toolkit/pull/14) [`3d3a0d9`](https://github.com/jabworks/agentic-toolkit/commit/3d3a0d90874b159570e20ac3b06103441d8b77f8) Thanks [@vi-hieu](https://github.com/vi-hieu)! - Correct the theme-check order in `live-verification` to light mode first, then dark. The gate is unchanged — a themed change is not verified until both have been seen — only the order it walks them in.
+
 ## 0.4.0
 
 ### Minor Changes
