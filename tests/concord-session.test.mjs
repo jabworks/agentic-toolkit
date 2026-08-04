@@ -302,6 +302,16 @@ test('cwd falls back to the process cwd, and session_id to null', () => {
   assert.equal(sessionIdOf({}), null);
 });
 
+test('session_id falls back to the UUID in the rollout filename (codex exec omits it)', () => {
+  const p = '/home/u/.codex/sessions/2026/08/03/rollout-2026-08-03T05-18-02-019fc60e-bddc-7be2-8a70-8c92b7701f8d.jsonl';
+  assert.equal(sessionIdOf({ transcript_path: p }), '019fc60e-bddc-7be2-8a70-8c92b7701f8d');
+  assert.equal(sessionIdOf({ rollout_path: p }), '019fc60e-bddc-7be2-8a70-8c92b7701f8d');
+  // explicit session_id still wins over the filename
+  assert.equal(sessionIdOf({ session_id: 's1', transcript_path: p }), 's1');
+  // a transcript path with no UUID shape yields null, not garbage
+  assert.equal(sessionIdOf({ transcript_path: '/tmp/not-a-rollout.jsonl' }), null);
+});
+
 // --- state persistence -------------------------------------------------------
 
 test('state written by one hook is read by the next', () => {

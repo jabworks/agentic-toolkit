@@ -87,10 +87,20 @@ export function cwdOf(payload) {
   return typeof c === 'string' && c ? c : process.cwd();
 }
 
-/** The session this hook is about, or null. */
+/**
+ * The session this hook is about, or null.
+ *
+ * Non-interactive sessions (`codex exec`) omit `session_id` from the payload,
+ * which used to drop the capture entirely. The rollout filename carries the
+ * same UUID — `rollout-<timestamp>-<uuid>.jsonl` — so derive it from there
+ * before giving up.
+ */
 export function sessionIdOf(payload) {
   const s = payload?.session_id;
-  return typeof s === 'string' && s ? s : null;
+  if (typeof s === 'string' && s) return s;
+  const p = rolloutPathOf(payload);
+  const m = p && path.basename(p).match(/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\.jsonl$/i);
+  return m ? m[1] : null;
 }
 
 /**
