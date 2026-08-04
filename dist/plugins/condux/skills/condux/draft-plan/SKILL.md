@@ -56,6 +56,9 @@ no separate HTML file is produced.
 │                                                                  │
 │  Step 4: PRESENT TO USER                                        │
 │  Show plan in sections, get sign-off before saving.             │
+│  If the sign-off prompt doubles as the what-next menu, it must  │
+│  carry workflow CP-1's FULL option set — incl. both subagent    │
+│  options — not just implement/tests/revise.                     │
 │                                                                  │
 │  Step 5: SAVE                                                   │
 │  Write to .condux/plans/ per AGENTS.md or default path.        │
