@@ -42,14 +42,33 @@ structure, and collision discipline.
      and lead with trigger terms a user would actually type.
    - condux-style skills: description states what it does; `when_to_use` carries the
      trigger conditions ("Trigger when…"). Both fields count against the 1024 budget.
-   - Quote YAML strings containing `:` or special chars — an unquoted description once
-     broke a skill outright (`a13e094`).
 
-3. **Front-load trigger terms.** Most important phrases first; include the literal
+3. **Canonical frontmatter form (test-enforced).** "Quote YAML strings" was the old
+   rule; it caused its own incident (`2026-08-05` — a single-quoted value with a bare
+   apostrophe in `that's`). The rule is now a *shape*, not an instruction to quote:
+   - Every line is `key: value` — one space after the colon, no lists, no block
+     scalars.
+   - **Plain (unquoted) when the value is safe**: it must not start with
+     ``- ? : , [ ] { } # & * ! | > ' " % @ ` ``, contain `: ` or ` #`, or end with `:`.
+   - **Double quotes otherwise**, escaped the way JSON escapes (`\"`, `\\`).
+   - **Single quotes are banned outright.** YAML needs `''` for a literal
+     apostrophe inside them, and that escape is the footgun. Nothing here needs them.
+
+   Don't hand-fix a violation — run `node scripts/check-frontmatter.mjs --fix`, which
+   rewrites illegal values and leaves legal ones byte-identical. Check with
+   `node --test tests/frontmatter-canonical.test.mjs tests/frontmatter-yaml.test.mjs`.
+
+   Why two gates: the canonical form makes the break unwritable, and the strict
+   `yaml` parse proves the form's premise. Neither `claude plugin validate` nor the
+   budget tests can do this — validate passed the file that broke Codex on
+   2026-08-05 (Claude's frontmatter parser is lenient), and the budget tests
+   regex-parse. See `toolkit-failure-archaeology` for all four incidents.
+
+4. **Front-load trigger terms.** Most important phrases first; include the literal
    words users type ("sync dist", "am I done", "browse specs"). Workflow summaries
    belong in the body, not the description.
 
-4. **Collision scan (mandatory).** Read every sibling description +
+5. **Collision scan (mandatory).** Read every sibling description +
    `when_to_use`. If the new skill's trigger space overlaps, either merge into the
    sibling or add explicit mutual disambiguation — both skills name each other, the
    way subagent-deployment ("not for executing an ordered plan — that's
@@ -63,16 +82,16 @@ structure, and collision discipline.
    silently erode. `scripts/collision-scan.mjs --check` exists but lexical scoring
    was falsified (5% recall, 2026-07-09) — the reading, and the test, are the scan.
 
-5. **Progressive disclosure.** SKILL.md = concise runbook readable in one scan:
+6. **Progressive disclosure.** SKILL.md = concise runbook readable in one scan:
    purpose, when (not) to use, procedure, traps, related skills. Long archaeology,
    catalogs, templates, ledgers → `references/`. Executable helpers → `scripts/` or
    references (see plan-review's `references/annotate-server.js`).
 
-6. **Every skill with a plausible sibling overlap must state when NOT to use it**
+7. **Every skill with a plausible sibling overlap must state when NOT to use it**
    and name that sibling instead. Keep unrelated skills concise; do not invent a
    false alternative merely to fill a section.
 
-7. **Interaction contracts.** A skill that prescribes a user-facing menu or
+8. **Interaction contracts.** A skill that prescribes a user-facing menu or
    checkpoint must mark the option set as exhaustive ("present every row, every
    time") and state that behavioral defaults shape the *recommendation marker*,
    never which options appear — an un-defended menu erodes toward the default

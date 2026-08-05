@@ -306,5 +306,13 @@ Three distribution channels read different trees:
 
 `dist/` is a build artifact mirrored from `skills/` via `scripts/sync.sh` — never
 edit it by hand; `node --test` (run in CI) fails if it drifts from source. After
-cloning, `bash scripts/install-hooks.sh` installs a pre-commit hook that syncs and
-stages `dist/` automatically.
+cloning, run `pnpm install` (the test suite needs it) and
+`bash scripts/install-hooks.sh`, which installs a pre-commit hook that validates
+SKILL.md frontmatter, then syncs and stages `dist/` automatically.
+
+SKILL.md frontmatter follows a deliberately narrow grammar — every line is
+`key: value`, values are plain when safe and double-quoted otherwise, and single
+quotes are banned. Four separate releases shipped frontmatter that strict YAML
+parsers reject (breaking the skill in Codex), so the grammar is enforced by
+`node scripts/check-frontmatter.mjs` (which also has `--fix`) and by a real
+strict parse in the test suite.
