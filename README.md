@@ -21,6 +21,26 @@ Personal collection of agentic coding skills. Compatible with Claude Code, Codex
 | [coding-directive](./skills/coding-directive/) | House style for @jabworks repos — TypeScript, React, formatting, imports, naming, CSS _(personal)_  |
 | [concord](./skills/concord/)                 | Continuous memory for Codex — captures each session from the rollout, ages it into tiers, recalls it |
 
+### Docket
+
+File-based project backlog plugin (`docket`) — two skills plus machinery:
+
+```bash
+/plugin install docket@jabworks-agentic-toolkit
+```
+
+Open items live in `docket/DOCKET.md`, closed items move to
+`docket/archive/<year>.md` with verification records, and ids are never
+reused — `#N` in a commit subject refers to the docket, not GitHub. The
+`record` skill captures and closes items; `groom` sweeps for stale and
+ghost work and recommends what to pick next. A dependency-free CLI
+(`server/docket.mjs`) keeps id allocation and archive moves byte-exact, a
+bundled MCP server exposes the same ops as tools (auto-registered on Claude
+Code; `server/install.sh` or the agent-followable `server/INSTALL.md`
+registers it for Codex/OpenCode), and `docket.mjs browse` renders a
+self-contained HTML board. Legacy root `BACKLOG.md` layouts are detected and
+work in place — migration is offered, never forced.
+
 ### Condux
 
 Lean agentic workflow plugin (`condux`). Install the full workflow bundle as a unit:

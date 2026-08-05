@@ -99,6 +99,16 @@ sync_skill() {
     copy_dir "$src/hooks" "$DIST_DIR/condux/hooks"
     echo "synced  skills/$name/hooks  →  dist/plugins/condux/hooks"
   fi
+
+  # docket's machinery (CLI, MCP server, renderer, installer) is loaded from
+  # the PLUGIN root — .mcp.json points at server/mcp-server.mjs — so the skill
+  # copy never reaches it. Same doctrine as agents/ and hooks/ above: every
+  # out-of-tree mirror target gets its own sync step AND its own test
+  # (tests/docket-server.test.mjs). record owns the canonical source.
+  if [[ "$name" == "record" && -d "$src/server" ]]; then
+    copy_dir "$src/server" "$DIST_DIR/docket/server"
+    echo "synced  skills/$name/server  →  dist/plugins/docket/server"
+  fi
 }
 
 # ---------------------------------------------------------------------------

@@ -98,6 +98,15 @@
       "category": "development"
     },
     {
+      "name": "docket",
+      "description": "File-based project backlog in committed files: open items in docket/DOCKET.md, closed items archived per year with verification records, ids never reused. The record skill captures and closes items, groom sweeps for stale and ghost work and picks what to do next; a dependency-free CLI, bundled MCP server, and self-contained HTML board keep the mechanics byte-exact.",
+      "author": {
+        "name": "Hieu Vi"
+      },
+      "source": "./dist/plugins/docket",
+      "category": "development"
+    },
+    {
       "name": "concord",
       "description": "Continuous memory for Codex: three hooks share one idempotent rollout sync, so capture is exactly-once regardless of hook order and a hard-killed session is recovered at next start. Memory ages through buffer, daily, recent, and archive tiers; explicitly pinned facts are never auto-compressed.",
       "author": {
