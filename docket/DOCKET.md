@@ -9,10 +9,6 @@ Stale open markers cost real sessions — closing means moving.
 
 ## Committed
 
-### 3. Trigger eval cases for record/groom (2026-08-05)
-
-Accepted drift at preflight 2026-08-05 (specs/docket/quirks.md): near-miss trigger eval prompts for record vs groom on both sides of the item-level vs whole-backlog boundary, wired into scripts/eval-triggers.mjs.
-
 ## Someday
 
 ### 1. Plugin doctor — verify condux/concord/docket work on the installed harness (2026-08-05)
