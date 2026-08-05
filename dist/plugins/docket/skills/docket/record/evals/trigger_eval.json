@@ -1,0 +1,22 @@
+[
+  { "query": "add this to the docket: rate-limit the webhook endpoint", "should_trigger": true, "expected_skill": "record" },
+  { "query": "close #12, it shipped", "should_trigger": true, "expected_skill": "record" },
+  { "query": "note on #7: blocked on the auth migration", "should_trigger": true, "expected_skill": "record" },
+  { "query": "put that idea on the backlog", "should_trigger": true, "expected_skill": "record" },
+  { "query": "we should eventually cache these lookups", "should_trigger": true, "expected_skill": "record" },
+  { "query": "someday: dark mode for the board", "should_trigger": true, "expected_skill": "record" },
+  { "query": "split #9 into frontend and backend items", "should_trigger": true, "expected_skill": "record" },
+  { "query": "show me the docket", "should_trigger": true, "expected_skill": "record", "accept": ["groom"] },
+  { "query": "file that for later", "should_trigger": true, "expected_skill": "record" },
+  { "query": "capture this idea before we lose it", "should_trigger": true, "expected_skill": "record" },
+  { "query": "this repo needs a backlog, set one up", "should_trigger": true, "expected_skill": "record" },
+  { "query": "mark #23 done and archive it", "should_trigger": true, "expected_skill": "record" },
+  { "query": "close out anything that's gone stale", "should_trigger": true, "expected_skill": "groom" },
+  { "query": "which open item should I pick up next", "should_trigger": true, "expected_skill": "groom" },
+  { "query": "are there shipped items still sitting open?", "should_trigger": true, "expected_skill": "groom" },
+  { "query": "give the whole backlog a once-over", "should_trigger": true, "expected_skill": "groom" },
+  { "query": "what's a product backlog in scrum?", "should_trigger": false, "expected_skill": null },
+  { "query": "reorder the sprint backlog in Jira for me", "should_trigger": false, "expected_skill": null },
+  { "query": "record a demo video of the app", "should_trigger": false, "expected_skill": null },
+  { "query": "note that in the PR description", "should_trigger": false, "expected_skill": null }
+]

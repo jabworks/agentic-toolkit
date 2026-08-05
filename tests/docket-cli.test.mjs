@@ -24,8 +24,18 @@ const CLI = path.join(REPO_ROOT, 'skills', 'record', 'server', 'docket.mjs');
 
 // Fixtures are copied per test because most ops mutate; scratch lives inside
 // the repo (same pattern as condux-hooks) so path resolution stays on one fs.
-function scratchCopy(fixture) {
+// Every scratch dir carries a `.git` marker: resolveDocket walks up until one,
+// and without it a fresh scratch dir adopts the toolkit's own dogfood docket/
+// at the repo root.
+function scratchDir() {
   const dir = fs.mkdtempSync(path.join(REPO_ROOT, 'node_modules', '.dockettest-'));
+  fs.mkdirSync(path.join(dir, '.git'));
+
+  return dir;
+}
+
+function scratchCopy(fixture) {
+  const dir = scratchDir();
   fs.cpSync(path.join(FIXTURES, fixture), dir, { recursive: true });
 
   return dir;
@@ -164,7 +174,7 @@ test('checkDocket passes a clean docket and names each corruption', () => {
 });
 
 test('scaffold creates the docket tree once and refuses a second run', () => {
-  const dir = fs.mkdtempSync(path.join(REPO_ROOT, 'node_modules', '.dockettest-'));
+  const dir = scratchDir();
   try {
     scaffold(dir, { project: 'demo', date: '2026-08-05' });
     assert.ok(fs.existsSync(path.join(dir, 'docket', 'DOCKET.md')));
@@ -232,7 +242,7 @@ test('renderHtml produces a self-contained board with anchors, archive, and stat
 });
 
 test('renderHtml shows a usable empty state on a fresh scaffold', () => {
-  const dir = fs.mkdtempSync(path.join(REPO_ROOT, 'node_modules', '.dockettest-'));
+  const dir = scratchDir();
   try {
     scaffold(dir, { project: 'fresh', date: '2026-08-05' });
     const html = renderHtml(resolveDocket(dir), { date: '2026-08-05' });
