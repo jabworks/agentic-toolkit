@@ -60,8 +60,14 @@ stale precisely when the work it proposes gets done.
    overlap scoring cannot reproduce the observed (semantic) collisions — 5%
    recall vs the ≥80% criterion (`scripts/collision-scan.mjs --check` is the
    record). Detection stays empirical: periodic eval runs + the flaky list.
-5. ~~Hook parity on clones~~ — closed 2026-07-08: `tests/local-hooks.test.mjs`
-   warns (never fails) on clones missing the pre-commit sync hook.
+5. ~~Hook parity on clones~~ — closed 2026-07-08 as a warning; **re-closed
+   2026-08-05 as a hard failure**. Warn-only was defensible while the hook only
+   synced `dist/` (CI caught drift regardless). It stopped being defensible when
+   the hook became a frontmatter gate — and the warning had in fact been ignored:
+   the primary development clone had no hook at all. `tests/local-hooks.test.mjs`
+   now fails on a missing or stale hook, and skips under `CI`, where the workflow
+   runs the same checks directly. Lesson for any future warn-only guard: a
+   warning nobody acts on is data about the guard, not about the clone.
 
 ## First three concrete steps
 
@@ -81,7 +87,8 @@ stale precisely when the work it proposes gets done.
 - `node --test` fails on an unquoted-`:` description (today it passes).
 - `node --test` fails when a registered plugin is absent from either catalog doc.
 - A fresh `git clone` + documented setup leaves no safety net uninstalled
-  (met 2026-07-08: README/CLAUDE.md notes + the local-hooks warn test).
+  (2026-07-08: README/CLAUDE.md notes + a warn test — which the primary clone
+  then ignored for four weeks; 2026-08-05: the local-hooks test fails instead).
 
 ## The library-health campaign (five fronts)
 

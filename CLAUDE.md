@@ -122,8 +122,10 @@ committing — it fails the build otherwise. The suite now needs
   `dist/opencode/skills/`), merged descriptions stay within OpenCode's 1024-char
   cap, restricted agents keep their `permission` denials, and the plugin loads,
   registers its bundled skills path, and never clobbers user-defined agents
-- `local-hooks.test.mjs` — warn-only (never fails): tells you when this clone
-  is missing the pre-commit sync hook (`bash scripts/install-hooks.sh`)
+- `local-hooks.test.mjs` — **fails** when this clone's pre-commit hook is
+  missing or stale (`bash scripts/install-hooks.sh`). Warn-only until
+  2026-08-05, when the hook became a frontmatter gate — an opt-in gate is no
+  gate. Skipped under `CI`, where the workflow runs the same checks directly
 - `docs-catalog.test.mjs` — every marketplace plugin appears in README.md and
   CLAUDE.md's catalogs
 
