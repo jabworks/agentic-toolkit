@@ -38,8 +38,10 @@ stale sweep exists to catch the ones that slip anyway.
 `record` vs `groom` phrasing must stay disjoint: item-level verbs ("add",
 "close #N", "note on #N", "later/someday" capture) → record; whole-backlog
 verbs ("groom", "what's next", "anything stale", "check the ids") → groom.
-Eval cases must include near-miss prompts on both sides — **follow-up, not
-shipped with 0.1.0** (accepted at preflight 2026-08-05). Neither skill may
+Eval cases must include near-miss prompts on both sides — shipped 2026-08-05
+in 0.1.1 (`skills/{record,groom}/evals/trigger_eval.json`, auto-discovered by
+`scripts/eval-triggers.mjs`), closing the drift accepted at preflight
+2026-08-05. Neither skill may
 trigger on generic "backlog" alone in repos with no docket and no legacy
 files — offer scaffold only on explicit intent.
 
