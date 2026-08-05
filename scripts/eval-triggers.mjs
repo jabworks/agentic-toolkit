@@ -12,6 +12,12 @@
 //
 // Requires the `claude` CLI on PATH (runs headless via `claude -p` with your
 // logged-in session; no API key handling here). Node stdlib only.
+//
+// Progress (run, batch, %, elapsed, ETA, running accuracy) goes to STDERR; the
+// report goes to stdout. A full run is ~10 minutes, so do NOT redirect stderr
+// into a buffering pipe — `2>&1 | tail -n` swallows every progress line until
+// the process exits, which looks exactly like a hung run. Let stderr through:
+//   node scripts/eval-triggers.mjs --runs 3 --out report.md > /dev/null
 
 import fs from 'node:fs';
 import os from 'node:os';
@@ -35,9 +41,17 @@ const INCLUDE_ALL = args.includes('--all'); // also score kind:"in-context" case
 const RUNS = Math.max(1, Number(flag('--runs', '1'))); // trials; >1 reports mean ± 95% CI
 
 // --- catalog ---------------------------------------------------------------
+// Decodes a frontmatter scalar the way a YAML parser would. Stripping only the
+// outer quotes leaves JSON escapes literal, so a double-quoted value would be
+// scored as `\"review this\"` — the eval must see the catalog the host sees.
 function fmField(block, key) {
   const m = block.match(new RegExp('^' + key + ':[ \\t]*(.*)$', 'm'));
-  return m ? m[1].trim().replace(/^['"]|['"]$/g, '') : null;
+  if (!m) return null;
+  const raw = m[1].trim();
+  if (raw.startsWith('"')) {
+    try { return JSON.parse(raw); } catch { /* fall through to the raw form */ }
+  }
+  return raw.replace(/^'|'$/g, '');
 }
 const catalog = [];
 for (const name of fs.readdirSync(SKILLS_DIR)) {
@@ -114,12 +128,24 @@ function routeBatch(batch) {
 }
 
 // --- run -------------------------------------------------------------------
+// Hoisted above runOnce so the live progress line can score with exactly the
+// same predicate the final report uses — a running accuracy that disagreed with
+// the report would be worse than none.
+const isHit = (r) => (r.got ?? null) === (r.expected ?? null)
+  || (r.got != null && (r.accept || []).includes(r.got));
+
+function hms(ms) {
+  const s = Math.round(ms / 1000);
+  return s < 60 ? `${s}s` : `${Math.floor(s / 60)}m${String(s % 60).padStart(2, '0')}s`;
+}
+
 function runOnce(runIdx) {
   const results = [];
   let batchErrors = 0;
+  const totalBatches = Math.ceil(corpus.length / BATCH);
+  const started = Date.now();
   for (let i = 0; i < corpus.length; i += BATCH) {
     const batch = corpus.slice(i, i + BATCH);
-    process.stderr.write(`run ${runIdx + 1}/${RUNS} · batch ${i / BATCH + 1}/${Math.ceil(corpus.length / BATCH)}…\n`);
     try {
       let routed;
       try {
@@ -147,6 +173,23 @@ function runOnce(runIdx) {
         break;
       }
     }
+
+    // Reported AFTER the batch so elapsed and ETA are measured, not predicted.
+    // A 40-batch run takes ~10 minutes; "batch 12/40" alone says nothing about
+    // how long is left or whether the numbers are going anywhere good.
+    const done = Math.min(i + BATCH, corpus.length);
+    const doneBatches = Math.ceil(done / BATCH);
+    const elapsed = Date.now() - started;
+    const eta = (elapsed / doneBatches) * (totalBatches - doneBatches);
+    const judged = results.filter((r) => r.got !== '(batch-error)');
+    const acc = judged.length ? (100 * judged.filter(isHit).length / judged.length).toFixed(1) : '—';
+    process.stderr.write(
+      `run ${runIdx + 1}/${RUNS} · batch ${doneBatches}/${totalBatches}`
+      + ` · ${Math.round(100 * done / corpus.length)}%`
+      + ` · ${hms(elapsed)} elapsed`
+      + (doneBatches < totalBatches ? ` · ~${hms(eta)} left` : '')
+      + ` · running ${acc}%\n`,
+    );
   }
   return { results, batchErrors };
 }
@@ -156,8 +199,6 @@ const results = runsData[runsData.length - 1].results; // last run drives the mi
 const batchErrors = runsData.reduce((s, r) => s + r.batchErrors, 0);
 
 // --- score -----------------------------------------------------------------
-const isHit = (r) => (r.got ?? null) === (r.expected ?? null)
-  || (r.got != null && (r.accept || []).includes(r.got));
 const scored = results.filter((r) => r.got !== '(batch-error)');
 const hits = scored.filter(isHit);
 const misses = scored.filter((r) => !isHit(r));
