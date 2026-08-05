@@ -1,6 +1,6 @@
 ---
 name: workflow
-description: "Routes any dev task into the right execution tier (Small/Medium/Large) and carries condux's operating rules — proportional effort, lazy skill loading, soft gates, implement-yourself-by-default. Confirms the tier with the user, then executes the matching flow, loading downstream skills only when a step needs them. Trigger with any implementation request — feature, bug fix, refactor, new endpoint, UI change. Every dev task starts here; other skills execute within /workflow, not instead of it. Also the operating manual — questions about how condux works, its tiers, soft gates, checkpoints, and named agents."
+description: "Routes any dev task into the right execution tier (Small/Medium/Large) and carries condux's operating rules — proportional effort, lazy skill loading, soft gates, implement-yourself-by-default. Trigger with any implementation request — feature, bug fix, refactor, new endpoint, UI change. Every dev task starts here; other skills execute within /workflow, not instead of it. Also the operating manual — questions about how condux works, its tiers, soft gates, checkpoints, and named agents."
 argument-hint: "<task description>"
 ---
 

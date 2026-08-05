@@ -1,6 +1,6 @@
 ---
 name: discovery
-description: "Refine a rough idea into a signed-off design. Asks goal-level questions, surfaces alternatives, then runs a post-approach detail round (contracts, mappings, edge cases) that feeds the tech spec (written via technical-spec at sign-off); presents the design in sections for sign-off before any planning or code begins. Trigger for LARGE tasks, when scope is unclear, or when the user wants to brainstorm or explore a rough idea. Also when resuming or continuing an existing design or design doc — the existing-design check offers resume-or-fresh. Acts as a soft gate before /draft-plan — if discovery hasn't run, ask the user if they want to skip it consciously."
+description: "Refine a rough idea into a signed-off design, presented in sections for sign-off before any planning or code begins. Feeds the tech spec, written via technical-spec at sign-off. Trigger for LARGE tasks, when scope is unclear, or when the user wants to brainstorm or explore a rough idea. Also when resuming an existing design or design doc — the existing-design check offers resume-or-fresh. A soft gate before /draft-plan: if discovery has not run, ask whether to skip it consciously."
 argument-hint: "<rough idea or feature description>"
 effort: high
 ---

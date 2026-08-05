@@ -1,6 +1,6 @@
 ---
 name: subagent-deployment
-description: Fan out 2+ independent tasks across named agents (explorer/researcher/planner/coder) in a single message when they share no files and no dependencies. Use for ad-hoc independent work discovered outside a formal plan — unrelated bug fixes, parallel lookups, independent small tasks.
+description: Fan out 2+ independent tasks across named agents (explorer/researcher/planner/coder) in a single message when they share no files and no dependencies. For ad-hoc independent work discovered outside a formal plan.
 when_to_use: Trigger when two or more genuinely independent tasks are on the table — nothing shared between them, no ordering — and any mix of named agents fits. Not for executing an ordered plan task-by-task (that's subagent-execution).
 argument-hint: "<list of independent tasks>"
 ---
