@@ -20,6 +20,21 @@ SKILLS_DIR="$REPO_ROOT/skills"
 DIST_DIR="$REPO_ROOT/dist/plugins"
 
 # ---------------------------------------------------------------------------
+# Frontmatter gate — refuse to propagate a SKILL.md that a strict YAML parser
+# would reject. Codex declines to load such a skill outright, and four separate
+# incidents shipped one anyway (see the incident ledger). Checking the source
+# BEFORE the copy is what keeps a bad value out of dist/ entirely; the whole
+# tree is re-checked after the build to catch generator bugs too.
+# ---------------------------------------------------------------------------
+if ! node "$REPO_ROOT/scripts/check-frontmatter.mjs" "$SKILLS_DIR" >/dev/null; then
+  node "$REPO_ROOT/scripts/check-frontmatter.mjs" "$SKILLS_DIR" >&2 || true
+  echo "" >&2
+  echo "ERROR  refusing to sync — fix the frontmatter above first." >&2
+  echo "       node scripts/check-frontmatter.mjs --fix" >&2
+  exit 1
+fi
+
+# ---------------------------------------------------------------------------
 # copy_dir <src> <dst>  — mirrors src into dst, removing stale files
 # ---------------------------------------------------------------------------
 copy_dir() {
@@ -78,9 +93,22 @@ sync_skill() {
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
+# Post-build gate: the OpenCode build re-quotes frontmatter through its own path
+# (it folds when_to_use into description), so a clean source does not guarantee a
+# clean generated tree.
+check_generated() {
+  if ! node "$REPO_ROOT/scripts/check-frontmatter.mjs" >/dev/null; then
+    node "$REPO_ROOT/scripts/check-frontmatter.mjs" >&2 || true
+    echo "" >&2
+    echo "ERROR  generated frontmatter is illegal — the build, not the source, is at fault." >&2
+    exit 1
+  fi
+}
+
 if [[ $# -gt 0 ]]; then
   sync_skill "$1"
   node "$REPO_ROOT/scripts/build-opencode.mjs"
+  check_generated
 else
   synced=0
   skipped=0
@@ -95,6 +123,7 @@ else
     fi
   done
   node "$REPO_ROOT/scripts/build-opencode.mjs"
+  check_generated
   echo ""
   echo "done — ${synced} synced, ${skipped} skipped, ${failed} failed"
   [[ $failed -eq 0 ]]
