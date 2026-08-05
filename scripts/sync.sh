@@ -88,6 +88,17 @@ sync_skill() {
     copy_dir "$src/agents" "$DIST_DIR/condux/agents"
     echo "synced  skills/$name/agents  →  dist/plugins/condux/agents"
   fi
+
+  # Same shape as agents/ above: both hosts load hooks from the PLUGIN root, not
+  # from a skill tree, so the skill copy never reaches them. This dir was
+  # hand-maintained in dist/ until 2026-08-05 — exactly the blind spot 6ba6572
+  # produced doctrine about ("every out-of-tree mirror target needs its own sync
+  # step AND its own test"). workflow owns it because the payload is its routing
+  # rule; plan-review's Codex Stop hook rides along in the same manifest.
+  if [[ "$name" == "workflow" && -d "$src/hooks" ]]; then
+    copy_dir "$src/hooks" "$DIST_DIR/condux/hooks"
+    echo "synced  skills/$name/hooks  →  dist/plugins/condux/hooks"
+  fi
 }
 
 # ---------------------------------------------------------------------------

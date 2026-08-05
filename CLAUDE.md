@@ -76,6 +76,15 @@ The `condux` and `toolkit-ops` bundles live at `dist/plugins/<bundle>/` and thei
 ## Key invariants
 
 - `dist/` is a verbatim mirror of `skills/` — never diverge them
+- Plugin-level dirs (`dist/plugins/condux/agents/`, `dist/plugins/condux/hooks/`)
+  are NOT reached by the skill-tree copy. Each has a source under `skills/`
+  (`subagent-execution/agents/`, `workflow/hooks/`), its own `sync.sh` case, and
+  its own mirror test. Never hand-edit them in `dist/` — that was the
+  `6ba6572` blind spot, and `hooks/` was still hand-maintained until 2026-08-05
+- condux ships a `SessionStart` hook on both hosts that injects
+  `skills/workflow/hooks/routing.md` (~390 tokens), so `/workflow` is the entry
+  point rather than a catalog inference. Edit the payload as prose in
+  `routing.md`; never inline it into the script
 - SKILL.md trigger contract: either `description` starts with "Use when..." (triggering conditions only), or a `when_to_use` field carries the trigger conditions (condux-style). `description` ≤ 500 chars, frontmatter total ≤ 1024 chars
 - SKILL.md frontmatter is a **narrow canonical grammar**, not free-form YAML:
   every line is `key: value`; values are plain when safe, double-quoted (JSON
@@ -107,6 +116,10 @@ committing — it fails the build otherwise. The suite now needs
 - `manifest-parity.test.mjs` — each plugin's `.claude-plugin`/`.codex-plugin`
   manifests match on name/version/skills, `interface` and `hooks` stay codex-only,
   and every skill has a trigger contract
+- `condux-hooks.test.mjs` — the plugin-level `hooks/` mirrors
+  `skills/workflow/hooks/`, each host manifest uses only its own root variable
+  (`${CLAUDE_PLUGIN_ROOT}` vs `${PLUGIN_ROOT}`), plan-review's Codex Stop hook
+  survives, and `session-start.mjs` emits each host's wire format and fails open
 - `frontmatter-canonical.test.mjs` — SKILL.md frontmatter across `skills/`,
   `dist/`, and `packages/` conforms to the canonical grammar, with all four
   historical breaks as regression fixtures. Dependency-free, and the same module

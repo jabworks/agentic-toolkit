@@ -31,6 +31,16 @@ Lean agentic workflow plugin (`condux`). Install the full workflow bundle as a u
 
 > Inspired by [obra/superpowers](https://github.com/obra/superpowers) — condux reworks its skill-orchestration ideas around a lean, proportional-effort philosophy (tiered routing, lazy loading, soft gates) rather than always-on maximalism.
 
+Installing is the whole setup: condux ships a `SessionStart` hook (Claude Code
+and Codex both) that puts its routing rule in context before your first prompt,
+so `/workflow` is reached as the entry point instead of being inferred from the
+skill catalog. That inference sits at roughly 80% on its own, and the misses are
+condux's own siblings winning the query — `root-cause-analysis` on a crash
+report, `draft-plan` on "write the plan" — which no description can fix without
+stealing their trigger space. The payload is ~390 tokens per session and lives
+in `skills/workflow/hooks/routing.md`; delete or edit that file to change or
+disable it.
+
 #### Why condux
 
 Most workflow frameworks are maximal — every gate runs on every task, so a typo
