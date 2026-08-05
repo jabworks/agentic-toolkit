@@ -16,6 +16,14 @@ set -euo pipefail
 if ! command -v claude >/dev/null 2>&1; then
   echo "claude CLI not found — skipping publish-surface validation"
   echo "(install: npm install -g @anthropic-ai/claude-code)"
+  # Skipping is a convenience for local runs only. In CI the tool is installed
+  # by the workflow, so its absence means the job is broken, not unnecessary —
+  # a guard that quietly passes when its tool is missing is what let the
+  # 2026-08-05 frontmatter break ship.
+  if [[ -n "${CI:-}" ]]; then
+    echo "CI is set — a missing validator is a failure, not a skip" >&2
+    exit 1
+  fi
   exit 0
 fi
 

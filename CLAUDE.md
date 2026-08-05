@@ -77,6 +77,14 @@ The `condux` and `toolkit-ops` bundles live at `dist/plugins/<bundle>/` and thei
 
 - `dist/` is a verbatim mirror of `skills/` — never diverge them
 - SKILL.md trigger contract: either `description` starts with "Use when..." (triggering conditions only), or a `when_to_use` field carries the trigger conditions (condux-style). `description` ≤ 500 chars, frontmatter total ≤ 1024 chars
+- SKILL.md frontmatter is a **narrow canonical grammar**, not free-form YAML:
+  every line is `key: value`; values are plain when safe, double-quoted (JSON
+  escaping) otherwise, and **single quotes are banned outright**. Four incidents
+  shipped frontmatter a strict parser rejects — the last one *because* it was
+  quoted, with a bare apostrophe inside single quotes. Never hand-fix a
+  violation: run `node scripts/check-frontmatter.mjs --fix`. Note that
+  `claude plugin validate` does NOT catch this class (Claude's parser is
+  lenient; Codex's is not)
 - `skills` path in plugin.json must start with `./` (relative to plugin root)
 - Artifact locations: durable output → a normal project path (`specs/`); working
   state → `<git-root>/.<plugin-name>/`, gitignored, named for the owning *plugin*
@@ -87,7 +95,8 @@ The `condux` and `toolkit-ops` bundles live at `dist/plugins/<bundle>/` and thei
 - Commit style: `fix:` / `feat:` / `chore:` prefix, `-s` signoff, no Co-Authored-By
 
 Most of these are enforced by `node --test` (see `tests/`), so run it before
-committing — it fails the build otherwise:
+committing — it fails the build otherwise. The suite now needs
+`pnpm install` (the `yaml` devDependency backs the frontmatter oracle):
 
 - `dist-mirror.test.mjs` — `dist/` skill trees match `skills/` byte-for-byte
 - `skill-invariants.test.mjs` — frontmatter budgets, `name` kebab-case and equal
@@ -98,6 +107,14 @@ committing — it fails the build otherwise:
 - `manifest-parity.test.mjs` — each plugin's `.claude-plugin`/`.codex-plugin`
   manifests match on name/version/skills, `interface` and `hooks` stay codex-only,
   and every skill has a trigger contract
+- `frontmatter-canonical.test.mjs` — SKILL.md frontmatter across `skills/`,
+  `dist/`, and `packages/` conforms to the canonical grammar, with all four
+  historical breaks as regression fixtures. Dependency-free, and the same module
+  gates `scripts/sync.sh` (before and after the build) and the pre-commit hook
+- `frontmatter-yaml.test.mjs` — the oracle: a real strict `yaml` parse of every
+  frontmatter block, asserting `name`/`description` survive as non-empty strings.
+  **Fails rather than skips** when the dependency is missing — a guard that
+  vanishes with its tool is how the 2026-08-05 break shipped
 - `opencode-dist.test.mjs` — `dist/opencode/skills/`,
   `packages/condux-opencode/agents/`, and the bundled
   `packages/condux-opencode/skills/` all match `scripts/build-opencode.mjs`
@@ -105,8 +122,10 @@ committing — it fails the build otherwise:
   `dist/opencode/skills/`), merged descriptions stay within OpenCode's 1024-char
   cap, restricted agents keep their `permission` denials, and the plugin loads,
   registers its bundled skills path, and never clobbers user-defined agents
-- `local-hooks.test.mjs` — warn-only (never fails): tells you when this clone
-  is missing the pre-commit sync hook (`bash scripts/install-hooks.sh`)
+- `local-hooks.test.mjs` — **fails** when this clone's pre-commit hook is
+  missing or stale (`bash scripts/install-hooks.sh`). Warn-only until
+  2026-08-05, when the hook became a frontmatter gate — an opt-in gate is no
+  gate. Skipped under `CI`, where the workflow runs the same checks directly
 - `docs-catalog.test.mjs` — every marketplace plugin appears in README.md and
   CLAUDE.md's catalogs
 

@@ -44,16 +44,30 @@ stale precisely when the work it proposes gets done.
    progression 76.0→85.8→91.7 in `references/health-campaign.md` Front A3).
    Remaining: A4 collision automation, seeded by the 31 residual misses
    (discovery↔session-handoff "resume" space is the strongest).
-2. **YAML-strict frontmatter validation.** The invariant test regex-parses
-   frontmatter; an `a13e094`-class quoting bug would pass it.
+2. ~~YAML-strict frontmatter validation~~ — closed 2026-08-05, **after the gap it
+   described shipped a fourth incident** (condux 2.9.1 failed to load in Codex).
+   Left open ~7 weeks as a backlog item; treat a documented gap in a
+   twice-shipped class as an incident with a pending date, not a nice-to-have.
+   Closed by two gates: `tests/frontmatter-canonical.test.mjs` (narrow grammar
+   via `scripts/check-frontmatter.mjs`, dependency-free, also gates `sync.sh`
+   and pre-commit) and `tests/frontmatter-yaml.test.mjs` (real strict `yaml`
+   parse). Deviates from the original prescription below — "dependency-free" was
+   kept for the gate that must run in a fresh clone, and a real parser was added
+   as the oracle, since a hand-rolled one cannot prove its own premise.
 3. ~~Docs-catalog enforcement~~ — closed 2026-07-09: `tests/docs-catalog.test.mjs`
    fails CI when a marketplace plugin is missing from either catalog.
 4. ~~Trigger-collision automation~~ — closed 2026-07-09 as **falsified**: lexical
    overlap scoring cannot reproduce the observed (semantic) collisions — 5%
    recall vs the ≥80% criterion (`scripts/collision-scan.mjs --check` is the
    record). Detection stays empirical: periodic eval runs + the flaky list.
-5. ~~Hook parity on clones~~ — closed 2026-07-08: `tests/local-hooks.test.mjs`
-   warns (never fails) on clones missing the pre-commit sync hook.
+5. ~~Hook parity on clones~~ — closed 2026-07-08 as a warning; **re-closed
+   2026-08-05 as a hard failure**. Warn-only was defensible while the hook only
+   synced `dist/` (CI caught drift regardless). It stopped being defensible when
+   the hook became a frontmatter gate — and the warning had in fact been ignored:
+   the primary development clone had no hook at all. `tests/local-hooks.test.mjs`
+   now fails on a missing or stale hook, and skips under `CI`, where the workflow
+   runs the same checks directly. Lesson for any future warn-only guard: a
+   warning nobody acts on is data about the guard, not about the clone.
 
 ## First three concrete steps
 
@@ -61,8 +75,9 @@ stale precisely when the work it proposes gets done.
    `scripts/eval-triggers.mjs` runs plus targeted guard clauses for the strongest
    collision spaces (discovery↔session-handoff "resume" first); lexical automation
    is falsified, so this stays manual-with-evals.
-2. Replace the frontmatter regex parse with a strict mini-YAML check (quoting-aware,
-   still dependency-free) in `tests/skill-invariants.test.mjs` — open problem 2.
+2. ~~Replace the frontmatter regex parse with a strict mini-YAML check~~ — done
+   2026-08-05 (open problem 2), as a canonical-grammar gate plus a real strict
+   parse rather than a mini-YAML implementation.
 3. Run the trigger evals against a weaker model to test transfer (the known
    uncertainty below — needs owner confirmation on which model/harness).
 
@@ -72,7 +87,8 @@ stale precisely when the work it proposes gets done.
 - `node --test` fails on an unquoted-`:` description (today it passes).
 - `node --test` fails when a registered plugin is absent from either catalog doc.
 - A fresh `git clone` + documented setup leaves no safety net uninstalled
-  (met 2026-07-08: README/CLAUDE.md notes + the local-hooks warn test).
+  (2026-07-08: README/CLAUDE.md notes + a warn test — which the primary clone
+  then ignored for four weeks; 2026-08-05: the local-hooks test fails instead).
 
 ## The library-health campaign (five fronts)
 

@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: "One-shot code review. Produces a diagnostic report categorized by severity (Critical / Important / Minor). Never fixes issues automatically. On-request only — never auto-triggers. At workflow CP-2 (pre-finalize, on request) or after /finalize, ask once: \"Want a code review before merging?\" Trigger phrases: \"review this\", \"review before merge\", \"check this PR\". Not for reviewing a plan or spec before implementation — that's plan-review. Not for running the change to watch it work — that's live-verification."
+description: "One-shot code review. Produces a diagnostic report categorized by severity (Critical / Important / Minor). Never fixes issues automatically. On-request only — never auto-triggers. At workflow CP-2 (pre-finalize, on request) or after /finalize, ask once: \"Want a code review before merging?\" Trigger phrases: \"review this\", \"review before merge\", \"check this PR\". Not for reviewing a plan or spec before implementation — that is plan-review. Not for running the change to watch it work — that is live-verification."
 argument-hint: "<PR URL, diff, branch, or file path>"
 ---
 

@@ -200,6 +200,58 @@ Doctrine:     verify the negative — before declaring a mechanism dead, read
               "Nothing at X" indicts nothing unless X is the write target.
 Encoded in:   health-campaign Front E measurement rule; this entry.
 
+## Fourth frontmatter break — the anti-footgun was the footgun (2026-08-05)
+
+Symptom:      Codex refused to load condux 2.9.1: "invalid YAML: did not find
+              expected key at line 3 column 299" on code-review's SKILL.md.
+              Claude Code loaded the same file without complaint.
+Wrong path:   reading it as a one-off typo and just fixing the file. It is the
+              FOURTH instance of the class (cff6133 → a13e094 → d754c63 → this)
+              and the SECOND in code-review specifically.
+Root cause:   `when_to_use` was a single-quoted scalar containing bare
+              apostrophes ("that's plan-review"). YAML needs `''` inside single
+              quotes, so the first apostrophe closed the scalar. The value was
+              quoted BECAUSE of a13e094's doctrine ("quote YAML strings") — the
+              rule meant to prevent this class produced this instance. The
+              reported "line 3" is the 3rd line of the frontmatter body; Codex
+              counts from after the opening `---`.
+Why every guard missed it, individually:
+              - tests/manifest-parity.test.mjs skipped quoted values outright:
+                `if (/^['"]/.test(value)) continue; // quoted — safe`. False.
+              - skill-invariants.test.mjs measures budgets; it never parses.
+              - scripts/validate-plugins.sh is NOT a YAML oracle (see the
+                correction below) and exits 0 when the claude CLI is absent.
+              - ci.yml's release-dry-run was continue-on-error anyway.
+              - the gap was documented as open for ~7 weeks (a13e094's entry,
+                toolkit-research-frontier open problem 2) and deferred.
+Evidence:     cff6133, a13e094, d754c63 (the prior three); this fix commit.
+Doctrine:     "quote it" is not a rule a human can apply reliably — narrow the
+              GRAMMAR instead. Frontmatter is `key: value` only; values are
+              plain-when-safe or double-quoted JSON; single quotes are banned
+              outright. And: a documented open gap in a class that has already
+              shipped twice is not a backlog item, it is an incident waiting on
+              a date.
+Encoded in:   scripts/check-frontmatter.mjs (+ `--fix`), gating node --test,
+              scripts/sync.sh (before AND after the build) and the pre-commit
+              hook; tests/frontmatter-canonical.test.mjs (all four historical
+              breaks as fixtures); tests/frontmatter-yaml.test.mjs (strict
+              `yaml` parse, FAILS rather than skips when the dep is missing);
+              toolkit-skill-standards procedure step 3.
+
+## Correction (2026-08-05) to "Unquoted YAML description" and "Publish-surface dry-run caught silent frontmatter death"
+
+Both entries above credit `scripts/validate-plugins.sh` / `claude plugin
+validate` as "the real YAML oracle." That is false, and believing it is part of
+why the 2026-08-05 break shipped. Verified 2026-08-05 by reintroducing the
+break into a scratch copy of dist/plugins/condux and running the validator:
+it printed "✔ Validation passed". It validates plugin.json; Claude's own
+frontmatter parser is lenient, so it cannot detect frontmatter that only a
+strict parser (Codex) rejects.
+
+The real oracles are tests/frontmatter-canonical.test.mjs and
+tests/frontmatter-yaml.test.mjs. Per the append-only rule the entries above are
+left as written.
+
 ---
 
 Categories with NO evidenced incident as of 2026-07-08 (stated per the no-fabrication
