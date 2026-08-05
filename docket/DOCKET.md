@@ -9,6 +9,10 @@ Stale open markers cost real sessions — closing means moving.
 
 ## Committed
 
+### 6. Graduate the no-plugin-deps rule to a degrade-gracefully ladder (2026-08-05)
+
+Amend toolkit-skill-standards (and the no-plugin-deps memory rule): skills prefer the highest detected rung — (1) skill files, always present on every channel; (2) bundled CLI travelling with the skill (record's server/ precedent); (3) registered MCP, host-dependent — but must function on rung 1 alone, because npx skills add ships bare skills with no manifest. Cross-plugin dependencies stay a hard ban. INSTALL.md makes rung 3 reliable to reach; plugin doctor (#1) reports which rung each plugin actually runs on per host. Decided 2026-08-05 in session.
+
 ## Someday
 
 ### 1. Plugin doctor — verify condux/concord/docket work on the installed harness (2026-08-05)
@@ -26,5 +30,9 @@ Zero-count sections render an empty chip pill after the heading (`count || empty
 ### 5. INSTALL.md adoption for condux and concord (2026-08-05)
 
 Adopt the INSTALL.md ease-of-install convention (detect, register, verify, report) for the other complex plugins: condux (OpenCode npm story) and concord (Codex hooks). Docket server/INSTALL.md is the reference implementation.
+
+### 7. Spec MCP server — revisit when specs gain write-side invariants (2026-08-05)
+
+Declined for now (2026-08-05): specs are read-mostly markdown — router lookup is ls + fuzzy match, agents read files natively, and a server would duplicate the file path every skill must keep anyway. Reconsider docket-style (thin MCP over a CLI) only if specs grow mutations worth guarding: enforced changelog stamps on drift decisions, cross-spec link integrity, or a host-enforced spec-before-plan gate.
 
 ## Loose threads
