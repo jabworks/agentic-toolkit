@@ -1,6 +1,6 @@
 ---
 name: test-first-development
-description: "Tests-first development — write tests before implementation. Opt-in only. Get one upfront consent (write tests first + auto-run), then run the cycle without re-asking. Still always ask before updating existing test specs. Never silently rewrite test specs to match new behavior. Trigger when the user explicitly asks for tests-first, picks it at a workflow checkpoint, or when implementing logic with clear input/output behavior. Also triggers whenever an existing test spec is about to be edited to make it pass — that decision runs through this skill."
+description: "Tests-first development — write tests before implementation. Opt-in only: one upfront consent (write tests first + auto-run), then run the cycle without re-asking. Trigger when the user explicitly asks for tests-first, picks it at a workflow checkpoint, or when implementing logic with clear input/output behavior. Also triggers whenever an existing test spec is about to be edited to make it pass — that decision runs through this skill."
 argument-hint: "<what to test>"
 ---
 

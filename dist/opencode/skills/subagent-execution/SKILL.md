@@ -1,6 +1,6 @@
 ---
 name: subagent-execution
-description: "Execute a plan using named specialist agents. Default is to implement yourself — only spawn when there is a concrete justification. Agents must be pre-defined; never create generic subagents with injected system prompts. Trigger when implementing a LARGE plan with tasks that benefit from agent specialization or parallel exploration — including task briefs, review packages, spawn rules, and resuming an interrupted plan from the `.condux/progress/` ledger (not session-handoff). Not for ad-hoc independent tasks outside a plan (that's subagent-deployment)."
+description: "Execute a plan using named specialist agents. Default is to implement yourself — only spawn when there is a concrete justification. Trigger when implementing a LARGE plan with tasks that benefit from agent specialization or parallel exploration — including task briefs, review packages, spawn rules, and resuming an interrupted plan from the `.condux/progress/` ledger (not session-handoff). Not for ad-hoc independent tasks outside a plan (that's subagent-deployment)."
 argument-hint: "<plan file path>"
 ---
 
@@ -15,6 +15,12 @@ Execute a plan using specialist agents. Default is to do the work yourself. Spaw
 ```
 
 ## Core Principle
+
+**Agents must be pre-defined.** Spawn only the named agents that ship with condux
+(`explorer`, `researcher`, `planner`, `coder`). Never invent a generic subagent by
+injecting a system prompt into a general-purpose one — an agent whose behaviour is
+written at call time has no reviewable contract, no consistent tool restrictions,
+and no way to improve across sessions.
 
 **You implement by default.** Spawning is an explicit decision with a stated reason — not the default mode of operation.
 
