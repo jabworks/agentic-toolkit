@@ -9,10 +9,6 @@ Stale open markers cost real sessions — closing means moving.
 
 ## Committed
 
-### 6. Graduate the no-plugin-deps rule to a degrade-gracefully ladder (2026-08-05)
-
-Amend toolkit-skill-standards (and the no-plugin-deps memory rule): skills prefer the highest detected rung — (1) skill files, always present on every channel; (2) bundled CLI travelling with the skill (record's server/ precedent); (3) registered MCP, host-dependent — but must function on rung 1 alone, because npx skills add ships bare skills with no manifest. Cross-plugin dependencies stay a hard ban. INSTALL.md makes rung 3 reliable to reach; plugin doctor (#1) reports which rung each plugin actually runs on per host. Decided 2026-08-05 in session.
-
 ## Someday
 
 ### 1. Plugin doctor — verify condux/concord/docket work on the installed harness (2026-08-05)
