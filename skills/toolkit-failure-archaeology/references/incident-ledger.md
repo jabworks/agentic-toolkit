@@ -252,6 +252,39 @@ The real oracles are tests/frontmatter-canonical.test.mjs and
 tests/frontmatter-yaml.test.mjs. Per the append-only rule the entries above are
 left as written.
 
+## `--target` stranded six releases the tag push had already created (2026-08-06)
+
+Symptom:      seeding the new plugin release channel pushed all 12 tags, then
+              failed to create 6 of the 12 GitHub releases: `! Failed to create
+              release, "workflow" scope may be required`. Re-running created
+              nothing — the tool read an existing tag as a finished release.
+Wrong path:   taking gh's hint literally and refreshing the token with the
+              `workflow` scope. The token needed no new scope: the same
+              `gh release create`, same tag, same commit, succeeds with
+              `--target` omitted (verified by running both forms back to back).
+Root cause:   two defects. `--target <sha>` makes GitHub re-point the tag ref,
+              and a token without `workflow` may not create or update a ref
+              whose commit touches `.github/workflows/` — 627d95ff does, which
+              is why exactly the older-commit releases failed. The flag was
+              redundant from the start: the script pushes the tag first, so the
+              tag already names the commit. Second, `tagged` was treated as
+              `released` although they are two calls and the second can fail
+              alone, which made the failure unrecoverable by re-running.
+Evidence:     a1a5929 (introduced), 7435f09 → a28606f (fix + tests). The same
+              merge's workflow run 31076910513 failed before any of this, at
+              `actions/setup-node`: `package-manager-cache` defaults to true
+              and looked for pnpm in a job that installs no dependencies —
+              the trap ci.yml already documents on its release-dry-run job.
+Doctrine:     never pass a flag that re-points a ref you have already pushed.
+              And: when an operation is two calls, the first one's completion
+              is not evidence about the second — track them separately, or the
+              partial failure has no recovery path.
+Encoded in:   scripts/release-plugins.mjs (no `--target`; `--repair` selects
+              tags whose release is missing); tests/release-plugins.test.mjs
+              (asserts `--target` never returns, drives a fake gh via
+              RELEASE_PLUGINS_GH); .github/workflows/plugin-release.yml
+              (`package-manager-cache: false`); skills/release/SKILL.md.
+
 ---
 
 Categories with NO evidenced incident as of 2026-07-08 (stated per the no-fabrication

@@ -12,6 +12,10 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## toolkit-ops 1.6.1 — 2026-08-06
+
+- chore(toolkit-ops): version 1.6.1
+
 ## toolkit-ops 1.6.0 — 2026-08-06
 
 - feat: per-plugin doctors, concord bundle conversion, and a generated release channel (#32)
@@ -26,7 +30,7 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## release 1.2.1 — 2026-08-06
 
-- chore(release): version 1.2.1
+- fix(release): repair stranded releases, drop --target, fix the CI runner (1.2.1) (#34)
 
 ## release 1.2.0 — 2026-08-06
 

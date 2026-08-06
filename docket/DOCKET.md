@@ -23,6 +23,10 @@ Zero-count sections render an empty chip pill after the heading (`count || empty
 
 Adopt the INSTALL.md ease-of-install convention (detect, register, verify, report) for the other complex plugins: condux (OpenCode npm story) and concord (Codex hooks). Docket server/INSTALL.md is the reference implementation.
 
+#### Status 2026-08-06 — second payoff: it unblocks `--fix` in the doctors
+
+The plugin doctors shipped (#1) with repair deliberately split: every broken probe prints its fix, but only `docket-doctor` can *perform* it, because `--fix` delegates to `server/install.sh` rather than reimplementing registration. `condux-doctor` and `concord-doctor` print their fix and stop — they have no installer to delegate to. Writing those installers is exactly this item, so it now buys the ease-of-install convention and the repair half of the health-check convention in one change. `concord-doctor` already names `references/install-codex-hook.sh` as the fix for an unwired host; that script is the seed of concord's INSTALL.md.
+
 ### 7. Spec MCP server — revisit when specs gain write-side invariants (2026-08-05)
 
 Declined for now (2026-08-05): specs are read-mostly markdown — router lookup is ls + fuzzy match, agents read files natively, and a server would duplicate the file path every skill must keep anyway. Reconsider docket-style (thin MCP over a CLI) only if specs grow mutations worth guarding: enforced changelog stamps on drift decisions, cross-spec link integrity, or a host-enforced spec-before-plan gate.
