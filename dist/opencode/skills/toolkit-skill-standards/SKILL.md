@@ -99,6 +99,10 @@ structure, and collision discipline.
    the menu (e.g. a sign-off step doubling as the what-next menu), both skills
    carry the requirement, on both sides of the seam.
 
+9. **Dependency ladder.** Anything the skill invokes beyond its own files must
+   follow the ladder (section below): work from skill files alone, prefer
+   detected richer surfaces, never depend across plugin boundaries.
+
 ## Artifact location contract
 
 Any skill that writes a file into the user's project follows this. Two tiers,
@@ -133,6 +137,35 @@ Current owners: `.condux/` (`designs/ plans/ progress/ scratch/ verification/`),
 
 Never write working state into the repo root, into CWD, or into a project's
 `docs/`: those belong to the project, not to the tool.
+
+## Dependency ladder
+
+A shipped skill may *prefer* richer surfaces but must *require* nothing beyond
+its own files. Three rungs:
+
+| Rung | Surface | Present |
+|---|---|---|
+| 1 | Skill files — SKILL.md, `references/`, `scripts/` | always, on every channel |
+| 2 | CLI bundled inside the skill dir (record's `server/docket.mjs`) | always — travels with the skill through `npx skills add`; needs only Node |
+| 3 | Registered MCP server or hooks | host-dependent — exists only after plugin install and registration |
+
+- **Function on rung 1 alone.** `npx skills add` ships bare skill trees with no
+  plugin manifest — no `.mcp.json`, no hooks. A skill that requires rung 3 is
+  broken on an entire distribution channel regardless of how good its installer is.
+- **Prefer the highest rung you can detect; detect, never assume.** The
+  reference phrasing is record's: "prefer the MCP tools when registered,
+  otherwise run the bundled CLI."
+- **Cross-plugin dependencies are banned at every rung.** A docket skill that
+  needs condux — or any skill that leans on a third-party MCP like
+  context-mode — breaks silently for everyone without that plugin, and no
+  installer or doctor can fix a dependency the bundle doesn't ship.
+- What makes rung 3 a first-class preferred path rather than a lucky bonus:
+  `INSTALL.md` (detect → register → verify → report) makes it reliable to
+  reach, and the plugin doctor (docket #1) reports which rung each plugin
+  actually runs on per host.
+
+Ratified 2026-08-05 (docket #6), graduating the older absolute "assume no
+MCP/plugin is installed" rule after docket shipped the ladder in practice.
 
 ## Evidence required
 
