@@ -40,13 +40,22 @@ node <skill-base>/../record/server/docket.mjs check
 
 (or the `docket_check` MCP tool). Exit 0 means clean. Findings come typed:
 
-- `duplicate-id` — the same id claimed twice; decide which entry keeps it,
-  re-add the other via `record` with a fresh id
+- `duplicate-id` — the same id **allocated** twice; decide which entry keeps
+  it, re-add the other via `record` with a fresh id
+- `orphan-reference` — a qualified id like `#47 (remainder)` whose parent
+  `#47` is not allocated anywhere. Either the parent was deleted, or the
+  qualifier is a typo for a different number. Never "fix" it by allocating a
+  new id — that breaks the link the qualifier exists to express
 - `next-id-drift` — docket.json fell behind a hand-edit; fix the counter to
   max+1 before any add happens
 - `malformed-heading` — a `###` line that is not `### <id>. Title (date)`
 - `orphaned-legacy` — both layouts present; docket/ wins, offer to migrate
   or delete the root files
+
+**Qualified ids are not duplicates.** `### 47 (remainder).` references item
+#47; it does not claim the number. A parent and any number of its slices can
+coexist across the open file and the archive, and `check` is silent about it —
+that shape is the partial-ship convention, not corruption.
 
 Id gaps are normal (absorbed files, dropped items) — never renumber to close
 them.

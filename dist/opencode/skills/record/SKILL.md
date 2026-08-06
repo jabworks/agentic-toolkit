@@ -62,7 +62,11 @@ item. Never edit earlier status blocks.
 parent: `(split from #26, <date>)`. Close or annotate the parent — a split
 parent left untouched double-counts the work.
 
-**Close.** Run `close <id> --note "<how it was verified>"`. Report the
+**Close.** Run `close <id> --note "<how it was verified>"`. If a number matches
+more than one open item — possible once qualified ids like `47 (remainder)` are
+in play — the CLI errors and lists the candidates; pass the exact slot,
+`close "47 (remainder)"`. Never guess which one was meant: closing is a move
+with no undo. Report the
 suggested commit subject it prints (`docs(docket): close #<id>`) — the
 convention, not a requirement; committing stays the user's call.
 

@@ -33,6 +33,43 @@ stale sweep exists to catch the ones that slip anyway.
   archive can contain ids with gaps or interleaved order — `check` treats
   gaps as normal, only dupes/reuse as findings.
 
+## Qualified ids: reference, not allocation (2026-08-06)
+
+A bare `### 47.` allocates id 47. A qualified `### 47 (remainder).` only
+references it — the partial-ship convention, where a slice and its parent
+deliberately share a number so commit subjects citing #47 keep pointing at
+one thing.
+
+The parser had tolerated the shape since the beginning (`ITEM_RE`,
+`ARCHIVE_ENTRY_RE`) and `migrate` was tested to preserve it, but `collectIds`
+discarded the qualifier, so `check` saw a bare `47` twice and called it
+corruption. On terminus — the reference consumer, and the layout this tool
+was generalized from — that made `check` permanently red on three items the
+day it adopted docket. A check that is always red is a check nobody wires
+into CI and nobody reads.
+
+Rules now:
+
+- Duplicate detection runs over **allocations only**. Two bare `### 2.`
+  headings are still a finding, unchanged.
+- A reference whose parent id is not allocated anywhere is an
+  `orphan-reference` finding — a dangling pointer, worth reporting.
+- Two identical references (`## 26 (shipped slice).` twice) are legal: a
+  parent can ship in any number of slices.
+- `next_id` is unaffected. It uses the numeric value, so a qualified
+  `74 (remainder)` still blocks reallocating 74.
+- `close` resolves a number against open items and **errors on ambiguity**
+  rather than taking the first match; the exact slot (`close "47 (remainder)"`)
+  is the disambiguator. Before this, terminus's `docket close 1` reached the
+  right item only because its open ids happened to be unique.
+
+Verified against the real terminus docket (2026-08-06, with permission —
+`docket/` only): 78 entries, 74 allocations, 4 references
+(`1 (remainder)`, `24 (follow-ups)`, `26 (shipped slice)` ×2), `next_id` 75
+against a max id of 74. The pre-fix code reported 4 `duplicate-id` findings
+there; the fixed code reports none and `docket check` exits 0, which is what
+lets it be wired into a preflight or CI step at all.
+
 ## Routing collision surface (intra-bundle)
 
 `record` vs `groom` phrasing must stay disjoint: item-level verbs ("add",

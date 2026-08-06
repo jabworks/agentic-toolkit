@@ -45,7 +45,10 @@ const TOOLS = [
     inputSchema: {
       type: 'object',
       properties: {
-        id: { type: 'integer', description: 'The item id to close' },
+        id: {
+          type: ['integer', 'string'],
+          description: 'The item id to close — a number, or the exact id slot for a qualified item, e.g. "47 (remainder)"',
+        },
         note: { type: 'string', description: 'Verification note — how the work was verified' },
       },
       required: ['id'],
