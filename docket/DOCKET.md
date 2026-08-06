@@ -19,16 +19,66 @@ Reverse path for the ease-of-install convention: agent-followable removal — dr
 
 Zero-count sections render an empty chip pill after the heading (`count || empty-string` still emits the span). One-line fix in docket-render.mjs. Seen at live verification 2026-08-05.
 
-### 5. INSTALL.md adoption for condux and concord (2026-08-05)
-
-Adopt the INSTALL.md ease-of-install convention (detect, register, verify, report) for the other complex plugins: condux (OpenCode npm story) and concord (Codex hooks). Docket server/INSTALL.md is the reference implementation.
-
-#### Status 2026-08-06 — second payoff: it unblocks `--fix` in the doctors
-
-The plugin doctors shipped (#1) with repair deliberately split: every broken probe prints its fix, but only `docket-doctor` can *perform* it, because `--fix` delegates to `server/install.sh` rather than reimplementing registration. `condux-doctor` and `concord-doctor` print their fix and stop — they have no installer to delegate to. Writing those installers is exactly this item, so it now buys the ease-of-install convention and the repair half of the health-check convention in one change. `concord-doctor` already names `references/install-codex-hook.sh` as the fix for an unwired host; that script is the seed of concord's INSTALL.md.
-
 ### 7. Spec MCP server — revisit when specs gain write-side invariants (2026-08-05)
 
 Declined for now (2026-08-05): specs are read-mostly markdown — router lookup is ls + fuzzy match, agents read files natively, and a server would duplicate the file path every skill must keep anyway. Reconsider docket-style (thin MCP over a CLI) only if specs grow mutations worth guarding: enforced changelog stamps on drift decisions, cross-spec link integrity, or a host-enforced spec-before-plan gate.
+
+### 8. INSTALL.md + verify for concord (split from #5, 2026-08-06) (2026-08-06)
+
+concord is the small half of #5 and is mostly done already.
+
+Has: `references/install-codex-hook.sh` — merges the three hooks into
+`<CODEX_HOME>/hooks.json` with absolute paths, enables `features.hooks`,
+supports `--uninstall`, refuses to overwrite malformed JSON, prints `ok`/`set`
+lines.
+
+Missing three things:
+
+1. A verify step. It registers and stops — it never confirms the thing it
+   registered answers, which is the exact failure the ease-of-install
+   convention exists to catch and the reason docket's installer round-trips
+   its server.
+2. `INSTALL.md` — the agent-followable twin, for restricted shells or when the
+   user wants to see each step.
+3. The convention's `host status detail` report format instead of `ok`/`set`.
+
+Verify is nearly free: `concord-doctor --host codex` already implements every
+probe and lives in the same plugin, so the installer may call it — no
+cross-plugin dependency. Installer registers, doctor confirms.
+
+Then wire `concord-doctor --fix` to the installer, which closes the repair half
+of the health-check convention for this plugin.
+
+Self-contained, no open design questions — the second worked example of the
+convention after docket.
+
+### 9. INSTALL.md front door for condux — consolidate three scattered installers (split from #5, 2026-08-06) (2026-08-06)
+
+condux is the larger half of #5, and the reason is not obvious from the parent
+item: condux has no plugin-level installer, but it already ships two, buried
+inside skills where no user would find them.
+
+| existing | does |
+|---|---|
+| `skills/plan-review/references/install-codex-hook.sh` | merges the Stop hook into `hooks.json`, enables `features.hooks` |
+| `skills/subagent-execution/references/install-codex-agents.mjs` | installs the four specialist agents for Codex |
+| *(no script)* | OpenCode: add `plugin: ["@jabworks/condux"]` to `opencode.json` |
+
+Per host:
+
+- Claude Code — nothing to do; the plugin manifest registers the hooks. Report
+  `skipped`.
+- Codex — both scripts above, plus the experimental hooks feature flag.
+- OpenCode — one JSON key.
+
+So this is a **front door over three scattered mechanisms**, not a new
+installer. That carries a design decision the concord half does not: whether
+those two scripts get absorbed into one installer, wrapped by it, or left in
+place and merely documented by INSTALL.md. Decide that before writing code —
+absorbing them moves files two skills own, wrapping them keeps the duplication
+but costs nothing, and documenting alone leaves the discovery problem half
+solved.
+
+Unblocks `condux-doctor --fix`, which today prints a repair it cannot perform.
 
 ## Loose threads
