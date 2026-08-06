@@ -3,7 +3,7 @@
 ## Layout
 
 ```
-skills/concord/
+skills/remember/
   SKILL.md                 # trigger contract; teaches explicit-remember + deep grep
   README.md
   hooks/codex-hooks.json   # SessionStart / UserPromptSubmit / SessionEnd
@@ -71,7 +71,7 @@ Existing suites that must stay green — they will fail on drift, by design:
 
 Per `skills/toolkit-foundry/SKILL.md`:
 
-1. `skills/concord/` + `dist/plugins/concord/` trees
+1. `skills/remember/` + `dist/plugins/concord/` trees
 2. `SKILL.md` frontmatter — trigger contract, ≤500 char description, ≤1024 total
 3. Both plugin manifests
 4. `.claude-plugin/marketplace.json` entry

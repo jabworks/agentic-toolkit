@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { readRollout, lineCount } from '../skills/concord/lib/rollout.mjs';
+import { readRollout, lineCount } from '../skills/remember/lib/rollout.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const FIXTURES = path.join(__dirname, 'fixtures', 'concord');

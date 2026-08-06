@@ -1,0 +1,16 @@
+[
+  { "query": "is concord actually capturing on this machine?", "should_trigger": true, "expected_skill": "concord-doctor" },
+  { "query": "check my concord install", "should_trigger": true, "expected_skill": "concord-doctor" },
+  { "query": "nothing from last session came back at startup", "should_trigger": true, "expected_skill": "concord-doctor" },
+  { "query": "did the concord hooks actually get wired into codex?", "should_trigger": true, "expected_skill": "concord-doctor" },
+  { "query": "memory stopped being recalled after I updated codex", "should_trigger": true, "expected_skill": "concord-doctor" },
+  { "query": "run a health check on concord", "should_trigger": true, "expected_skill": "concord-doctor" },
+  { "query": "remember that deploys need the VPN", "should_trigger": true, "expected_skill": "remember" },
+  { "query": "what did we work on yesterday?", "should_trigger": true, "expected_skill": "remember" },
+  { "query": "search my memory for the auth refactor", "should_trigger": true, "expected_skill": "remember" },
+  { "query": "why isn't my skill triggering", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },
+  { "query": "wrap up this session", "should_trigger": true, "expected_skill": "session-handoff" },
+  { "query": "has this dist drift thing happened before", "should_trigger": true, "expected_skill": "toolkit-failure-archaeology" },
+  { "query": "how does human memory consolidation work?", "should_trigger": false, "expected_skill": null },
+  { "query": "my redis cache keeps evicting keys", "should_trigger": false, "expected_skill": null }
+]

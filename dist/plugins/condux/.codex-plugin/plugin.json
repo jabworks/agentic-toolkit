@@ -1,6 +1,6 @@
 {
   "name": "condux",
-  "version": "2.10.2",
+  "version": "2.11.0",
   "description": "Codex skills for lean agentic workflow: tier routing, discovery, plan drafting, tests-first, subagent coordination, finalize, live verification, code review, preflight, root-cause debugging, interactive plan review, and feature spec management.",
   "author": {
     "name": "jabworks"
@@ -24,7 +24,9 @@
     "root-cause-analysis",
     "spec",
     "technical-spec",
-    "plan-review"
+    "plan-review",
+    "doctor",
+    "health-check"
   ],
   "skills": "./skills/condux",
   "hooks": "./hooks/codex-hooks.json",
@@ -37,7 +39,8 @@
     "defaultPrompt": [
       "Route this task with /workflow.",
       "Finalize this implementation.",
-      "Code review before merging."
+      "Code review before merging.",
+      "Is condux working on this machine?"
     ]
   }
 }

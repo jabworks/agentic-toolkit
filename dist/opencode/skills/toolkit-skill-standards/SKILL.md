@@ -103,6 +103,11 @@ structure, and collision discipline.
    follow the ladder (section below): work from skill files alone, prefer
    detected richer surfaces, never depend across plugin boundaries.
 
+10. **Health check.** A plugin with machinery beyond skill files — hooks, a
+    server, a package registration — ships a doctor per the health-check
+    convention (section below). Reviewing such a plugin without asking "how
+    would a user find out this is broken?" is an incomplete review.
+
 ## Artifact location contract
 
 Any skill that writes a file into the user's project follows this. Two tiers,
@@ -161,11 +166,55 @@ its own files. Three rungs:
   installer or doctor can fix a dependency the bundle doesn't ship.
 - What makes rung 3 a first-class preferred path rather than a lucky bonus:
   `INSTALL.md` (detect → register → verify → report) makes it reliable to
-  reach, and the plugin doctor (docket #1) reports which rung each plugin
+  reach, and the health-check convention below reports which rung each plugin
   actually runs on per host.
 
 Ratified 2026-08-05 (docket #6), graduating the older absolute "assume no
 MCP/plugin is installed" rule after docket shipped the ladder in practice.
+
+## Health-check convention
+
+The standing counterpart to `INSTALL.md`: an installer verifies once, a
+doctor verifies whenever you ask. Any plugin with machinery beyond skill
+files — hooks, a server, a package registration — ships one.
+`docket-doctor` is the reference implementation.
+
+Four beats, the same shape as ease-of-install:
+
+1. **Detect** — which hosts exist on this machine. Missing host is `absent`,
+   not an error.
+2. **Probe** — every registration the plugin depends on, per host. Static
+   parse **and** execution: the registered path must exist and the thing it
+   registers must answer. A manifest that parses while its server is dead is
+   the failure the convention exists to catch.
+3. **Report** — one row per probe, `host status detail`, nothing silent. A
+   host that needs nothing is named with its reason.
+4. **Fix** — print the repair for every broken row. Performing it is
+   optional and belongs to the plugin's own installer; never reimplement
+   registration inside a doctor.
+
+Non-negotiables:
+
+- **Probes must not mutate.** Every execution step answers "what does this
+  write?" first. concord's `capture.mjs` writes to the memory store, so it is
+  resolved and loaded but never invoked; an `initialize` round-trip mutates
+  nothing, so it runs.
+- **Offline.** Version comparison reads the local marketplace clone and
+  prints that clone's own age. A doctor runs in degraded conditions by
+  definition — one that hangs without network fails exactly when needed.
+- **Own files only.** A doctor lives inside its own skill directory so
+  `<skill-base>/doctor.mjs` resolves on every distribution channel, and it
+  probes its own plugin. Cross-plugin doctors are banned for the same reason
+  cross-plugin dependencies are.
+- **Say what it cannot prove.** No child process can tell whether the host
+  *invoked* a hook. The report states that probes are static-plus-executable
+  so a green board is never misread as "the hook fired".
+
+Statuses are exactly four — `done`, `broken`, `absent`, `skipped`. Only
+`broken` fails the run: an unmade optional registration is `absent`, because
+the ladder says the skill still works a rung down.
+
+Ratified 2026-08-06 (docket #1).
 
 ## Evidence required
 

@@ -3,10 +3,11 @@
 OpenCode plugin for the [condux](https://github.com/jabworks/agentic-toolkit)
 workflow toolkit. One plugin line installs everything condux needs:
 
-- **Skills** — bundles the 12 condux workflow skills (`workflow`, `discovery`,
+- **Skills** — bundles the 14 condux workflow skills (`workflow`, `discovery`,
   `draft-plan`, `test-first-development`, `subagent-execution`,
-  `subagent-deployment`, `finalize`, `code-review`, `preflight`,
-  `root-cause-analysis`, `plan-review`, `technical-spec`) and registers them on
+  `subagent-deployment`, `finalize`, `live-verification`, `code-review`,
+  `preflight`, `root-cause-analysis`, `plan-review`, `technical-spec`,
+  `condux-doctor`) and registers them on
   `config.skills.paths` via the `config` hook — no separate `npx skills add`
   step. A skill you install yourself under the same name still wins; OpenCode
   dedupes by name.

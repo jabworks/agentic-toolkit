@@ -1,6 +1,6 @@
 {
   "name": "release",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Codex skill for cutting releases safely — detects the repo's machinery (AGENTS.md overrides, changesets, this toolkit's plugin tagging, plain GitHub tag + release), always dry-runs the full plan, executes on one confirm, and knows the rollback path for every step.",
   "author": {
     "name": "jabworks"

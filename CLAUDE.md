@@ -67,9 +67,9 @@ See `skills/toolkit-foundry/SKILL.md` for the canonical checklist. Short version
 | `spec-browser` | Catalog and browse a specs/ tree as one doc site |
 | `release` | Cut a release safely — machinery router (changesets/toolkit/GitHub), dry-run first |
 | `coding-directive` | The jabworks house style — TS/React/formatting/imports/naming/CSS, enforced tier + judgment tier |
-| `concord` | Continuous memory for Codex — rollout-sync capture, aging tiers, session-start recall (Codex-only hooks) |
-| `condux` (plugin) | agentic workflow bundle (workflow, discovery, draft-plan, test-first-development, subagent-execution, subagent-deployment, finalize, live-verification, code-review, preflight, root-cause-analysis, plan-review, technical-spec) |
-| `docket` (plugin) | file-based backlog bundle (record, groom) + plugin-level `server/` — dependency-free CLI, MCP server (`.mcp.json`), HTML board, installer (`install.sh`/`INSTALL.md`); sources `skills/record/` (owns `server/`) and `skills/groom/` |
+| `concord` (plugin) | Continuous memory for Codex — rollout-sync capture, aging tiers, session-start recall (Codex-only hooks). Bundle: `remember` (the memory skill, sources `skills/remember/`) + `concord-doctor` |
+| `condux` (plugin) | agentic workflow bundle (workflow, discovery, draft-plan, test-first-development, subagent-execution, subagent-deployment, finalize, live-verification, code-review, preflight, root-cause-analysis, plan-review, technical-spec, condux-doctor) |
+| `docket` (plugin) | file-based backlog bundle (record, groom, docket-doctor) + plugin-level `server/` — dependency-free CLI, MCP server (`.mcp.json`), HTML board, installer (`install.sh`/`INSTALL.md`); sources `skills/record/` (owns `server/`) and `skills/groom/` |
 | `toolkit-ops` (plugin) | repo-maintenance bundle (toolkit-orientation, toolkit-foundry, toolkit-change-control, toolkit-skill-standards, toolkit-debugging-playbook, toolkit-failure-archaeology, toolkit-plugin-reference, toolkit-research-frontier) |
 
 The `condux` and `toolkit-ops` bundles live at `dist/plugins/<bundle>/` and their sources are in the corresponding `skills/` subdirectories.
@@ -142,6 +142,16 @@ committing — it fails the build otherwise. The suite now needs
   gate. Skipped under `CI`, where the workflow runs the same checks directly
 - `docs-catalog.test.mjs` — every marketplace plugin appears in README.md and
   CLAUDE.md's catalogs
+
+Plugin releases are automated. Merging to `main` runs
+`.github/workflows/plugin-release.yml` → `scripts/release-plugins.mjs --since
+<push-base> --execute`, which tags every plugin version *introduced by that
+push* as `<plugin>--v<version>` and creates a GitHub release with notes from
+the commits touching its dist tree. CI never backfills. Never hand-tag. After bumping a version, run
+`node scripts/release-plugins.mjs --write-changelog` — `release-plugins.test.mjs`
+fails when a shipped version has no `CHANGELOG.md` entry. Versions on an
+unmerged branch are held back; the 122 versions that shipped before this
+channel existed live in `CHANGELOG.md` only.
 
 Three distribution channels read three different trees (don't conflate them):
 `npx skills add` installs from top-level `skills/`; the plugin marketplace
