@@ -14,7 +14,7 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## toolkit-ops 1.6.0 — 2026-08-06
 
-- feat(doctors): per-plugin health checks + concord bundle conversion (#1)
+- feat: per-plugin doctors, concord bundle conversion, and a generated release channel (#32)
 
 ## toolkit-ops 1.5.2 — 2026-08-06
 
@@ -22,23 +22,27 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## session-handoff 1.6.5 — 2026-08-06
 
-- feat(doctors): per-plugin health checks + concord bundle conversion (#1)
+- feat: per-plugin doctors, concord bundle conversion, and a generated release channel (#32)
+
+## release 1.2.1 — 2026-08-06
+
+- chore(release): version 1.2.1
 
 ## release 1.2.0 — 2026-08-06
 
-- feat(release): generated plugin release channel + CHANGELOG.md (release 1.2.0)
+- feat: per-plugin doctors, concord bundle conversion, and a generated release channel (#32)
 
 ## docket 0.2.0 — 2026-08-06
 
-- feat(doctors): per-plugin health checks + concord bundle conversion (#1)
+- feat: per-plugin doctors, concord bundle conversion, and a generated release channel (#32)
 
 ## condux 2.11.0 — 2026-08-06
 
-- feat(doctors): per-plugin health checks + concord bundle conversion (#1)
+- feat: per-plugin doctors, concord bundle conversion, and a generated release channel (#32)
 
 ## concord 0.3.0 — 2026-08-06
 
-- feat(doctors): per-plugin health checks + concord bundle conversion (#1)
+- feat: per-plugin doctors, concord bundle conversion, and a generated release channel (#32)
 
 ## toolkit-ops 1.5.1 — 2026-08-05
 
