@@ -23,6 +23,13 @@ step, and the second toolkit-wide convention after ease-of-install.
 
 ## Changelog
 
+- 2026-08-06 (docket #8): concord gained an installer, so `--fix` is no longer
+  docket-only — its doctor delegates to
+  `skills/remember/references/install-codex-hook.sh` (api, decisions). The
+  delegation is mutual and acyclic: that installer's verify beat calls the
+  doctor back with `--host codex --quiet` and never `--fix`. condux keeps
+  printing its fix until #9. Both doctors now report a failed installer rather
+  than re-probing in silence (decisions) — docket 0.3.1, concord 0.4.0.
 - 2026-08-06 (implementation): three drift decisions, all corrections to
   design-time assumptions caught by checking. (1) `<skill-base>/server/…`
   **does** resolve in a marketplace install — sync copies docket's machinery

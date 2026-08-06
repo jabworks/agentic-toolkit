@@ -16,12 +16,19 @@ skills/remember/
     recall.mjs             # SessionStart: catch-up, then emit recall
     capture.mjs            # UserPromptSubmit / SessionEnd
     consolidate.mjs        # detached; deterministic promotion + codex exec
-    doctor.mjs             # resolved paths, hook wiring, last capture
   references/
-    install-codex-hook.sh  # wire into ~/.codex/hooks.json + config.toml
+    install-codex-hook.sh  # wire into ~/.codex/hooks.json + config.toml, then verify
+    INSTALL.md             # the same procedure, for an agent to follow by hand
+
+skills/concord-doctor/
+  doctor.mjs               # health check; --fix delegates to the installer above
 ```
 
-Mirrored to `dist/plugins/concord/` by `scripts/sync.sh`.
+The health check was originally drafted as `bin/doctor.mjs` inside this skill.
+docket #1 made it a sibling skill instead, so it is reachable as
+`/concord:concord-doctor` and resolves at `<skill-base>/doctor.mjs` on every
+distribution channel. Both directories mirror to
+`dist/plugins/concord/skills/concord/` via `scripts/sync.sh`.
 
 ## Patterns to follow
 

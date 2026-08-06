@@ -356,6 +356,14 @@ function summarize(rows) {
   return `\n${verdict} — probes are static-parse plus execution; they cannot prove the host invoked anything.\n`;
 }
 
+// null when the installer ran and succeeded; otherwise how it failed.
+function installerFailure(run) {
+  if (run.error) return `could not be run: ${run.error.message}`;
+  if (run.signal) return `was killed by ${run.signal}`;
+
+  return run.status === 0 ? null : `exited ${run.status}`;
+}
+
 function collect(flags) {
   const hosts = detectHosts();
   const installerPath = findMachinery('install.sh');
@@ -397,7 +405,12 @@ function main(argv) {
       process.stdout.write('no installer found beside this skill — nothing to run for --fix\n');
     } else {
       process.stdout.write(`running ${installerPath}\n`);
-      spawnSync('bash', [installerPath], { stdio: 'inherit', timeout: 60000 });
+      const run = spawnSync('bash', [installerPath], { stdio: 'inherit', timeout: 60000 });
+      const failure = installerFailure(run);
+      // "running …" followed by silence reads as success. It is not: bash can be
+      // missing entirely, and install.sh exits 1 when the server fails its
+      // initialize round-trip.
+      if (failure) process.stdout.write(`the installer ${failure} — the re-probe below is what holds\n`);
       rows = collect(flags).rows;
     }
   }

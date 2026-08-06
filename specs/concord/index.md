@@ -1,7 +1,7 @@
 # Concord — Tech Spec
 
-**Last updated:** 2026-07-29
-**Commit:** 3a872c6
+**Last updated:** 2026-08-06
+**Commit:** 3a872c6 (initial spec; later entries in the changelog below)
 **Status:** draft
 
 Continuous memory for Codex — captures sessions, compresses them into aging
@@ -16,4 +16,8 @@ MIT; `remember` keeps Claude Code.
 - [implementation.md](implementation.md) — layout, patterns to follow, tests, registration, phasing
 
 ## Changelog
+- 2026-08-06 (docket #8): layout corrected — the health check is the sibling
+  skill `skills/concord-doctor/`, not the `bin/doctor.mjs` this spec drafted
+  (moved by docket #1); `references/` now also carries `INSTALL.md`, and the
+  installer verifies what it registered (implementation).
 - 2026-07-29 (3a872c6): Initial spec

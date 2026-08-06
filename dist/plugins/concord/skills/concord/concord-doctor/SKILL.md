@@ -2,7 +2,7 @@
 name: concord-doctor
 description: "Health check for the concord memory plugin on the host it is installed on. Probes both Codex registration paths — the hooks.json the installer writes and the plugin manifest a Codex plugin install uses — checks all three hook events resolve to scripts that still exist, that the experimental hooks feature is enabled, that the memory store is readable, and compares the installed version against the local marketplace clone. Never runs a hook: both of them write."
 when_to_use: "Checking whether concord itself works on this machine: is concord capturing, memory stopped being recalled at session start, nothing from last session came back, did the concord hooks get wired, check my concord install. Run it after installing or updating the plugin and after any Codex upgrade. Not for recalling or storing a memory (that is remember); not for diagnosing this repo's own build or dist drift (that is toolkit-debugging-playbook)."
-argument-hint: "[--host claude|codex|opencode]"
+argument-hint: "[--host claude|codex|opencode] [--fix]"
 ---
 
 # /concord-doctor
@@ -13,10 +13,21 @@ Answers one question: **is concord actually working on this host?**
 node <skill-base>/doctor.mjs                    # every probe
 node <skill-base>/doctor.mjs --host codex       # the only host that matters
 node <skill-base>/doctor.mjs --quiet            # only what is not fine
+node <skill-base>/doctor.mjs --fix              # run the installer, then re-probe
 ```
 
 Exit 0 when nothing is broken, 1 when something is, 2 when the memory skill is
 not beside this doctor.
+
+`--fix` performs no registration itself — it runs the memory skill's
+`references/install-codex-hook.sh` and probes again, so idempotency, the
+refusal to overwrite malformed `hooks.json`, and the matcher that leaves other
+plugins' hooks alone all stay in one place. Nothing broken, nothing to install:
+`--fix` is a no-op. The installer verifies by calling this doctor back without
+`--fix`, so the two never ping-pong. If the installer itself fails — its own
+verify step exits 1 when a registration it wrote does not answer — that is said
+out loud before the re-probe, so a run that repaired nothing never reads as one
+that did.
 
 ## Reading the report
 

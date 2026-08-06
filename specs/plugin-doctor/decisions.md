@@ -92,12 +92,25 @@ stub it, for an answer the stale-clone report already qualifies honestly.
 ## Diagnose everywhere, repair only where an installer exists
 
 Every broken probe prints the exact fix — command or file edit. `--fix`
-actually performs it only for docket, whose `install.sh` already provides the
-idempotency and backup guarantees a repair needs. condux and concord print
-their fix and gain `--fix` when docket #5 gives them installers.
+actually performs it only where an installer already provides the idempotency
+and backup guarantees a repair needs. docket had one from the start; concord
+gained one in docket #8, and its doctor's `--fix` runs
+`skills/remember/references/install-codex-hook.sh`. condux still only prints
+its fix, and gains `--fix` when docket #9 gives it a front door.
 
 Rejected: writing ad-hoc repair logic into the doctors now. That would
 duplicate the installer contract in a second place and diverge from it.
+
+The delegation runs both ways for concord and stays acyclic: the installer's
+own verify beat calls `concord-doctor --host codex --quiet`, and the doctor
+never passes `--fix` down.
+
+Delegating means the doctor must report its delegate's failure. Both doctors
+check the spawn result and print how the installer failed — could not be run,
+killed by a signal, or a non-zero exit — before re-probing. `running …`
+followed by silence otherwise reads as a repair that happened, and with
+concord that is a live case: its installer exits 1 when the registration it
+just wrote fails verify. The re-probe still decides the exit code.
 
 ## Output: the installer's report shape, no JSON
 

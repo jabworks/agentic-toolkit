@@ -7,7 +7,7 @@ Every plugin's doctor is a dependency-free ESM script invoked the same way:
 ```bash
 node <skill-base>/doctor.mjs           # probe everything, report, exit 0/1
 node <skill-base>/doctor.mjs --host codex   # restrict to one host
-node <skill-base>/doctor.mjs --fix     # docket only, until #5
+node <skill-base>/doctor.mjs --fix     # docket and concord; condux until #9
 ```
 
 | Flag | Meaning |
