@@ -14,6 +14,11 @@ skills/<name>/          # Editable source — always edit here
   README.md             # Optional human docs
   references/           # Optional templates or checklists for agents
 
+plugins/<name>/         # Plugin-level source — README.md (the plugin's homepage
+                        # on GitHub and in directories). Outside every skill tree,
+                        # so sync.sh copies it explicitly; LICENSE comes from the
+                        # repo root the same way. Never hand-edit the dist copies
+
 dist/plugins/<name>/    # Install mirror — never edit directly; sync from skills/
   skills/<name>/        # Mirrors skills/<name>/
   .claude-plugin/
@@ -77,6 +82,11 @@ The `condux` and `toolkit-ops` bundles live at `dist/plugins/<bundle>/` and thei
 ## Key invariants
 
 - `dist/` is a verbatim mirror of `skills/` — never diverge them
+- Plugin-level FILES (`dist/plugins/*/README.md`, `dist/plugins/*/LICENSE`) are not
+  reached by the skill-tree copy either. READMEs are sourced from `plugins/<name>/`
+  and LICENSE from the repo root, both copied by `sync_plugin_files` in sync.sh and
+  guarded by `plugin-files.test.mjs`. Before that existed condux's README was
+  hand-written straight into `dist/` and docket shipped with no LICENSE at all
 - Plugin-level dirs (`dist/plugins/condux/agents/`, `dist/plugins/condux/hooks/`)
   are NOT reached by the skill-tree copy. Each has a source under `skills/`
   (`subagent-execution/agents/`, `workflow/hooks/`), its own `sync.sh` case, and
@@ -142,6 +152,9 @@ committing — it fails the build otherwise. The suite now needs
   gate. Skipped under `CI`, where the workflow runs the same checks directly
 - `docs-catalog.test.mjs` — every marketplace plugin appears in README.md and
   CLAUDE.md's catalogs
+- `plugin-files.test.mjs` — every plugin has a `plugins/<name>/README.md`, its dist
+  copy matches byte for byte, every plugin ships the repo LICENSE, and a bundle's
+  README names every skill it ships (condux's claimed 12 while shipping 14)
 
 Plugin releases are automated. Merging to `main` runs
 `.github/workflows/plugin-release.yml` → `scripts/release-plugins.mjs --since

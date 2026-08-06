@@ -1,6 +1,6 @@
 {
   "name": "git-operations",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Decision router for git: given a situation, pick the right operation (undo/discard/stash/merge/push) and run it safely with an undo path. Favours modern porcelain over legacy checkout; cross-links to git-commit.",
   "author": {
     "name": "jabworks"

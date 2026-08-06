@@ -12,9 +12,13 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## toolkit-ops 1.6.2 — 2026-08-06
+
+- chore(toolkit-ops): version 1.6.2
+
 ## toolkit-ops 1.6.1 — 2026-08-06
 
-- chore(toolkit-ops): version 1.6.1
+- docs(toolkit-ops): ledger the --target release incident, note #5's second payoff (1.6.1) (#35)
 
 ## toolkit-ops 1.6.0 — 2026-08-06
 
@@ -24,9 +28,25 @@ The `@jabworks/condux` npm package has its own changelog at
 
 - docs(toolkit-ops): dependency ladder in toolkit-skill-standards (1.5.2) (#31)
 
+## spec-browser 1.0.6 — 2026-08-06
+
+- chore(spec-browser): version 1.0.6
+
+## session-report 1.6.3 — 2026-08-06
+
+- chore(session-report): version 1.6.3
+
+## session-handoff 1.6.6 — 2026-08-06
+
+- chore(session-handoff): version 1.6.6
+
 ## session-handoff 1.6.5 — 2026-08-06
 
 - feat: per-plugin doctors, concord bundle conversion, and a generated release channel (#32)
+
+## release 1.2.2 — 2026-08-06
+
+- chore(release): version 1.2.2
 
 ## release 1.2.1 — 2026-08-06
 
@@ -36,17 +56,45 @@ The `@jabworks/condux` npm package has its own changelog at
 
 - feat: per-plugin doctors, concord bundle conversion, and a generated release channel (#32)
 
+## git-operations 1.0.5 — 2026-08-06
+
+- chore(git-operations): version 1.0.5
+
+## git-commit 1.0.5 — 2026-08-06
+
+- chore(git-commit): version 1.0.5
+
+## docket 0.2.1 — 2026-08-06
+
+- chore(docket): version 0.2.1
+
 ## docket 0.2.0 — 2026-08-06
 
 - feat: per-plugin doctors, concord bundle conversion, and a generated release channel (#32)
+
+## condux 2.11.1 — 2026-08-06
+
+- chore(condux): version 2.11.1
 
 ## condux 2.11.0 — 2026-08-06
 
 - feat: per-plugin doctors, concord bundle conversion, and a generated release channel (#32)
 
+## concord 0.3.1 — 2026-08-06
+
+- chore(concord): version 0.3.1
+
 ## concord 0.3.0 — 2026-08-06
 
 - feat: per-plugin doctors, concord bundle conversion, and a generated release channel (#32)
+
+## coding-directive 1.1.4 — 2026-08-06
+
+- chore(coding-directive): version 1.1.4
+
+## adapting-skills 1.3.5 — 2026-08-06
+
+- chore(adapting-skills): version 1.3.5
 
 ## toolkit-ops 1.5.1 — 2026-08-05
 
