@@ -14,7 +14,7 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## toolkit-ops 1.6.2 — 2026-08-06
 
-- feat(plugins): plugin homepages with a real source of truth
+- feat(plugins): plugin homepages with a real source of truth (#36)
 
 ## toolkit-ops 1.6.1 — 2026-08-06
 
@@ -30,15 +30,15 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## spec-browser 1.0.6 — 2026-08-06
 
-- feat(plugins): plugin homepages with a real source of truth
+- feat(plugins): plugin homepages with a real source of truth (#36)
 
 ## session-report 1.6.3 — 2026-08-06
 
-- feat(plugins): plugin homepages with a real source of truth
+- feat(plugins): plugin homepages with a real source of truth (#36)
 
 ## session-handoff 1.6.6 — 2026-08-06
 
-- feat(plugins): plugin homepages with a real source of truth
+- feat(plugins): plugin homepages with a real source of truth (#36)
 
 ## session-handoff 1.6.5 — 2026-08-06
 
@@ -46,7 +46,7 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## release 1.2.2 — 2026-08-06
 
-- feat(plugins): plugin homepages with a real source of truth
+- feat(plugins): plugin homepages with a real source of truth (#36)
 
 ## release 1.2.1 — 2026-08-06
 
@@ -58,19 +58,23 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## git-operations 1.0.5 — 2026-08-06
 
-- feat(plugins): plugin homepages with a real source of truth
+- feat(plugins): plugin homepages with a real source of truth (#36)
 
 ## git-commit 1.0.5 — 2026-08-06
 
-- feat(plugins): plugin homepages with a real source of truth
+- feat(plugins): plugin homepages with a real source of truth (#36)
+
+## docket 0.3.1 — 2026-08-06
+
+- chore(docket): version 0.3.1
 
 ## docket 0.3.0 — 2026-08-06
 
-- chore(docket): version 0.3.0
+- feat(docket): qualified ids reference a parent instead of allocating (0.3.0) (#37)
 
 ## docket 0.2.1 — 2026-08-06
 
-- feat(plugins): plugin homepages with a real source of truth
+- feat(plugins): plugin homepages with a real source of truth (#36)
 
 ## docket 0.2.0 — 2026-08-06
 
@@ -78,15 +82,19 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## condux 2.11.1 — 2026-08-06
 
-- feat(plugins): plugin homepages with a real source of truth
+- feat(plugins): plugin homepages with a real source of truth (#36)
 
 ## condux 2.11.0 — 2026-08-06
 
 - feat: per-plugin doctors, concord bundle conversion, and a generated release channel (#32)
 
+## concord 0.4.0 — 2026-08-06
+
+- chore(concord): version 0.4.0
+
 ## concord 0.3.1 — 2026-08-06
 
-- feat(plugins): plugin homepages with a real source of truth
+- feat(plugins): plugin homepages with a real source of truth (#36)
 
 ## concord 0.3.0 — 2026-08-06
 
@@ -94,11 +102,11 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## coding-directive 1.1.4 — 2026-08-06
 
-- feat(plugins): plugin homepages with a real source of truth
+- feat(plugins): plugin homepages with a real source of truth (#36)
 
 ## adapting-skills 1.3.5 — 2026-08-06
 
-- feat(plugins): plugin homepages with a real source of truth
+- feat(plugins): plugin homepages with a real source of truth (#36)
 
 ## toolkit-ops 1.5.1 — 2026-08-05
 

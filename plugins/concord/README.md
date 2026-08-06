@@ -30,8 +30,13 @@ Then wire the hooks and enable Codex's experimental hooks feature:
 bash <skill-base>/references/install-codex-hook.sh
 ```
 
+It registers, then verifies what it registered, and reports one row per host —
+Claude Code and OpenCode included, named as `skipped` rather than left out.
+`references/INSTALL.md` is the same procedure written out for an agent to follow by
+hand when bash is not available.
+
 Restart Codex and trust the hooks when prompted. `concord-doctor` tells you whether all
-of that actually took.
+of that actually took, and `concord-doctor --fix` re-runs the installer for you.
 
 ---
 
@@ -40,7 +45,7 @@ of that actually took.
 | Skill | What it does |
 |---|---|
 | `remember` | The memory itself: pin a fact, answer "what did we do last time", search past sessions, and explain the tiers and files. |
-| `concord-doctor` | Is concord actually capturing on this host? Probes both Codex registration paths, all three hook events, the feature flag, and the store. |
+| `concord-doctor` | Is concord actually capturing on this host? Probes both Codex registration paths, all three hook events, the feature flag, and the store. `--fix` delegates the repair to the installer. |
 
 ---
 

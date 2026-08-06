@@ -57,7 +57,9 @@ host-side, and this report is the evidence for that conclusion.
 
 `--fix` never reimplements registration: it runs docket's own `install.sh`,
 where the idempotency, backups, and never-touch-unrelated-config guarantees
-already live, then re-probes.
+already live, then re-probes. If the installer itself fails — or bash is not
+there to run it — that is said out loud before the re-probe, so a run that
+repaired nothing never reads as one that did.
 
 ## Boundaries
 

@@ -86,6 +86,9 @@ recollection is far worse than admitting the tier does not go back that far.
 
 Nothing being injected usually means the hooks are not wired. Codex hooks are
 experimental and need both `~/.codex/hooks.json` and `[features] hooks = true`
-in `~/.codex/config.toml`; see `references/install-codex-hook.sh`. Hook failures
+in `~/.codex/config.toml`. Run `references/install-codex-hook.sh` to register
+both (it verifies afterwards), or follow `references/INSTALL.md` by hand when
+bash is not available. `concord-doctor` reports what is actually wired, and
+`concord-doctor --fix` runs that installer for you. Hook failures
 never surface in the session by design — they are logged to `.concord/logs/hook.log`,
 which is the first place to look.

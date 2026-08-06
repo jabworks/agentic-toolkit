@@ -30,6 +30,7 @@ const USAGE = `usage: doctor [options]
 
   --host <claude|codex|opencode>   probe one host only
   --quiet                          print only broken and absent rows
+  --fix                            run the installer for anything broken
 `;
 
 function parseFlags(argv) {
@@ -76,10 +77,16 @@ function readJson(file) {
   }
 }
 
-function installerFix() {
+function installerPath() {
   const installer = path.join(SKILL_DIR, 'references', 'install-codex-hook.sh');
 
-  return fs.existsSync(installer) ? `bash ${installer}` : 'run the memory skill’s references/install-codex-hook.sh';
+  return fs.existsSync(installer) ? installer : null;
+}
+
+function installerFix() {
+  const installer = installerPath();
+
+  return installer ? `bash ${installer}` : 'run the memory skill’s references/install-codex-hook.sh';
 }
 
 // Claude Code loads no concord hooks by design — the plugin is Codex-only, so
@@ -368,6 +375,29 @@ function summarize(rows) {
   return `\n${verdict} — probes are static-parse plus a module load; no hook is ever executed, so nothing here proves the host invoked one.\n`;
 }
 
+// null when the installer ran and succeeded; otherwise how it failed.
+function installerFailure(run) {
+  if (run.error) return `could not be run: ${run.error.message}`;
+  if (run.signal) return `was killed by ${run.signal}`;
+
+  return run.status === 0 ? null : `exited ${run.status}`;
+}
+
+function collect(flags) {
+  const hosts = detectHosts();
+  const only = typeof flags.host === 'string' ? flags.host : null;
+  const perHost = [
+    ['claude', () => probeClaude(hosts)],
+    ['codex', () => probeCodex(hosts)],
+    ['opencode', () => probeOpencode(hosts)],
+  ];
+
+  const rows = perHost.filter(([host]) => !only || host === only).map(([, probe]) => probe());
+  if (!only) rows.push(probeScripts(), probeStore(), probeVersion());
+
+  return rows;
+}
+
 function main(argv) {
   const flags = parseFlags(argv);
   if (flags.help) {
@@ -382,16 +412,27 @@ function main(argv) {
     return 2;
   }
 
-  const hosts = detectHosts();
-  const only = typeof flags.host === 'string' ? flags.host : null;
-  const perHost = [
-    ['claude', () => probeClaude(hosts)],
-    ['codex', () => probeCodex(hosts)],
-    ['opencode', () => probeOpencode(hosts)],
-  ];
+  let rows = collect(flags);
 
-  const rows = perHost.filter(([host]) => !only || host === only).map(([, probe]) => probe());
-  if (!only) rows.push(probeScripts(), probeStore(), probeVersion());
+  // --fix delegates to the installer rather than reimplementing registration:
+  // idempotency, the malformed-JSON refusal and the never-touch-another-plugin's
+  // -hooks matcher already live there. The installer's own verify step calls
+  // this doctor back without --fix, so the two cannot ping-pong.
+  if (flags.fix && rows.some((row) => row.status === 'broken' || (row.status === 'absent' && row.fix))) {
+    const installer = installerPath();
+    if (!installer) {
+      process.stdout.write('no installer found beside this skill — nothing to run for --fix\n');
+    } else {
+      process.stdout.write(`running ${installer}\n`);
+      const run = spawnSync('bash', [installer], { stdio: 'inherit', timeout: 60000 });
+      const failure = installerFailure(run);
+      // "running …" followed by silence reads as success. It is not: bash can be
+      // missing entirely, and concord's installer exits 1 when its own verify
+      // step says the registration it just wrote does not answer.
+      if (failure) process.stdout.write(`the installer ${failure} — the re-probe below is what holds\n`);
+      rows = collect(flags);
+    }
+  }
 
   report(rows, flags.quiet === true);
   process.stdout.write(summarize(rows));

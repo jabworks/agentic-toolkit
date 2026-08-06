@@ -23,35 +23,6 @@ Zero-count sections render an empty chip pill after the heading (`count || empty
 
 Declined for now (2026-08-05): specs are read-mostly markdown — router lookup is ls + fuzzy match, agents read files natively, and a server would duplicate the file path every skill must keep anyway. Reconsider docket-style (thin MCP over a CLI) only if specs grow mutations worth guarding: enforced changelog stamps on drift decisions, cross-spec link integrity, or a host-enforced spec-before-plan gate.
 
-### 8. INSTALL.md + verify for concord (split from #5, 2026-08-06) (2026-08-06)
-
-concord is the small half of #5 and is mostly done already.
-
-Has: `references/install-codex-hook.sh` — merges the three hooks into
-`<CODEX_HOME>/hooks.json` with absolute paths, enables `features.hooks`,
-supports `--uninstall`, refuses to overwrite malformed JSON, prints `ok`/`set`
-lines.
-
-Missing three things:
-
-1. A verify step. It registers and stops — it never confirms the thing it
-   registered answers, which is the exact failure the ease-of-install
-   convention exists to catch and the reason docket's installer round-trips
-   its server.
-2. `INSTALL.md` — the agent-followable twin, for restricted shells or when the
-   user wants to see each step.
-3. The convention's `host status detail` report format instead of `ok`/`set`.
-
-Verify is nearly free: `concord-doctor --host codex` already implements every
-probe and lives in the same plugin, so the installer may call it — no
-cross-plugin dependency. Installer registers, doctor confirms.
-
-Then wire `concord-doctor --fix` to the installer, which closes the repair half
-of the health-check convention for this plugin.
-
-Self-contained, no open design questions — the second worked example of the
-convention after docket.
-
 ### 9. INSTALL.md front door for condux — consolidate three scattered installers (split from #5, 2026-08-06) (2026-08-06)
 
 condux is the larger half of #5, and the reason is not obvious from the parent

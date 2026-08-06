@@ -600,6 +600,172 @@ test('concord: probes never touch the memory store', () => {
   }
 });
 
+// --- concord's installer: the other half of the ease-of-install convention ---
+// The doctor fixture already lays the plugin out the way an install does, so the
+// real installer runs against it with the doctor as its sibling — which is the
+// arrangement its verify step depends on.
+function runInstaller(fixture, args = [], { installer } = {}) {
+  const script = installer ?? path.join(fixture.plugin, 'skills', 'concord', 'remember', 'references', 'install-codex-hook.sh');
+  const res = spawnSync('bash', [script, ...args], {
+    encoding: 'utf8',
+    timeout: 30000,
+    env: {
+      ...process.env,
+      HOME: fixture.home,
+      XDG_CONFIG_HOME: path.join(fixture.home, '.config'),
+      CODEX_HOME: path.join(fixture.home, '.codex'),
+    },
+  });
+
+  const rows = (res.stdout ?? '')
+    .split('\n')
+    .map((line) => line.match(/^(\S+)\s+(done|broken|absent|skipped)\s+(.*)$/))
+    .filter(Boolean)
+    .map(([, name, status, detail]) => ({ host: name, status, detail }));
+
+  return { status: res.status, stdout: res.stdout ?? '', stderr: res.stderr ?? '', rows };
+}
+
+test('concord installer: registers, verifies through the sibling doctor, reports every host', () => {
+  const fixture = concordFixture();
+  try {
+    host(fixture, 'codex');
+    const result = runInstaller(fixture);
+
+    assert.equal(result.status, 0, result.stdout + result.stderr);
+    assert.equal(rowFor(result, 'verify').status, 'done');
+    assert.match(rowFor(result, 'verify').detail, /concord-doctor/);
+    // Codex-only is a design decision, so the other two hosts are named with
+    // their reason rather than left out — the convention forbids a silent host.
+    assert.ok(['skipped', 'absent'].includes(rowFor(result, 'claude').status));
+    assert.ok(['skipped', 'absent'].includes(rowFor(result, 'opencode').status));
+
+    const hooks = JSON.parse(fs.readFileSync(path.join(fixture.home, '.codex', 'hooks.json'), 'utf8')).hooks;
+    for (const event of ['SessionStart', 'UserPromptSubmit', 'SessionEnd']) {
+      assert.equal(hooks[event]?.length, 1, `${event} must be registered exactly once`);
+    }
+    assert.match(fs.readFileSync(path.join(fixture.home, '.codex', 'config.toml'), 'utf8'), /hooks = true/);
+
+    // The installer's own verify must not leave the doctor's --fix armed.
+    assert.equal(runDoctor(fixture, ['--host', 'codex']).status, 0);
+  } finally {
+    cleanup(fixture.root);
+  }
+});
+
+// Rung 1 of the dependency ladder: `npx skills add` ships the memory skill with
+// no sibling doctor. Verify has to degrade to reading the registration back —
+// and say that it did, because a verify step that quietly vanishes is exactly
+// the failure this convention exists to catch.
+test('concord installer: verifies without the doctor and says which path it took', () => {
+  const fixture = concordFixture();
+  try {
+    host(fixture, 'codex');
+    fs.rmSync(path.join(fixture.plugin, 'skills', 'concord', 'concord-doctor'), { recursive: true, force: true });
+
+    const result = runInstaller(fixture);
+
+    assert.equal(result.status, 0, result.stdout + result.stderr);
+    assert.equal(rowFor(result, 'verify').status, 'done');
+    assert.match(rowFor(result, 'verify').detail, /concord-doctor is not installed beside this skill/);
+  } finally {
+    cleanup(fixture.root);
+  }
+});
+
+test('concord installer: a missing memory script is FATAL before anything is written', () => {
+  const fixture = concordFixture();
+  try {
+    const codex = host(fixture, 'codex');
+    fs.rmSync(path.join(fixture.bin, 'recall.mjs'));
+
+    const result = runInstaller(fixture);
+
+    assert.equal(result.status, 1);
+    assert.match(result.stdout, /FATAL\s+memory\s+missing .*recall\.mjs/);
+    assert.equal(fs.existsSync(path.join(codex, 'hooks.json')), false, 'a failed detect must register nothing');
+  } finally {
+    cleanup(fixture.root);
+  }
+});
+
+// The branch the whole convention exists for: registration written, but the
+// thing it registered does not answer. A manifest install whose hooks file moved
+// is the realistic way to reach it — the doctor reads the manifest before it
+// reads hooks.json, so the installer's own writes are fine and it still fails.
+test('concord installer: a registration that does not answer exits 1, not 0', () => {
+  const fixture = concordFixture({ manifestHooks: true });
+  try {
+    host(fixture, 'codex');
+    fs.rmSync(path.join(fixture.plugin, 'skills', 'concord', 'remember', 'hooks'), { recursive: true, force: true });
+
+    const result = runInstaller(fixture);
+
+    assert.equal(result.status, 1, 'writing a registration that fails verify is not a success');
+    assert.equal(rowFor(result, 'verify').status, 'broken');
+    // The doctor's own reason has to reach the user, or "broken" is unactionable.
+    assert.match(result.stdout, /which does not exist/);
+    // Registration still happened — verify reports on it, it does not roll it back.
+    assert.ok(fs.existsSync(path.join(fixture.home, '.codex', 'hooks.json')));
+  } finally {
+    cleanup(fixture.root);
+  }
+});
+
+test('concord --fix: an installer that fails is said out loud, not left as silence', () => {
+  const fixture = concordFixture({ manifestHooks: true });
+  try {
+    host(fixture, 'codex');
+    fs.rmSync(path.join(fixture.plugin, 'skills', 'concord', 'remember', 'hooks'), { recursive: true, force: true });
+
+    const result = runDoctor(fixture, ['--host', 'codex', '--fix']);
+
+    assert.equal(result.status, 1);
+    assert.match(result.stdout, /the installer exited 1/);
+    // The installer's own rows are inherited into this stdout, so the verdict is
+    // the last codex row — the re-probe — not the first.
+    assert.equal(result.rows.filter((row) => row.host === 'codex').at(-1).status, 'broken');
+  } finally {
+    cleanup(fixture.root);
+  }
+});
+
+test('concord --fix: runs the installer and turns the absent Codex row green', () => {
+  const fixture = concordFixture();
+  try {
+    host(fixture, 'codex');
+    const before = runDoctor(fixture, ['--host', 'codex']);
+    assert.equal(rowFor(before, 'codex').status, 'absent');
+
+    const fixed = runDoctor(fixture, ['--host', 'codex', '--fix']);
+
+    assert.equal(fixed.status, 0, fixed.stdout);
+    assert.match(fixed.stdout, /running .*install-codex-hook\.sh/);
+    // The last codex row is the re-probe, not the installer's own output.
+    const reprobe = fixed.rows.filter((row) => row.host === 'codex').at(-1);
+    assert.equal(reprobe.status, 'done');
+  } finally {
+    cleanup(fixture.root);
+  }
+});
+
+test('concord --fix: nothing broken means the installer is never run', () => {
+  const fixture = concordFixture();
+  try {
+    const codex = host(fixture, 'codex');
+    installHooks(codex, fixture.bin);
+
+    const before = fingerprint(fixture.home);
+    const result = runDoctor(fixture, ['--host', 'codex', '--fix']);
+
+    assert.equal(result.status, 0);
+    assert.doesNotMatch(result.stdout, /running /);
+    assert.equal(fingerprint(fixture.home), before, '--fix on a healthy install must change nothing');
+  } finally {
+    cleanup(fixture.root);
+  }
+});
+
 test('a hanging server is broken within the probe timeout, not a hung doctor', () => {
   const fixture = docketFixture();
   try {
