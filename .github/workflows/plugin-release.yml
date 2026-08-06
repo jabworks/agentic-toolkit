@@ -1,0 +1,47 @@
+name: Plugin Release
+
+# Plugin versions live in plugin.json and get bumped in ordinary commits, so
+# without this nothing about them ever reaches the releases page — which is how
+# 25 versions shipped untagged. Kept separate from release.yml so a failure here
+# can never disturb the npm publish job.
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  release:
+    name: Tag and release changed plugins
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          # The script derives release points from the manifest's history and
+          # skips versions that already have a tag. A shallow, tagless checkout
+          # would make every version look new.
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+
+      # --since scopes this to what the push introduced. Without it the first
+      # run would publish every untagged version behind each plugin's tag —
+      # about forty releases in one burst, which is not what a push means.
+      # Backfilling is a deliberate, manual `--initial` run.
+      - name: Plan
+        run: node scripts/release-plugins.mjs --since "${{ github.event.before }}"
+
+      - name: Tag and release
+        run: node scripts/release-plugins.mjs --since "${{ github.event.before }}" --execute
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

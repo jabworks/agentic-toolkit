@@ -51,11 +51,22 @@ rewrites are banned.**
      **is** merging that PR — guide the user there and stop.
    - Otherwise: `npx changeset version` → show the diff → confirm →
      `npx changeset publish` → `git push --follow-tags`.
-3. **This toolkit** (`.claude-plugin/marketplace.json` exists):
-   - `node --test` green →
-     `claude plugin tag dist/plugins/<name>` (creates the `<name>--v<version>`
-     tag AND validates plugin.json against the marketplace entry) →
-     `git push origin <tag>` →
+3. **This toolkit** (`.claude-plugin/marketplace.json` exists) — **plugin
+   releases are automated; do not hand-tag**:
+   - Merging to `main` runs `.github/workflows/plugin-release.yml`, which calls
+     `scripts/release-plugins.mjs --since <push-base> --execute`: every plugin
+     version *introduced by that push* gets its `<name>--v<version>` tag and a
+     GitHub release, with notes from the commits that touched its dist tree.
+     CI never backfills — a gap stays a gap until someone runs `--initial`.
+   - The release *is* merging the PR. Confirm the version bump landed and stop.
+   - Before committing a bump: `node scripts/release-plugins.mjs` to see the
+     plan, and `--write-changelog` to regenerate `CHANGELOG.md` — a test fails
+     when a shipped version has no entry.
+   - Versions on an unmerged branch are held back by design; the script refuses
+     to release a commit that is not on the default branch.
+   - Hand-tagging remains the fallback if the workflow is broken:
+     `claude plugin tag dist/plugins/<name>` validates plugin.json against the
+     marketplace entry, then `git push origin <tag>` and
      `gh release create <tag> --generate-notes --title "<name> v<version>"`.
    - Remind: installed copies refresh only on a version change — users must
      update the plugin.

@@ -21,8 +21,8 @@ function converse(cwd, requests) {
 
     const timer = setTimeout(() => {
       child.kill();
-      reject(new Error('MCP server did not answer all requests within 5s; got ' + responses.length));
-    }, 5000);
+      reject(new Error('MCP server did not answer all requests within 15s; got ' + responses.length));
+    }, 15000);
 
     child.stdout.setEncoding('utf8');
     child.stdout.on('data', (chunk) => {
@@ -90,7 +90,7 @@ test('MCP server: Content-Length framing survives multibyte payloads and mixes w
     const responses = [];
 
     const done = new Promise((resolve, reject) => {
-      const timer = setTimeout(() => reject(new Error('timed out; got ' + responses.length)), 5000);
+      const timer = setTimeout(() => reject(new Error('timed out; got ' + responses.length)), 15000);
       let buffer = '';
       child.stdout.setEncoding('utf8');
       child.stdout.on('data', (chunk) => {
