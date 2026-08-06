@@ -83,8 +83,13 @@ function main(argv) {
     }
 
     case 'close': {
-      const id = parseInt(positional[0], 10);
-      if (Number.isNaN(id)) throw new Error('close needs a numeric id: docket close <id>');
+      // Passed through as written: `close 47` resolves by number, and
+      // `close "47 (remainder)"` names one qualified item exactly. parseInt
+      // here would silently truncate the second form to the first.
+      const id = (positional[0] ?? '').trim();
+      if (id === '' || Number.isNaN(Number.parseInt(id, 10))) {
+        throw new Error('close needs an id: docket close <id> | docket close "<id> (qualifier)"');
+      }
 
       const note = typeof flags.note === 'string' ? flags.note : '';
       const result = closeItem(resolveDocket(cwd), id, { note, date: today() });

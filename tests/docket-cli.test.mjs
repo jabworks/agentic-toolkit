@@ -288,3 +288,83 @@ test('CLI: next-id and add print machine-friendly output; check exits 1 on findi
     cleanup(corrupted);
   }
 });
+
+// A qualified id slot (`### 1 (remainder).`) references a parent item instead
+// of allocating a new id — the terminus partial-ship convention, which the
+// parser and migrate already tolerated while check reported it as corruption.
+test('a qualified id references its parent instead of duplicating it', () => {
+  const dir = scratchCopy('qualified');
+  try {
+    const result = checkDocket(resolveDocket(dir));
+
+    assert.deepEqual(result, { ok: true, findings: [] },
+      'the parent/slice convention is legal, not corruption');
+  } finally {
+    cleanup(dir);
+  }
+});
+
+test('duplicate detection still fires on bare ids', () => {
+  const dir = scratchCopy('corrupted');
+  try {
+    const { findings } = checkDocket(resolveDocket(dir));
+    const duplicates = findings.filter((finding) => finding.kind === 'duplicate-id');
+
+    assert.equal(duplicates.length, 1, 'two bare `### 2.` headings are still a collision');
+    assert.equal(duplicates[0].id, 2);
+  } finally {
+    cleanup(dir);
+  }
+});
+
+test('a reference with no allocated parent is reported', () => {
+  const dir = scratchCopy('orphan-ref');
+  try {
+    const { ok, findings } = checkDocket(resolveDocket(dir));
+
+    assert.equal(ok, false);
+    assert.deepEqual(findings.map((finding) => finding.kind), ['orphan-reference']);
+    assert.equal(findings[0].id, 99);
+    assert.match(findings[0].message, /99 \(remainder\)/);
+  } finally {
+    cleanup(dir);
+  }
+});
+
+test('close resolves a qualified item by number when only one open item carries it', () => {
+  const dir = scratchCopy('qualified');
+  try {
+    // The terminus case: open `1 (remainder)` against archived bare `1`.
+    const result = closeItem(resolveDocket(dir), 1, { note: 'verified', date: '2026-08-06' });
+    const archive = fs.readFileSync(path.join(dir, 'docket', 'archive', '2026.md'), 'utf8');
+
+    assert.match(archive, /## 1 \(remainder\)\. Open the agentic tools/,
+      'the qualifier must survive into the archive entry');
+    assert.equal(result.id, 1);
+  } finally {
+    cleanup(dir);
+  }
+});
+
+test('close refuses an ambiguous id instead of archiving the wrong item', () => {
+  const dir = scratchCopy('qualified');
+  try {
+    const openFile = path.join(dir, 'docket', 'DOCKET.md');
+    fs.appendFileSync(openFile, '\n### 1 (second slice). A rival claim on the same number (2026-07-20)\n\nBody.\n');
+
+    assert.throws(
+      () => closeItem(resolveDocket(dir), 1, { note: '', date: '2026-08-06' }),
+      /ambiguous/,
+      'two open items numbered 1 must not resolve to a silent first match',
+    );
+
+    // The escape hatch the error points at.
+    const result = closeItem(resolveDocket(dir), '1 (second slice)', { note: '', date: '2026-08-06' });
+    assert.equal(result.id, 1);
+
+    const stillOpen = fs.readFileSync(openFile, 'utf8');
+    assert.match(stillOpen, /### 1 \(remainder\)\./, 'the other claimant must be untouched');
+  } finally {
+    cleanup(dir);
+  }
+});

@@ -17,9 +17,25 @@ docket/
   the ghost-work rationale).
 - Sections, in order: `## Committed` · `## Someday` · `## Loose threads`.
 - Item: `### <id>. <title> (<YYYY-MM-DD>)` followed by freeform prose body.
-  Amendments allowed in the heading tail, terminus-style:
-  `(2026-07-18, corrected 2026-07-23)`, `(split from #26, 2026-07-14)`,
-  `(remainder)`.
+- **Two parenthesised forms exist and they are different constructs.** They
+  look alike and behave nothing alike, so the position is what matters:
+
+  | Form | Example | Read by |
+  |---|---|---|
+  | **Id slot** — a *reference* | `### 24 (follow-ups). Artifacts v2` | the parser |
+  | **Title tail** — an *amendment* | `### 24. Artifacts v2 (split from #26, 2026-07-14)` | humans only |
+
+  A qualifier in the **id slot** means "this entry belongs to item #24" — it
+  references the id, it does not allocate it. `check` validates that the
+  parent exists, `close` can address it exactly, and `next_id` still counts
+  the number so #24 is never handed out again. A parent and any number of its
+  slices coexist legally, in either file.
+
+  Anything in the **title tail** is prose. `(2026-07-18, corrected
+  2026-07-23)`, `(split from #26, 2026-07-14)`, `(remainder)` — the parser
+  never looks at it, so it expresses no relationship the tooling can act on.
+  Use it for dates and notes; use the id slot when you want the link to be
+  real.
 - Follow-ups: `#### Status <YYYY-MM-DD> — <summary>` blocks appended under
   the item, never rewriting history above.
 - `## Loose threads` holds unnumbered bullets — observations not yet worth

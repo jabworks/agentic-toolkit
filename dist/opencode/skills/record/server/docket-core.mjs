@@ -123,22 +123,33 @@ export function parseOpen(text) {
   return { lines, sections, items };
 }
 
+// A bare `### 47.` ALLOCATES id 47. A qualified `### 47 (remainder).` only
+// REFERENCES it — the terminus convention for a partial ship, where the slice
+// and the parent deliberately share a number so commit subjects citing #47
+// keep pointing at one thing. Carrying idPart is what lets `check` tell the
+// two apart; treating both as allocations reported the convention as
+// corruption, permanently, on the reference consumer.
 export function collectIds(d) {
   requireLayout(d);
   const ids = [];
   const open = parseOpen(fs.readFileSync(d.paths.open, 'utf8'));
 
   for (const item of open.items) {
-    ids.push({ id: item.id, source: d.paths.open });
+    ids.push({ id: item.id, idPart: item.idPart, source: d.paths.open });
   }
   for (const file of archiveFiles(d)) {
     for (const line of fs.readFileSync(file, 'utf8').split('\n')) {
       const entry = line.match(ARCHIVE_ENTRY_RE);
-      if (entry) ids.push({ id: parseInt(entry[1], 10), source: file });
+      if (entry) ids.push({ id: parseInt(entry[1], 10), idPart: entry[1], source: file });
     }
   }
 
   return ids;
+}
+
+// The id slot carries a qualifier — `47 (remainder)`, not bare `47`.
+export function isReference(entry) {
+  return /\(/.test(entry.idPart ?? '');
 }
 
 function readConfig(d) {
@@ -220,11 +231,32 @@ export function closeItem(d, id, { note = '', date }) {
   if (!date) throw new Error('closeItem needs an injected date');
 
   const open = parseOpen(fs.readFileSync(d.paths.open, 'utf8'));
-  const item = open.items.find((entry) => entry.id === id);
 
-  if (!item) {
-    throw new Error('#' + id + ' not found among open items in ' + d.paths.open);
+  // `close 1` resolves by number; `close "1 (remainder)"` by the exact id slot.
+  // Numbers can repeat across open items once qualified ids exist, and closing
+  // is a move — picking the first match would archive the wrong item and there
+  // is no undo for that. Ambiguity is an error, never a guess.
+  const wanted = String(id).trim();
+  const exact = open.items.filter((entry) => entry.idPart === wanted);
+  const numeric = Number.parseInt(wanted, 10);
+  const candidates = exact.length > 0
+    ? exact
+    : open.items.filter((entry) => entry.id === numeric);
+
+  if (candidates.length === 0) {
+    throw new Error('#' + wanted + ' not found among open items in ' + d.paths.open);
   }
+
+  if (candidates.length > 1) {
+    const shown = candidates.map((entry) => '"' + entry.idPart + '. ' + entry.title + '"').join(', ');
+
+    throw new Error(
+      '#' + wanted + ' is ambiguous — ' + candidates.length + ' open items share it: ' + shown +
+      '. Pass the exact id slot, e.g. close "' + candidates[0].idPart + '".',
+    );
+  }
+
+  const item = candidates[0];
 
   const block = open.lines.slice(item.start, item.end);
   while (block.length > 0 && block[block.length - 1].trim() === '') block.pop();
@@ -246,7 +278,14 @@ export function closeItem(d, id, { note = '', date }) {
   }
   fs.writeFileSync(d.paths.open, ensureTrailingNewline(open.lines.join('\n')));
 
-  return { id, archiveFile, commitSubject: 'docs(docket): close #' + id };
+  // The numeric id is what commit subjects cite, so the suggestion uses it
+  // even when a qualified slot was passed in; idPart carries the exact item.
+  return {
+    id: item.id,
+    idPart: item.idPart,
+    archiveFile,
+    commitSubject: 'docs(docket): close #' + item.id,
+  };
 }
 
 function appendArchiveEntry(d, archiveFile, entryLines, date) {
@@ -274,8 +313,10 @@ export function checkDocket(d) {
     findings.push({ kind: 'unreadable', message: String(err.message ?? err) });
   }
 
+  // Duplicate detection runs over ALLOCATIONS only. Two bare `#47` headings
+  // are still corruption and still reported exactly as before.
   const seen = new Map();
-  for (const entry of ids) {
+  for (const entry of ids.filter((candidate) => !isReference(candidate))) {
     if (seen.has(entry.id)) {
       findings.push({
         kind: 'duplicate-id',
@@ -284,6 +325,19 @@ export function checkDocket(d) {
       });
     } else {
       seen.set(entry.id, entry.source);
+    }
+  }
+
+  // A reference is only meaningful if its parent exists. `#47 (remainder)`
+  // with no `#47` anywhere is a dangling pointer — the id was never allocated,
+  // so nothing links the slice to a parent.
+  for (const entry of ids.filter(isReference)) {
+    if (!seen.has(entry.id)) {
+      findings.push({
+        kind: 'orphan-reference',
+        id: entry.id,
+        message: '"' + entry.idPart + '" in ' + entry.source + ' references #' + entry.id + ', which is not allocated anywhere',
+      });
     }
   }
 
