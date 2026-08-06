@@ -24,6 +24,10 @@ import { fileURLToPath } from 'node:url';
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
+// Overridable so the gh-dependent paths are testable without a network or a
+// real token: the tests point this at a script that records its argv.
+const GH = process.env.RELEASE_PLUGINS_GH || 'gh';
+
 // Noise in the notes: the changesets bot and merge commits say nothing about
 // what changed in a plugin.
 const SKIP_SUBJECTS = [/^Version Packages/, /^Merge (pull request|branch|remote)/];
@@ -32,6 +36,7 @@ const USAGE = `usage: release-plugins [options]
 
   --plugin <name>      restrict to one plugin
   --since <ref>        only versions introduced after <ref> (what CI uses)
+  --repair             create releases for tags that have one missing
   --initial            seed one release per plugin at its current version
   --execute            create the tags and GitHub releases (default: dry run)
   --write-changelog    regenerate CHANGELOG.md from the same data
@@ -152,6 +157,20 @@ function shasSince(root, ref) {
   return new Set(out.trim().split('\n').filter(Boolean));
 }
 
+// Tag creation and release creation are two calls, and the second one can fail
+// on its own — it did, transiently, on the seeding run. Treating "tag exists"
+// as "released" would strand those forever, so releases are tracked separately.
+function existingReleases(root) {
+  const res = spawnSync(GH, ['release', 'list', '--limit', '1000', '--json', 'tagName'], { cwd: root, encoding: 'utf8' });
+  if (res.status !== 0) return null;
+
+  try {
+    return new Set(JSON.parse(res.stdout).map((release) => release.tagName));
+  } catch {
+    return null;
+  }
+}
+
 function existingTags(root) {
   const out = git(root, ['tag', '--list'], { allowFailure: true }) ?? '';
 
@@ -174,8 +193,9 @@ function notesFor(root, plugin, fromSha, toSha) {
   return [...new Set(subjects)];
 }
 
-function buildPlan(root, only) {
+function buildPlan(root, only, { needReleases = false } = {}) {
   const tags = existingTags(root);
+  const releases = needReleases ? existingReleases(root) : null;
   const published = publishedShas(root);
   const today = new Date().toISOString().slice(0, 10);
   const entries = [];
@@ -203,6 +223,7 @@ function buildPlan(root, only) {
         ...point,
         tag,
         tagged: tags.has(tag),
+        released: releases === null ? null : releases.has(tag),
         historical: index <= watermark,
         latest: index === points.length - 1,
         priorVersions: points.slice(0, index).map((earlier) => earlier.version),
@@ -221,7 +242,10 @@ function buildPlan(root, only) {
 
 // Two selections over the same plan. `initial` seeds a plugin that has never
 // been released here; the default is every version newer than the watermark.
-function pending(entries, { initial, since }) {
+function pending(entries, { initial, since, repair }) {
+  // Repair looks at the opposite set: tags that exist but never got a release.
+  if (repair) return entries.filter((entry) => entry.tagged && entry.released === false);
+
   const releasable = entries.filter((entry) => !entry.tagged && entry.onDefaultBranch);
   if (initial) return releasable.filter((entry) => entry.latest);
   if (since) return releasable.filter((entry) => since.has(entry.sha));
@@ -260,14 +284,23 @@ function execute(root, entries, { initial }) {
     fs.writeFileSync(bodyFile, releaseBody(entry, today, { initial }));
 
     try {
-      git(root, ['tag', entry.tag, entry.sha]);
-      git(root, ['push', 'origin', entry.tag]);
+      // A repair run re-enters with the tag already in place.
+      if (!entry.tagged) {
+        git(root, ['tag', entry.tag, entry.sha]);
+        git(root, ['push', 'origin', entry.tag]);
+      }
 
-      const res = spawnSync('gh', [
+      // No --target: the tag is pushed above and already names the commit.
+      // Passing it makes GitHub re-point the ref, which a token without the
+      // `workflow` scope may not do when that commit touches .github/workflows
+      // — the failure that stranded six releases on the seeding run.
+      const res = spawnSync(GH, [
         'release', 'create', entry.tag,
-        '--target', entry.sha,
         '--title', `${entry.plugin} v${entry.version}`,
         '--notes-file', bodyFile,
+        // A release describing an old commit must not claim the Latest badge
+        // just because it was published last.
+        ...(entry.reconstructed ? ['--latest=false'] : []),
       ], { cwd: root, encoding: 'utf8' });
 
       if (res.status !== 0) {
@@ -318,7 +351,7 @@ function printPlan(entries, selected) {
 
   for (const entry of entries) {
     if (!chosen.has(entry.tag) && !entry.tagged) continue;
-    const mark = entry.tagged ? 'tagged ' : 'CREATE ';
+    const mark = chosen.has(entry.tag) ? 'CREATE ' : 'tagged ';
     const flag = entry.reconstructed && !entry.tagged ? ' (reconstructed)' : '';
     process.stdout.write(
       `${mark} ${entry.tag.padEnd(28)} ${entry.date}  ${(entry.sha ?? 'uncommitted').slice(0, 8).padEnd(8)}  ${entry.notes.length} commit(s)${flag}\n`,
@@ -355,7 +388,9 @@ function main(argv) {
   }
 
   const root = typeof flags['repo-root'] === 'string' ? path.resolve(flags['repo-root']) : REPO_ROOT;
-  const entries = buildPlan(root, typeof flags.plugin === 'string' ? flags.plugin : null);
+  const entries = buildPlan(root, typeof flags.plugin === 'string' ? flags.plugin : null, {
+    needReleases: flags.repair === true,
+  });
 
   if (flags['write-changelog']) {
     fs.writeFileSync(path.join(root, 'CHANGELOG.md'), renderChangelog(entries));
@@ -365,8 +400,9 @@ function main(argv) {
   }
 
   const initial = flags.initial === true;
+  const repair = flags.repair === true;
   const since = typeof flags.since === 'string' ? shasSince(root, flags.since) : null;
-  const selected = pending(entries, { initial, since });
+  const selected = pending(entries, { initial, since, repair });
   printPlan(entries, selected);
 
   if (!flags.execute) {

@@ -21,12 +21,17 @@ function fixtureRepo() {
   run('config', 'user.email', 'test@example.com');
   run('config', 'user.name', 'Test');
 
-  const bump = (plugin, version, subject) => {
+  // `date` backdates the commit, which is what makes a release a
+  // reconstruction rather than a same-day publish.
+  const bump = (plugin, version, subject, date) => {
     const manifest = path.join(dir, 'dist', 'plugins', plugin, '.claude-plugin', 'plugin.json');
     fs.mkdirSync(path.dirname(manifest), { recursive: true });
     fs.writeFileSync(manifest, JSON.stringify({ name: plugin, version }, null, 2) + '\n');
-    run('add', '-A');
-    run('commit', '-q', '-m', subject);
+    execFileSync('git', ['-C', dir, 'add', '-A'], { encoding: 'utf8' });
+    execFileSync('git', ['-C', dir, 'commit', '-q', '-m', subject], {
+      encoding: 'utf8',
+      env: date ? { ...process.env, GIT_AUTHOR_DATE: date, GIT_COMMITTER_DATE: date } : process.env,
+    });
 
     return run('rev-parse', 'HEAD').trim();
   };
@@ -224,6 +229,83 @@ test('--since falls back to the last commit when the ref does not resolve', () =
     const creates = plan.rows.filter((row) => row.mark === 'CREATE').map((row) => row.tag);
 
     assert.deepEqual(creates, ['alpha--v1.1.0'], 'an unresolvable ref must not release the backlog');
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+// A fake gh that answers `release list` from a fixture and records every
+// invocation, so the release-creation arguments are assertable without a token.
+function fakeGh(dir, releasedTags) {
+  const bin = path.join(dir, 'fake-gh.mjs');
+  const log = path.join(dir, 'gh-calls.log');
+  fs.writeFileSync(bin, `#!/usr/bin/env node
+import fs from 'node:fs';
+const args = process.argv.slice(2);
+fs.appendFileSync(${JSON.stringify(log)}, JSON.stringify(args) + '\\n');
+if (args[0] === 'release' && args[1] === 'list') {
+  process.stdout.write(JSON.stringify(${JSON.stringify(releasedTags)}.map((tagName) => ({ tagName }))));
+}
+process.exit(0);
+`);
+  fs.chmodSync(bin, 0o755);
+
+  return {
+    env: { RELEASE_PLUGINS_GH: bin },
+    calls: () => (fs.existsSync(log) ? fs.readFileSync(log, 'utf8').trim().split('\n').filter(Boolean).map((line) => JSON.parse(line)) : []),
+  };
+}
+
+test('--repair targets tags whose release creation failed, and nothing else', () => {
+  const { dir, run, bump } = fixtureRepo();
+  try {
+    const first = bump('alpha', '1.0.0', 'feat(alpha): initial');
+    const second = bump('beta', '0.1.0', 'feat(beta): initial');
+    run('tag', 'alpha--v1.0.0', first);
+    run('tag', 'beta--v0.1.0', second);
+
+    // beta got its release; alpha's tag exists but its release never landed.
+    const gh = fakeGh(dir, ['beta--v0.1.0']);
+    const res = spawnSync(process.execPath, [SCRIPT, '--repo-root', dir, '--repair'], {
+      encoding: 'utf8',
+      env: { ...process.env, ...gh.env },
+    });
+    const creates = (res.stdout ?? '').split('\n').filter((line) => line.startsWith('CREATE'));
+
+    assert.equal(creates.length, 1);
+    assert.match(creates[0], /alpha--v1\.0\.0/);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+// --target makes GitHub re-point the tag ref, which a token without the
+// `workflow` scope may not do when the commit touches .github/workflows. It
+// stranded six releases on the seeding run; the tag push already fixes the
+// commit, so the flag must never come back.
+test('release creation never passes --target, and reconstructions do not claim Latest', () => {
+  const { dir, run, bump } = fixtureRepo();
+  try {
+    bump('alpha', '1.0.0', 'feat(alpha): initial', '2026-01-15T10:00:00+00:00');
+
+    // --execute pushes the tag before creating the release, so the fixture
+    // needs somewhere to push to.
+    const remote = fs.mkdtempSync(path.join(os.tmpdir(), 'release-plugins-remote-'));
+    execFileSync('git', ['init', '-q', '--bare', remote]);
+    run('remote', 'add', 'origin', remote);
+    run('push', '-q', 'origin', 'main');
+
+    const gh = fakeGh(dir, []);
+    execFileSync(process.execPath, [SCRIPT, '--repo-root', dir, '--execute'], {
+      encoding: 'utf8',
+      env: { ...process.env, ...gh.env },
+    });
+
+    const create = gh.calls().find((args) => args[0] === 'release' && args[1] === 'create');
+
+    assert.ok(create, 'a release must have been attempted');
+    assert.ok(!create.includes('--target'), '--target must never be passed');
+    assert.ok(create.includes('--latest=false'), 'a reconstructed release must not claim Latest');
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }

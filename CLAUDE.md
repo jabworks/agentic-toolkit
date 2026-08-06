@@ -147,7 +147,8 @@ Plugin releases are automated. Merging to `main` runs
 `.github/workflows/plugin-release.yml` → `scripts/release-plugins.mjs --since
 <push-base> --execute`, which tags every plugin version *introduced by that
 push* as `<plugin>--v<version>` and creates a GitHub release with notes from
-the commits touching its dist tree. CI never backfills. Never hand-tag. After bumping a version, run
+the commits touching its dist tree. CI never backfills. Never hand-tag. If a tag lands without its release, run
+`--repair`. After bumping a version, run
 `node scripts/release-plugins.mjs --write-changelog` — `release-plugins.test.mjs`
 fails when a shipped version has no `CHANGELOG.md` entry. Versions on an
 unmerged branch are held back; the 122 versions that shipped before this

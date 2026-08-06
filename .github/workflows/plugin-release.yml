@@ -33,6 +33,9 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: '24'
+          # This job installs no project deps, so the default pnpm cache lookup
+          # fails before anything runs — it did, on the first real merge.
+          package-manager-cache: false
 
       # --since scopes this to what the push introduced. Without it the first
       # run would publish every untagged version behind each plugin's tag —

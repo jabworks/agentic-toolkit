@@ -65,6 +65,9 @@ rewrites are banned.**
      when a shipped version has no entry.
    - Versions on an unmerged branch are held back by design; the script refuses
      to release a commit that is not on the default branch.
+   - If a tag lands but its release does not (they are two calls, and the
+     second can fail alone), `--repair` creates the missing releases. A tag
+     with no release is otherwise stranded forever.
    - Hand-tagging remains the fallback if the workflow is broken:
      `claude plugin tag dist/plugins/<name>` validates plugin.json against the
      marketplace entry, then `git push origin <tag>` and
