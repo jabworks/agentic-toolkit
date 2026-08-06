@@ -194,7 +194,7 @@ Root cause:   per-repo capture writes to <git-root>/.concord/ in each
               skill's own paths contract says it lives.
 Evidence:     4ba3ac6 (the diagnosis commit — its real payload is the
               codex-exec session_id fallback found WHILE disproving the
-              finding); skills/concord/lib/paths.mjs (the contract).
+              finding); skills/remember/lib/paths.mjs (the contract).
 Doctrine:     verify the negative — before declaring a mechanism dead, read
               its contract for where output should live and look there.
               "Nothing at X" indicts nothing unless X is the write target.

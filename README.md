@@ -19,7 +19,25 @@ Personal collection of agentic coding skills. Compatible with Claude Code, Codex
 | [spec-browser](./skills/spec-browser/)       | Catalog and browse a specs/ tree — markdown index + folder-grouped doc site                           |
 | [release](./skills/release/)                 | Cut releases safely — machinery detection (changesets/toolkit/GitHub), dry-run first, rollback paths  |
 | [coding-directive](./skills/coding-directive/) | House style for @jabworks repos — TypeScript, React, formatting, imports, naming, CSS _(personal)_  |
-| [concord](./skills/concord/)                 | Continuous memory for Codex — captures each session from the rollout, ages it into tiers, recalls it |
+| [remember](./skills/remember/)               | Continuous memory for Codex (`concord` plugin) — captures each session from the rollout, ages it into tiers, recalls it |
+| [concord-doctor](./skills/concord-doctor/)   | Health check for the concord plugin — probes its Codex hooks and memory store on this host           |
+| [condux-doctor](./skills/condux-doctor/)     | Health check for the condux plugin — runs the SessionStart routing hook and checks the agents shipped |
+| [docket-doctor](./skills/docket-doctor/)     | Health check for the docket plugin — probes the MCP registration on every host and the CLI fallback  |
+
+### Concord
+
+Continuous memory for Codex (`concord`) — the `remember` skill plus its doctor:
+
+```bash
+/plugin install concord@jabworks-agentic-toolkit
+```
+
+Three Codex hooks share one idempotent operation — sync the rollout forward
+from its recorded position — so capture is exactly-once regardless of hook
+order, and a hard-killed session is recovered at next start rather than lost.
+Memory ages through buffer, daily, recent, and archive tiers; explicitly
+pinned facts are never auto-compressed. `references/install-codex-hook.sh`
+wires the hooks; `concord-doctor` tells you whether they are still wired.
 
 ### Docket
 

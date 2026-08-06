@@ -1,6 +1,6 @@
 ---
 name: toolkit-failure-archaeology
-description: Use when about to re-fight an old battle in jabworks/agentic-toolkit — checking whether a mistake happened before, mining git history for precedent, or recording a new incident. Holds the evidenced incident ledger (dist drift, YAML breakage, missed registration, stale plugin caches) with commit hashes and the doctrine each produced. Triggers include "has this happened before", "why do we do it this way", "add this to the ledger". Not for recalling past sessions; use concord.
+description: Use when about to re-fight an old battle in jabworks/agentic-toolkit — checking whether a mistake happened before, mining git history for precedent, or recording a new incident. Holds the evidenced incident ledger (dist drift, YAML breakage, missed registration, stale plugin caches) with commit hashes and the doctrine each produced. Triggers include "has this happened before", "why do we do it this way", "add this to the ledger". Not for recalling past sessions; use concord:remember.
 ---
 
 # Toolkit Failure Archaeology

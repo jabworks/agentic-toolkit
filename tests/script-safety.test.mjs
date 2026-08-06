@@ -79,3 +79,34 @@ test('Codex hook installer refuses to overwrite malformed hooks JSON', () => {
     fs.rmSync(codexHome, { recursive: true, force: true });
   }
 });
+
+const CONCORD_HOOK_INSTALLER = path.resolve(__dirname, '../skills/remember/references/install-codex-hook.sh');
+
+// The installer finds its own entries again by matching the command string. It
+// used to match the substring "concord", which stopped appearing in the path
+// once the skill was renamed to `remember` — so a reinstall duplicated every
+// hook and --uninstall left them behind.
+test('concord hook installer stays idempotent after the remember rename', () => {
+  const codexHome = fs.mkdtempSync(path.join(os.tmpdir(), 'ci-concord-hooks-'));
+  const events = ['SessionStart', 'UserPromptSubmit', 'SessionEnd'];
+  const read = () => JSON.parse(fs.readFileSync(path.join(codexHome, 'hooks.json'), 'utf8')).hooks ?? {};
+  try {
+    const env = { ...process.env, CODEX_HOME: codexHome };
+    execFileSync('bash', [CONCORD_HOOK_INSTALLER], { env });
+    execFileSync('bash', [CONCORD_HOOK_INSTALLER], { env });
+
+    const installed = read();
+    for (const event of events) {
+      assert.equal(installed[event]?.length, 1, `${event} must not accumulate duplicates`);
+      assert.match(JSON.stringify(installed[event]), /remember\/bin\//);
+    }
+
+    execFileSync('bash', [CONCORD_HOOK_INSTALLER, '--uninstall'], { env });
+    const removed = read();
+    for (const event of events) {
+      assert.equal(removed[event], undefined, `${event} must be gone after --uninstall`);
+    }
+  } finally {
+    fs.rmSync(codexHome, { recursive: true, force: true });
+  }
+});

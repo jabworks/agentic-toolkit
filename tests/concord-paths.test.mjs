@@ -15,7 +15,7 @@ import {
   resolveMemoryDir,
   tierPaths,
   tierPathsFor,
-} from '../skills/concord/lib/paths.mjs';
+} from '../skills/remember/lib/paths.mjs';
 
 // --- helpers -----------------------------------------------------------------
 

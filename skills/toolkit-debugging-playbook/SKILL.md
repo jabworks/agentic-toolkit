@@ -1,7 +1,7 @@
 ---
 name: toolkit-debugging-playbook
 description: Use when a skill or plugin from jabworks/agentic-toolkit misbehaves — a skill doesn't trigger, a plugin doesn't show up after install, dist looks out of date, the installed copy differs from the repo, or a manifest fails to parse. Symptom → first discriminating command → root cause, with false friends and stop-and-ask points. Triggers include "why isn't my skill triggering", "why isn't X showing up", "plugin not showing up", "dist drift", "stale plugin", "skill broken".
-when_to_use: The toolkit's own distribution machinery is the suspect. Not for ordinary bugs in the app you're building — that's root-cause-analysis.
+when_to_use: The toolkit's own distribution machinery is the suspect, and you have the repo. Not for ordinary bugs in the app you're building — that's root-cause-analysis. Not for whether an installed plugin is registered and working on this machine — that's the plugin's own doctor (docket-doctor), which needs no checkout.
 ---
 
 # Toolkit Debugging Playbook
@@ -18,6 +18,10 @@ Any misbehavior of this toolkit's skills, plugins, manifests, sync, or installs.
 ## When not to use
 
 - General code bugs in a project → condux `root-cause-analysis`.
+- The question is about *one machine's install* rather than the repo — is the
+  server registered, did the hook get wired, is the version current → that
+  plugin's doctor (`docket-doctor`). It probes the installed harness and
+  needs no checkout; this skill diagnoses the machinery that produced it.
 - The cause turns out to be description wording → hand off to
   `toolkit-skill-standards`.
 - Nothing is broken and you're gating a release → `toolkit-change-control`.
@@ -38,6 +42,7 @@ Run the discriminating command FIRST; don't theorize before it returns.
 | dist looks out of date | `node --test tests/dist-mirror.test.mjs` | 1. Sync not run after a skills/ edit (hook is local-only) 2. Someone hand-edited dist/ (it gets clobbered next sync) |
 | Installed copy differs from repo | compare versions: `node -p 'require("./dist/plugins/<p>/.claude-plugin/plugin.json").version'` vs what the user's tool reports | Stale plugin cache — caches refresh only on version bump (`a4f4aa8`). Fix: bump both manifests, re-release |
 | Manifest fails to parse / install errors | `node -e 'for (const s of ["claude","codex"]) console.log(s, JSON.parse(require("fs").readFileSync("dist/plugins/<p>/." + s + "-plugin/plugin.json")).name)'` | Invalid JSON; missing required field; `skills` path not `./`-prefixed |
+| MCP tools or hooks from a plugin stopped working on this machine | `node <skill-base>/doctor.mjs` for that plugin — it names the host, the registration, and the fix | Hand off: the doctor's verdict *is* the diagnosis. Come back here only if it reports green while the plugin still misbehaves, which points at the host, not the registration |
 | Skill renders empty/garbled in listings | `node --test tests/skill-invariants.test.mjs` then eyeball YAML quoting | Unquoted YAML with `:` in description (`a13e094`); over-budget frontmatter |
 | condux agents behave stale | `node --test tests/skill-invariants.test.mjs` (agents-mirror test) | Plugin-level `agents/` not mirrored — sync's special case (`6ba6572`) |
 | Skill loads and runs, but its prescribed menu/steps degrade over sessions | diff the skill's contract against a recent transcript of it running — which prescribed options or steps actually appeared? | 1. Two skills' prompts merged and the option set got improvised (CP-1 menu erosion, `2cc080d`) 2. A behavioral default read as license to omit options rather than shape the recommendation 3. The instruction buried too deep in a long body |
@@ -89,7 +94,9 @@ to the version check.
 
 `toolkit-skill-standards` (wording-caused trigger misses), `toolkit-change-control`
 (publish gate after the fix), `toolkit-failure-archaeology` (has this happened
-before?), `toolkit-plugin-reference` (manifest field semantics).
+before?), `toolkit-plugin-reference` (manifest field semantics),
+`docket-doctor` (is that plugin registered and working on *this* machine —
+the install side, no checkout needed).
 
 ## Provenance and maintenance
 

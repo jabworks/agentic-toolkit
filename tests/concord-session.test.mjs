@@ -6,17 +6,17 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
-import { tierPaths } from '../skills/concord/lib/paths.mjs';
-import { readState, readTier, writeState } from '../skills/concord/lib/store.mjs';
-import { sync, catchUp } from '../skills/concord/lib/session.mjs';
-import { rolloutPathOf, cwdOf, sessionIdOf } from '../skills/concord/lib/hook.mjs';
+import { tierPaths } from '../skills/remember/lib/paths.mjs';
+import { readState, readTier, writeState } from '../skills/remember/lib/store.mjs';
+import { sync, catchUp } from '../skills/remember/lib/session.mjs';
+import { rolloutPathOf, cwdOf, sessionIdOf } from '../skills/remember/lib/hook.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, '..');
 const BASIC = path.join(__dirname, 'fixtures', 'concord', 'rollout-basic.jsonl');
 const SUBAGENT = path.join(__dirname, 'fixtures', 'concord', 'rollout-subagent.jsonl');
-const CAPTURE = path.join(REPO_ROOT, 'skills', 'concord', 'bin', 'capture.mjs');
-const RECALL = path.join(REPO_ROOT, 'skills', 'concord', 'bin', 'recall.mjs');
+const CAPTURE = path.join(REPO_ROOT, 'skills', 'remember', 'bin', 'capture.mjs');
+const RECALL = path.join(REPO_ROOT, 'skills', 'remember', 'bin', 'recall.mjs');
 
 function freshPaths() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'concord-session-'));

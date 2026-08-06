@@ -4,9 +4,9 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import { tierPaths } from '../skills/concord/lib/paths.mjs';
-import { atomicWrite } from '../skills/concord/lib/store.mjs';
-import { composeRecall, DEFAULT_LIMIT } from '../skills/concord/lib/budget.mjs';
+import { tierPaths } from '../skills/remember/lib/paths.mjs';
+import { atomicWrite } from '../skills/remember/lib/store.mjs';
+import { composeRecall, DEFAULT_LIMIT } from '../skills/remember/lib/budget.mjs';
 
 const NOW = new Date('2026-07-27T12:00:00.000Z');
 

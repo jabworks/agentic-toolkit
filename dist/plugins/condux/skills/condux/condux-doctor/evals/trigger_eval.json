@@ -1,0 +1,17 @@
+[
+  { "query": "is condux actually working on this machine?", "should_trigger": true, "expected_skill": "condux-doctor" },
+  { "query": "check my condux install", "should_trigger": true, "expected_skill": "condux-doctor" },
+  { "query": "the routing rule stopped showing up at session start", "should_trigger": true, "expected_skill": "condux-doctor" },
+  { "query": "did the condux SessionStart hook actually fire?", "should_trigger": true, "expected_skill": "condux-doctor" },
+  { "query": "the specialist agents are missing after I updated the plugin", "should_trigger": true, "expected_skill": "condux-doctor" },
+  { "query": "run a health check on condux", "should_trigger": true, "expected_skill": "condux-doctor" },
+  { "query": "verify condux registered properly on codex", "should_trigger": true, "expected_skill": "condux-doctor" },
+  { "query": "add a search filter to the invoice table", "should_trigger": true, "expected_skill": "workflow" },
+  { "query": "how do condux tiers work?", "should_trigger": true, "expected_skill": "workflow" },
+  { "query": "why isn't my skill triggering", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },
+  { "query": "dist drifted from skills after my edit", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },
+  { "query": "what should I work on next?", "should_trigger": true, "expected_skill": "groom" },
+  { "query": "what is a git hook?", "should_trigger": false, "expected_skill": null },
+  { "query": "my laptop fan is loud when node runs", "should_trigger": false, "expected_skill": null },
+  { "query": "check the health of the kubernetes cluster", "should_trigger": false, "expected_skill": null }
+]

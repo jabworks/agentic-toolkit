@@ -11,10 +11,6 @@ Stale open markers cost real sessions — closing means moving.
 
 ## Someday
 
-### 1. Plugin doctor — verify condux/concord/docket work on the installed harness (2026-08-05)
-
-Per-harness health check for the shipped plugins (condux, concord, docket): does the condux SessionStart hook actually fire on this host, are concord rollout-sync hooks wired, does the docket MCP server answer an initialize round-trip, do the manifests the installed host reads parse, do installed versions match the marketplace. Shape: detect host, probe each registration, report done/broken/absent per plugin — the standing version of the INSTALL.md verify step. Precedents: ctx doctor, remember:doctor. Origin: idea recalled 2026-08-05 after shipping docket.
-
 ### 2. UNINSTALL.md — the removal half of the ease-of-install convention (2026-08-05)
 
 Reverse path for the ease-of-install convention: agent-followable removal — drop the Codex config.toml table, remove the OpenCode json key (or restore the .bak backups), verify the registration is gone, report per host. Docket as reference implementation; generalizes to condux/concord alongside INSTALL.md.

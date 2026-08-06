@@ -1,7 +1,7 @@
 {
   "name": "docket",
-  "version": "0.1.1",
-  "description": "Codex skills for file-based backlog management: a docket/ folder with never-reused item ids, capture and lifecycle via the record skill, grooming and pick-next via groom, a dependency-free CLI, a bundled MCP server, and a self-contained HTML board.",
+  "version": "0.2.0",
+  "description": "Codex skills for file-based backlog management: a docket/ folder with never-reused item ids, capture and lifecycle via the record skill, grooming and pick-next via groom, a dependency-free CLI, a bundled MCP server, a self-contained HTML board, and a per-host health check.",
   "author": {
     "name": "jabworks"
   },
@@ -16,7 +16,9 @@
     "capture",
     "mcp",
     "grooming",
-    "pick-next"
+    "pick-next",
+    "doctor",
+    "health-check"
   ],
   "skills": "./skills/docket",
   "interface": {
@@ -29,7 +31,8 @@
       "Add this to the docket.",
       "Close #12 — shipped and verified.",
       "Groom the backlog.",
-      "What should I work on next?"
+      "What should I work on next?",
+      "Is docket working on this machine?"
     ]
   }
 }

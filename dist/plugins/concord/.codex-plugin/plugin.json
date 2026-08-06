@@ -1,6 +1,6 @@
 {
   "name": "concord",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Continuous memory for Codex: captures each session from the rollout, ages it into tiers, and injects the relevant slice back at the next session start.",
   "author": {
     "name": "jabworks"
@@ -16,7 +16,7 @@
     "recall"
   ],
   "skills": "./skills/concord",
-  "hooks": "./skills/concord/hooks/codex-hooks.json",
+  "hooks": "./skills/concord/remember/hooks/codex-hooks.json",
   "interface": {
     "displayName": "Concord",
     "shortDescription": "Continuous session memory for Codex.",

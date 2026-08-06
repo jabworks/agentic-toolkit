@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import { tierPaths } from '../skills/concord/lib/paths.mjs';
+import { tierPaths } from '../skills/remember/lib/paths.mjs';
 import {
   RECENT_DAYS,
   appendBuffer,
@@ -16,7 +16,7 @@ import {
   readTier,
   readToday,
   writeState,
-} from '../skills/concord/lib/store.mjs';
+} from '../skills/remember/lib/store.mjs';
 
 // --- helpers -----------------------------------------------------------------
 
