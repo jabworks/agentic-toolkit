@@ -18,6 +18,7 @@ REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 [[ -z "$REPO_ROOT" ]] && REPO_ROOT=$(cd "$(dirname "$0")/.." && pwd)
 SKILLS_DIR="$REPO_ROOT/skills"
 DIST_DIR="$REPO_ROOT/dist/plugins"
+PLUGIN_SRC="$REPO_ROOT/plugins"
 
 # ---------------------------------------------------------------------------
 # Frontmatter gate — refuse to propagate a SKILL.md that a strict YAML parser
@@ -112,6 +113,38 @@ sync_skill() {
 }
 
 # ---------------------------------------------------------------------------
+# sync_plugin_files — plugin-level files that belong to no skill: the README
+# that acts as the plugin's homepage, plus the LICENSE every plugin ships.
+#
+# These sit outside every skill tree, so the skill copy never reaches them —
+# the same shape as agents/ and hooks/, and the same rule applies: an
+# out-of-tree mirror target gets its own sync step AND its own test
+# (tests/plugin-files.test.mjs). Before this existed, condux's README was
+# hand-written straight into dist/ and docket shipped with no LICENSE at all.
+# ---------------------------------------------------------------------------
+sync_plugin_files() {
+  local copied=0
+
+  for plugin_dir in "$DIST_DIR"/*/; do
+    local plugin
+    plugin=$(basename "$plugin_dir")
+
+    # One LICENSE, at the repo root, copied to every plugin — not 12 identical
+    # source files that can drift apart.
+    cp "$REPO_ROOT/LICENSE" "$plugin_dir/LICENSE"
+
+    if [[ -f "$PLUGIN_SRC/$plugin/README.md" ]]; then
+      cp "$PLUGIN_SRC/$plugin/README.md" "$plugin_dir/README.md"
+      ((copied++)) || true
+    else
+      echo "WARN    dist/plugins/$plugin has no plugins/$plugin/README.md" >&2
+    fi
+  done
+
+  echo "synced  plugins/*/README.md + LICENSE  →  dist/plugins/*/  (${copied} README(s))"
+}
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 # Post-build gate: the OpenCode build re-quotes frontmatter through its own path
@@ -128,6 +161,7 @@ check_generated() {
 
 if [[ $# -gt 0 ]]; then
   sync_skill "$1"
+  sync_plugin_files
   node "$REPO_ROOT/scripts/build-opencode.mjs"
   check_generated
 else
@@ -143,6 +177,7 @@ else
       ((failed++)) || true
     fi
   done
+  sync_plugin_files
   node "$REPO_ROOT/scripts/build-opencode.mjs"
   check_generated
   echo ""
