@@ -1,5 +1,13 @@
 # @jabworks/condux
 
+## 0.7.0
+
+### Minor Changes
+
+- [#32](https://github.com/jabworks/agentic-toolkit/pull/32) [`400f346`](https://github.com/jabworks/agentic-toolkit/commit/400f34693832728ff0b503673b61c1a99e7f66f0) Thanks [@vi-hieu](https://github.com/vi-hieu)! - Bundle `condux-doctor`, the plugin's health check, into the OpenCode package. It answers "is condux actually working on this host?" — probing the SessionStart routing hook by _running_ it (Claude Code's JSON envelope, Codex's raw payload), resolving plan-review's Codex Stop hook without executing it, checking the OpenCode registration and the four specialist agent definitions, and comparing the installed version against the local marketplace clone. Offline and read-only.
+
+  Running the hook is the point. `session-start.mjs` fails open by design: if its payload is missing it exits 0 and prints nothing, so every static check passes while condux's routing rule is silently absent. Only executing it tells you that `/workflow` stopped being the entry point.
+
 ## 0.6.0
 
 ### Minor Changes
