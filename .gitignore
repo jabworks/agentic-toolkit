@@ -3,3 +3,4 @@
 .condux/
 .concord/
 node_modules/
+.session-handoff/
