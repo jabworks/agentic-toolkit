@@ -12,6 +12,28 @@ const SKILLS_DIR = path.join(REPO_ROOT, 'skills');
 const MAX_DESCRIPTION = 500;
 const MAX_FRONTMATTER = 1024;
 
+// A floor as well as a ceiling. A one-word description passes every other check
+// here while being useless for the thing we measure hardest — routing. Set at
+// roughly half the observed minimum (86 chars, session-handoff) so a genuinely
+// terse trigger for a narrow skill still fits, but a stub does not.
+const MIN_DESCRIPTION = 40;
+
+// Bundled assets ship to every install channel. 5 MB is far above anything here
+// (the largest file is an 88 KB eval corpus) — the point is to fail loudly if a
+// binary, a screenshot dump, or a vendored dependency ever lands in a skill.
+const MAX_ASSET_BYTES = 5 * 1024 * 1024;
+
+// Every subdirectory kind a skill is allowed to contain.
+//
+// This is a change detector, not a tidiness rule. A new kind of directory under
+// a skill is how the recurring blind spot starts: `hooks/` and `server/` are
+// loaded from the PLUGIN root, so the skill-tree copy in sync.sh never reaches
+// them and each needed its own sync step and its own mirror test. That was
+// `6ba6572`, and `hooks/` stayed hand-maintained in dist/ until 2026-08-05
+// regardless. When this list needs a new entry, ask whether the new directory
+// is also a new out-of-tree mirror target before adding it.
+const ALLOWED_SKILL_DIRS = new Set(['references', 'evals', 'hooks', 'server', 'lib', 'bin', 'agents']);
+
 // Returns the raw frontmatter block (between the leading `---` fences, excluding
 // them) or null if the file has none.
 function frontmatter(src) {
@@ -54,8 +76,50 @@ test('every skill has SKILL.md frontmatter within the name/description/size budg
     const desc = field(block, 'description');
     if (!desc) problems.push(name + ': frontmatter missing "description"');
     else if (desc.length > MAX_DESCRIPTION) problems.push(`${name}: description ${desc.length} chars (> ${MAX_DESCRIPTION})`);
+    else if (desc.length < MIN_DESCRIPTION) problems.push(`${name}: description ${desc.length} chars (< ${MIN_DESCRIPTION}) — too thin to route on`);
   }
   assert.deepEqual(problems, [], 'skill frontmatter invariant violations:\n' + problems.join('\n'));
+});
+
+test('no bundled asset is large enough to bloat every install channel', () => {
+  const problems = [];
+
+  const walk = (dir, skill) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const abs = path.join(dir, entry.name);
+      if (entry.isDirectory()) { walk(abs, skill); continue; }
+
+      const { size } = fs.statSync(abs);
+      if (size > MAX_ASSET_BYTES) {
+        const rel = path.relative(SKILLS_DIR, abs);
+        problems.push(`${rel}: ${(size / 1024 / 1024).toFixed(1)} MB (> ${MAX_ASSET_BYTES / 1024 / 1024} MB)`);
+      }
+    }
+  };
+
+  for (const name of skillDirs()) walk(path.join(SKILLS_DIR, name), name);
+
+  assert.deepEqual(problems, [], 'oversized bundled assets:\n' + problems.join('\n'));
+});
+
+test('skills contain only known directory kinds', () => {
+  const problems = [];
+
+  for (const name of skillDirs()) {
+    const entries = fs.readdirSync(path.join(SKILLS_DIR, name), { withFileTypes: true });
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue;
+      if (ALLOWED_SKILL_DIRS.has(entry.name)) continue;
+
+      problems.push(
+        `${name}/${entry.name}/ is a directory kind no skill has used before — if it is loaded from the `
+        + 'plugin root rather than the skill tree, it needs its own sync.sh step and its own mirror test '
+        + '(see ALLOWED_SKILL_DIRS above). Add it to the set once you have checked.',
+      );
+    }
+  }
+
+  assert.deepEqual(problems, [], 'unknown skill directory kinds:\n' + problems.join('\n'));
 });
 
 test('marketplace.json source paths and plugin.json skills paths resolve on disk', () => {
