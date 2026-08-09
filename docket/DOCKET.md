@@ -171,58 +171,6 @@ the same data and the two should be designed together.
 
 Found 2026-08-09 surveying awesome-copilot's maintenance machinery.
 
-### 13. Generalize supply-chain lint across all skills, not one template (2026-08-09)
-
-We already do one of these checks — for exactly one file. `skill-invariants.test.mjs:105`
-("plan-review HTML template makes no external network references") greps that
-single template for `//` URLs. That is the `EXTERNAL-DOMAIN` rule, hand-scoped
-to one artifact because that artifact was a known risk. Nothing generalizes it,
-and no other rule in the family exists at all.
-
-Adjacent but different: `script-safety.test.mjs` tests the *runtime* behaviour
-of three specific installer scripts (path escape, idempotency, refusing to
-overwrite malformed config) and `browser-security.test.mjs` tests plan-review's
-HTML escaping. Both check that our known scripts behave; neither reads a
-SKILL.md to see what it instructs an agent to fetch or execute. That is the
-gap — and we publish to a public marketplace across three channels.
-
-Upstream runs `npx @microsoft/vally-cli lint ./skills` nightly
-(`.github/workflows/skill-quality-report.yml`) and gates PRs with
-`skill-check.yml`. Vally's lint (MIT, read from the 0.13.0 tarball —
-`dist/skill/reference-scanner.js` + `external-dep-checker.js`) is purely
-supply-chain, driven by two allow-list files (`knownDomainsFile`,
-`allowedExternalDepsFile`):
-
-| code | flags |
-|---|---|
-| `EXTERNAL-DOMAIN` | URL to a domain not on the known list |
-| `HTTP-NOT-HTTPS` | plaintext HTTP reference |
-| `PIPE-TO-SHELL` | `curl ... \| sh` shaped instructions |
-| `INVOKES-SCRIPT` | skill body tells the agent to run a script |
-| `SCRIPT-FILE` | bundled executable script |
-| `SCRIPT-NO-SRI` | remote script without subresource integrity |
-| `NON-BUILTIN-TOOL-REF` | references a tool outside the host's builtins |
-| `FILE-READ-ERROR` | referenced file unreadable |
-
-Several of ours trip these on purpose — docket ships `install.sh` and
-`server/mcp-server.mjs` behind `.mcp.json`, condux ships `session-start.mjs` as
-a SessionStart hook. That is the argument *for* an allow-list rather than
-against the check: the value is that a *new* unreviewed one shows up in CI.
-
-Adoption shape, per the no-plugin-dependencies ladder: do **not** take the CLI
-dependency. Port the eight rule codes into a dependency-free
-`tests/skill-supply-chain.test.mjs` with a checked-in allow-list, written the
-way `frontmatter-canonical.test.mjs` is — no devDependency, same module usable
-from the pre-commit hook. (`@microsoft/vally-cli` would be a repo dev
-dependency, not a shipped-plugin one, so it is defensible; it is just more than
-this needs.)
-
-Cheapest of the awesome-copilot findings to land. The plan-review no-egress test
-is the proof it works and the thing to subsume: once the general check exists
-with plan-review's template on the allow-list, that bespoke test can retire.
-
-Found 2026-08-09 surveying awesome-copilot's maintenance machinery.
-
 ### 14. Price a trajectory-based routing eval against the judge-prompt harness (2026-08-09)
 
 `scripts/eval-triggers.mjs` renders the live skill catalog into a prompt and
