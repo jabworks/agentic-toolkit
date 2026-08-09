@@ -14,7 +14,15 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## toolkit-ops 1.6.3 — 2026-08-09
 
-- docs(toolkit-ops): record the awesome-copilot survey, reopen A4 as a question (1.6.3)
+- docs(toolkit-ops): survey awesome-copilot's maintenance machinery, reopen A4 as a question (1.6.3) (#40)
+
+## session-report 1.6.4 — 2026-08-09
+
+- feat(tests): supply-chain lint over every skill, and two templates stop phoning home
+
+## session-handoff 1.6.7 — 2026-08-09
+
+- feat(tests): supply-chain lint over every skill, and two templates stop phoning home
 
 ## toolkit-ops 1.6.2 — 2026-08-06
 

@@ -1,0 +1,50 @@
+{
+  "_comment": "Reviewed exceptions for scripts/check-supply-chain.mjs. Every entry carries a reason and the checker fails on an entry with none, and on an entry nothing references any more — an allow-list without reasons is a mute suppression list, and one that outlives its risk is worse.",
+
+  "domains": {
+    "github.com": "prose citations only — upstream projects credited in SKILL.md bodies (plannotator, agent-toolkit) and this repo's own URL. No script fetches from it.",
+    "api.github.com": "cited in the awesome-copilot survey as a re-verification command for the reader to run, not executed by anything we ship.",
+    "developers.openai.com": "documentation URL in a source comment in install-codex-agents.mjs recording where the Codex subagent schema was verified. Not fetched.",
+    "raw.githubusercontent.com": "session-report's analyzers fetch litellm's public pricing table at runtime — see remoteFetches for the specific URL and its risk."
+  },
+
+  "remoteFetches": {
+    "https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json": "session-report reads live model pricing to cost a session. Pinned to BerriAI/litellm's main branch, so the content can change with no diff here and no review — accepted because the analyzers degrade to cached/absent pricing rather than failing, and the data never reaches an eval or a shipped artifact. Revisit if either stops being true: pin a commit sha, or vendor a snapshot."
+  },
+
+  "scripts": {
+    "skills/concord-doctor/doctor.mjs": "concord's doctor — probes and repairs the plugin's own registration.",
+    "skills/condux-doctor/doctor.mjs": "condux's doctor — same contract.",
+    "skills/docket-doctor/doctor.mjs": "docket's doctor — same contract.",
+
+    "skills/discovery/references/choice-server.js": "local decision server for discovery's picker; binds loopback only.",
+    "skills/plan-review/references/annotate-server.js": "local annotation server behind plan-review's browser UI; binds loopback only, and its HTML template is the original no-egress guarantee this checker generalizes.",
+    "skills/plan-review/references/install-codex-hook.sh": "registers plan-review's Codex Stop hook; behaviour covered by tests/script-safety.test.mjs.",
+    "skills/spec-browser/references/build-index.js": "builds the static spec index; no network.",
+
+    "skills/record/server/docket.mjs": "docket's dependency-free CLI — rung 1 of the degrade-gracefully ladder.",
+    "skills/record/server/docket-core.mjs": "docket's parser and id allocator, shared by the CLI and the MCP server.",
+    "skills/record/server/docket-render.mjs": "renders the docket board to self-contained HTML.",
+    "skills/record/server/mcp-server.mjs": "docket's MCP server — rung 3 of the ladder, registered via .mcp.json.",
+    "skills/record/server/install.sh": "docket's installer; verifies what it registers.",
+
+    "skills/remember/bin/capture.mjs": "concord's capture entry point, invoked by the Codex rollout hook.",
+    "skills/remember/bin/recall.mjs": "concord's session-start recall entry point.",
+    "skills/remember/lib/budget.mjs": "concord internals — token budget for injected memory.",
+    "skills/remember/lib/hook.mjs": "concord internals — hook wire formats.",
+    "skills/remember/lib/paths.mjs": "concord internals — store path resolution.",
+    "skills/remember/lib/rollout.mjs": "concord internals — Codex rollout parsing.",
+    "skills/remember/lib/session.mjs": "concord internals — session assembly.",
+    "skills/remember/lib/store.mjs": "concord internals — the memory store itself.",
+    "skills/remember/references/install-codex-hook.sh": "registers concord's Codex hooks; idempotency covered by tests/script-safety.test.mjs.",
+
+    "skills/session-report/analyze-claude.mjs": "parses Claude Code transcripts into the usage report. Fetches litellm pricing — see remoteFetches.",
+    "skills/session-report/analyze-codex.mjs": "parses Codex transcripts into the usage report. Fetches litellm pricing — see remoteFetches.",
+
+    "skills/subagent-execution/references/install-codex-agents.mjs": "installs the four condux specialist agents for Codex; dry-run behaviour covered by tests/script-safety.test.mjs.",
+    "skills/subagent-execution/references/review-package.sh": "assembles a review package for the code-review flow; local only.",
+    "skills/subagent-execution/references/task-brief.sh": "renders a task brief for a spawned agent; local only.",
+    "skills/technical-spec/references/scaffold.sh": "scaffolds a specs/ tree; path-escape refusal covered by tests/script-safety.test.mjs.",
+    "skills/workflow/hooks/session-start.mjs": "condux's SessionStart hook — injects the routing payload on both hosts, fails open."
+  }
+}

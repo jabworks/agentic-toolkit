@@ -102,11 +102,8 @@ test('condux plugin-level agents/ mirrors its skills/ source verbatim', () => {
   assert.deepEqual(drifted, [], 'condux/agents drifted from source — run scripts/sync.sh:\n' + drifted.join('\n'));
 });
 
-test('plan-review HTML template makes no external network references (no-egress guarantee)', () => {
-  const html = fs.readFileSync(
-    path.join(SKILLS_DIR, 'plan-review', 'references', 'plan-review-template.html'),
-    'utf8',
-  );
-  const hits = html.match(/https?:\/\/[^\s"'`)]+/g) || [];
-  assert.deepEqual(hits, [], 'plan-review template contains external URLs (breaks no-egress):\n' + hits.join('\n'));
-});
+// The plan-review no-egress test lived here until 2026-08-09. It was
+// EXTERNAL-DOMAIN hand-scoped to one file, and tests/skill-supply-chain.test.mjs
+// now runs that rule over every skill — including the two templates that had
+// been quietly fetching Google Fonts the whole time, which a one-file grep
+// could never have found. Retired rather than duplicated.
