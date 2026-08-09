@@ -4,12 +4,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>session report</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;700&display=swap"
-      rel="stylesheet"
-    />
+    <!-- No remote fonts: this report carries project names, costs, and
+         timestamps, and a webfont request tells its host the file was opened
+         and when. --mono falls back through JetBrains Mono to ui-monospace, so
+         this renders the same on any machine that has a dev font. -->
     <style>
       :root {
         /* Terminus UI — dark default */
