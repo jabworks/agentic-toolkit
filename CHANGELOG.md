@@ -12,6 +12,10 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## toolkit-ops 1.6.3 — 2026-08-09
+
+- docs(toolkit-ops): record the awesome-copilot survey, reopen A4 as a question (1.6.3)
+
 ## toolkit-ops 1.6.2 — 2026-08-06
 
 - feat(plugins): plugin homepages with a real source of truth (#36)
@@ -66,7 +70,7 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## docket 0.3.1 — 2026-08-06
 
-- chore(docket): version 0.3.1
+- feat(concord): installer verifies what it registers, doctor can repair it (0.4.0) (#39)
 
 ## docket 0.3.0 — 2026-08-06
 
@@ -90,7 +94,7 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## concord 0.4.0 — 2026-08-06
 
-- chore(concord): version 0.4.0
+- feat(concord): installer verifies what it registers, doctor can repair it (0.4.0) (#39)
 
 ## concord 0.3.1 — 2026-08-06
 
