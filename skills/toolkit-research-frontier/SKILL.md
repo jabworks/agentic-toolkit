@@ -60,6 +60,10 @@ stale precisely when the work it proposes gets done.
    overlap scoring cannot reproduce the observed (semantic) collisions — 5%
    recall vs the ≥80% criterion (`scripts/collision-scan.mjs --check` is the
    record). Detection stays empirical: periodic eval runs + the flaky list.
+   **Reopened as a question 2026-08-09**: that result falsifies *n-grams*, not
+   semantic detection, which the preregistration never covered — see
+   `references/awesome-copilot-survey-2026-08-09.md` §1 for an upstream design
+   (semantic compare + a durable human accept-list) and docket #10 for the work.
 5. ~~Hook parity on clones~~ — closed 2026-07-08 as a warning; **re-closed
    2026-08-05 as a hard failure**. Warn-only was defensible while the hook only
    synced `dist/` (CI caught drift regardless). It stopped being defensible when
@@ -99,6 +103,21 @@ C sync/publish automation, D docs staleness (all selected by the owner,
 2026-07-08; B–D substantially executed in the same audit), E contract adherence
 (added 2026-08-04 after the CP-1 menu-erosion miss — transcripts audited against
 what loaded skills *prescribe*, not just whether they fire).
+
+## External surveys
+
+How other public skill/plugin repos solve the same four problems (mirror
+integrity, registration, frontmatter parsing, collision detection). Read these
+before proposing machinery — prior art beats a fresh design, and the negative
+findings stop a re-investigation.
+
+- `references/awesome-copilot-survey-2026-08-09.md` — github/awesome-copilot
+  (MIT) and `@microsoft/vally` (MIT). Six findings, all tracked as docket
+  #10–#15: A4's falsification was lexical-only (#10), declared bundle
+  composition vs `sync.sh`'s hardcoded arms (#11), generated catalogs vs
+  asserted ones (#12), supply-chain lint on skill content (#13),
+  trajectory-based routing measurement (#14), three cheap validation checks
+  (#15). Includes what NOT to copy and what was checked and rejected.
 
 ## Evidence required
 
