@@ -4,3 +4,4 @@
 .concord/
 node_modules/
 .session-handoff/
+.session-report/
