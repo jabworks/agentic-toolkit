@@ -210,28 +210,4 @@ eval runs — what we do by hand across dated reports), `max-repeat` and
 
 Found 2026-08-09 surveying awesome-copilot's maintenance machinery.
 
-### 15. Three cheap skill-validation checks we do not have (2026-08-09)
-
-Small additions to `tests/skill-invariants.test.mjs`, each a few lines, all
-lifted from `eng/validate-skills.mjs` + `eng/constants.mjs` in
-`github/awesome-copilot` (MIT). Batch them into one pass.
-
-- **Description floor.** We enforce ceilings (description <= 500, frontmatter
-  total <= 1024) and no floor. Upstream uses
-  `SKILL_DESCRIPTION_MIN_LENGTH = 10`. A one-word description passes every check
-  we have today while being useless for routing — and routing quality is the
-  thing we measure hardest.
-- **Bundled asset size cap.** Upstream refuses any bundled asset over 5 MB. We
-  check no sizes at all, and docket ships a whole `server/` tree that the
-  marketplace has to carry.
-- **Asset directory allow-list.** Upstream only walks `references/`, `assets/`,
-  `scripts/` inside a skill. Our `references/` convention is documented in
-  `toolkit-skill-standards` but unenforced, so a stray directory ships silently
-  through the mirror.
-
-Not worth a workflow on their own; good filler alongside #13, which touches the
-same test surface.
-
-Found 2026-08-09 surveying awesome-copilot's maintenance machinery.
-
 ## Loose threads
