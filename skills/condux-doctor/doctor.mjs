@@ -24,6 +24,7 @@ const USAGE = `usage: doctor [options]
 
   --host <claude|codex|opencode>   probe one host only
   --quiet                          print only broken and absent rows
+  --fix                            run condux's installer, then re-probe
 `;
 
 function parseFlags(argv) {
@@ -62,7 +63,10 @@ function detectHosts() {
   const configHome = process.env.XDG_CONFIG_HOME || path.join(HOME, '.config');
   const dirs = {
     claude: path.join(HOME, '.claude'),
-    codex: path.join(HOME, '.codex'),
+    // CODEX_HOME is honoured by both sub-installers and by install.mjs. Without
+    // it here, the installer's verify beat would probe a different directory
+    // than the one it just wrote to, and report a pass for the wrong config.
+    codex: process.env.CODEX_HOME || path.join(HOME, '.codex'),
     opencode: path.join(configHome, 'opencode'),
   };
 
@@ -197,8 +201,56 @@ function probeClaude(hosts) {
   });
 }
 
+// Codex's hook support sits behind an experimental feature flag. A plugin
+// manifest can declare hooks; nothing in a plugin can enable them. With the
+// flag off, the manifest parses, every path resolves, and no hook fires — which
+// this doctor scored `done` until docket #9. It is the static-parse blind spot
+// the probe-depth decision names, applied to an input rather than to a path.
+//
+// The claim is narrow on purpose: the flag is set. Nothing on disk records
+// whether Codex has restarted since, and a running Codex does not re-read it.
+function probeCodexFeatureFlag(codexHome) {
+  const config = path.join(codexHome, 'config.toml');
+  const fix = `run condux's install.mjs, or add [features] hooks = true to ${config}`;
+
+  if (!fs.existsSync(config)) {
+    return { host: 'codex', status: 'broken', detail: 'no config.toml — the hooks feature is not enabled', fix };
+  }
+
+  let text = '';
+  try {
+    text = fs.readFileSync(config, 'utf8');
+  } catch (err) {
+    return { host: 'codex', status: 'broken', detail: `cannot read config.toml: ${err.message}`, fix };
+  }
+
+  const lines = text.split('\n');
+  const start = lines.findIndex((line) => /^\s*\[features\]\s*(#.*)?$/.test(line));
+  if (start === -1) {
+    return { host: 'codex', status: 'broken', detail: 'config.toml declares no [features] table — hooks cannot fire', fix };
+  }
+
+  let end = lines.length;
+  for (let i = start + 1; i < lines.length; i++) {
+    if (/^\s*\[/.test(lines[i])) {
+      end = i;
+      break;
+    }
+  }
+
+  const enabled = lines.slice(start + 1, end).some((line) => /^\s*hooks\s*=\s*true\s*(#.*)?$/.test(line));
+
+  return enabled
+    ? null
+    : { host: 'codex', status: 'broken', detail: 'features.hooks is not true — the manifest resolves but no hook fires', fix };
+}
+
 function probeCodex(hosts) {
   if (!hosts.codex) return { host: 'codex', status: 'absent', detail: 'no ~/.codex on this machine' };
+
+  // Runs first: with the flag off, how well the manifest parses is moot.
+  const flag = probeCodexFeatureFlag(hosts.codex);
+  if (flag) return flag;
 
   const row = probeHookManifest('codex', {
     file: 'codex-hooks.json',
@@ -391,6 +443,40 @@ function summarize(rows) {
   return `\n${verdict} — probes are static-parse plus execution; they cannot prove the host invoked anything.\n`;
 }
 
+// --fix performs no registration itself: it runs condux's installer and probes
+// again, so idempotency, backups and atomic writes stay in one place. The
+// installer's own verify beat calls this doctor back with --host <h> --quiet
+// and never --fix, so the two cannot ping-pong.
+function findInstaller() {
+  return firstExisting([
+    path.join(PLUGIN_ROOT, 'install.mjs'),
+    path.join(SKILL_BASE, '..', '..', 'plugins', 'condux', 'install.mjs'),
+  ]);
+}
+
+function runInstaller(only) {
+  const installer = findInstaller();
+  if (!installer) {
+    process.stdout.write('no install.mjs found beside this plugin — nothing to run for --fix\n\n');
+
+    return;
+  }
+
+  const args = [installer];
+  if (only) args.push('--host', only);
+
+  process.stdout.write(`running ${installer}${only ? ` --host ${only}` : ''}\n`);
+  const result = spawnSync(process.execPath, args, { timeout: 60000, encoding: 'utf8' });
+
+  // Report the delegate's failure rather than re-probing in silence: `running …`
+  // followed by nothing reads as a repair that happened.
+  if (result.error) process.stdout.write(`the installer could not be run: ${result.error.message}\n`);
+  else if (result.signal) process.stdout.write(`the installer was killed by ${result.signal}\n`);
+  else if (result.status !== 0) process.stdout.write(`the installer exited ${result.status}\n`);
+
+  process.stdout.write('\n');
+}
+
 function main(argv) {
   const flags = parseFlags(argv);
   if (flags.help) {
@@ -405,8 +491,12 @@ function main(argv) {
     return 2;
   }
 
-  const hosts = detectHosts();
   const only = typeof flags.host === 'string' ? flags.host : null;
+  if (flags.fix === true) runInstaller(only);
+
+  // Detected after the installer runs — it may have created a host directory
+  // that was not there when this process started.
+  const hosts = detectHosts();
   const perHost = [
     ['claude', () => probeClaude(hosts)],
     ['codex', () => probeCodex(hosts)],

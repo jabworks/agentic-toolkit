@@ -69,6 +69,15 @@ function host(fixture, name) {
   return dir;
 }
 
+// condux's Codex probe reads the experimental hooks flag before it reads the
+// manifest, because with the flag off no manifest can fire. A fixture that
+// wants to exercise the manifest probes has to enable it first.
+function enableCodexHooks(dir) {
+  fs.writeFileSync(path.join(dir, 'config.toml'), '[features]\nhooks = true\n');
+
+  return dir;
+}
+
 function runDoctor(fixture, args = []) {
   const res = spawnSync(process.execPath, [fixture.doctor, ...args], {
     encoding: 'utf8',
@@ -319,7 +328,7 @@ test('condux: both hook manifests run and emit their host wire format', () => {
   const fixture = conduxFixture();
   try {
     host(fixture, 'claude');
-    host(fixture, 'codex');
+    enableCodexHooks(host(fixture, 'codex'));
     const result = runDoctor(fixture);
 
     assert.equal(rowFor(result, 'claude').status, 'done');
@@ -370,7 +379,7 @@ test('condux: a resolvable SessionStart with a dangling Stop target still fails 
   const fixture = conduxFixture();
   try {
     host(fixture, 'claude');
-    host(fixture, 'codex');
+    enableCodexHooks(host(fixture, 'codex'));
     fs.rmSync(path.join(fixture.plugin, 'skills', 'condux', 'plan-review'), { recursive: true, force: true });
 
     const result = runDoctor(fixture);
@@ -444,6 +453,70 @@ test('condux: probes mutate nothing', () => {
     runDoctor(fixture);
 
     assert.equal(fingerprint(fixture.root), before, 'a condux run must be read-only');
+  } finally {
+    cleanup(fixture.root);
+  }
+});
+
+// The flag is what makes a Codex hook fire; the manifest only declares one.
+// Before this probe existed the row below read `done` — a green board for a
+// host where nothing could run.
+test('condux: a resolvable Codex manifest with features.hooks off is broken, not done', () => {
+  const fixture = conduxFixture();
+  try {
+    const codex = host(fixture, 'codex');
+
+    const noConfig = runDoctor(fixture, ['--host', 'codex']);
+    assert.equal(rowFor(noConfig, 'codex').status, 'broken');
+    assert.match(rowFor(noConfig, 'codex').detail, /hooks feature is not enabled/);
+    assert.equal(noConfig.status, 1);
+
+    fs.writeFileSync(path.join(codex, 'config.toml'), '[features]\nhooks = false\n');
+    const disabled = runDoctor(fixture, ['--host', 'codex']);
+    assert.equal(rowFor(disabled, 'codex').status, 'broken');
+    assert.match(rowFor(disabled, 'codex').detail, /no hook fires/);
+
+    fs.writeFileSync(path.join(codex, 'config.toml'), '[other]\nx = 1\n');
+    const noTable = runDoctor(fixture, ['--host', 'codex']);
+    assert.match(rowFor(noTable, 'codex').detail, /no \[features\] table/);
+
+    enableCodexHooks(codex);
+    const enabled = runDoctor(fixture, ['--host', 'codex']);
+    assert.equal(rowFor(enabled, 'codex').status, 'done', 'with the flag on, the manifest probes run');
+  } finally {
+    cleanup(fixture.root);
+  }
+});
+
+test('condux: --fix runs the installer and re-probes', () => {
+  const fixture = conduxFixture();
+  try {
+    const codex = host(fixture, 'codex');
+    fs.copyFileSync(path.join(REPO_ROOT, 'plugins', 'condux', 'install.mjs'), path.join(fixture.plugin, 'install.mjs'));
+
+    const before = runDoctor(fixture, ['--host', 'codex']);
+    assert.equal(rowFor(before, 'codex').status, 'broken');
+
+    const after = runDoctor(fixture, ['--host', 'codex', '--fix']);
+    assert.match(after.stdout, /running .*install\.mjs/);
+    assert.equal(rowFor(after, 'codex').status, 'done', '--fix must repair, not just print');
+    assert.equal(after.status, 0);
+    assert.match(fs.readFileSync(path.join(codex, 'config.toml'), 'utf8'), /hooks = true/);
+  } finally {
+    cleanup(fixture.root);
+  }
+});
+
+// A doctor that cannot repair must say so rather than implying it tried.
+test('condux: --fix with no installer beside the plugin says so and changes nothing', () => {
+  const fixture = conduxFixture();
+  try {
+    const codex = host(fixture, 'codex');
+    const result = runDoctor(fixture, ['--host', 'codex', '--fix']);
+
+    assert.match(result.stdout, /no install\.mjs found/);
+    assert.equal(rowFor(result, 'codex').status, 'broken');
+    assert.equal(fs.existsSync(path.join(codex, 'config.toml')), false, 'nothing may be written');
   } finally {
     cleanup(fixture.root);
   }

@@ -1,9 +1,9 @@
 # Plugin doctor — Tech Spec
 
-**Last updated:** 2026-08-06
-**Commit:** 32c11d2 (design stage — pre-implementation)
+**Last updated:** 2026-08-10
+**Commit:** 9617664 + the condux front door (docket #9), implemented
 **Status:** draft
-**Docket item:** #1
+**Docket item:** #1, extended by #9
 
 A per-plugin health check for the three plugins with machinery beyond skill
 files — condux, concord, docket. Each ships its own `doctor.mjs` and a doctor
@@ -23,6 +23,26 @@ step, and the second toolkit-wide convention after ease-of-install.
 
 ## Changelog
 
+- 2026-08-10 (docket #9, implemented): two things changed against the design as
+  written. `doctor.mjs` now honours `$CODEX_HOME` — it did not, while both
+  sub-installers and the new installer do, so the installer's verify beat would
+  have probed a different directory than the one it had just written to and
+  reported a pass for the wrong config. And `--uninstall` deliberately leaves
+  `features.hooks` set, because concord and plan-review ride the same flag;
+  clearing it on condux's way out would break them. condux 2.12.0, suite
+  215 → 223.
+- 2026-08-10 (docket #9, design stage): condux gains a plugin-level front door
+  (`plugins/condux/INSTALL.md` + `install.mjs`) and its doctor gains `--fix`,
+  so all three plugins can now repair as well as diagnose (api, decisions).
+  The front door **wraps** the two installers already living inside
+  `plan-review` and `subagent-execution` rather than absorbing them — forced
+  by channel topology, since `plugins/` never reaches the `npx skills add`
+  tree (decisions, quirks). Two corrections surfaced while designing it: the
+  docket entry's host table was stale (the Codex Stop hook ships in the plugin
+  manifest, so its script matters only on npx), and the Codex `features.hooks`
+  flag was an unprobed input — with it off, the manifest resolves, no hook
+  fires, and the doctor scored the row `done`. A flag probe is folded into the
+  same item (api, decisions, quirks).
 - 2026-08-06 (docket #8): concord gained an installer, so `--fix` is no longer
   docket-only — its doctor delegates to
   `skills/remember/references/install-codex-hook.sh` (api, decisions). The

@@ -39,6 +39,20 @@ which bundles these skills and self-registers them on `config.skills.paths`:
 }
 ```
 
+**Codex needs two more things**, and no plugin can do either for you: Codex's
+experimental hooks feature has to be enabled, and the four specialist agents are
+standalone TOMLs because the Codex plugin format has no `agents/` component.
+
+```bash
+node install.mjs                 # detect, register, verify, report
+node install.mjs --dry-run       # see what it would change first
+```
+
+[`INSTALL.md`](INSTALL.md) is the same procedure by hand, and covers what
+differs between a plugin install and `npx skills add`. To check an existing
+install rather than change it, run `/condux:condux-doctor` — or
+`node install.mjs --uninstall` to reverse it.
+
 ---
 
 ## The 14 skills

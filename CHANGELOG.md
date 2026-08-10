@@ -12,17 +12,21 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## condux 2.12.0 — 2026-08-10
+
+- chore(condux): version 2.12.0
+
 ## toolkit-ops 1.6.3 — 2026-08-09
 
 - docs(toolkit-ops): survey awesome-copilot's maintenance machinery, reopen A4 as a question (1.6.3) (#40)
 
 ## session-report 1.6.4 — 2026-08-09
 
-- feat(tests): supply-chain lint over every skill, and two templates stop phoning home
+- feat(tests): supply-chain lint over every skill, and two templates stop phoning home (#41)
 
 ## session-handoff 1.6.7 — 2026-08-09
 
-- feat(tests): supply-chain lint over every skill, and two templates stop phoning home
+- feat(tests): supply-chain lint over every skill, and two templates stop phoning home (#41)
 
 ## toolkit-ops 1.6.2 — 2026-08-06
 

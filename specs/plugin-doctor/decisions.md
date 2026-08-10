@@ -95,8 +95,10 @@ Every broken probe prints the exact fix — command or file edit. `--fix`
 actually performs it only where an installer already provides the idempotency
 and backup guarantees a repair needs. docket had one from the start; concord
 gained one in docket #8, and its doctor's `--fix` runs
-`skills/remember/references/install-codex-hook.sh`. condux still only prints
-its fix, and gains `--fix` when docket #9 gives it a front door.
+`skills/remember/references/install-codex-hook.sh`. condux gained its front
+door in docket #9, and its `--fix` delegates to that installer — which in turn
+composes the two scripts that already lived inside `plan-review` and
+`subagent-execution` (see *condux's front door wraps, it does not absorb*).
 
 Rejected: writing ad-hoc repair logic into the doctors now. That would
 duplicate the installer contract in a second place and diverge from it.
@@ -123,9 +125,56 @@ No `--json`: the consumer is an agent reading a skill's shell output, which
 parses columns fine. Adding a second output contract doubles the surface for
 no current reader.
 
+## condux's front door wraps, it does not absorb (docket #9)
+
+condux's installer composes the two scripts that already exist —
+`plan-review/references/install-codex-hook.sh` and
+`subagent-execution/references/install-codex-agents.mjs` — leaving both where
+they are. It resolves them plugin-root-first with a source-tree fallback, the
+`firstExisting` pattern the doctor already uses.
+
+The decision is forced by channel topology, not preference. Three
+distribution channels read three different trees: `npx skills add` installs
+from top-level `skills/`, while `plugins/condux/` reaches the marketplace
+alone. Absorbing the two scripts into a plugin-level installer would delete
+them from the npx channel — the one channel where they are the *sole*
+mechanism, since no plugin manifest exists there to register anything.
+
+Rejected:
+
+- **Absorb** both scripts into the new installer. Self-contained, no two-hop
+  resolution, and it breaks npx installs outright.
+- **Document only** — an `INSTALL.md` naming the two scripts, no new script.
+  That pushes orchestration of two foreign skill trees into `--fix`, which is
+  the wrapper's job written in a worse place, and this spec already forbids
+  registration logic inside a doctor.
+
+A consequence worth stating: the docket entry's own host table was stale when
+this was designed. It assigned the Codex Stop hook to
+`install-codex-hook.sh`, but that hook ships in the plugin manifest
+(`hooks/codex-hooks.json` declares `SessionStart` and `Stop`), so the script
+is redundant for a plugin install and load-bearing only on npx.
+
+## The Codex hooks feature flag is a probe, not just an install step
+
+`condux-doctor` gained a `features.hooks` probe in the same item. Nothing in
+the condux plugin enables Codex's experimental `features.hooks = true` — only
+the installers do — so a plugin install with the flag off has a manifest that
+resolves and two hooks that never fire, which the doctor scored `done`.
+
+A manifest resolving is not a hook firing. This is the same class the
+probe-depth decision above already commits to (static parse is the check that
+passes while a hook is silently broken); the flag was simply an unprobed input
+to it.
+
+Folded into #9 rather than split, because it is the same Codex registration
+surface the item already opens and a knowingly false-green row costs more than
+the gap #9 was opened for.
+
 ## Out of scope
 
-Repair for condux and concord (docket #5) · uninstall verification
-(docket #2) · any network version check · proving the host actually invoked
-a hook (see quirks.md) · doctors for the skill-only plugins, which have no
-registrations to probe.
+Uninstall verification and `UNINSTALL.md` as a cross-plugin convention
+(docket #2 — condux's installer carries an `--uninstall` flag for concord
+parity, which is not the same thing) · any network version check · proving the
+host actually invoked a hook (see quirks.md) · doctors for the skill-only
+plugins, which have no registrations to probe.
