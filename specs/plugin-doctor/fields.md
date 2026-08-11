@@ -10,6 +10,7 @@ What each probe reads, what it executes, and what maps to which status.
 | codex | `hooks/codex-hooks.json` | `node hooks/session-start.mjs --codex` | JSON parses, both hook entries present, script emits Codex's wire format, `annotate-server.js` resolves on disk | either hook path unresolvable, wrong root variable, script errors |
 | opencode | `opencode.json`, a local copy of `@jabworks/condux` if present | `node --check` on the package entry point — the `config` hook is never invoked | registered in the plugin array, and any local copy ships its `agents/` and `skills/` and parses | a local copy missing either bundled directory, or an entry point that does not parse. Registered with no local copy is `absent`: OpenCode fetches at startup |
 | all | `plugin.json`, `installed_plugins.json`, marketplace clone | — | installed version ≥ marketplace version | installed version older than marketplace |
+| conflicts | `conflicts.json`, `installed_plugins.json`, `config.toml` `[plugins."…"]` headers, the four skills directories | — | no registry entry matches anything on the machine | never — a match is `warn`, an unreadable registry is `skipped`. A skill counts only if its directory entry resolves: these trees are largely symlinks into a shared one, and a dangling link is not something a host can load |
 
 ## concord (`concord-doctor`)
 

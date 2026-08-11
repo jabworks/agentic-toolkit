@@ -1,0 +1,52 @@
+{
+  "note": "Known-conflicting skill libraries, as data. Both plugins/condux/install.mjs and doctor.mjs read this one file — adding an entry is a data edit, not a code edit in two places. Detection is name matching against what is already on disk: no network, no semantic comparison (that is docket #10, an open research question). Every entry must be verified against an installed copy before it ships; a wrong skill name in a shipped warning is worse than no warning.",
+  "conflicts": [
+    {
+      "id": "superpowers",
+      "title": "superpowers",
+      "author": "obra (Jesse Vincent)",
+      "homepage": "https://github.com/obra/superpowers",
+      "verified": "6.2.0, read from an installed copy on 2026-08-11",
+      "relationship": "condux reworks its skill-orchestration ideas around proportional effort — tiered routing, lazy loading, soft gates — rather than always-on maximalism. The debt is real and credited; the consequence is that the two are near-complete functional twins.",
+      "impact": "Both ship a SessionStart hook on the same matcher (startup|clear|compact), and each injects a router telling the agent every dev task starts with it. Whichever is read last wins, per session, unpredictably. 11 of superpowers' 14 skills also overlap 8 of condux's 14, so the agent picks between two competing contracts at every step of a task.",
+      "recommendation": "Run one or the other. They are not layered libraries — they are two answers to the same question.",
+      "detect": {
+        "plugin": "superpowers",
+        "minSkills": 2,
+        "skills": [
+          "brainstorming",
+          "dispatching-parallel-agents",
+          "executing-plans",
+          "finishing-a-development-branch",
+          "receiving-code-review",
+          "requesting-code-review",
+          "subagent-driven-development",
+          "systematic-debugging",
+          "test-driven-development",
+          "using-git-worktrees",
+          "using-superpowers",
+          "verification-before-completion",
+          "writing-plans",
+          "writing-skills"
+        ]
+      },
+      "overlaps": [
+        { "theirs": "using-superpowers", "ours": "workflow", "both": "the entry-point router — each injected at SessionStart" },
+        { "theirs": "brainstorming", "ours": "discovery", "both": "rough idea to signed-off design" },
+        { "theirs": "writing-plans", "ours": "draft-plan", "both": "design to plan document" },
+        { "theirs": "executing-plans", "ours": "subagent-execution", "both": "working through a plan task by task" },
+        { "theirs": "subagent-driven-development", "ours": "subagent-execution", "both": "delegating implementation to agents" },
+        { "theirs": "dispatching-parallel-agents", "ours": "subagent-deployment", "both": "fanning out independent tasks" },
+        { "theirs": "test-driven-development", "ours": "test-first-development", "both": "tests before implementation" },
+        { "theirs": "systematic-debugging", "ours": "root-cause-analysis", "both": "root-cause-first investigation" },
+        { "theirs": "verification-before-completion", "ours": "preflight", "both": "the am-I-actually-done checklist" },
+        { "theirs": "requesting-code-review", "ours": "code-review", "both": "review of the implemented diff" },
+        { "theirs": "receiving-code-review", "ours": "code-review", "both": "acting on review findings" }
+      ],
+      "remedy": {
+        "plugin": "/plugin uninstall {key}",
+        "skills": "remove the overlapping directories under {dir}, or uninstall the library that installed them"
+      }
+    }
+  ]
+}

@@ -12,9 +12,13 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
-## condux 2.12.0 — 2026-08-10
+## condux 2.13.0 — 2026-08-11
 
-- chore(condux): version 2.12.0
+- feat(condux): warn when a competing skill library is installed (2.13.0)
+
+## condux 2.12.0 — 2026-08-11
+
+- feat(condux): an install front door that wraps its scattered installers (2.12.0) (#46)
 
 ## toolkit-ops 1.6.3 — 2026-08-09
 

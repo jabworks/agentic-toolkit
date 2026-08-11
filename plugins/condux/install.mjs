@@ -27,7 +27,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const PLUGIN_ROOT = path.dirname(fileURLToPath(import.meta.url));
 const HOME = os.homedir();
@@ -83,6 +83,21 @@ function findSibling(...segments) {
 const AGENT_INSTALLER = findSibling('subagent-execution', 'references', 'install-codex-agents.mjs');
 const HOOK_INSTALLER = findSibling('plan-review', 'references', 'install-codex-hook.sh');
 const DOCTOR = findSibling('condux-doctor', 'doctor.mjs');
+const CONFLICT_REGISTRY = findSibling('condux-doctor', 'conflicts.json');
+const CONFLICT_MODULE = findSibling('condux-doctor', 'conflicts.mjs');
+
+// The registry and the code that reads it are the doctor's, borrowed rather
+// than copied. Two installers of the same warning drift, and the table naming
+// another project's skills is exactly the thing that must not go stale in one
+// of two places.
+let conflicts = null;
+if (CONFLICT_MODULE) {
+  try {
+    conflicts = await import(pathToFileURL(CONFLICT_MODULE).href);
+  } catch {
+    conflicts = null;
+  }
+}
 
 function detectHosts() {
   const configHome = process.env.XDG_CONFIG_HOME || path.join(HOME, '.config');
@@ -365,12 +380,26 @@ function main(argv) {
     }
   }
 
+  // Read-only, so it runs under --dry-run too, and unlike the doctor it runs
+  // under --host as well: this is the front door, and installing next to a
+  // library that competes for the same routing is worth saying at the moment
+  // of installation rather than only on a later full probe. Never on the way
+  // out — what else is installed stops being condux's business there.
+  if (!remove) {
+    rows.push(
+      conflicts
+        ? { host: 'conflicts', ...conflicts.probe(CONFLICT_REGISTRY, hosts, HOME) }
+        : { host: 'conflicts', status: 'skipped', detail: 'conflicts.mjs is not reachable from this installer' },
+    );
+  }
+
   report(rows);
 
   const broken = rows.filter((row) => row.status === 'broken').length;
+  const warned = rows.filter((row) => row.status === 'warn').length;
   const verdict = remove
     ? 'condux is unregistered where this installer could reverse it'
-    : 'condux is registered on every host present';
+    : `condux is registered on every host present${warned > 0 ? `, with ${warned} warning(s) above` : ''}`;
   process.stdout.write(
     broken === 0 ? `\n${verdict}${dry ? ' (dry run — nothing was written)' : ''}.\n` : `\n${broken} step(s) failed.\n`,
   );

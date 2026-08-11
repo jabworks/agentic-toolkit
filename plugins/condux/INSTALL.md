@@ -31,6 +31,9 @@ install story wrong for as long as it was undocumented.
   - `$PLUGIN_ROOT/skills/condux/subagent-execution/references/install-codex-agents.mjs`
   - `$PLUGIN_ROOT/skills/condux/plan-review/references/install-codex-hook.sh`
   - `$PLUGIN_ROOT/skills/condux/condux-doctor/doctor.mjs`
+  - `$PLUGIN_ROOT/skills/condux/condux-doctor/conflicts.json` and
+    `conflicts.mjs` — the known-conflicts registry and its reader, shared with
+    the doctor so the same warning is not written twice (step 5)
 - Check `node` exists and record its **absolute path**. Codex Desktop does not
   inherit `PATH`, so a bare `node` in a hook command fails there.
 - `CODEX_HOME` = `$CODEX_HOME` if set, else `~/.codex`.
@@ -124,7 +127,36 @@ The package bundles the condux agents and the 13 condux skills and
 self-registers them through its `config` hook, so this one key is the whole
 OpenCode install.
 
-## 5. Verify
+## 5. Check for a competing skill library
+
+condux is not the only library that routes dev work, and the closest one is
+the one it learned from. Read the registry —
+`skills/condux/condux-doctor/conflicts.json` in a plugin install,
+`skills/condux-doctor/conflicts.json` in the source tree — and match each
+entry's `detect` block against what is already on this machine. Name matching
+only; nothing here reaches the network or compares skills by meaning.
+
+Two surfaces, because a machine can carry the conflict either way:
+
+| Surface | Where | Match |
+|---|---|---|
+| Installed plugin | `~/.claude/plugins/installed_plugins.json` keys · `$CODEX_HOME/config.toml` `[plugins."<name>@<marketplace>"]` headers | the part before `@` equals `detect.plugin` |
+| Loose skills | `~/.claude/skills` · `~/.agents/skills` · `$CODEX_HOME/skills` · `${XDG_CONFIG_HOME:-~/.config}/opencode/skills` | at least `detect.minSkills` (default 2) directory names in `detect.skills` |
+
+Read the registration files, not `plugins/cache/` — a cache directory outlives
+the install that created it. Deduplicate the loose skills on their resolved
+path: `~/.claude/skills/<name>` is routinely a symlink into
+`~/.agents/skills/<name>`, and that is one skill, not two.
+
+Report `warn` on a hit and `done` on a clean machine. **Never `broken`** —
+condux installed correctly, and the exit code must not say otherwise.
+
+**Report the removal command; do not run it.** This installer's contract is to
+reverse what *it* registered. Another library's registration is not that, and
+uninstalling a plugin the user chose is not a step an installer takes on its
+own initiative.
+
+## 6. Verify
 
 Do not report success on the strength of having written a file. Run the doctor,
 which already implements every probe:
@@ -139,7 +171,7 @@ passing it back down is the cycle that convention forbids.
 Exit 0 → the registration resolves. Non-zero → report `broken` and carry the
 doctor's last line as the detail.
 
-## 6. Report
+## 7. Report
 
 One row per host, `host status detail`, columns at widths 10 and 8, with any
 fix on an indented continuation line:
@@ -148,6 +180,8 @@ fix on an indented continuation line:
 claude     skipped  the plugin manifest registers the SessionStart hook — nothing to do
 codex      done     set [features] hooks = true — restart Codex for it to take effect
 opencode   done     added @jabworks/condux to opencode.json
+conflicts  warn     superpowers — installed as superpowers@claude-plugins-official on claude; 11 skills overlap condux
+                    ↳ /plugin uninstall superpowers@claude-plugins-official — or … (run one library or the other; condux does not remove it for you)
 ```
 
 | Status | Meaning |
@@ -156,13 +190,16 @@ opencode   done     added @jabworks/condux to opencode.json
 | `broken` | A step failed, or verify still reports a problem |
 | `absent` | The host is not on this machine |
 | `skipped` | Present, and deliberately needs nothing here |
+| `warn` | Registered fine, but something on this machine competes with it |
 
-Exit 0 when nothing is `broken`, 1 otherwise. A sub-installer that fails is
+Exit 0 when nothing is `broken`, 1 otherwise. `warn` does not move the exit
+code — the install did succeed, and a conflict the user may well have chosen
+on purpose is not a failed step. A sub-installer that fails is
 reported as failed — could not be run, killed by a signal, or a non-zero exit —
 before verify runs. `running …` followed by silence reads as a repair that
 happened.
 
-## 7. After
+## 8. After
 
 - **Restart Codex** (and Codex Desktop if used). The feature flag is read at
   startup; writing it is not the same as hooks being live, and nothing on disk

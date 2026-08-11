@@ -239,4 +239,53 @@ machinery question underneath it. Do not design them apart.
 
 Found 2026-08-11 shipping #9.
 
+### 19. INSTALL.md is buried for docket and concord, at the plugin root only for condux (2026-08-11)
+
+Found 2026-08-11 while fixing the same problem one level up: the root README
+had `## Install` at line 225 of 411, behind the whole skills catalog. Moved to
+line 10. The per-plugin equivalent is still wrong for two of three plugins.
+
+| Plugin | Where its INSTALL.md sits | What a user sees on landing |
+|---|---|---|
+| condux | `dist/plugins/condux/INSTALL.md` | plugin root — found |
+| docket | `dist/plugins/docket/skills/docket/record/server/INSTALL.md` | four levels down, inside a skill |
+| concord | `dist/plugins/concord/skills/concord/remember/references/INSTALL.md` | four levels down, inside a skill |
+
+This is #9's fix that never generalised. That item gave condux a plugin-level
+front door precisely because its installers were "buried inside skills where no
+user would find them" — and closed without touching the two plugins whose
+installers are still buried inside skills.
+
+Both are also `README.md`-adjacent in the wrong direction: `plugins/docket/` and
+`plugins/concord/` each hold a README (the plugin homepage, guarded by
+`plugin-files.test.mjs`) and no INSTALL.md, so the homepage is at the plugin
+root and the install procedure is not.
+
+#### Decide before writing anything
+
+The mirroring machinery already exists — `sync_plugin_files` copies every file
+in `plugins/<name>/` to `dist/plugins/<name>/`, so a plugin-level INSTALL.md
+needs no new sync step. The open question is what goes in it, and there are
+three shapes with different costs:
+
+1. **Move.** Relocate each INSTALL.md to `plugins/<name>/`. Cheapest, but
+   repeats #9's rejected branch — `plugins/` never reaches the `npx skills add`
+   tree, and for concord that document is the install story for the one channel
+   where its script is the sole mechanism. Verify before choosing: does
+   anything resolve paths relative to the INSTALL.md's own location?
+2. **Wrap**, as #9 did for condux — a plugin-level INSTALL.md that points at
+   the deep one and carries the host table. Costs a second document per plugin
+   and a way to keep the two honest.
+3. **Generate.** Build the plugin-level copy from the deep one at sync time,
+   the way `dist/opencode/` is built. No drift by construction, and #12-shaped
+   (generate rather than test), but the only option that adds a build step.
+
+Related but distinct: #2 is the *removal* half of the same convention and #17
+is condux's own `--uninstall` gap. Whatever shape wins here is the one
+UNINSTALL.md should adopt, so decide this one first.
+
+Not urgent — docket and concord both install fine and their INSTALL.md files
+are correct where they sit. This is discoverability, which is the whole premise
+of the ease-of-install convention.
+
 ## Loose threads

@@ -7,6 +7,155 @@
 
 Personal collection of agentic coding skills. Compatible with Claude Code, Codex, OpenCode, Cursor, Gemini CLI, and [40+ other tools](https://github.com/vercel-labs/skills) via `npx skills add`.
 
+## Install
+
+`npx skills add` auto-detects the running agent and installs to the right directory:
+
+```bash
+npx skills add jabworks/agentic-toolkit
+```
+
+This works inside Claude Code, Codex, OpenCode, Cursor, and most other agentic tools — no flags needed.
+
+### Ask an agent to install it
+
+The marketplace install is only half the job for `condux`, `docket` and `concord` — each finishes with a host-specific step no marketplace can perform. Every one of them ships an `INSTALL.md` written to be followed by an agent, so the shortest path is to hand the whole thing to the agent you already have open. Paste this:
+
+```text
+Install plugins from the jabworks/agentic-toolkit marketplace on this machine.
+
+1. Detect the host you are running in — Claude Code (~/.claude), Codex
+   ($CODEX_HOME or ~/.codex), or OpenCode (~/.config/opencode).
+
+2. Add the marketplace and install the plugins I named. If I did not name any,
+   ask me first — do not install all of them.
+     Claude Code   /plugin marketplace add jabworks/agentic-toolkit
+                   /plugin install <plugin>@jabworks-agentic-toolkit
+     Codex         codex plugin marketplace add jabworks/agentic-toolkit
+                   codex plugin add <plugin>@jabworks-agentic-toolkit
+     OpenCode      add "@jabworks/condux" to the plugin array in opencode.json
+
+3. Three plugins need a step the marketplace cannot do. Read the INSTALL.md
+   next to each one you installed, then run its installer:
+     condux    <plugin-root>/install.mjs
+     docket    <plugin-root>/skills/docket/record/server/install.sh
+     concord   <plugin-root>/skills/concord/remember/references/install-codex-hook.sh
+   Show me the --dry-run plan before writing anything.
+
+4. Verify rather than assume — run the doctor for each plugin and show me the
+   report as it printed:
+     /condux:condux-doctor    /docket:docket-doctor    /concord:concord-doctor
+
+5. Report one row per host: what you changed, what was already correct, and
+   what any doctor flagged. If one warns that another installed skill library
+   conflicts, show me its removal command but do not remove anything.
+```
+
+Every step is safe to re-run, and each installer is read-modify-write on one key — none of them rewrites config another plugin owns.
+
+### Compatibility with other skill libraries
+
+**`condux` conflicts with [obra/superpowers](https://github.com/obra/superpowers)** — the library it reworks. Both register a `SessionStart` hook on the same matcher, each injecting a router claiming every dev task, and 11 of superpowers' 14 skills overlap 8 of condux's. Run one or the other. `install.mjs` and `/condux:condux-doctor` both detect it and print the removal command without running it; the overlap table and reasoning are in [the condux README](plugins/condux/README.md#compatibility), and the registry driving the check is [`skills/condux-doctor/conflicts.json`](skills/condux-doctor/conflicts.json).
+
+No other conflict is currently detected. The rest of the toolkit's skills — git, release, spec, session — occupy their own ground.
+
+### Claude Code — plugin marketplace
+
+Alternatively, register as a plugin marketplace to install individual skills:
+
+> Via CLI:
+
+```bash
+claude plugin marketplace add jabworks/agentic-toolkit
+claude plugin install session-handoff@jabworks-agentic-toolkit # claude plugin install session-handoff
+claude plugin install toolkit-ops@jabworks-agentic-toolkit # claude plugin install toolkit-ops
+```
+
+> Via Claude Code CLI:
+
+```bash
+/plugin marketplace add jabworks/agentic-toolkit
+/plugin install session-handoff@jabworks-agentic-toolkit # /plugin install session-handoff
+/plugin install toolkit-ops@jabworks-agentic-toolkit # /plugin install toolkit-ops
+```
+
+> Via Claude Code CLI plugin menu:
+
+```bash
+/plugin
+-> Marketplaces tab -> Add Marketplace -> jabworks/agentic-toolkit
+-> Discover tab -> Search plugin name
+```
+
+### Codex — plugin manifests
+
+This repo is also Codex plugin compatible:
+
+> Via CLI:
+
+```bash
+codex plugin marketplace add jabworks/agentic-toolkit
+codex plugin add session-handoff@jabworks-agentic-toolkit
+codex plugin add toolkit-ops@jabworks-agentic-toolkit
+```
+
+> Via Codex CLI plugins menu:
+
+```bash
+/plugins
+-> Add Marketplace -> jabworks/agentic-toolkit
+-> Select jabworks/agentic-toolkit tab to add plugins
+```
+
+### OpenCode — condux plugin + merged-trigger skill variants
+
+For the **condux** workflow, one plugin line is the whole install. The
+[`@jabworks/condux`](packages/condux-opencode/) plugin bundles the 13 condux
+skills, injects the specialist agents (coder / explorer / planner / researcher),
+and wires an opt-in plan-review listener:
+
+```jsonc
+// opencode.json
+{
+  "plugin": ["@jabworks/condux"]
+}
+```
+
+The bundled skills register themselves on `config.skills.paths`, so no separate
+skills install is needed for condux.
+
+For the **rest** of the toolkit skills (git-commit, session-handoff, release,
+spec-browser, coding-directive, …), install the OpenCode-facing variants. These
+fold each skill's `when_to_use` trigger conditions into its `description` —
+OpenCode surfaces only `description` when deciding which skill to load, so the
+plain `skills/` tree would lose them:
+
+```bash
+npx skills add https://github.com/jabworks/agentic-toolkit/tree/main/dist/opencode/skills -a opencode
+```
+
+This copies skills into `~/.config/opencode/skills/`. It also includes the
+condux skills, but the plugin already provides those — OpenCode dedupes by name,
+so installing both is harmless.
+
+### Manual fallback
+
+If running outside an agent environment, clone and copy to your tool's skills directory:
+
+| Tool        | Skills directory             |
+| ----------- | ---------------------------- |
+| Claude Code | `~/.claude/skills/`          |
+| Codex       | `~/.codex/skills/`           |
+| OpenCode    | `~/.config/opencode/skills/` |
+| Cursor      | `~/.cursor/skills/`          |
+| Gemini CLI  | `~/.gemini/skills/`          |
+| Most others | `.agents/skills/`            |
+
+```bash
+git clone https://github.com/jabworks/agentic-toolkit /tmp/agentic-toolkit
+cp -r /tmp/agentic-toolkit/skills/<name> <skills-directory>/
+```
+
 ## Skills
 
 | Skill                                        | Description                                                                                           |
@@ -220,112 +369,7 @@ no-egress guarantees) are separately enforced by `node --test` in CI.
 
 The **plan-review** skill is inspired by [Plannotator](https://github.com/backnotprop/plannotator) — its interactive plan-review workflow served as the design reference. plan-review is an independent in-house reimplementation with no shared code and no third-party runtime dependency.
 
-## Install
-
-`npx skills add` auto-detects the running agent and installs to the right directory:
-
-```bash
-npx skills add jabworks/agentic-toolkit
-```
-
-This works inside Claude Code, Codex, OpenCode, Cursor, and most other agentic tools — no flags needed.
-
-### Claude Code — plugin marketplace
-
-Alternatively, register as a plugin marketplace to install individual skills:
-
-> Via CLI:
-
-```bash
-claude plugin marketplace add jabworks/agentic-toolkit
-claude plugin install session-handoff@jabworks-agentic-toolkit # claude plugin install session-handoff
-claude plugin install toolkit-ops@jabworks-agentic-toolkit # claude plugin install toolkit-ops
-```
-
-> Via Claude Code CLI:
-
-```bash
-/plugin marketplace add jabworks/agentic-toolkit
-/plugin install session-handoff@jabworks-agentic-toolkit # /plugin install session-handoff
-/plugin install toolkit-ops@jabworks-agentic-toolkit # /plugin install toolkit-ops
-```
-
-> Via Claude Code CLI plugin menu:
-
-```bash
-/plugin
--> Marketplaces tab -> Add Marketplace -> jabworks/agentic-toolkit
--> Discover tab -> Search plugin name
-```
-
-### Codex — plugin manifests
-
-This repo is also Codex plugin compatible:
-
-> Via CLI:
-
-```bash
-codex plugin marketplace add jabworks/agentic-toolkit
-codex plugin add session-handoff@jabworks-agentic-toolkit
-codex plugin add toolkit-ops@jabworks-agentic-toolkit
-```
-
-> Via Codex CLI plugins menu:
-
-```bash
-/plugins
--> Add Marketplace -> jabworks/agentic-toolkit
--> Select jabworks/agentic-toolkit tab to add plugins
-```
-
-### OpenCode — condux plugin + merged-trigger skill variants
-
-For the **condux** workflow, one plugin line is the whole install. The
-[`@jabworks/condux`](packages/condux-opencode/) plugin bundles the 13 condux
-skills, injects the specialist agents (coder / explorer / planner / researcher),
-and wires an opt-in plan-review listener:
-
-```jsonc
-// opencode.json
-{
-  "plugin": ["@jabworks/condux"]
-}
-```
-
-The bundled skills register themselves on `config.skills.paths`, so no separate
-skills install is needed for condux.
-
-For the **rest** of the toolkit skills (git-commit, session-handoff, release,
-spec-browser, coding-directive, …), install the OpenCode-facing variants. These
-fold each skill's `when_to_use` trigger conditions into its `description` —
-OpenCode surfaces only `description` when deciding which skill to load, so the
-plain `skills/` tree would lose them:
-
-```bash
-npx skills add https://github.com/jabworks/agentic-toolkit/tree/main/dist/opencode/skills -a opencode
-```
-
-This copies skills into `~/.config/opencode/skills/`. It also includes the
-condux skills, but the plugin already provides those — OpenCode dedupes by name,
-so installing both is harmless.
-
-### Manual fallback
-
-If running outside an agent environment, clone and copy to your tool's skills directory:
-
-| Tool        | Skills directory             |
-| ----------- | ---------------------------- |
-| Claude Code | `~/.claude/skills/`          |
-| Codex       | `~/.codex/skills/`           |
-| OpenCode    | `~/.config/opencode/skills/` |
-| Cursor      | `~/.cursor/skills/`          |
-| Gemini CLI  | `~/.gemini/skills/`          |
-| Most others | `.agents/skills/`            |
-
-```bash
-git clone https://github.com/jabworks/agentic-toolkit /tmp/agentic-toolkit
-cp -r /tmp/agentic-toolkit/skills/<name> <skills-directory>/
-```
+**condux** reworks [obra/superpowers](https://github.com/obra/superpowers)' skill-orchestration ideas around proportional effort. Reworking a library that thoroughly makes the two direct alternatives rather than companions — see [Compatibility](#compatibility-with-other-skill-libraries) before installing both.
 
 ## Structure
 
