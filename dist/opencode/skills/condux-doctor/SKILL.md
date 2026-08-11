@@ -1,6 +1,6 @@
 ---
 name: condux-doctor
-description: "Health check for the condux plugin on the host it is installed on. Runs the SessionStart routing hook on both hosts and checks each one's wire format, confirms Codex's hooks feature flag is enabled and plan-review's Stop hook resolves, checks the OpenCode npm registration and its bundled agents and skills, verifies the four specialist agent definitions shipped, and compares the installed version against the local marketplace clone. Offline; read-only unless --fix. Checking whether condux itself works on this machine: is condux working, the routing rule stopped appearing, /workflow is not being reached, did the SessionStart hook fire, check my condux install, the specialist agents are missing. Run it after installing or updating the plugin. Not for routing a dev task (that is workflow); not for diagnosing this repo's own build or dist drift (that is toolkit-debugging-playbook)."
+description: "Health check for the condux plugin on the host it is installed on. Runs the SessionStart routing hook on both hosts and checks each wire format, confirms Codex's hooks flag is on and plan-review's Stop hook resolves, checks the OpenCode registration and its bundled agents and skills, verifies the four specialist agents shipped, compares the installed version against the marketplace clone, and flags conflicting skill libraries installed. Offline; read-only unless --fix. Checking whether condux itself works on this machine: is condux working, the routing rule stopped appearing, /workflow is not being reached, did the SessionStart hook fire, check my condux install, the agents are missing, does condux clash with superpowers. Run it after installing or updating. Not for routing a dev task (that is workflow); not for diagnosing this repo's own build or dist drift (that is toolkit-debugging-playbook)."
 argument-hint: "[--host claude|codex|opencode] [--fix]"
 ---
 
@@ -29,8 +29,8 @@ changes nothing.
 
 One row per probe: `host  status  detail`, fix on an indented continuation
 line. `done` works · `broken` needs the fix · `absent` is not there and not a
-failure · `skipped` deliberately needs nothing. Only `broken` affects the
-exit code.
+failure · `skipped` deliberately needs nothing · `warn` works but something
+else on the machine competes with it. Only `broken` affects the exit code.
 
 ## What it probes
 
@@ -52,6 +52,12 @@ exit code.
   step, which is exactly the mirror that drifted once before.
 - **Version** — installed against the local marketplace clone, with that
   clone's own last-fetch date printed beside it. Never fetches.
+- **Conflicting skill libraries** — anything in
+  `conflicts.json` that is already on this machine, matched by name against
+  the host plugin registrations and the loose skill directories. The one entry
+  today is `superpowers`, which condux is derived from and which registers a
+  competing `SessionStart` router. Reported `warn`, never `broken`: condux is
+  fine, and the removal command is printed rather than run.
 
 ## Why running the hook matters
 

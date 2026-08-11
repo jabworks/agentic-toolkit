@@ -20,6 +20,17 @@ const HOME = os.homedir();
 const EXEC_TIMEOUT = 5000;
 const PACKAGE = '@jabworks/condux';
 
+// Imported dynamically so a doctor whose sibling has gone missing still runs.
+// A health check is what you reach for when an install is already suspect —
+// dying at module load is the one failure mode it cannot afford, and a static
+// import would do exactly that.
+let conflicts = null;
+try {
+  conflicts = await import('./conflicts.mjs');
+} catch {
+  conflicts = null;
+}
+
 const USAGE = `usage: doctor [options]
 
   --host <claude|codex|opencode>   probe one host only
@@ -344,6 +355,16 @@ function probeAgents() {
     : { host: 'all', status: 'broken', detail: `missing agent definitions: ${missing.join(', ')}`, fix: 'reinstall the plugin' };
 }
 
+// Not a condux fault, so never `broken` — the exit code stays clean and the
+// installer's verify beat keeps passing. It is reported because two libraries
+// racing to route the same task is invisible from inside a session: nothing
+// errors, the agent simply follows whichever contract it read last.
+function probeConflicts(hosts) {
+  if (!conflicts) return { host: 'conflicts', status: 'skipped', detail: 'conflicts.mjs is not beside this doctor' };
+
+  return { host: 'conflicts', ...conflicts.probe(path.join(SKILL_BASE, 'conflicts.json'), hosts, HOME) };
+}
+
 function compareVersions(a, b) {
   const pa = String(a).split('.').map(Number);
   const pb = String(b).split('.').map(Number);
@@ -438,7 +459,11 @@ function report(rows, quiet) {
 
 function summarize(rows) {
   const broken = rows.filter((row) => row.status === 'broken').length;
-  const verdict = broken === 0 ? 'condux is healthy on every host present' : `${broken} probe(s) broken`;
+  const warned = rows.filter((row) => row.status === 'warn').length;
+  // A warning never claims a clean bill of health, and never withholds one
+  // either: condux works, something else on this machine competes with it.
+  const clean = warned === 0 ? 'condux is healthy on every host present' : `condux is healthy on every host present, with ${warned} warning(s)`;
+  const verdict = broken === 0 ? clean : `${broken} probe(s) broken`;
 
   return `\n${verdict} — probes are static-parse plus execution; they cannot prove the host invoked anything.\n`;
 }
@@ -504,7 +529,7 @@ function main(argv) {
   ];
 
   const rows = perHost.filter(([host]) => !only || host === only).map(([, probe]) => probe());
-  if (!only) rows.push(probeAgents(), probeVersion());
+  if (!only) rows.push(probeAgents(), probeVersion(), probeConflicts(hosts));
 
   report(rows, flags.quiet === true);
   process.stdout.write(summarize(rows));

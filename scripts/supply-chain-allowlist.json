@@ -15,6 +15,7 @@
   "scripts": {
     "skills/concord-doctor/doctor.mjs": "concord's doctor — probes and repairs the plugin's own registration.",
     "skills/condux-doctor/doctor.mjs": "condux's doctor — same contract.",
+    "skills/condux-doctor/conflicts.mjs": "reads the known-conflicts registry for the doctor and condux's installer. Reads other people's config and skill directories, so it is deliberately the narrowest thing that can: filesystem reads and name matching only, no network and no child processes, asserted by tests/condux-conflicts.test.mjs.",
     "skills/docket-doctor/doctor.mjs": "docket's doctor — same contract.",
 
     "skills/discovery/references/choice-server.js": "local decision server for discovery's picker; binds loopback only.",

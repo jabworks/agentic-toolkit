@@ -38,6 +38,7 @@ One row per probe, in the installer's column layout:
 | `broken` | Registration present but non-functional — parse failure, unresolvable path, wrong or absent output |
 | `absent` | The probed thing is not there — the host is not installed, or an *optional* registration was never made. Not a failure: the dependency ladder says the skill still works a rung down, and the detail says which case it is |
 | `skipped` | Present, and deliberately needs nothing here (Claude Code registers docket's MCP server from the shipped `.mcp.json`; concord is Codex-only) |
+| `warn` | The plugin is registered and working, but something else on the machine competes with it. Not a fault of the plugin and never an exit code — see *Probe: conflicting skill libraries* |
 
 - `<detail>` — one clause, lowercase, concrete. For `broken`, the detail names
   the fix or is immediately followed by an indented fix line.
@@ -54,8 +55,41 @@ than it is.
 | 1 | At least one probe reported `broken` |
 | 2 | The doctor could not run at all — no `node`, or its own files are missing |
 
-`absent` and `skipped` never affect the exit code. A machine with only Codex
-installed exits 0.
+`absent`, `skipped` and `warn` never affect the exit code. A machine with only
+Codex installed exits 0, and so does one carrying a conflicting library.
+
+## Probe: conflicting skill libraries
+
+condux only, added 2026-08-11. Reports `warn` when another installed library
+competes with the plugin for the same routing decisions.
+
+The registry is data — `skills/condux-doctor/conflicts.json` — read by both
+`doctor.mjs` and `plugins/condux/install.mjs` through a shared
+`conflicts.mjs`. Adding a conflict is a data edit; the table naming another
+project's skills exists exactly once. Every entry carries a `verified` stamp
+because it must have been read off a real install: a wrong skill name in a
+shipped warning is worse than no warning.
+
+Two surfaces, matched by name only:
+
+| Surface | Reads | Match |
+|---|---|---|
+| Host plugin registration | `~/.claude/plugins/installed_plugins.json` keys · `$CODEX_HOME/config.toml` `[plugins."<name>@<marketplace>"]` headers | the part before `@` equals `detect.plugin` |
+| Loose skills | `~/.claude/skills` · `~/.agents/skills` · `$CODEX_HOME/skills` · OpenCode's `skills/` | at least `detect.minSkills` (default 2) names in `detect.skills`, deduplicated on resolved path |
+
+The registration files are read rather than `plugins/cache/`, which outlives
+the install that created it. The floor above 1 is the false-positive guard —
+a lone `brainstorming/` is a word before it is a library.
+
+**Report, never remove.** The removal command is printed with the resolved
+plugin key. Reversing another vendor's registration is outside what this
+installer registered and therefore outside what it may undo; a documented
+removal path across plugins is docket #2. The probe does not run under
+`--uninstall`.
+
+Three ways this stays inside the offline, read-only contract: no network, no
+child process, no comparison of skill descriptions by meaning. That last one
+is a live question (docket #10) and a doctor is not where it gets prototyped.
 
 ## Probe: version vs marketplace
 
