@@ -1,7 +1,7 @@
 ---
 name: condux-doctor
-description: "Health check for the condux plugin on the host it is installed on. Probes the SessionStart routing hook on Claude Code and Codex by running it and checking the wire format each host expects, confirms plan-review's Codex Stop hook resolves, checks the OpenCode npm registration and its bundled agents and skills, verifies the four specialist agent definitions shipped, and compares the installed version against the local marketplace clone. Offline and read-only. Checking whether condux itself works on this machine: is condux working, the routing rule stopped appearing, /workflow is not being reached, did the SessionStart hook fire, check my condux install, the specialist agents are missing. Run it after installing or updating the plugin. Not for routing a dev task (that is workflow); not for diagnosing this repo's own build or dist drift (that is toolkit-debugging-playbook)."
-argument-hint: "[--host claude|codex|opencode]"
+description: "Health check for the condux plugin on the host it is installed on. Runs the SessionStart routing hook on both hosts and checks each one's wire format, confirms Codex's hooks feature flag is enabled and plan-review's Stop hook resolves, checks the OpenCode npm registration and its bundled agents and skills, verifies the four specialist agent definitions shipped, and compares the installed version against the local marketplace clone. Offline; read-only unless --fix. Checking whether condux itself works on this machine: is condux working, the routing rule stopped appearing, /workflow is not being reached, did the SessionStart hook fire, check my condux install, the specialist agents are missing. Run it after installing or updating the plugin. Not for routing a dev task (that is workflow); not for diagnosing this repo's own build or dist drift (that is toolkit-debugging-playbook)."
+argument-hint: "[--host claude|codex|opencode] [--fix]"
 ---
 
 # /condux-doctor
@@ -12,10 +12,18 @@ Answers one question: **is condux actually working on this host?**
 node <skill-base>/doctor.mjs                    # every host, every probe
 node <skill-base>/doctor.mjs --host codex       # one host
 node <skill-base>/doctor.mjs --quiet            # only what is not fine
+node <skill-base>/doctor.mjs --fix              # run the installer, then re-probe
 ```
 
 Exit 0 when nothing is broken, 1 when something is, 2 when the doctor cannot
 find condux's own hooks.
+
+`--fix` performs no registration itself — it runs condux's plugin-level
+`install.mjs` and probes again, so idempotency, backups and atomic writes stay
+in one place. If the installer fails, the report says how it failed rather than
+re-probing in silence, and the re-probe still decides the exit code. Without an
+installer beside the plugin (an `npx skills add` tree has none), it says so and
+changes nothing.
 
 ## Reading the report
 
@@ -30,6 +38,11 @@ exit code.
   `hookSpecificOutput` envelope carrying non-empty context; Codex must get
   the raw routing payload. Each host's manifest must use its own root
   variable — `${CLAUDE_PLUGIN_ROOT}` or `${PLUGIN_ROOT}`, never the other.
+- **Codex's `features.hooks` flag**, before anything else on that host. A
+  plugin manifest can declare hooks; nothing in a plugin can enable them. With
+  the flag off, the manifest parses, every path resolves, and no hook fires —
+  which this doctor scored `done` until it learned to read the flag. It proves
+  the flag is set, not that Codex has restarted since.
 - **plan-review's Codex Stop hook** — resolved, never executed. It blocks a
   turn for up to four days waiting on a human by design.
 - **OpenCode** — `@jabworks/condux` in the plugin array, and when a local

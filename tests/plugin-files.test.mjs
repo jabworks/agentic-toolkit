@@ -38,6 +38,34 @@ test('each plugin README in dist is a verbatim copy of its source', () => {
   }
 });
 
+// The README assertion above covers the one file every plugin has. This covers
+// the rest: condux ships INSTALL.md and install.mjs at plugin level, and the
+// sync step copies whatever is there rather than a hardcoded list of names. A
+// plugin-level file with no dist copy is a file that never reaches the
+// marketplace, and nothing else in the suite would notice.
+test('every plugin-level file has a byte-identical dist copy', () => {
+  for (const plugin of plugins) {
+    const source = path.join(PLUGIN_SRC, plugin);
+    if (!fs.existsSync(source)) continue;
+
+    const files = fs
+      .readdirSync(source, { withFileTypes: true })
+      .filter((entry) => entry.isFile())
+      .map((entry) => entry.name);
+
+    for (const file of files) {
+      const mirror = path.join(DIST, plugin, file);
+
+      assert.ok(fs.existsSync(mirror), `${plugin}/${file}: no dist copy — run scripts/sync.sh`);
+      assert.equal(
+        fs.readFileSync(mirror, 'utf8'),
+        fs.readFileSync(path.join(source, file), 'utf8'),
+        `${plugin}/${file}: dist copy differs from its source — never hand-edit dist/`,
+      );
+    }
+  }
+});
+
 test('every plugin ships the repo LICENSE, byte for byte', () => {
   const license = fs.readFileSync(path.join(REPO_ROOT, 'LICENSE'), 'utf8');
 

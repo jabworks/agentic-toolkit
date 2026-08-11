@@ -7,7 +7,7 @@ Every plugin's doctor is a dependency-free ESM script invoked the same way:
 ```bash
 node <skill-base>/doctor.mjs           # probe everything, report, exit 0/1
 node <skill-base>/doctor.mjs --host codex   # restrict to one host
-node <skill-base>/doctor.mjs --fix     # docket and concord; condux until #9
+node <skill-base>/doctor.mjs --fix     # all three, once condux #9 landed
 ```
 
 | Flag | Meaning |
@@ -79,6 +79,63 @@ lines triplicated across three doctors that may not share code, and the file
 is an undocumented host internal whose shape can change without notice. If
 "works in one repo, not another" turns out to bite in practice, this is the
 first thing to add back.
+
+## Probe: Codex `features.hooks` (condux, docket #9)
+
+Codex's hook support is behind an experimental feature flag. The plugin
+manifest can declare hooks, but nothing in a plugin can enable
+`features.hooks = true` in a user's `config.toml` — only an installer can.
+
+The probe reads `[features] hooks` from `<CODEX_HOME>/config.toml`:
+
+| Flag state | Row |
+|---|---|
+| `true` | continue to the existing manifest and execution probes |
+| absent or `false` | `broken` — the manifest resolves but no hook can fire |
+
+It runs *before* the SessionStart and Stop probes, because with the flag off
+those probes describe a registration that cannot execute regardless of how
+well it parses. This is the static-parse blind spot the probe-depth decision
+names, applied to an input rather than to a path.
+
+The doctor cannot distinguish *flag written* from *Codex restarted since*.
+The row reports the flag, and the detail says a restart is required if it was
+just set — see quirks.
+
+## Installer contract: condux's front door (docket #9)
+
+`plugins/condux/install.mjs`, alongside `plugins/condux/INSTALL.md` as the
+by-hand twin. Same four beats as docket's and concord's installers —
+**detect → register → verify → report** — and the same column layout.
+
+| Flag | Meaning |
+|---|---|
+| *(none)* | Detect hosts, register what each needs, verify, report |
+| `--host <claude\|codex\|opencode>` | Act on one host only |
+| `--dry-run` | Report what would change; write nothing |
+| `--uninstall` | Reverse what this installer registered. No verify beat on the way out — the correct end state is that nothing answers |
+
+What it registers, per host:
+
+| host | action |
+|---|---|
+| `claude` | none — the plugin manifest already registers the SessionStart hook. Reported `skipped` with that reason, never silently omitted |
+| `codex` | set `[features] hooks = true`; run `subagent-execution/references/install-codex-agents.mjs` for the four agent TOMLs; on a non-plugin (npx) install, also run `plan-review/references/install-codex-hook.sh` |
+| `opencode` | add `@jabworks/condux` to the `plugin` array in `opencode.json` |
+
+**Composition, not reimplementation.** The two sub-installers are located
+plugin-root-first with a source-tree fallback and executed as-is. Both are
+position-dependent — `install-codex-hook.sh` resolves
+`$SCRIPT_DIR/annotate-server.js`, `install-codex-agents.mjs` resolves
+`../agents` — so the wrapper must invoke them in place and never copy them.
+
+A sub-installer that fails is reported as failed — could not be run, killed by
+a signal, or non-zero exit — before the verify beat runs, mirroring what both
+doctors already do with their delegates.
+
+**Verify** delegates to `condux-doctor --host <host> --quiet` and never passes
+`--fix`, so installer and doctor cannot ping-pong. This is the same acyclic
+delegation concord uses in the opposite direction.
 
 ## The convention other plugins adopt
 

@@ -95,3 +95,43 @@ There is no documentation bug to fix. What follows for the doctors:
 - The duplicate copy is worth knowing about for a different reason: a stale
   plugin install can leave the two out of sync, and only the one a given
   caller resolves will be exercised.
+
+## Setting `features.hooks` is not the same as Codex having restarted
+
+The flag probe reads `[features] hooks` from `config.toml`. Nothing on disk
+records whether Codex has been restarted since it was written, and a running
+Codex does not re-read the file.
+
+So the flag row is honest about a narrower claim than it looks: *the flag is
+set*, not *hooks are live in the current session*. After `--fix` or a fresh
+install writes it, the detail says a restart is required; on a later run the
+row reads plainly. This is the same shape as the limitation above — the doctor
+proves the strongest observable proposition and names what it cannot see,
+rather than inferring.
+
+## condux's front door is reachable on one channel, its sub-installers on all
+
+`plugins/condux/INSTALL.md` and `install.mjs` are plugin-level, so they ship
+to the marketplace only. `npx skills add` installs from top-level `skills/`
+and never sees them.
+
+That asymmetry is deliberate and is the reason the front door wraps rather
+than absorbs: the two sub-installers stay inside `plan-review` and
+`subagent-execution`, where every channel reaches them and where their own
+SKILL.md files already document them. An npx user has no front door and does
+not need one — they have the two scripts, which is what they had before.
+
+The practical consequence for anyone editing this: **the front door cannot be
+the only place a registration step is written down.** Anything it learns to do
+that npx users also need must live in, or be delegated to, a skill tree.
+
+## Plugin-level files are not reached by the skill-tree copy
+
+`plugins/condux/` needs its own `sync.sh` case and its own mirror test.
+This is the `6ba6572` blind-spot class the decisions file already names, and
+the reason `plugin-files.test.mjs` exists — condux's README was hand-written
+straight into `dist/` before that guard, and docket shipped with no LICENSE.
+
+A new plugin-level file added without a sync case does not fail loudly; it
+simply never reaches `dist/`, and the install channel serves whatever was
+there before.

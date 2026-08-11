@@ -110,3 +110,118 @@ test('concord hook installer stays idempotent after the remember rename', () => 
     fs.rmSync(codexHome, { recursive: true, force: true });
   }
 });
+
+// --- condux's install front door -------------------------------------------
+// It composes two position-dependent sub-installers and edits two config files
+// it does not own, so the things worth guarding are: it writes nothing under
+// --dry-run, it refuses configs it cannot parse, it is re-runnable, and
+// --uninstall leaves shared state alone.
+const CONDUX_INSTALLER = path.resolve(__dirname, '../plugins/condux/install.mjs');
+
+function installerSandbox() {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ci-condux-install-'));
+  const dirs = {
+    root,
+    home: path.join(root, 'home'),
+    codex: path.join(root, 'codex'),
+    config: path.join(root, 'config'),
+  };
+  fs.mkdirSync(dirs.home, { recursive: true });
+  fs.mkdirSync(dirs.codex, { recursive: true });
+  fs.mkdirSync(path.join(dirs.config, 'opencode'), { recursive: true });
+
+  return dirs;
+}
+
+function runInstaller(sandbox, args = []) {
+  return spawnSync(process.execPath, [CONDUX_INSTALLER, ...args], {
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      HOME: sandbox.home,
+      CODEX_HOME: sandbox.codex,
+      XDG_CONFIG_HOME: sandbox.config,
+    },
+  });
+}
+
+test('condux installer --dry-run writes nothing at all', () => {
+  const sandbox = installerSandbox();
+  try {
+    const result = runInstaller(sandbox, ['--dry-run']);
+
+    assert.equal(result.status, 0);
+    assert.match(result.stdout, /dry run — nothing was written/);
+    // The hook installer has no --dry-run of its own, so the only safe thing to
+    // do with it under one is not to run it.
+    assert.match(result.stdout, /would run .*install-codex-hook\.sh/);
+    assert.deepEqual(fs.readdirSync(sandbox.codex), []);
+    assert.deepEqual(fs.readdirSync(path.join(sandbox.config, 'opencode')), []);
+  } finally {
+    fs.rmSync(sandbox.root, { recursive: true, force: true });
+  }
+});
+
+test('condux installer is re-runnable without duplicating anything', () => {
+  const sandbox = installerSandbox();
+  try {
+    assert.equal(runInstaller(sandbox).status, 0);
+    assert.equal(runInstaller(sandbox).status, 0);
+
+    const config = fs.readFileSync(path.join(sandbox.codex, 'config.toml'), 'utf8');
+    assert.equal(config.match(/^\[features\]/gm).length, 1, '[features] must not accumulate');
+    assert.equal(config.match(/hooks = true/g).length, 1, 'the flag must not accumulate');
+
+    const hooks = JSON.parse(fs.readFileSync(path.join(sandbox.codex, 'hooks.json'), 'utf8'));
+    assert.equal(hooks.hooks.Stop.length, 1, 'the Stop hook must not accumulate');
+
+    const opencode = JSON.parse(fs.readFileSync(path.join(sandbox.config, 'opencode', 'opencode.json'), 'utf8'));
+    assert.deepEqual(opencode.plugin, ['@jabworks/condux']);
+  } finally {
+    fs.rmSync(sandbox.root, { recursive: true, force: true });
+  }
+});
+
+test('condux installer refuses a config it cannot parse instead of overwriting it', () => {
+  const sandbox = installerSandbox();
+  try {
+    const opencode = path.join(sandbox.config, 'opencode', 'opencode.json');
+    fs.writeFileSync(opencode, '{ not json');
+    const bad = runInstaller(sandbox, ['--host', 'opencode']);
+
+    assert.equal(bad.status, 1);
+    assert.match(bad.stdout, /does not parse/);
+    assert.equal(fs.readFileSync(opencode, 'utf8'), '{ not json', 'the user file must survive');
+
+    // Two [features] tables is invalid TOML; resolving it is a human's call.
+    fs.writeFileSync(path.join(sandbox.codex, 'config.toml'), '[features]\nhooks = false\n\n[features]\n');
+    const dupe = runInstaller(sandbox, ['--host', 'codex']);
+
+    assert.equal(dupe.status, 1);
+    assert.match(dupe.stdout, /\[features\] more than once/);
+  } finally {
+    fs.rmSync(sandbox.root, { recursive: true, force: true });
+  }
+});
+
+test('condux installer --uninstall leaves the shared hooks flag set', () => {
+  const sandbox = installerSandbox();
+  try {
+    const opencode = path.join(sandbox.config, 'opencode', 'opencode.json');
+    fs.writeFileSync(opencode, JSON.stringify({ plugin: ['@jabworks/condux', '@other/keep'] }, null, 2));
+    runInstaller(sandbox);
+
+    const result = runInstaller(sandbox, ['--uninstall']);
+    assert.equal(result.status, 0);
+
+    // concord and plan-review ride the same flag — clearing it on condux's way
+    // out would break them.
+    assert.match(fs.readFileSync(path.join(sandbox.codex, 'config.toml'), 'utf8'), /hooks = true/);
+    assert.match(result.stdout, /shared with other plugins/);
+
+    const after = JSON.parse(fs.readFileSync(opencode, 'utf8'));
+    assert.deepEqual(after.plugin, ['@other/keep'], 'only condux may be removed');
+  } finally {
+    fs.rmSync(sandbox.root, { recursive: true, force: true });
+  }
+});

@@ -114,13 +114,21 @@ sync_skill() {
 
 # ---------------------------------------------------------------------------
 # sync_plugin_files — plugin-level files that belong to no skill: the README
-# that acts as the plugin's homepage, plus the LICENSE every plugin ships.
+# that acts as the plugin's homepage, an INSTALL.md or installer where the
+# plugin has one, plus the LICENSE every plugin ships.
 #
 # These sit outside every skill tree, so the skill copy never reaches them —
 # the same shape as agents/ and hooks/, and the same rule applies: an
 # out-of-tree mirror target gets its own sync step AND its own test
 # (tests/plugin-files.test.mjs). Before this existed, condux's README was
 # hand-written straight into dist/ and docket shipped with no LICENSE at all.
+#
+# Every regular file is copied, rather than a hardcoded list of names. The
+# list was the blind spot: adding condux's INSTALL.md and install.mjs under
+# the old shape meant two more `cp` lines, and the file after that would have
+# meant a third. Directories are deliberately skipped — the plugin-level dirs
+# (condux/agents, condux/hooks, docket/server) have their own sync cases and
+# their own mirror tests, and copying them here would give them two writers.
 # ---------------------------------------------------------------------------
 sync_plugin_files() {
   local copied=0
@@ -133,15 +141,26 @@ sync_plugin_files() {
     # source files that can drift apart.
     cp "$REPO_ROOT/LICENSE" "$plugin_dir/LICENSE"
 
-    if [[ -f "$PLUGIN_SRC/$plugin/README.md" ]]; then
-      cp "$PLUGIN_SRC/$plugin/README.md" "$plugin_dir/README.md"
-      ((copied++)) || true
-    else
+    if [[ -d "$PLUGIN_SRC/$plugin" ]]; then
+      # dotglob so the syncer sees the same files its guard does: bash's `*`
+      # skips dot-prefixed names while the mirror test reads the directory with
+      # readdirSync, which does not. Without this the two disagree, and a
+      # plugin-level dotfile would be demanded by the test and never copied.
+      shopt -s dotglob
+      for src in "$PLUGIN_SRC/$plugin"/*; do
+        [[ -f "$src" ]] || continue
+        cp "$src" "$plugin_dir/$(basename "$src")"
+        ((copied++)) || true
+      done
+      shopt -u dotglob
+    fi
+
+    if [[ ! -f "$PLUGIN_SRC/$plugin/README.md" ]]; then
       echo "WARN    dist/plugins/$plugin has no plugins/$plugin/README.md" >&2
     fi
   done
 
-  echo "synced  plugins/*/README.md + LICENSE  →  dist/plugins/*/  (${copied} README(s))"
+  echo "synced  plugins/*/* + LICENSE  →  dist/plugins/*/  (${copied} plugin-level file(s))"
 }
 
 # ---------------------------------------------------------------------------
