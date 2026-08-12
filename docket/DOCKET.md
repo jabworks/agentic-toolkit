@@ -181,34 +181,6 @@ eval runs — what we do by hand across dated reports), `max-repeat` and
 
 Found 2026-08-09 surveying awesome-copilot's maintenance machinery.
 
-### 16. Supply-chain lint does not cover plugin-level files (2026-08-11)
-
-`scripts/check-supply-chain.mjs` walks `skills/` only — 159 files at the time of
-writing. #9 shipped the repo's first **plugin-level** executable
-(`plugins/condux/install.mjs`) plus an `INSTALL.md` that instructs an agent to
-run scripts, and neither is scanned by anything.
-
-That is precisely the shape the lint exists to catch. From #13's rule set:
-`SCRIPT-FILE` (bundled executable), `INVOKES-SCRIPT` (a body telling an agent to
-run one), `PIPE-TO-SHELL`, `EXTERNAL-DOMAIN`. All four are now reachable in a
-tree the checker never opens.
-
-Scope is small — the walker takes a second root. The real work is the
-allow-list, since the new files legitimately trip `SCRIPT-FILE` and
-`INVOKES-SCRIPT` by design, exactly as docket's `install.sh` and `server/` do.
-Same argument as #13: the value is that an *unreviewed* one shows up in CI, not
-that these ones are silent.
-
-Note the allow-list already fails on reasonless AND unused entries, so entries
-must be written against the real findings rather than guessed at.
-
-While there: `plugins/docket/` and `plugins/concord/` are README-only today, but
-docket's installer machinery lives at `skills/record/server/` and is synced to
-the plugin root — worth confirming which copy the checker sees, and whether it
-sees it twice.
-
-Found 2026-08-11 shipping #9.
-
 ### 17. condux --uninstall cannot reverse what its sub-installers wrote (2026-08-11)
 
 `plugins/condux/install.mjs --uninstall` reverses exactly one thing it wrote —

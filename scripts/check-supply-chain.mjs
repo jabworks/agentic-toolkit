@@ -26,15 +26,22 @@
 // than an absent one, so NON-BUILTIN-TOOL-REF is deliberately omitted and this
 // comment is its record.
 //
-// Scans skills/ only. dist/ and packages/ are byte-parity mirrors already
-// guarded by dist-mirror.test.mjs and opencode-dist.test.mjs, and keying the
-// allow-list to source paths keeps one reason per fact.
+// Scans the two source trees that ship executable or agent-facing content:
+// skills/ and plugins/. The second root was added after the repo's first
+// plugin-level executable (plugins/condux/install.mjs) sat unscanned alongside
+// an INSTALL.md telling an agent to run it — all four of SCRIPT-FILE,
+// INVOKES-SCRIPT, PIPE-TO-SHELL and EXTERNAL-DOMAIN were reachable in a tree
+// this checker never opened.
+//
+// dist/ and packages/ stay out. They are byte-parity mirrors already guarded by
+// dist-mirror.test.mjs and opencode-dist.test.mjs, and keying the allow-list to
+// source paths keeps one reason per fact.
 //
 // Dependency-free on purpose, matching scripts/check-frontmatter.mjs: it must
 // run in a fresh clone with no node_modules.
 //
 // Usage:
-//   node scripts/check-supply-chain.mjs            # check skills/
+//   node scripts/check-supply-chain.mjs            # check skills/ and plugins/
 //   node scripts/check-supply-chain.mjs --json     # machine-readable findings
 
 import fs from 'node:fs';
@@ -45,7 +52,16 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, '..');
 const ALLOWLIST_FILE = path.join(__dirname, 'supply-chain-allowlist.json');
 
-const SCAN_ROOT = 'skills';
+const SCAN_ROOTS = ['skills', 'plugins'];
+
+// Where a `references/…` citation is resolved, which is NOT the same as where
+// files are scanned. Skills are the only tree that ships references/ helpers,
+// and plugin-level prose cites them by the same relative shape — concord's
+// plugin README points at `references/INSTALL.md`, meaning
+// skills/remember/references/INSTALL.md. Resolving against the citing file's
+// own root instead reports that as dangling.
+const SIBLING_ROOT = 'skills';
+
 const PROSE_EXT = new Set(['.md']);
 const SCRIPT_EXT = new Set(['.mjs', '.js', '.sh', '.py', '.ps1']);
 // .html earns its place: a rendered template is where egress hides (script src,
@@ -140,20 +156,29 @@ export function checkAllowlist(allowlist, used) {
 // File collection
 // ---------------------------------------------------------------------------
 
-export function collectFiles(repoRoot = REPO_ROOT, root = SCAN_ROOT) {
-  const dir = path.resolve(repoRoot, root);
-  if (!fs.existsSync(dir)) return [];
+export function collectFiles(repoRoot = REPO_ROOT, roots = SCAN_ROOTS) {
+  // This parameter took a single root string before plugins/ was added. A stale
+  // string caller would iterate character by character, match no directory, and
+  // hand back an empty list — a checker that silently scans nothing passes
+  // forever, which is the one failure this file cannot afford.
+  const scan = typeof roots === 'string' ? [roots] : roots;
 
   const files = [];
-  for (const entry of fs.readdirSync(dir, { recursive: true })) {
-    const rel = path.relative(repoRoot, path.join(dir, entry));
-    if (rel.includes('node_modules')) continue;
 
-    const abs = path.join(repoRoot, rel);
-    if (!fs.statSync(abs).isFile()) continue;
+  for (const root of scan) {
+    const dir = path.resolve(repoRoot, root);
+    if (!fs.existsSync(dir)) continue;
 
-    const ext = path.extname(rel);
-    if (PROSE_EXT.has(ext) || SCRIPT_EXT.has(ext) || DATA_EXT.has(ext)) files.push(rel);
+    for (const entry of fs.readdirSync(dir, { recursive: true })) {
+      const rel = path.relative(repoRoot, path.join(dir, entry));
+      if (rel.includes('node_modules')) continue;
+
+      const abs = path.join(repoRoot, rel);
+      if (!fs.statSync(abs).isFile()) continue;
+
+      const ext = path.extname(rel);
+      if (PROSE_EXT.has(ext) || SCRIPT_EXT.has(ext) || DATA_EXT.has(ext)) files.push(rel);
+    }
   }
 
   return files.sort();
@@ -168,14 +193,15 @@ function lineAt(src, index) {
   return src.slice(0, index).split('\n').length;
 }
 
-// True when a skill-relative citation resolves against the citing skill, the
-// repo root, or any other skill — see the FILE-READ-ERROR comment for why the
-// last one is not a loophole.
+// True when a skill-relative citation resolves against the citing directory, the
+// repo root, or any skill — see the FILE-READ-ERROR comment for why the last one
+// is not a loophole, and SIBLING_ROOT for why it is skills/ regardless of which
+// tree the citing file lives in.
 function resolvesAnywhere(token, skillDir) {
   if (fs.existsSync(path.resolve(skillDir, token))) return true;
   if (fs.existsSync(path.resolve(REPO_ROOT, token))) return true;
 
-  const skillsDir = path.join(REPO_ROOT, SCAN_ROOT);
+  const skillsDir = path.join(REPO_ROOT, SIBLING_ROOT);
 
   return fs.readdirSync(skillsDir).some((name) => fs.existsSync(path.join(skillsDir, name, token)));
 }
@@ -265,9 +291,9 @@ function checkFile(rel, src, allowlist, findings, used) {
   }
 }
 
-// SCRIPT-FILE — every executable this repo ships inside a skill must be
-// declared. The rule is "declared", not "none": 28 scripts across 12 skills are
-// the point of several of them.
+// SCRIPT-FILE — every executable this repo ships inside a skill or at a plugin
+// root must be declared. The rule is "declared", not "none": 28 scripts across
+// 12 skills are the point of several of them.
 function checkScriptInventory(files, allowlist, findings, used) {
   const declared = allowlist.scripts ?? {};
 

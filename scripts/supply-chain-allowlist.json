@@ -5,7 +5,8 @@
     "github.com": "prose citations only — upstream projects credited in SKILL.md bodies (plannotator, agent-toolkit) and this repo's own URL. No script fetches from it.",
     "api.github.com": "cited in the awesome-copilot survey as a re-verification command for the reader to run, not executed by anything we ship.",
     "developers.openai.com": "documentation URL in a source comment in install-codex-agents.mjs recording where the Codex subagent schema was verified. Not fetched.",
-    "raw.githubusercontent.com": "session-report's analyzers fetch litellm's public pricing table at runtime — see remoteFetches for the specific URL and its risk."
+    "raw.githubusercontent.com": "session-report's analyzers fetch litellm's public pricing table at runtime — see remoteFetches for the specific URL and its risk.",
+    "www.npmjs.com": "prose citation in plugins/condux/README.md — the package page for @jabworks/condux, the OpenCode install channel this repo publishes. Nothing fetches it."
   },
 
   "remoteFetches": {
@@ -13,6 +14,8 @@
   },
 
   "scripts": {
+    "plugins/condux/install.mjs": "condux's plugin-level install front door — the one executable this repo ships outside skills/. Wraps the three installers scattered inside skills (Codex agents, the plan-review Stop hook, the OpenCode plugin key) and is what INSTALL.md tells an agent to run; behaviour covered by tests/script-safety.test.mjs. Declaring it also clears the INVOKES-SCRIPT findings on every `node … install.mjs` line in INSTALL.md and README.md, since invocations are matched by basename.",
+
     "skills/concord-doctor/doctor.mjs": "concord's doctor — probes and repairs the plugin's own registration.",
     "skills/condux-doctor/doctor.mjs": "condux's doctor — same contract.",
     "skills/condux-doctor/conflicts.mjs": "reads the known-conflicts registry for the doctor and condux's installer. Reads other people's config and skill directories, so it is deliberately the narrowest thing that can: filesystem reads and name matching only, no network and no child processes, asserted by tests/condux-conflicts.test.mjs.",
@@ -23,7 +26,7 @@
     "skills/plan-review/references/install-codex-hook.sh": "registers plan-review's Codex Stop hook; behaviour covered by tests/script-safety.test.mjs.",
     "skills/spec-browser/references/build-index.js": "builds the static spec index; no network.",
 
-    "skills/record/server/docket.mjs": "docket's dependency-free CLI — rung 1 of the degrade-gracefully ladder.",
+    "skills/record/server/docket.mjs": "docket's dependency-free CLI — rung 2 of the degrade-gracefully ladder, and the file the ladder names as its rung-2 example.",
     "skills/record/server/docket-core.mjs": "docket's parser and id allocator, shared by the CLI and the MCP server.",
     "skills/record/server/docket-render.mjs": "renders the docket board to self-contained HTML.",
     "skills/record/server/mcp-server.mjs": "docket's MCP server — rung 3 of the ladder, registered via .mcp.json.",

@@ -1,10 +1,11 @@
 // Gate for scripts/check-supply-chain.mjs.
 //
-// The live assertion is that skills/ has no unreviewed external dependency or
-// risky invocation. The fixtures below are the more valuable half: each one is
-// a false positive an earlier draft of a rule actually produced, kept as a
-// regression so the rule cannot quietly re-broaden. A supply-chain rule that
-// cries wolf gets suppressed wholesale, which is worse than not having it.
+// The live assertion is that skills/ and plugins/ carry no unreviewed external
+// dependency or risky invocation. The fixtures below are the more valuable
+// half: each one is a false positive an earlier draft of a rule actually
+// produced, kept as a regression so the rule cannot quietly re-broaden. A
+// supply-chain rule that cries wolf gets suppressed wholesale, which is worse
+// than not having it.
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -24,7 +25,7 @@ import {
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, '..');
 
-test('skills/ has no unreviewed external dependency or risky invocation', () => {
+test('skills/ and plugins/ have no unreviewed external dependency or risky invocation', () => {
   const { ok, findings, allowlistProblems } = checkSupplyChain();
 
   const detail = [
@@ -43,6 +44,54 @@ test('the scan actually covers the skills tree', () => {
   assert.ok(files.length > 100, `expected the scan to cover the skills tree, got ${files.length} file(s)`);
   assert.ok(files.some((f) => f.endsWith(path.join('workflow', 'SKILL.md'))), 'workflow/SKILL.md was not scanned');
   assert.ok(files.some((f) => f.endsWith('.mjs')), 'no bundled scripts were scanned');
+});
+
+test('the scan also covers the plugins tree', () => {
+  // plugins/ went unscanned for the two releases between the repo's first
+  // plugin-level executable and this test. The skills-tree assertion above
+  // passes at full strength on a scan that opens neither plugin file, so the
+  // second root needs its own anchor: an executable and the prose that runs it.
+  const files = collectFiles();
+  const plugins = files.filter((f) => f.startsWith(`plugins${path.sep}`));
+
+  assert.ok(plugins.length > 0, 'the plugins tree was not scanned at all');
+  assert.ok(
+    plugins.includes(path.join('plugins', 'condux', 'install.mjs')),
+    "condux's plugin-level installer was not scanned",
+  );
+  assert.ok(
+    plugins.includes(path.join('plugins', 'condux', 'INSTALL.md')),
+    'the prose instructing an agent to run that installer was not scanned',
+  );
+});
+
+test('a single root passed as a string still scans that tree', () => {
+  // collectFiles took one root string until plugins/ was added. Iterating a
+  // string yields characters, none of which name a directory, so a stale caller
+  // would get [] back and every rule would report clean over nothing.
+  const asString = collectFiles(REPO_ROOT, 'plugins');
+  const asArray = collectFiles(REPO_ROOT, ['plugins']);
+
+  assert.ok(asString.length > 0, 'a string root scanned nothing');
+  assert.deepEqual(asString, asArray, 'a string root and a single-element array disagree');
+});
+
+test('plugin-level prose may cite a skill reference by its skill-relative path', () => {
+  // The trap in widening the scan: citations resolve against skills/ no matter
+  // which tree the citing file lives in. concord's plugin README points at
+  // `references/INSTALL.md`, meaning skills/remember/references/INSTALL.md.
+  // Resolving against the citing file's own root instead — plugins/concord/ —
+  // reports a live, correct link as dangling.
+  const citing = path.join(REPO_ROOT, 'plugins', 'concord', 'README.md');
+  const cited = path.join(REPO_ROOT, 'skills', 'remember', 'references', 'INSTALL.md');
+
+  assert.match(fs.readFileSync(citing, 'utf8'), /`references\/INSTALL\.md`/, 'the citation this guards is gone');
+  assert.ok(fs.existsSync(cited), 'the file that citation resolves to is gone');
+
+  const { findings } = checkSupplyChain();
+  const dangling = findings.filter((f) => f.code === 'FILE-READ-ERROR' && f.file.startsWith(`plugins${path.sep}`));
+
+  assert.deepEqual(dangling, [], 'a plugin-level citation of a skill reference was flagged as dangling');
 });
 
 test('loopback is not egress', () => {
