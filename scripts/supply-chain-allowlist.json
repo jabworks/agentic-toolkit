@@ -26,7 +26,7 @@
     "skills/plan-review/references/install-codex-hook.sh": "registers plan-review's Codex Stop hook; behaviour covered by tests/script-safety.test.mjs.",
     "skills/spec-browser/references/build-index.js": "builds the static spec index; no network.",
 
-    "skills/record/server/docket.mjs": "docket's dependency-free CLI — rung 1 of the degrade-gracefully ladder.",
+    "skills/record/server/docket.mjs": "docket's dependency-free CLI — rung 2 of the degrade-gracefully ladder, and the file the ladder names as its rung-2 example.",
     "skills/record/server/docket-core.mjs": "docket's parser and id allocator, shared by the CLI and the MCP server.",
     "skills/record/server/docket-render.mjs": "renders the docket board to self-contained HTML.",
     "skills/record/server/mcp-server.mjs": "docket's MCP server — rung 3 of the ladder, registered via .mcp.json.",
