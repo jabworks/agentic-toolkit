@@ -9,7 +9,7 @@ Stale open markers cost real sessions — closing means moving.
 
 ## Committed
 
-### 1. Ship the widget pipeline (2026-06-01)
+### 1. Ship the widget pipeline #build #ui (2026-06-01)
 
 First body line with `code` and a — dash.
 
@@ -19,7 +19,7 @@ The follow-up block belongs to the item above it.
 
 ## Someday
 
-### 2. Explore the frobnicator (2026-06-10)
+### 2. Explore the frobnicator #research (2026-06-10)
 
 Someday body.
 

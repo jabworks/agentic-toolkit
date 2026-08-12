@@ -15,121 +15,126 @@
          through JetBrains Mono to ui-monospace, so this renders the same on any
          machine that has a dev font. -->
     <style>
-      :root {
-        /* Terminus UI — dark default */
-        --background:         #111110;
-        --card:               #191918;
-        --foreground:         #eeeeec;
-        --muted:              #222221;
-        --muted-foreground:   #b5b3ad;
-        --border:             #3b3a37;
-        --input:              #3b3a37;
-        --primary:            #978365;
-        --primary-foreground: #ffffff;
-        --secondary:          #222221;
-        --accent:             #2a2a28;
-        --ring:               #978365;
-        --radius:             0.25rem;
+/* tokens:core:start */
+/* Shared colour core — do not hand-edit; edit scripts/tokens/core.css. */
+:root {
+  --background: #111110;
+  --card: #191918;
+  --card-foreground: #eeeeec;
+  --popover: #222221;
+  --foreground: #eeeeec;
+  --muted: #222221;
+  --muted-foreground: #b5b3ad;
+  --border: #3b3a37;
+  --input: #3b3a37;
+  --primary: #978365;
+  --primary-foreground: #ffffff;
+  --primary-hover: #a39073;
+  --primary-muted: #24231f;
+  --primary-text: #cbb99f;
+  --ring: #978365;
+  --accent: #2a2a28;
+  --success: #71d083;
+  --success-muted: #1b2a1e;
+  --success-border: #2d5736;
+  --warning: #ffca16;
+  --warning-muted: #302008;
+  --warning-border: #5c3d05;
+  --destructive: #ff977d;
+  --destructive-muted: #391714;
+  --destructive-border: #6e2920;
+  --info: #70b8ff;
+  --info-muted: #0d2847;
+  --info-border: #104d87;
+  --outline: rgba(237, 237, 236, 0.08);
+  --subtle: #686560;
+  --radius: 0.25rem;
+  --mono: "Geist Mono", "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Monaco, "Cascadia Code", monospace;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --background: #f6f5ef;
+    --card: #fcfbf6;
+    --card-foreground: #36302a;
+    --popover: #fcfbf6;
+    --foreground: #36302a;
+    --muted: #f0efe3;
+    --muted-foreground: #726c5e;
+    --border: #ddd6c6;
+    --input: #ddd6c6;
+    --primary: #967e60;
+    --primary-foreground: #ffffff;
+    --primary-hover: #897254;
+    --primary-muted: #efece0;
+    --primary-text: #6f5e44;
+    --ring: #967e60;
+    --accent: #eae7da;
+    --success: #3f7a34;
+    --success-muted: #e6f5e2;
+    --success-border: #c2e1b3;
+    --warning: #93761d;
+    --warning-muted: #fbf4c4;
+    --warning-border: #ebd87f;
+    --destructive: #bf4f3b;
+    --destructive-muted: #fbe8e2;
+    --destructive-border: #f0c9ba;
+    --info: #3f6fa6;
+    --info-muted: #e6f1fc;
+    --info-border: #bed7ef;
+    --outline: rgba(54, 48, 42, 0.08);
+    --subtle: #a8a294;
+  }
+}
+/* tokens:core:end */
 
-        --card-foreground:    #eeeeec;
+      /* session-handoff extensions — semantic variants, named palette entries,
+         and terminal colours. Outside the markers on purpose: anything
+         inside them is replaced by check-tokens.mjs --fix. */
+      :root {
+        --secondary:          #222221;
         --card-hover:         #222221;
         --card-active:        #2a2a28;
-        --popover:            #222221;
         --popover-foreground: #eeeeec;
-        --primary-hover:      #a39073;
-        --primary-muted:      #24231f;
-        --primary-text:       #cbb99f;
         --border-hover:       #494844;
         --gold-9:             #978365;
         --gold-10:            #a39073;
-
-        --success:              #71d083;
-        --success-muted:        #1b2a1e;
-        --success-foreground:   #ffffff;
-        --success-border:       #2d5736;
-        --success-solid:        #46a758;
-        --warning:              #ffca16;
-        --warning-muted:        #302008;
-        --warning-foreground:   #21180b;
-        --warning-border:       #5c3d05;
-        --warning-solid:        #ffc53d;
-        --info:                 #70b8ff;
-        --info-muted:           #0d2847;
-        --info-foreground:      #ffffff;
-        --info-border:          #104d87;
-        --info-solid:           #0090ff;
-        --destructive:          #ff977d;
-        --destructive-muted:    #391714;
-        --destructive-foreground: #ffffff;
-        --destructive-border:   #6e2920;
-        --destructive-solid:    #e54d2e;
-
-        /* Aliases */
-        --term-bg:  var(--background);
-        --term-fg:  var(--foreground);
-        --titlebar: var(--secondary);
-        --outline:  rgba(237, 237, 236, 0.08);
-        --hover:    var(--accent);
-        --clay:     var(--primary);
-        --dim:      var(--muted-foreground);
-        --subtle:   #686560;
-        --green:    var(--success);
-        --red:      var(--destructive);
-        --blue:     var(--info);
-        --yellow:   var(--warning);
-        --ivory:    var(--background);
-        --mono:     "Geist Mono", "JetBrains Mono", ui-monospace, Menlo, Monaco, monospace;
+        --success-foreground: #ffffff;
+        --success-solid:      #46a758;
+        --warning-foreground: #21180b;
+        --warning-solid:      #ffc53d;
+        --info-foreground:    #ffffff;
+        --info-solid:         #0090ff;
+        --destructive-foreground:#ffffff;
+        --destructive-solid:  #e54d2e;
+        --term-bg:            var(--background);
+        --term-fg:            var(--foreground);
+        --titlebar:           var(--secondary);
+        --hover:              var(--accent);
+        --clay:               var(--primary);
+        --dim:                var(--muted-foreground);
+        --green:              var(--success);
+        --red:                var(--destructive);
+        --blue:               var(--info);
+        --yellow:             var(--warning);
+        --ivory:              var(--background);
       }
 
       @media (prefers-color-scheme: light) {
         :root {
-          --background:         #f6f5ef;
-          --card:               #fcfbf6;
-          --foreground:         #36302a;
-          --muted:              #f0efe3;
-          --muted-foreground:   #8c8678;
-          --border:             #ddd6c6;
-          --input:              #ddd6c6;
-          --primary:            #967e60;
-          --primary-foreground: #ffffff;
           --secondary:          #f0efe3;
-          --accent:             #eae7da;
-          --ring:               #967e60;
-
-          --card-foreground:    #36302a;
           --card-hover:         #f0efe3;
           --card-active:        #eae7da;
-          --popover:            #f0efe3;
           --popover-foreground: #36302a;
-          --primary-hover:      #897254;
-          --primary-muted:      #efece0;
-          --primary-text:       #6f5e44;
           --border-hover:       #cfc8b6;
           --gold-10:            #897254;
-
-          --success:              #3f7a34;
-          --success-muted:        #e6f5e2;
-          --success-foreground:   #ffffff;
-          --success-border:       #c2e1b3;
-          --success-solid:        #46a758;
-          --warning:              #93761d;
-          --warning-muted:        #fbf4c4;
-          --warning-foreground:   #21180b;
-          --warning-border:       #ebd87f;
-          --warning-solid:        #ffc53d;
-          --info:                 #3f6fa6;
-          --info-muted:           #e6f1fc;
-          --info-foreground:      #ffffff;
-          --info-border:          #bed7ef;
-          --info-solid:           #0090ff;
-          --destructive:          #bf4f3b;
-          --destructive-muted:    #fbe8e2;
-          --destructive-foreground: #ffffff;
-          --destructive-border:   #f0c9ba;
-          --destructive-solid:    #e54d2e;
-
-          --outline: rgba(54, 48, 42, 0.08);
-          --subtle:  #a8a294;
+          --success-foreground: #ffffff;
+          --success-solid:      #46a758;
+          --warning-foreground: #21180b;
+          --warning-solid:      #ffc53d;
+          --info-foreground:    #ffffff;
+          --info-solid:         #0090ff;
+          --destructive-foreground:#ffffff;
+          --destructive-solid:  #e54d2e;
         }
       }
 

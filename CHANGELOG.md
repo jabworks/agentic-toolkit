@@ -12,17 +12,33 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## session-report 1.6.5 — 2026-08-12
+
+- chore(session-report): version 1.6.5
+
+## session-handoff 1.6.8 — 2026-08-12
+
+- chore(session-handoff): version 1.6.8
+
+## docket 0.5.0 — 2026-08-12
+
+- chore(docket): version 0.5.0
+
 ## docket 0.4.0 — 2026-08-12
 
-- feat(condux,docket,concord): the removal half of the ease-of-install convention (2.14.0, 0.4.0, 0.4.2)
+- feat(condux,docket,concord): the removal half of the ease-of-install convention (2.14.0, 0.4.0, 0.4.2) (#51)
 
 ## docket 0.3.2 — 2026-08-12
 
 - docs(docket,concord): plugin-level INSTALL.md front doors (0.3.2, 0.4.1) (#50)
 
+## condux 2.14.1 — 2026-08-12
+
+- chore(condux): version 2.14.1
+
 ## condux 2.14.0 — 2026-08-12
 
-- feat(condux,docket,concord): the removal half of the ease-of-install convention (2.14.0, 0.4.0, 0.4.2)
+- feat(condux,docket,concord): the removal half of the ease-of-install convention (2.14.0, 0.4.0, 0.4.2) (#51)
 
 ## condux 2.13.0 — 2026-08-12
 
@@ -30,7 +46,7 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## concord 0.4.2 — 2026-08-12
 
-- feat(condux,docket,concord): the removal half of the ease-of-install convention (2.14.0, 0.4.0, 0.4.2)
+- feat(condux,docket,concord): the removal half of the ease-of-install convention (2.14.0, 0.4.0, 0.4.2) (#51)
 
 ## concord 0.4.1 — 2026-08-12
 

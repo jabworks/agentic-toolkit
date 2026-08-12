@@ -36,6 +36,21 @@ if ! node "$REPO_ROOT/scripts/check-frontmatter.mjs" "$SKILLS_DIR" >/dev/null; t
 fi
 
 # ---------------------------------------------------------------------------
+# Token-core gate — refuse to propagate an HTML surface whose colour core has
+# drifted from scripts/tokens/core.css. Same reasoning as the frontmatter gate
+# above: checking the source before the copy keeps the drift out of dist/. No
+# post-build re-check is needed — nothing in the build transforms CSS, and the
+# dist copies are already guarded byte-for-byte by the mirror tests.
+# ---------------------------------------------------------------------------
+if ! node "$REPO_ROOT/scripts/check-tokens.mjs" >/dev/null; then
+  node "$REPO_ROOT/scripts/check-tokens.mjs" >&2 || true
+  echo "" >&2
+  echo "ERROR  refusing to sync — fix the token drift above first." >&2
+  echo "       node scripts/check-tokens.mjs --fix" >&2
+  exit 1
+fi
+
+# ---------------------------------------------------------------------------
 # copy_dir <src> <dst>  — mirrors src into dst, removing stale files
 # ---------------------------------------------------------------------------
 copy_dir() {
