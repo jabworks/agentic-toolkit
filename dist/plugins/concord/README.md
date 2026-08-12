@@ -35,6 +35,9 @@ Claude Code and OpenCode included, named as `skipped` rather than left out.
 `references/INSTALL.md` is the same procedure written out for an agent to follow by
 hand when bash is not available.
 
+Start at [INSTALL.md](INSTALL.md) if you would rather not hunt for either — it carries
+the host table and points at both.
+
 Restart Codex and trust the hooks when prompted. `concord-doctor` tells you whether all
 of that actually took, and `concord-doctor --fix` re-runs the installer for you.
 

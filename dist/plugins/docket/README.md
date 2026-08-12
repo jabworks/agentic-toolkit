@@ -32,6 +32,10 @@ codex plugin add docket@jabworks-agentic-toolkit
 
 **OpenCode / other hosts** — `npx skills add https://github.com/jabworks/agentic-toolkit/tree/main/dist/opencode/skills -a opencode`
 
+The skills work with nothing else done. To drop the per-operation shell prompts by
+registering the MCP server, see [INSTALL.md](INSTALL.md) — one script, one host
+table, and the doctor that verifies it.
+
 ---
 
 ## The 3 skills
