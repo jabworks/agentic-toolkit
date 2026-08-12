@@ -1,0 +1,142 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+import {
+  applyCore,
+  checkSurface,
+  checkTokens,
+  CORE_PATH,
+  END,
+  expectedBody,
+  findRegion,
+  readCore,
+  START,
+  SURFACES,
+} from '../scripts/check-tokens.mjs';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const REPO_ROOT = path.resolve(__dirname, '..');
+
+const CORE = readCore();
+
+const wrap = (body, { before = '', after = '' } = {}) => `${before}${START}${body}${END}${after}`;
+
+// ---------------------------------------------------------------------------
+// The live surfaces
+// ---------------------------------------------------------------------------
+
+test('every shipped surface carries the canonical core', () => {
+  const { ok, findings } = checkTokens();
+
+  assert.equal(ok, true, findings.map((f) => `${f.file}: ${f.reason}`).join('\n'));
+});
+
+test('the surface registry is literal and every entry exists on disk', () => {
+  assert.ok(SURFACES.length > 0);
+
+  for (const rel of SURFACES) {
+    assert.ok(fs.existsSync(path.join(REPO_ROOT, rel)), `${rel} is registered but missing`);
+  }
+});
+
+// The core is inlined into a JS template literal in docket-render.mjs. A
+// backtick or an interpolation opener would not break the CSS surfaces at all —
+// it would break exactly one file, at runtime. Guard it at the source.
+test('the canonical core is safe to inline into a template literal', () => {
+  const core = fs.readFileSync(path.join(REPO_ROOT, CORE_PATH), 'utf8');
+
+  assert.equal(core.includes('`'), false, 'core.css contains a backtick');
+  assert.equal(core.includes('${'), false, 'core.css contains an interpolation opener');
+});
+
+test('the core defines a light override for every theme-varying token', () => {
+  const split = CORE.indexOf('@media');
+  const names = (chunk) => new Set([...chunk.matchAll(/(--[a-z-]+):/g)].map((m) => m[1]));
+  const base = names(CORE.slice(0, split));
+  const light = names(CORE.slice(split));
+
+  // --mono and --radius are theme-invariant; everything else must be restated.
+  const missing = [...base].filter((n) => !light.has(n));
+
+  assert.deepEqual(missing.sort(), ['--mono', '--radius']);
+});
+
+// ---------------------------------------------------------------------------
+// Marker handling — a missing marker is not mechanically fixable
+// ---------------------------------------------------------------------------
+
+test('a missing marker is reported rather than silently skipped', () => {
+  assert.match(findRegion('body { color: red }', 'x').problem, /missing the start marker/);
+  assert.match(findRegion(`${START}\n${CORE}`, 'x').problem, /missing the end marker/);
+});
+
+test('duplicate or inverted markers are rejected', () => {
+  const body = expectedBody(CORE);
+
+  assert.match(findRegion(`${END}${body}${START}`, 'x').problem, /precedes/);
+  assert.match(findRegion(`${wrap(body)}${START}`, 'x').problem, /duplicate start marker/);
+  assert.match(findRegion(`${wrap(body)}${END}`, 'x').problem, /duplicate end marker/);
+});
+
+test('applyCore refuses a file with no markers instead of appending one', () => {
+  const src = 'body { color: red }';
+  const result = applyCore(src, CORE, 'x');
+
+  assert.equal(result.changed, false);
+  assert.equal(result.src, src);
+  assert.match(result.problem, /missing/);
+});
+
+// ---------------------------------------------------------------------------
+// Byte-exact comparison and --fix
+// ---------------------------------------------------------------------------
+
+test('a single altered value fails the check', () => {
+  const drifted = expectedBody(CORE).replace('#111110', '#000000');
+
+  assert.equal(checkSurface(wrap(drifted), CORE, 'x').ok, false);
+});
+
+test('reindenting the region fails the check — the region has one canonical form', () => {
+  const indented = expectedBody(CORE).replace(/^ {2}--background/m, '    --background');
+
+  assert.equal(checkSurface(wrap(indented), CORE, 'x').ok, false);
+});
+
+test('--fix restores a drifted region and is idempotent', () => {
+  const src = wrap(expectedBody(CORE).replace('#111110', '#000000'));
+
+  const first = applyCore(src, CORE, 'x');
+  assert.equal(first.changed, true);
+  assert.equal(checkSurface(first.src, CORE, 'x').ok, true);
+
+  const second = applyCore(first.src, CORE, 'x');
+  assert.equal(second.changed, false, '--fix churns a file that already conforms');
+  assert.equal(second.src, first.src);
+});
+
+test('--fix replaces only the marked region, never the surrounding file', () => {
+  const before = '<style>\n:root { --hl: gold; }\n';
+  const after = '\n:root { --chip: silver; }\n</style>\n';
+  const src = wrap(expectedBody(CORE).replace('#978365', '#ffffff'), { before, after });
+
+  const result = applyCore(src, CORE, 'x');
+
+  assert.equal(result.changed, true);
+  assert.ok(result.src.startsWith(before), 'content before the start marker was modified');
+  assert.ok(result.src.endsWith(after), 'content after the end marker was modified');
+  assert.equal(checkSurface(result.src, CORE, 'x').ok, true);
+});
+
+test('extension tokens outside the markers survive --fix', () => {
+  const extensions = '\n:root { --hl: rgba(255, 202, 22, 0.30); --hl-active: rgba(255, 202, 22, 0.55); }\n';
+  const src = wrap(expectedBody(CORE).replace('#191918', '#123456'), { after: extensions });
+
+  const result = applyCore(src, CORE, 'x');
+
+  assert.ok(result.src.includes('--hl-active: rgba(255, 202, 22, 0.55)'));
+  assert.equal(result.src.includes('#123456'), false);
+});

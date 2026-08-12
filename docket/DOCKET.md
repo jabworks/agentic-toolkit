@@ -9,6 +9,95 @@ Stale open markers cost real sessions — closing means moving.
 
 ## Committed
 
+### 25. Tag-based filtering on the board — the other half of category filtering (2026-08-12) (2026-08-12)
+
+Section scoping shipped with #21: chips for All / Committed / Someday / Loose
+threads / Archive, plus free-text search over id, title and body. What is still
+missing is filtering by *topic* rather than by workflow state.
+
+The docket format carries no tag field — `parseOpen` yields
+`{ id, idPart, title, section }` and body lines, nothing else. Three routes were
+considered when this came up:
+
+| route | cost | verdict |
+|---|---|---|
+| sections as categories | free | shipped in #21 — but sections are workflow state, not topic |
+| `#tag` convention in titles | zero code to start | **recommended** |
+| a real tags field | MEDIUM–LARGE | touches the format contract, parser, CLI, MCP server, renderer *and* the archive |
+
+The middle route is the ladder doctrine (#6) applied to this: a `#tag` in the
+title line is a rung-1 file convention. It needs no parser change, degrades to
+plain text anywhere that does not know about it, and the board's existing
+free-text filter already matches it today — type `#ui` and it works, because
+`data-search` indexes the title. A chip row that discovers the tag set by
+scanning titles then becomes a pure rendering enhancement over data that already
+exists, with no format migration and no archive rewrite.
+
+Decide before building: whether tag chips combine with section chips as AND
+(scope ∩ tag) or replace them, and whether an unknown tag typed into the search
+box should be offered as a chip.
+
+Raised 2026-08-12 while shipping #21's section scopes.
+#### Status 2026-08-12 — implemented alongside #21
+
+Shipped as the `#tag`-in-title convention with a discovered tag row: pills
+appear only when a docket actually uses tags, counts are faceted against the
+active scope and search, and the leading-letter rule keeps id cross-references
+like "split from #2" out of the tag set. Tag chips AND with section chips, as
+the entry proposed. Awaiting merge with #21.
+
+
+### 21. Token core, checker with --fix, and docket palette conversion (split from #20, 2026-08-12) (2026-08-12)
+
+The shared visual layer for the four HTML surfaces, plus the #4 chip fix in the
+same file. Design signed off 2026-08-12:
+`.condux/designs/2026-08-12-html-surface-tokens-and-navigation.md`.
+
+Measured, not assumed: `session-report/template.html` and
+`session-handoff/references/handoff-template.html` define **identical** 56-token
+sets. `plan-review/references/plan-review-template.html` shares 32 of them and
+adds 3 of its own (`--hl`, `--hl-active`, `--radius-md`). Only
+`record/server/docket-render.mjs` speaks a different dialect — 7 tokens,
+`--bg/--fg/--line/--chip`, no name overlap. So the shared unit is a **32-token
+core** with declared per-surface extensions, not one block: inlining all 56 into
+plan-review ships 24 dead tokens, inlining only the core breaks `--hl` and
+`--green`.
+
+**Mechanism: a checker with `--fix`, not a generator.** The canonical core lives
+in one file; `scripts/check-tokens.mjs` asserts each surface's marker-delimited
+region matches, `--fix` rewrites it, a test guards it, and it gates `sync.sh`
+the way `check-frontmatter.mjs` already does (`sync.sh:30-34` pre-build,
+`:169-176` post-build).
+
+The distinction is load-bearing. A generator makes the marked region build
+output, so hand-editing it is a bug and `skills/` becomes partly generated —
+against "edit `skills/`, it is the source of truth". A checker leaves the region
+authored and merely required to match. It is also a **gate**, not a copy arm, so
+it adds nothing to the surface #11 is filed against, whose complaint is about
+copy decisions (bundle membership probed from `dist/`, hardcoded name→dest
+checks).
+
+Converting docket is not find-and-replace, twice over:
+
+- `--muted` means the opposite thing in the two vocabularies. docket's
+  `--muted: #6a6f76` is a muted *foreground* (used as `color:` on `.stats`); the
+  core's `--muted: #222221` is a surface, with `--muted-foreground` for text. A
+  mechanical rename silently inverts the role.
+- The three document surfaces are dark-base with a `prefers-color-scheme: light`
+  override; docket is light-base with a `dark` override. Converting flips the
+  no-preference fallback. Near-invisible in practice, but it is a change.
+
+The `--fix` path rewrites marker-delimited regions only, never code structure —
+it edits a CSS block inside a JS template literal in `docket-render.mjs`.
+
+Touches four plugins across three release channels: version bumps on condux,
+docket, session-report and session-handoff, and `pnpm changeset` for the npm
+channel because `packages/condux-opencode/` carries plan-review's template.
+Runs through the toolkit-change-control gate.
+
+Closes #4 in the same change — the zero-count chip is a one-liner in
+`docket-render.mjs`, and there is no reason to touch that renderer twice.
+
 ## Someday
 
 ### 4. Board cosmetic: hide the count chip on zero-count sections (2026-08-05)
@@ -177,49 +266,68 @@ eval runs — what we do by hand across dated reports), `max-repeat` and
 
 Found 2026-08-09 surveying awesome-copilot's maintenance machinery.
 
-### 20. Review and redesign the shipped HTML templates, navigation first (2026-08-12)
+### 22. Spec-site navigation in plan-review's DIR_MODE (split from #20, 2026-08-12) (2026-08-12)
 
-Every plugin that renders HTML built its own from scratch. There is no shared
-stylesheet, no shared shell, and no shared navigation pattern — four templates,
-four answers, and the answers disagree about the basics.
+The pain that raised #20: navigation is hard in practice when browsing a specs
+tree. Design signed off 2026-08-12 settled *who owns the surface*; what the
+navigation should become is still undesigned.
 
-| Surface | Lines | nav | TOC | search | sticky |
-|---|---|---|---|---|---|
-| `plan-review/references/plan-review-template.html` | 732 | yes | yes | yes | no |
-| `record/server/docket-render.mjs` | 266 | no | minimal | yes | yes |
-| `session-report/template.html` | 1442 | no | no | one | yes |
-| `session-handoff/references/handoff-template.html` | 603 | no | no | no | no |
+Ownership was already ratified before #20 was written.
+`technical-spec/SKILL.md:100-107` routes spec preview to plan-review's annotate
+server in directory mode, and `plan-review/SKILL.md:53` records that
+technical-spec's own preview server was **retired into it**.
 
-Only `prefers-color-scheme` is common to all four, and only because each
-reimplemented it. The largest document by far (session-report, 1442 lines) has
-the weakest navigation of the set.
+#20's framing — "the spec doc-site is a plan reviewer wearing a hat" — is
+backwards. `listDocs()` (`annotate-server.js:96`) walks every `*.md` in the tree
+grouped by folder; the client builds a folder-grouped sidebar with per-doc TOC;
+cross-doc relative links resolve specifically so a spec catalog's `index.md`
+renders — the very file `spec-browser/references/build-index.js` generates. It
+is a doc-site server that grew a verdict strip, not the reverse.
 
-**spec-browser is a different problem than it looks.** It renders no HTML at
-all — `references/build-index.js` writes a markdown `index.md` catalog and
-nothing else. Browsing a specs tree in a browser goes through plan-review's
-directory mode (`annotate-server.js <spec-dir>`, `DIR_MODE`), which was built to
-*review one plan* and was extended to walk a folder. So "spec-browser navigation
-is hard" is really "the spec doc-site is a plan reviewer wearing a hat", and the
-fix is a design decision about whether spec browsing gets its own surface or
-plan-review's directory mode grows into one properly.
+So: invest here, and spec-browser stays rung 1 of the dependency ladder — the
+agent-readable `index.md` catalog, working with zero servers and zero condux.
+Giving it its own renderer would create a fifth HTML surface, the disease #20
+diagnoses. The cross-reference between them stays descriptive, never a
+dependency.
 
-Decide before building:
+Needs its own discovery before planning: whether the gap is a sidebar redesign,
+a search index, or only grouping and ordering fixes is undecided.
 
-- One shared shell (header, nav, theme, search) that all four render into, or
-  four templates that merely agree on a navigation contract? The hard constraint
-  is that every artifact must stay **self-contained with no egress** — no CDN,
-  no external font, asserted by the supply-chain checker — so "shared" means a
-  build-time include, not a runtime import.
-- Does spec-browser get a real doc-site renderer, or does plan-review's
-  `DIR_MODE` become one? They currently overlap and neither owns it.
-- What navigation actually fits each: a long single document (handoff,
-  session-report) wants a sticky TOC; a board (docket) wants filter + jump; a
-  multi-file tree (specs) wants a sidebar. One pattern will not serve all three,
-  which is why "add a TOC everywhere" is not the answer.
+### 23. Long-document navigation for session-report and session-handoff (split from #20, 2026-08-12) (2026-08-12)
 
-Worth pairing with #4 (the zero-count chip in `docket-render.mjs`) — same file,
-and no reason to touch that renderer twice.
+The two long single documents have the weakest navigation relative to their
+size. Design signed off 2026-08-12; the pattern is agreed, the work is not
+scoped.
 
-Raised 2026-08-12: navigation is hard in practice on spec-browser and docket.
+`session-report/template.html` is 1442 lines — the largest artifact this toolkit
+ships — with no nav, no TOC, and no search. Its only keyboard interaction is
+arrow-key day selection (`:1153-1161`). It is the clear first target: a sticky
+TOC is the pattern that fits a long single document.
+
+`session-handoff/references/handoff-template.html` is 603 lines with 11 anchors
+and nothing else. It may need nothing at all — it is a fill-in document whose
+markdown twin has no navigation either. Decide before building rather than
+adding a TOC on symmetry grounds.
+
+Explicitly not a defect list for the other two surfaces. #20's uniform
+four-feature table reads as one, but "sticky: no" on plan-review's `100vh` pane
+app and "TOC: no" on a fill-in handoff are correct outcomes. One navigation
+pattern does not serve a long document, a board, and a multi-file tree — which
+is why this is separate from #22.
+
+Depends on #21 only for the token core; the navigation work is independent.
+
+### 24. plan-review docs say directory mode lists top-level *.md; the code walks recursively (2026-08-12) (2026-08-12)
+
+`plan-review/SKILL.md:49` and `:101` both describe directory mode as listing
+"every top-level `*.md`". `annotate-server.js:96` (`listDocs()`) walks the whole
+tree — its own comment says "every *.md in the tree" — and the client groups
+sub-folder docs and resolves subdirectory links.
+
+The code outgrew the prose. Two-line doc fix; matters because #22 depends on
+directory mode being understood as a recursive doc-site, and the SKILL.md is
+what an agent reads first.
+
+Found 2026-08-12 verifying #20's claims against the files.
 
 ## Loose threads

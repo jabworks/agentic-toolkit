@@ -61,6 +61,7 @@ test('the local pre-commit hook is installed and current', (t) => {
   const body = fs.readFileSync(hook, 'utf8');
   const missing = [
     ['check-frontmatter.mjs', 'the SKILL.md frontmatter gate'],
+    ['check-tokens.mjs', 'the shared token-core gate'],
     ['scripts/sync.sh', 'the skills/ → dist/ sync'],
   ].filter(([needle]) => !body.includes(needle));
 

@@ -129,7 +129,9 @@ test('closeItem stamps, moves byte-identical bodies to the year archive, and rep
 
     const archive = fs.readFileSync(result.archiveFile, 'utf8');
     assert.match(archive, /^# DOCKET ARCHIVE 2026/, 'a fresh year file must get the header');
-    assert.match(archive, /## 1\. Ship the widget pipeline \(2026-06-01\) — ✅ DONE 2026-08-05/);
+    // The title moves verbatim, tags included — the board counts tags on archived
+  // entries, so a close that dropped them would undercount every tag pill.
+  assert.match(archive, /## 1\. Ship the widget pipeline #build #ui \(2026-06-01\) — ✅ DONE 2026-08-05/);
     assert.ok(archive.includes(body), 'item body (incl. the #### Status block) must move byte-identically');
     assert.match(archive, /Verification: verified on preview/);
 
@@ -231,8 +233,36 @@ test('renderHtml produces a self-contained board with anchors, archive, and stat
     assert.match(html, /id="item-3"/, 'archived items get anchors too');
     assert.match(html, /data-open="item-4"/, '--open must deep-link');
     assert.match(html, /<details><summary>2025/, 'archive collapses per year');
-    assert.match(html, /<b>3<\/b> open/, 'open count stat');
-    assert.match(html, /prefers-color-scheme:dark/, 'dark derives from the light base');
+    // The scope pills absorbed the per-section counts the stats row used to
+    // duplicate; only non-section stats still live in that row.
+    assert.match(html, /data-scope="" data-total="3"[^>]*>All<span class="count">3<\/span>/, 'the All pill reports the open count');
+    assert.match(html, /data-scope="Committed" data-total="1"[^>]*>Committed<span class="count">1<\/span>/, 'section pills carry their own total');
+    assert.match(html, /<b>65d<\/b> oldest open/, 'non-section stats survive in the stats row');
+    assert.doesNotMatch(html, /<b>3<\/b> open/, 'the stats row no longer duplicates the pill counts');
+    assert.match(html, /id="filter"[^>]*hidden>/, 'the search box starts collapsed');
+    assert.match(html, /id="filter-toggle"[^>]*aria-expanded="false"/, 'the Filter button reports its state');
+
+    // Tags are discovered from `#tag` in item titles — a file convention, not a
+    // format change. The leading-letter rule is what keeps id cross-references
+    // like "split from #2" out of the tag set.
+    assert.match(html, /<div class="tags"/, 'a docket that uses tags gets a tag row');
+    assert.match(html, /data-tag="build" data-total="1"/, 'each tag pill carries its own total');
+    assert.match(html, /data-tag="research"/, 'tags are discovered across sections');
+    assert.doesNotMatch(html, /data-tag="2"/, 'a numeric #N cross-reference is an id, not a tag');
+    assert.match(html, /id="item-1"[^>]*data-tags="build ui"/, 'items carry their tags for filtering');
+    assert.match(html, /id="item-4"[^>]*data-tags=""/, 'an untagged item carries an empty tag list');
+    // The board adopted the shared token core (docket #21), which is dark-base
+    // with a light override — the reverse of the dialect this used to assert.
+    assert.match(html, /@media \(prefers-color-scheme: light\)/, 'light derives from the shared dark base');
+
+    // Section scopes: All, one chip per DOCKET.md section, and the archive.
+    // Sections are the only grouping the format already carries, so scoping to
+    // them needs no data-model change.
+    assert.match(html, /<div class="scopes"/, 'the board offers section scopes');
+    assert.match(html, /data-scope=""[^>]*>All</, 'All is the default scope');
+    assert.match(html, /<section data-section="Committed">/, 'each section carries its scope name');
+    assert.match(html, /data-section="__archive"/, 'the archive gets a reserved scope name');
+    assert.doesNotMatch(html, /<section data-section="__archive">[\s\S]*?<section /, 'archive is the last section');
 
     // Self-contained: no external fetches of any kind.
     assert.doesNotMatch(html, /(?:src|href)="https?:/, 'renderer must not reference external resources');
