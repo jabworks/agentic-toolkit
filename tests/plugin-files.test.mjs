@@ -77,6 +77,82 @@ test('every plugin ships the repo LICENSE, byte for byte', () => {
   }
 });
 
+// An install procedure a user cannot find is an install procedure they do not
+// run. condux got a plugin-level front door when its installers were scattered
+// inside skills; docket's and concord's stayed four levels down, inside a skill,
+// while the plugin homepage sat at the root. The rule generalises the fix rather
+// than naming the two plugins: if the install story is written down anywhere in
+// the shipped tree, the plugin root is one of the places it is written down.
+test('a plugin whose install procedure is buried also has one at its root', () => {
+  const problems = [];
+
+  for (const plugin of plugins) {
+    const root = path.join(DIST, plugin);
+    if (!fs.existsSync(root)) continue;
+
+    const shipped = fs
+      .readdirSync(root, { recursive: true })
+      .filter((entry) => path.basename(entry) === 'INSTALL.md')
+      .map((entry) => entry.split(path.sep).join('/'));
+
+    if (shipped.length === 0) continue;
+
+    // Both halves matter, and checking dist alone covers neither properly. A
+    // missing root copy is the buried-procedure bug this test is named for; a
+    // root copy with no editable source is condux's hand-written README all
+    // over again — sync.sh would never touch it, and the byte-identical test
+    // above iterates sources, so a dist-only file is invisible to every other
+    // assertion in this file.
+    if (!shipped.includes('INSTALL.md')) {
+      problems.push(`${plugin}: ships ${shipped.join(', ')} but nothing at the plugin root`);
+      continue;
+    }
+
+    if (!fs.existsSync(path.join(PLUGIN_SRC, plugin, 'INSTALL.md'))) {
+      problems.push(`${plugin}: dist has a root INSTALL.md with no source — never hand-write into dist/`);
+    }
+  }
+
+  assert.deepEqual(problems, [], 'add plugins/<name>/INSTALL.md — a front door pointing at the deep procedure');
+});
+
+// The front door's whole job is naming where the real procedure lives, so a
+// stale path in it is worse than no front door — it sends an agent somewhere
+// that does not exist. Every repo-relative path it cites must resolve against
+// the plugin root a user actually lands on, which is the dist tree, not this one.
+test('every path a plugin-level INSTALL.md cites resolves in its dist tree', () => {
+  // Placeholders the reader substitutes, host config on the reader's machine,
+  // and absolute paths are all claims about somewhere else — not about this tree.
+  const PLACEHOLDER = /[<>${}*~]/;
+  const PATH_TOKEN = /`([^`\s]*\/[^`\s]*\.[a-z]+)`/g;
+  const INVOCATION = /\b(?:node|bash|sh)\s+([^\s`"']*\/[^\s`"']*\.(?:mjs|js|sh))/g;
+  const dangling = [];
+
+  for (const plugin of plugins) {
+    const front = path.join(PLUGIN_SRC, plugin, 'INSTALL.md');
+    if (!fs.existsSync(front)) continue;
+
+    const src = fs.readFileSync(front, 'utf8');
+    const cited = new Set(
+      [...src.matchAll(PATH_TOKEN), ...src.matchAll(INVOCATION)]
+        .map((m) => m[1])
+        .filter((token) => !PLACEHOLDER.test(token) && !token.startsWith('/')),
+    );
+
+    for (const token of cited) {
+      // A front door may cite its own source location as well as the shipped
+      // path — resolve against the repo root too, or every "edit the source,
+      // never the mirror" note reads as a dangling link.
+      if (fs.existsSync(path.join(DIST, plugin, token))) continue;
+      if (fs.existsSync(path.join(REPO_ROOT, token))) continue;
+
+      dangling.push(`${plugin}/INSTALL.md cites ${token}, which resolves nowhere`);
+    }
+  }
+
+  assert.deepEqual(dangling, []);
+});
+
 // The hand-written skills table is the part that goes stale: condux's README
 // claimed 12 skills while the plugin shipped 14, and the npm package README
 // said 12 while bundling 13. A README that omits a skill is a homepage that
