@@ -1,6 +1,6 @@
 {
   "name": "@jabworks/condux",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "OpenCode plugin for the condux workflow toolkit — bundles the condux skills and injects the specialist agents (coder, explorer, planner, researcher) plus an opt-in plan-review listener.",
   "type": "module",
   "publishConfig": {
