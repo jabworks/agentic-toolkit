@@ -177,4 +177,49 @@ eval runs — what we do by hand across dated reports), `max-repeat` and
 
 Found 2026-08-09 surveying awesome-copilot's maintenance machinery.
 
+### 20. Review and redesign the shipped HTML templates, navigation first (2026-08-12)
+
+Every plugin that renders HTML built its own from scratch. There is no shared
+stylesheet, no shared shell, and no shared navigation pattern — four templates,
+four answers, and the answers disagree about the basics.
+
+| Surface | Lines | nav | TOC | search | sticky |
+|---|---|---|---|---|---|
+| `plan-review/references/plan-review-template.html` | 732 | yes | yes | yes | no |
+| `record/server/docket-render.mjs` | 266 | no | minimal | yes | yes |
+| `session-report/template.html` | 1442 | no | no | one | yes |
+| `session-handoff/references/handoff-template.html` | 603 | no | no | no | no |
+
+Only `prefers-color-scheme` is common to all four, and only because each
+reimplemented it. The largest document by far (session-report, 1442 lines) has
+the weakest navigation of the set.
+
+**spec-browser is a different problem than it looks.** It renders no HTML at
+all — `references/build-index.js` writes a markdown `index.md` catalog and
+nothing else. Browsing a specs tree in a browser goes through plan-review's
+directory mode (`annotate-server.js <spec-dir>`, `DIR_MODE`), which was built to
+*review one plan* and was extended to walk a folder. So "spec-browser navigation
+is hard" is really "the spec doc-site is a plan reviewer wearing a hat", and the
+fix is a design decision about whether spec browsing gets its own surface or
+plan-review's directory mode grows into one properly.
+
+Decide before building:
+
+- One shared shell (header, nav, theme, search) that all four render into, or
+  four templates that merely agree on a navigation contract? The hard constraint
+  is that every artifact must stay **self-contained with no egress** — no CDN,
+  no external font, asserted by the supply-chain checker — so "shared" means a
+  build-time include, not a runtime import.
+- Does spec-browser get a real doc-site renderer, or does plan-review's
+  `DIR_MODE` become one? They currently overlap and neither owns it.
+- What navigation actually fits each: a long single document (handoff,
+  session-report) wants a sticky TOC; a board (docket) wants filter + jump; a
+  multi-file tree (specs) wants a sidebar. One pattern will not serve all three,
+  which is why "add a TOC everywhere" is not the answer.
+
+Worth pairing with #4 (the zero-count chip in `docket-render.mjs`) — same file,
+and no reason to touch that renderer twice.
+
+Raised 2026-08-12: navigation is hard in practice on spec-browser and docket.
+
 ## Loose threads
