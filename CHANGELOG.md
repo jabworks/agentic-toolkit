@@ -12,17 +12,29 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## docket 0.4.0 — 2026-08-12
+
+- feat(condux,docket,concord): the removal half of the ease-of-install convention (2.14.0, 0.4.0, 0.4.2)
+
 ## docket 0.3.2 — 2026-08-12
 
-- docs(docket,concord): plugin-level INSTALL.md front doors (0.3.2, 0.4.1)
+- docs(docket,concord): plugin-level INSTALL.md front doors (0.3.2, 0.4.1) (#50)
+
+## condux 2.14.0 — 2026-08-12
+
+- feat(condux,docket,concord): the removal half of the ease-of-install convention (2.14.0, 0.4.0, 0.4.2)
 
 ## condux 2.13.0 — 2026-08-12
 
 - feat(condux): warn when a competing skill library is installed (2.13.0) (#48)
 
+## concord 0.4.2 — 2026-08-12
+
+- feat(condux,docket,concord): the removal half of the ease-of-install convention (2.14.0, 0.4.0, 0.4.2)
+
 ## concord 0.4.1 — 2026-08-12
 
-- docs(docket,concord): plugin-level INSTALL.md front doors (0.3.2, 0.4.1)
+- docs(docket,concord): plugin-level INSTALL.md front doors (0.3.2, 0.4.1) (#50)
 
 ## condux 2.12.0 — 2026-08-11
 

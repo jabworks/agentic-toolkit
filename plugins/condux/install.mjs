@@ -171,6 +171,24 @@ function readFeatureHooks(text) {
   return { section: { start, end, at: at === -1 ? -1 : start + 1 + at }, enabled, lines };
 }
 
+// Read-only twin of registerFeatureFlag, for the uninstall path. Deliberately
+// cannot write: the only correct action on the way out is to look and report.
+// A config it cannot read or parse reports not-enabled rather than throwing —
+// this is a report line, and refusing to uninstall over an unreadable flag
+// would be a worse outcome than saying nothing about it.
+function readFeatureFlagState(codexHome) {
+  const config = path.join(codexHome, 'config.toml');
+  if (!fs.existsSync(config)) return { enabled: false };
+
+  try {
+    const parsed = readFeatureHooks(fs.readFileSync(config, 'utf8'));
+
+    return { enabled: parsed.error ? false : parsed.enabled };
+  } catch {
+    return { enabled: false };
+  }
+}
+
 function registerFeatureFlag(codexHome, dry) {
   const config = path.join(codexHome, 'config.toml');
   let text = '';
@@ -237,6 +255,54 @@ function registerCodex(codexHome, dry) {
     const hook = runSub('bash', [HOOK_INSTALLER], 'the Codex hook installer');
     if (!hook.ok) return { host: 'codex', status: 'broken', detail: hook.why };
     steps.push('registered the plan-review Stop hook');
+  }
+
+  return { host: 'codex', status: 'done', detail: steps.join('; ') };
+}
+
+// The mirror of registerCodex, and deliberately the same shape: this installer
+// delegates on the way in, so it delegates on the way out. Reversing the writes
+// here instead would mean re-deriving the agent TOML names and the Stop hook's
+// entry shape — knowledge that lives in exactly one place each today, and the
+// scattering of that knowledge is what made this plugin's install story wrong
+// until it got a front door.
+function unregisterCodex(codexHome, dry) {
+  const steps = [];
+
+  // Never the feature flag. Three plugins write it, none owns it, and clearing
+  // it silently breaks whichever of the other two is still installed. Reported
+  // rather than omitted, so a user does not read a correct result as a leak.
+  const flag = readFeatureFlagState(codexHome);
+
+  if (AGENT_INSTALLER) {
+    const args = [AGENT_INSTALLER, '--codex-home', codexHome, '--uninstall'];
+    if (dry) args.push('--dry-run');
+    const agents = runSub(process.execPath, args, 'the Codex agent installer');
+    if (!agents.ok) return { host: 'codex', status: 'broken', detail: agents.why };
+    steps.push(dry ? 'would remove the four specialist agents' : 'removed the four specialist agents');
+  } else {
+    // `npx skills add` ships bare skill trees, so a missing delegate is an
+    // install shape, not a failure.
+    steps.push('no agent installer beside this plugin — nothing to remove');
+  }
+
+  // Symmetric with the install path: a plugin install never registered the Stop
+  // hook by hand, so there is nothing here to take back.
+  if (IS_PLUGIN) {
+    steps.push('the Stop hook came from the plugin manifest — removing the plugin removes it');
+  } else if (!HOOK_INSTALLER) {
+    steps.push('no hook installer beside this plugin — nothing to remove');
+  } else if (dry) {
+    steps.push(`would run ${HOOK_INSTALLER} --uninstall for the plan-review Stop hook`);
+  } else {
+    const hook = runSub('bash', [HOOK_INSTALLER, '--uninstall'], 'the Codex hook installer');
+    if (!hook.ok) return { host: 'codex', status: 'broken', detail: hook.why };
+    steps.push('removed the plan-review Stop hook');
+  }
+
+  if (flag.enabled) {
+    steps.push('[features] hooks = true left set — concord and plan-review ride the same flag');
+    return { host: 'codex', status: 'warn', detail: steps.join('; ') };
   }
 
   return { host: 'codex', status: 'done', detail: steps.join('; ') };
@@ -353,20 +419,7 @@ function main(argv) {
     }
 
     if (host === 'codex') {
-      if (remove) {
-        // features.hooks is shared with concord and plan-review, and the two
-        // sub-installers have no reverse path of their own. Saying so beats
-        // clearing a flag another plugin still needs.
-        rows.push({
-          host,
-          status: 'skipped',
-          detail: 'features.hooks is shared with other plugins and is left set; agent TOMLs and the Stop hook are removed by hand',
-          fix: `remove ${path.join(dir, 'agents')}/{coder,explorer,planner,researcher}.toml and the --codex-stop entry in ${path.join(dir, 'hooks.json')}`,
-        });
-        continue;
-      }
-
-      rows.push(registerCodex(dir, dry));
+      rows.push(remove ? unregisterCodex(dir, dry) : registerCodex(dir, dry));
       continue;
     }
 
@@ -397,8 +450,12 @@ function main(argv) {
 
   const broken = rows.filter((row) => row.status === 'broken').length;
   const warned = rows.filter((row) => row.status === 'warn').length;
+  // The hedge this line used to carry ("where this installer could reverse it")
+  // was true when the Codex branch printed paths to delete by hand. It now
+  // delegates to each sub-installer's own --uninstall, so the only thing left
+  // behind is shared state, and that is a warn row rather than a caveat here.
   const verdict = remove
-    ? 'condux is unregistered where this installer could reverse it'
+    ? `condux is unregistered on every host present${warned > 0 ? `, with ${warned} warning(s) above` : ''}`
     : `condux is registered on every host present${warned > 0 ? `, with ${warned} warning(s) above` : ''}`;
   process.stdout.write(
     broken === 0 ? `\n${verdict}${dry ? ' (dry run — nothing was written)' : ''}.\n` : `\n${broken} step(s) failed.\n`,

@@ -11,10 +11,6 @@ Stale open markers cost real sessions — closing means moving.
 
 ## Someday
 
-### 2. UNINSTALL.md — the removal half of the ease-of-install convention (2026-08-05)
-
-Reverse path for the ease-of-install convention: agent-followable removal — drop the Codex config.toml table, remove the OpenCode json key (or restore the .bak backups), verify the registration is gone, report per host. Docket as reference implementation; generalizes to condux/concord alongside INSTALL.md.
-
 ### 4. Board cosmetic: hide the count chip on zero-count sections (2026-08-05)
 
 Zero-count sections render an empty chip pill after the heading (`count || empty-string` still emits the span). One-line fix in docket-render.mjs. Seen at live verification 2026-08-05.
@@ -181,34 +177,49 @@ eval runs — what we do by hand across dated reports), `max-repeat` and
 
 Found 2026-08-09 surveying awesome-copilot's maintenance machinery.
 
-### 17. condux --uninstall cannot reverse what its sub-installers wrote (2026-08-11)
+### 20. Review and redesign the shipped HTML templates, navigation first (2026-08-12)
 
-`plugins/condux/install.mjs --uninstall` reverses exactly one thing it wrote —
-the OpenCode `plugin` key. Two others it cannot:
+Every plugin that renders HTML built its own from scratch. There is no shared
+stylesheet, no shared shell, and no shared navigation pattern — four templates,
+four answers, and the answers disagree about the basics.
 
-| written by | reverse path |
-|---|---|
-| `subagent-execution/references/install-codex-agents.mjs` | none — no `--uninstall` flag |
-| `plan-review/references/install-codex-hook.sh` | none — concord's twin has one, condux's does not |
-| `[features] hooks = true` | deliberately **not** reversed — concord and plan-review ride the same flag |
+| Surface | Lines | nav | TOC | search | sticky |
+|---|---|---|---|---|---|
+| `plan-review/references/plan-review-template.html` | 732 | yes | yes | yes | no |
+| `record/server/docket-render.mjs` | 266 | no | minimal | yes | yes |
+| `session-report/template.html` | 1442 | no | no | one | yes |
+| `session-handoff/references/handoff-template.html` | 603 | no | no | no | no |
 
-Today it reports `skipped` and prints the exact paths to remove by hand. That is
-honest but thin, and it makes condux the odd one out: concord's installer has a
-working `--uninstall` that removes its three hook events and is regression-tested
-for it (`script-safety.test.mjs`, after the `remember` rename duplicated every
-hook).
+Only `prefers-color-scheme` is common to all four, and only because each
+reimplemented it. The largest document by far (session-report, 1442 lines) has
+the weakest navigation of the set.
 
-The shared-flag case is the interesting one and does not have an obvious answer.
-`features.hooks` is not owned by any single plugin, so no plugin's uninstall can
-safely clear it — which means the toolkit needs a rule for shared host state,
-not just a flag. Candidates: leave it always (today's behaviour, and the flag
-outlives every plugin that wanted it), or reference-count by probing whether any
-other known plugin still registers hooks, or hand it to the user as a prompt.
+**spec-browser is a different problem than it looks.** It renders no HTML at
+all — `references/build-index.js` writes a markdown `index.md` catalog and
+nothing else. Browsing a specs tree in a browser goes through plan-review's
+directory mode (`annotate-server.js <spec-dir>`, `DIR_MODE`), which was built to
+*review one plan* and was extended to walk a folder. So "spec-browser navigation
+is hard" is really "the spec doc-site is a plan reviewer wearing a hat", and the
+fix is a design decision about whether spec browsing gets its own surface or
+plan-review's directory mode grows into one properly.
 
-Closest sibling of #2, and probably decided with it rather than before it: #2 is
-the documented `UNINSTALL.md` procedure across all three plugins, and this is the
-machinery question underneath it. Do not design them apart.
+Decide before building:
 
-Found 2026-08-11 shipping #9.
+- One shared shell (header, nav, theme, search) that all four render into, or
+  four templates that merely agree on a navigation contract? The hard constraint
+  is that every artifact must stay **self-contained with no egress** — no CDN,
+  no external font, asserted by the supply-chain checker — so "shared" means a
+  build-time include, not a runtime import.
+- Does spec-browser get a real doc-site renderer, or does plan-review's
+  `DIR_MODE` become one? They currently overlap and neither owns it.
+- What navigation actually fits each: a long single document (handoff,
+  session-report) wants a sticky TOC; a board (docket) wants filter + jump; a
+  multi-file tree (specs) wants a sidebar. One pattern will not serve all three,
+  which is why "add a TOC everywhere" is not the answer.
+
+Worth pairing with #4 (the zero-count chip in `docket-render.mjs`) — same file,
+and no reason to touch that renderer twice.
+
+Raised 2026-08-12: navigation is hard in practice on spec-browser and docket.
 
 ## Loose threads

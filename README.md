@@ -7,6 +7,19 @@
 
 Personal collection of agentic coding skills. Compatible with Claude Code, Codex, OpenCode, Cursor, Gemini CLI, and [40+ other tools](https://github.com/vercel-labs/skills) via `npx skills add`.
 
+## Contents
+
+- [Install](#install) — [ask an agent](#ask-an-agent-to-install-it) · [conflicts](#compatibility-with-other-skill-libraries) · [Claude Code](#claude-code--plugin-marketplace) · [Codex](#codex--plugin-manifests) · [OpenCode](#opencode--condux-plugin--merged-trigger-skill-variants) · [manual](#manual-fallback)
+- [Skills](#skills) — the standalone skills table
+  - [Condux](#condux) — the agentic workflow bundle
+  - [Concord](#concord) — continuous memory for Codex
+  - [Docket](#docket) — file-based project backlog
+  - [Toolkit Ops](#toolkit-ops) — maintaining this repo
+- [Where artifacts land](#where-artifacts-land) — what gets written to your project, and where
+- [Evals](#evals) — how trigger routing is measured
+- [Acknowledgments](#acknowledgments)
+- [Structure](#structure) — repo layout and the three distribution channels
+
 ## Install
 
 `npx skills add` auto-detects the running agent and installs to the right directory:
