@@ -10,6 +10,7 @@
 //
 // Usage:
 //   node install-codex-agents.mjs [--codex-home <dir>] [--dry-run]
+//   node install-codex-agents.mjs --uninstall [--codex-home <dir>] [--dry-run]
 //
 // Behavior:
 //   - description = the .md frontmatter description prose (Claude-style
@@ -20,6 +21,14 @@
 //     sandbox_mode defaults to read-only for explorer/researcher and
 //     workspace-write for planner/coder
 //   - existing files are backed up to <name>.toml.bak first
+//
+// --uninstall removes exactly the .toml files this installer would have
+// written — the names are derived from the same ../agents/*.md frontmatter,
+// never hardcoded, since the agent set has already changed once. It never
+// touches unrelated files a user placed in agents/ by hand, and it removes
+// the agents/ directory itself only if that leaves it empty (plain rmdir,
+// never recursive). It does not read or write config.toml — the
+// [features] hooks flag is shared host state this script does not own.
 //
 // Schema per https://developers.openai.com/codex/subagents (verified
 // 2026-07-08): required name/description/developer_instructions; a custom
@@ -32,6 +41,7 @@ import { fileURLToPath } from 'node:url';
 
 const args = process.argv.slice(2);
 const DRY = args.includes('--dry-run');
+const UNINSTALL = args.includes('--uninstall');
 const homeIdx = args.indexOf('--codex-home');
 const CODEX_HOME = homeIdx >= 0 ? args[homeIdx + 1] : (process.env.CODEX_HOME || path.join(os.homedir(), '.codex'));
 const DEST = path.join(CODEX_HOME, 'agents');
@@ -50,7 +60,8 @@ function fmField(block, key) {
   return m ? m[1].trim().replace(/^['"]|['"]$/g, '') : null;
 }
 
-if (!DRY) fs.mkdirSync(DEST, { recursive: true });
+// --uninstall must never create the directory it is trying to remove.
+if (!DRY && !UNINSTALL) fs.mkdirSync(DEST, { recursive: true });
 
 for (const file of fs.readdirSync(AGENTS_DIR).filter((f) => f.endsWith('.md'))) {
   const src = fs.readFileSync(path.join(AGENTS_DIR, file), 'utf8');
@@ -58,6 +69,28 @@ for (const file of fs.readdirSync(AGENTS_DIR).filter((f) => f.endsWith('.md'))) 
   if (!fm) { console.error(`skip ${file}: no frontmatter`); continue; }
 
   const name = fmField(fm[1], 'name');
+
+  if (UNINSTALL) {
+    // Same name derivation as install, just aimed at removal — the set of
+    // files this loop owns is exactly the set install would have written.
+    const dest = path.join(DEST, `${name}.toml`);
+    if (!fs.existsSync(dest)) {
+      console.log(`skipped ${dest} (already absent)`);
+      continue;
+    }
+    if (DRY) {
+      console.log(`--- would remove ${dest}`);
+      continue;
+    }
+    try {
+      fs.unlinkSync(dest);
+      console.log(`removed ${dest}`);
+    } catch (err) {
+      console.error(`failed ${dest}: ${err.message}`);
+    }
+    continue;
+  }
+
   let description = fmField(fm[1], 'description') || '';
   // Strip Claude-style example blocks (literal \n escapes inside the YAML
   // string) and unescape what remains into plain prose.
@@ -94,5 +127,20 @@ for (const file of fs.readdirSync(AGENTS_DIR).filter((f) => f.endsWith('.md'))) 
   } else {
     fs.writeFileSync(dest, toml);
     console.log(`wrote ${dest}${preserved.length ? '  (preserved: ' + preserved.map((l) => l.split(' ')[0]).join(', ') + ')' : ''}`);
+  }
+}
+
+if (UNINSTALL && !DRY) {
+  // Non-recursive on purpose — this only succeeds when every file we didn't
+  // own is also gone, i.e. never for a directory the user is still using.
+  try {
+    fs.rmdirSync(DEST);
+    console.log(`removed ${DEST} (empty)`);
+  } catch (err) {
+    if (err.code === 'ENOTEMPTY') {
+      console.log(`left ${DEST} in place (not empty — files not owned by this installer remain)`);
+    } else if (err.code !== 'ENOENT') {
+      console.error(`warn: could not remove ${DEST}: ${err.message}`);
+    }
   }
 }

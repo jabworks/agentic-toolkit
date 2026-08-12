@@ -77,50 +77,76 @@ test('every plugin ships the repo LICENSE, byte for byte', () => {
   }
 });
 
-// An install procedure a user cannot find is an install procedure they do not
-// run. condux got a plugin-level front door when its installers were scattered
-// inside skills; docket's and concord's stayed four levels down, inside a skill,
-// while the plugin homepage sat at the root. The rule generalises the fix rather
-// than naming the two plugins: if the install story is written down anywhere in
-// the shipped tree, the plugin root is one of the places it is written down.
-test('a plugin whose install procedure is buried also has one at its root', () => {
+// A procedure a user cannot find is a procedure they do not run. condux got a
+// plugin-level front door when its installers were scattered inside skills;
+// docket's and concord's stayed four levels down, inside a skill, while the
+// plugin homepage sat at the root. The rule generalises the fix rather than
+// naming the plugins: if the story is written down anywhere in the shipped tree,
+// the plugin root is one of the places it is written down.
+//
+// Both kinds of front door are covered by the same rule, because the removal
+// half went missing in exactly the way the install half did. A third kind later
+// costs one array entry, not a fourth test.
+const FRONT_DOOR_DOCS = ['INSTALL.md', 'UNINSTALL.md'];
+
+test('a plugin whose install or removal procedure is buried also has one at its root', () => {
   const problems = [];
 
   for (const plugin of plugins) {
     const root = path.join(DIST, plugin);
     if (!fs.existsSync(root)) continue;
 
-    const shipped = fs
-      .readdirSync(root, { recursive: true })
-      .filter((entry) => path.basename(entry) === 'INSTALL.md')
-      .map((entry) => entry.split(path.sep).join('/'));
+    const tree = fs.readdirSync(root, { recursive: true }).map((entry) => entry.split(path.sep).join('/'));
 
-    if (shipped.length === 0) continue;
+    for (const doc of FRONT_DOOR_DOCS) {
+      const shipped = tree.filter((entry) => path.posix.basename(entry) === doc);
+      if (shipped.length === 0) continue;
 
-    // Both halves matter, and checking dist alone covers neither properly. A
-    // missing root copy is the buried-procedure bug this test is named for; a
-    // root copy with no editable source is condux's hand-written README all
-    // over again — sync.sh would never touch it, and the byte-identical test
-    // above iterates sources, so a dist-only file is invisible to every other
-    // assertion in this file.
-    if (!shipped.includes('INSTALL.md')) {
-      problems.push(`${plugin}: ships ${shipped.join(', ')} but nothing at the plugin root`);
-      continue;
-    }
+      // Both halves matter, and checking dist alone covers neither properly. A
+      // missing root copy is the buried-procedure bug this test is named for; a
+      // root copy with no editable source is condux's hand-written README all
+      // over again — sync.sh would never touch it, and the byte-identical test
+      // above iterates sources, so a dist-only file is invisible to every other
+      // assertion in this file.
+      if (!shipped.includes(doc)) {
+        problems.push(`${plugin}: ships ${shipped.join(', ')} but no ${doc} at the plugin root`);
+        continue;
+      }
 
-    if (!fs.existsSync(path.join(PLUGIN_SRC, plugin, 'INSTALL.md'))) {
-      problems.push(`${plugin}: dist has a root INSTALL.md with no source — never hand-write into dist/`);
+      if (!fs.existsSync(path.join(PLUGIN_SRC, plugin, doc))) {
+        problems.push(`${plugin}: dist has a root ${doc} with no source — never hand-write into dist/`);
+      }
     }
   }
 
-  assert.deepEqual(problems, [], 'add plugins/<name>/INSTALL.md — a front door pointing at the deep procedure');
+  assert.deepEqual(problems, [], 'add plugins/<name>/<doc> — a front door pointing at the deep procedure');
+});
+
+// The placement rule above only fires when a document of that kind exists
+// somewhere in the tree, which silently exempts UNINSTALL.md: no plugin has a
+// buried one (concord's removal steps live inside its deep INSTALL.md, docket's
+// did not exist), so deleting all three front doors passed it. Placement was
+// guarded; existence was not.
+//
+// The convention is that the two halves ship as a pair — a plugin that tells a
+// user how to register something owes them the reverse. Keyed off the install
+// front door rather than a hardcoded plugin list, so a new plugin inherits the
+// obligation the moment it gains an installer.
+test('a plugin with an install front door also ships a removal one', () => {
+  const missing = plugins.filter(
+    (plugin) =>
+      fs.existsSync(path.join(PLUGIN_SRC, plugin, 'INSTALL.md')) &&
+      !fs.existsSync(path.join(PLUGIN_SRC, plugin, 'UNINSTALL.md')),
+  );
+
+  assert.deepEqual(missing, [], 'add plugins/<name>/UNINSTALL.md — the removal half of the convention');
 });
 
 // The front door's whole job is naming where the real procedure lives, so a
 // stale path in it is worse than no front door — it sends an agent somewhere
 // that does not exist. Every repo-relative path it cites must resolve against
 // the plugin root a user actually lands on, which is the dist tree, not this one.
-test('every path a plugin-level INSTALL.md cites resolves in its dist tree', () => {
+test('every path a plugin-level front door cites resolves in its dist tree', () => {
   // Placeholders the reader substitutes, host config on the reader's machine,
   // and absolute paths are all claims about somewhere else — not about this tree.
   const PLACEHOLDER = /[<>${}*~]/;
@@ -129,24 +155,26 @@ test('every path a plugin-level INSTALL.md cites resolves in its dist tree', () 
   const dangling = [];
 
   for (const plugin of plugins) {
-    const front = path.join(PLUGIN_SRC, plugin, 'INSTALL.md');
-    if (!fs.existsSync(front)) continue;
+    for (const doc of FRONT_DOOR_DOCS) {
+      const front = path.join(PLUGIN_SRC, plugin, doc);
+      if (!fs.existsSync(front)) continue;
 
-    const src = fs.readFileSync(front, 'utf8');
-    const cited = new Set(
-      [...src.matchAll(PATH_TOKEN), ...src.matchAll(INVOCATION)]
-        .map((m) => m[1])
-        .filter((token) => !PLACEHOLDER.test(token) && !token.startsWith('/')),
-    );
+      const src = fs.readFileSync(front, 'utf8');
+      const cited = new Set(
+        [...src.matchAll(PATH_TOKEN), ...src.matchAll(INVOCATION)]
+          .map((m) => m[1])
+          .filter((token) => !PLACEHOLDER.test(token) && !token.startsWith('/')),
+      );
 
-    for (const token of cited) {
-      // A front door may cite its own source location as well as the shipped
-      // path — resolve against the repo root too, or every "edit the source,
-      // never the mirror" note reads as a dangling link.
-      if (fs.existsSync(path.join(DIST, plugin, token))) continue;
-      if (fs.existsSync(path.join(REPO_ROOT, token))) continue;
+      for (const token of cited) {
+        // A front door may cite its own source location as well as the shipped
+        // path — resolve against the repo root too, or every "edit the source,
+        // never the mirror" note reads as a dangling link.
+        if (fs.existsSync(path.join(DIST, plugin, token))) continue;
+        if (fs.existsSync(path.join(REPO_ROOT, token))) continue;
 
-      dangling.push(`${plugin}/INSTALL.md cites ${token}, which resolves nowhere`);
+        dangling.push(`${plugin}/${doc} cites ${token}, which resolves nowhere`);
+      }
     }
   }
 

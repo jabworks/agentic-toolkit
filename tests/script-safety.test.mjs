@@ -215,9 +215,11 @@ test('condux installer --uninstall leaves the shared hooks flag set', () => {
     assert.equal(result.status, 0);
 
     // concord and plan-review ride the same flag — clearing it on condux's way
-    // out would break them.
+    // out would break them. The report must say so by name: a user who reads
+    // "still set" without being told who else needs it cannot tell a correct
+    // result from an incomplete uninstall, and will clear it by hand.
     assert.match(fs.readFileSync(path.join(sandbox.codex, 'config.toml'), 'utf8'), /hooks = true/);
-    assert.match(result.stdout, /shared with other plugins/);
+    assert.match(result.stdout, /concord and plan-review/);
 
     const after = JSON.parse(fs.readFileSync(opencode, 'utf8'));
     assert.deepEqual(after.plugin, ['@other/keep'], 'only condux may be removed');
