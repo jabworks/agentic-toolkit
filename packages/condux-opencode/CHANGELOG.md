@@ -1,5 +1,17 @@
 # @jabworks/condux
 
+## 0.8.1
+
+### Patch Changes
+
+- [#54](https://github.com/jabworks/agentic-toolkit/pull/54) [`80d46ac`](https://github.com/jabworks/agentic-toolkit/commit/80d46ac16e9b39813daf3bd6e8445e0c8ca46279) Thanks [@vi-hieu](https://github.com/vi-hieu)! - Adopt the shared colour core in the plan-review template.
+
+  The bundled skills now carry the canonical 32-token palette between
+  `tokens:core` markers, checked against `scripts/tokens/core.css` by
+  `scripts/check-tokens.mjs`. No behaviour change on the OpenCode side — the
+  template renders the same colours it did before, with `--mono` widened to the
+  union of both font stacks (all local-or-fallback lookups, nothing fetched).
+
 ## 0.8.0
 
 ### Minor Changes
