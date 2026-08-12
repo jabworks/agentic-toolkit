@@ -10,6 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          # npm-channel.test.mjs walks back to the last @jabworks/condux release
+          # commit to see whether the published surface drifted since. The
+          # default shallow checkout cannot reach it, and that test fails rather
+          # than skips — a guard that vanishes with its history is no guard.
+          fetch-depth: 0
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v5
         with:

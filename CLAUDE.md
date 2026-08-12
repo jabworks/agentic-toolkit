@@ -167,6 +167,17 @@ fails when a shipped version has no `CHANGELOG.md` entry. Versions on an
 unmerged branch are held back; the 122 versions that shipped before this
 channel existed live in `CHANGELOG.md` only.
 
+**The npm channel does not work that way, and the difference is the trap.**
+`@jabworks/condux` releases through changesets, which needs a hand-written
+`.changeset/*.md`. Without one, `changesets/action` versions nothing, opens no
+PR, and publishes nothing — silently. condux 2.12.0, 2.13.0 and 2.14.0 each
+changed the bundled skills and none carried a changeset, so npm served 0.7.0
+while the marketplace moved on. Whenever a change reaches
+`packages/condux-opencode/{index.js,agents,skills}` — which sync regenerates
+from `skills/`, so any condux skill edit qualifies — run `pnpm changeset`.
+`npm-channel.test.mjs` fails when that surface drifted past the last release
+with no pending changeset.
+
 Three distribution channels read three different trees (don't conflate them):
 `npx skills add` installs from top-level `skills/`; the plugin marketplace
 (`/plugin install …@jabworks-agentic-toolkit`) installs from `dist/plugins/` via
