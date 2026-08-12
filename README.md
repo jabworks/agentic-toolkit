@@ -173,41 +173,6 @@ cp -r /tmp/agentic-toolkit/skills/<name> <skills-directory>/
 | [condux-doctor](./skills/condux-doctor/)     | Health check for the condux plugin — runs the SessionStart routing hook and checks the agents shipped |
 | [docket-doctor](./skills/docket-doctor/)     | Health check for the docket plugin — probes the MCP registration on every host and the CLI fallback  |
 
-### Concord
-
-Continuous memory for Codex (`concord`) — the `remember` skill plus its doctor:
-
-```bash
-/plugin install concord@jabworks-agentic-toolkit
-```
-
-Three Codex hooks share one idempotent operation — sync the rollout forward
-from its recorded position — so capture is exactly-once regardless of hook
-order, and a hard-killed session is recovered at next start rather than lost.
-Memory ages through buffer, daily, recent, and archive tiers; explicitly
-pinned facts are never auto-compressed. `references/install-codex-hook.sh`
-wires the hooks; `concord-doctor` tells you whether they are still wired.
-
-### Docket
-
-File-based project backlog plugin (`docket`) — two skills plus machinery:
-
-```bash
-/plugin install docket@jabworks-agentic-toolkit
-```
-
-Open items live in `docket/DOCKET.md`, closed items move to
-`docket/archive/<year>.md` with verification records, and ids are never
-reused — `#N` in a commit subject refers to the docket, not GitHub. The
-`record` skill captures and closes items; `groom` sweeps for stale and
-ghost work and recommends what to pick next. A dependency-free CLI
-(`server/docket.mjs`) keeps id allocation and archive moves byte-exact, a
-bundled MCP server exposes the same ops as tools (auto-registered on Claude
-Code; `server/install.sh` or the agent-followable `server/INSTALL.md`
-registers it for Codex/OpenCode), and `docket.mjs browse` renders a
-self-contained HTML board. Legacy root `BACKLOG.md` layouts are detected and
-work in place — migration is offered, never forced.
-
 ### Condux
 
 Lean agentic workflow plugin (`condux`). Install the full workflow bundle as a unit:
@@ -305,6 +270,41 @@ opt-in at checkpoints or justified by genuinely parallel work.
 | [/root-cause-analysis](./skills/root-cause-analysis/) | Root-cause-first bug investigation — enforces the 4-phase sequence before any fix |
 | [/technical-spec](./skills/technical-spec/) | Scaffold and persist feature specs (decisions, API, fields, quirks) with a live HTML preview |
 | [/plan-review](./skills/plan-review/) | Annotate a plan in a local browser with a categorized comment toolbar, then return approve/revise/deny to the agent — auto via a Claude Code ExitPlanMode hook or a Codex Stop hook, or manually. Self-contained, no egress |
+
+### Concord
+
+Continuous memory for Codex (`concord`) — the `remember` skill plus its doctor:
+
+```bash
+/plugin install concord@jabworks-agentic-toolkit
+```
+
+Three Codex hooks share one idempotent operation — sync the rollout forward
+from its recorded position — so capture is exactly-once regardless of hook
+order, and a hard-killed session is recovered at next start rather than lost.
+Memory ages through buffer, daily, recent, and archive tiers; explicitly
+pinned facts are never auto-compressed. `references/install-codex-hook.sh`
+wires the hooks; `concord-doctor` tells you whether they are still wired.
+
+### Docket
+
+File-based project backlog plugin (`docket`) — two skills plus machinery:
+
+```bash
+/plugin install docket@jabworks-agentic-toolkit
+```
+
+Open items live in `docket/DOCKET.md`, closed items move to
+`docket/archive/<year>.md` with verification records, and ids are never
+reused — `#N` in a commit subject refers to the docket, not GitHub. The
+`record` skill captures and closes items; `groom` sweeps for stale and
+ghost work and recommends what to pick next. A dependency-free CLI
+(`server/docket.mjs`) keeps id allocation and archive moves byte-exact, a
+bundled MCP server exposes the same ops as tools (auto-registered on Claude
+Code; `server/install.sh` or the agent-followable `server/INSTALL.md`
+registers it for Codex/OpenCode), and `docket.mjs browse` renders a
+self-contained HTML board. Legacy root `BACKLOG.md` layouts are detected and
+work in place — migration is offered, never forced.
 
 ### Toolkit Ops
 
