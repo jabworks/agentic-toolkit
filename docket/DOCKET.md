@@ -11,10 +11,6 @@ Stale open markers cost real sessions — closing means moving.
 
 ## Someday
 
-### 2. UNINSTALL.md — the removal half of the ease-of-install convention (2026-08-05)
-
-Reverse path for the ease-of-install convention: agent-followable removal — drop the Codex config.toml table, remove the OpenCode json key (or restore the .bak backups), verify the registration is gone, report per host. Docket as reference implementation; generalizes to condux/concord alongside INSTALL.md.
-
 ### 4. Board cosmetic: hide the count chip on zero-count sections (2026-08-05)
 
 Zero-count sections render an empty chip pill after the heading (`count || empty-string` still emits the span). One-line fix in docket-render.mjs. Seen at live verification 2026-08-05.
@@ -180,35 +176,5 @@ eval runs — what we do by hand across dated reports), `max-repeat` and
 `loop-outcome` graders, JSONL/JUnit/markdown reporters.
 
 Found 2026-08-09 surveying awesome-copilot's maintenance machinery.
-
-### 17. condux --uninstall cannot reverse what its sub-installers wrote (2026-08-11)
-
-`plugins/condux/install.mjs --uninstall` reverses exactly one thing it wrote —
-the OpenCode `plugin` key. Two others it cannot:
-
-| written by | reverse path |
-|---|---|
-| `subagent-execution/references/install-codex-agents.mjs` | none — no `--uninstall` flag |
-| `plan-review/references/install-codex-hook.sh` | none — concord's twin has one, condux's does not |
-| `[features] hooks = true` | deliberately **not** reversed — concord and plan-review ride the same flag |
-
-Today it reports `skipped` and prints the exact paths to remove by hand. That is
-honest but thin, and it makes condux the odd one out: concord's installer has a
-working `--uninstall` that removes its three hook events and is regression-tested
-for it (`script-safety.test.mjs`, after the `remember` rename duplicated every
-hook).
-
-The shared-flag case is the interesting one and does not have an obvious answer.
-`features.hooks` is not owned by any single plugin, so no plugin's uninstall can
-safely clear it — which means the toolkit needs a rule for shared host state,
-not just a flag. Candidates: leave it always (today's behaviour, and the flag
-outlives every plugin that wanted it), or reference-count by probing whether any
-other known plugin still registers hooks, or hand it to the user as a prompt.
-
-Closest sibling of #2, and probably decided with it rather than before it: #2 is
-the documented `UNINSTALL.md` procedure across all three plugins, and this is the
-machinery question underneath it. Do not design them apart.
-
-Found 2026-08-11 shipping #9.
 
 ## Loose threads
