@@ -12,9 +12,13 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## session-report 1.7.0 — 2026-08-13
+
+- feat(session-report): sticky section nav — one chip per report section, scroll-spy highlight, smooth-scroll jump; handoff-template consciously left nav-free (docket #23)
+
 ## condux 2.15.0 — 2026-08-13
 
-- feat(plan-review): directory mode's sidebar becomes a doc-site tree — collapsible folders with rolled-up note counts, filter over doc names and headings, breadcrumb, prev/next (docket #22)
+- feat(plan-review): directory mode grows a doc-site — tree, filter, breadcrumb, prev/next (2.15.0) (#59)
 
 ## condux 2.14.2 — 2026-08-13
 
