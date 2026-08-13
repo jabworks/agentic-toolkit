@@ -1,0 +1,9 @@
+{
+  "plugins": {
+    "ghost-skill": {
+      "marketplace": { "description": "declares a skill dir that does not exist" }
+    },
+    "no-blurb": {}
+  },
+  "catalogs": {}
+}

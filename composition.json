@@ -1,0 +1,308 @@
+{
+  "plugins": {
+    "session-handoff": {
+      "marketplace": {
+        "description": "Creates and resumes handoff documents for seamless Claude Code session transitions. Use when context window approaches capacity or a work session is ending."
+      }
+    },
+    "adapting-skills": {
+      "marketplace": {
+        "description": "Use when adapting a generic skill or scaffolding code to match the jabworks stack, conventions, and working preferences."
+      }
+    },
+    "session-report": {
+      "marketplace": {
+        "description": "Generate an explorable HTML report of session usage — tokens, cache, subagents, skills, expensive prompts. Works for Claude Code and Codex."
+      }
+    },
+    "condux": {
+      "bundle": true,
+      "skills": [
+        "code-review",
+        "condux-doctor",
+        "discovery",
+        "draft-plan",
+        "finalize",
+        "live-verification",
+        "plan-review",
+        "preflight",
+        "root-cause-analysis",
+        "subagent-deployment",
+        "subagent-execution",
+        "technical-spec",
+        "test-first-development",
+        "workflow"
+      ],
+      "pluginDirs": {
+        "skills/subagent-execution/agents": "agents",
+        "skills/workflow/hooks": "hooks"
+      },
+      "marketplace": {
+        "description": "Lean agentic workflow skills: tiered task routing, discovery gate, lean plan drafting, opt-in tests-first, subagent coordination, end-of-task quality gate, on-request code review, preflight done-check, root-cause-first debugging, and feature spec management."
+      }
+    },
+    "spec-browser": {
+      "marketplace": {
+        "description": "Catalog and browse a growing specs/ tree: a plain-markdown index any agent can reference, plus a folder-grouped doc site reusing the plan-review renderer. No external services or plugins."
+      }
+    },
+    "git-commit": {
+      "marketplace": {
+        "description": "Craft a conventional-commit message from the diff and run the commit safely — review before staging, no blind `git add .`, multiline bodies via -F, branch check first."
+      }
+    },
+    "git-operations": {
+      "marketplace": {
+        "description": "Decision router for git: given a situation, pick the right operation (undo/discard/stash/merge/push) and run it safely with an undo path. Cross-links to git-commit for committing."
+      }
+    },
+    "toolkit-ops": {
+      "bundle": true,
+      "skills": [
+        "toolkit-change-control",
+        "toolkit-debugging-playbook",
+        "toolkit-failure-archaeology",
+        "toolkit-foundry",
+        "toolkit-orientation",
+        "toolkit-plugin-reference",
+        "toolkit-research-frontier",
+        "toolkit-skill-standards"
+      ],
+      "marketplace": {
+        "description": "Operate the toolkit repo itself: repo orientation, change control and publish gating, skill-authoring standards, debugging playbook, failure archaeology, plugin schema reference, and research frontier for jabworks/agentic-toolkit."
+      }
+    },
+    "release": {
+      "marketplace": {
+        "description": "Cut releases safely: detects the repo's machinery (AGENTS.md overrides, changesets, this toolkit's plugin tagging, plain GitHub tag + release), always dry-runs the full plan, executes on one confirm, and knows the rollback path for every step."
+      }
+    },
+    "coding-directive": {
+      "marketplace": {
+        "description": "Write code that matches the jabworks house style the first time: enforced rules from the style-guide configs (TypeScript, ESLint/oxlint, Prettier/oxfmt, Stylelint) plus a confidence-marked judgment layer for naming, error handling, React anatomy, monorepo boundaries, and Tailwind."
+      }
+    },
+    "docket": {
+      "bundle": true,
+      "skills": [
+        "docket-doctor",
+        "groom",
+        "record"
+      ],
+      "pluginDirs": {
+        "skills/record/server": "server"
+      },
+      "marketplace": {
+        "description": "File-based project backlog in committed files: open items in docket/DOCKET.md, closed items archived per year with verification records, ids never reused. The record skill captures and closes items, groom sweeps for stale and ghost work and picks what to do next; a dependency-free CLI, bundled MCP server, and self-contained HTML board keep the mechanics byte-exact."
+      }
+    },
+    "concord": {
+      "bundle": true,
+      "skills": [
+        "concord-doctor",
+        "remember"
+      ],
+      "marketplace": {
+        "description": "Continuous memory for Codex: three hooks share one idempotent rollout sync, so capture is exactly-once regardless of hook order and a hard-killed session is recovered at next start. Memory ages through buffer, daily, recent, and archive tiers; explicitly pinned facts are never auto-compressed."
+      }
+    }
+  },
+  "catalogs": {
+    "readme-skills": {
+      "rows": [
+        {
+          "skill": "session-report",
+          "blurb": "Generate an explorable HTML report of session usage — tokens, cache, cost, subagents, skills"
+        },
+        {
+          "skill": "session-handoff",
+          "blurb": "Preserve and restore session context across agentic coding sessions"
+        },
+        {
+          "skill": "adapting-skills",
+          "blurb": "Stack and style priors for adapting skills to the jabworks conventions _(opinionated — fork the priors for your own stack)_"
+        },
+        {
+          "skill": "git-commit",
+          "blurb": "Conventional-commit message from the diff, run safely — review before staging, no blind `git add .`"
+        },
+        {
+          "skill": "git-operations",
+          "blurb": "Decision router for git — pick the right operation (undo/discard/stash/merge/push) with an undo path"
+        },
+        {
+          "skill": "spec-browser",
+          "blurb": "Catalog and browse a specs/ tree — markdown index + folder-grouped doc site"
+        },
+        {
+          "skill": "release",
+          "blurb": "Cut releases safely — machinery detection (changesets/toolkit/GitHub), dry-run first, rollback paths"
+        },
+        {
+          "skill": "coding-directive",
+          "blurb": "House style for @jabworks repos — TypeScript, React, formatting, imports, naming, CSS _(personal)_"
+        },
+        {
+          "skill": "remember",
+          "blurb": "Continuous memory for Codex (`concord` plugin) — captures each session from the rollout, ages it into tiers, recalls it"
+        },
+        {
+          "skill": "concord-doctor",
+          "blurb": "Health check for the concord plugin — probes its Codex hooks and memory store on this host"
+        },
+        {
+          "skill": "condux-doctor",
+          "blurb": "Health check for the condux plugin — runs the SessionStart routing hook and checks the agents shipped"
+        },
+        {
+          "skill": "docket-doctor",
+          "blurb": "Health check for the docket plugin — probes the MCP registration on every host and the CLI fallback"
+        }
+      ]
+    },
+    "readme-condux": {
+      "rows": [
+        {
+          "skill": "workflow",
+          "blurb": "Tier router — infer Small/Medium/Large, confirm with user, load only the skills the tier needs"
+        },
+        {
+          "skill": "discovery",
+          "blurb": "Design gate — goal-round questions, alternatives, then a post-approach detail round (contracts, mappings, edge cases); sign-off saves the design doc and, default-on, a structured tech spec"
+        },
+        {
+          "skill": "draft-plan",
+          "blurb": "Lean task-card plan (what/why/gotchas/deps), Markdown, LARGE tasks only"
+        },
+        {
+          "skill": "test-first-development",
+          "blurb": "Opt-in tests-first — one upfront consent, then red-green-refactor; asks before editing existing specs"
+        },
+        {
+          "skill": "subagent-execution",
+          "blurb": "Named specialist agents for LARGE plans, only when justified, never to fill time"
+        },
+        {
+          "skill": "subagent-deployment",
+          "blurb": "Fan out independent tasks across named agents in one message — ad-hoc, not a formal plan"
+        },
+        {
+          "skill": "finalize",
+          "blurb": "End-of-task quality gate — typecheck → lint → format → test, once, stop on first failure"
+        },
+        {
+          "skill": "live-verification",
+          "blurb": "Run the change and watch it work — drives the real UI or endpoint after finalize, light mode then dark, reports claim → evidence → verdict and names what it couldn't verify"
+        },
+        {
+          "skill": "code-review",
+          "blurb": "On-request diagnostic report (Critical/Important/Minor), never auto-triggers, never fixes"
+        },
+        {
+          "skill": "preflight",
+          "blurb": "\"Am I actually done?\" checklist before finalize — catches skipped steps and regressions, and drift-checks the implementation against the task's spec"
+        },
+        {
+          "skill": "root-cause-analysis",
+          "blurb": "Root-cause-first bug investigation — enforces the 4-phase sequence before any fix"
+        },
+        {
+          "skill": "technical-spec",
+          "blurb": "Scaffold and persist feature specs (decisions, API, fields, quirks) with a live HTML preview"
+        },
+        {
+          "skill": "plan-review",
+          "blurb": "Annotate a plan in a local browser with a categorized comment toolbar, then return approve/revise/deny to the agent — auto via a Claude Code ExitPlanMode hook or a Codex Stop hook, or manually. Self-contained, no egress"
+        }
+      ]
+    },
+    "readme-toolkit-ops": {
+      "rows": [
+        {
+          "skill": "toolkit-orientation",
+          "blurb": "Zero-context map of the repo — trees, bundles, manifest pairing, docs trust order"
+        },
+        {
+          "skill": "toolkit-foundry",
+          "blurb": "Create and maintain skills — scaffold, register, sync, publish (formerly standalone `plugin-foundry`)"
+        },
+        {
+          "skill": "toolkit-change-control",
+          "blurb": "Classify a change, pick the version bump, gate on the publish checklist"
+        },
+        {
+          "skill": "toolkit-skill-standards",
+          "blurb": "Frontmatter budgets, trigger contract, progressive disclosure, collision scan"
+        },
+        {
+          "skill": "toolkit-debugging-playbook",
+          "blurb": "Symptom → discriminating command → root cause for skill/plugin problems"
+        },
+        {
+          "skill": "toolkit-failure-archaeology",
+          "blurb": "Git-evidenced incident ledger — don't re-fight settled battles"
+        },
+        {
+          "skill": "toolkit-plugin-reference",
+          "blurb": "Verified plugin.json / marketplace.json schema, Claude↔Codex divergences"
+        },
+        {
+          "skill": "toolkit-research-frontier",
+          "blurb": "Open problems, assets, next steps, and the library-health campaign"
+        }
+      ]
+    },
+    "claude-md-skills": {
+      "rows": [
+        {
+          "entry": "`session-handoff`",
+          "blurb": "Preserve/restore session context at context limits"
+        },
+        {
+          "entry": "`session-report`",
+          "blurb": "Generate HTML usage report from session transcripts"
+        },
+        {
+          "entry": "`adapting-skills`",
+          "blurb": "Adapt generic skills to the jabworks stack and conventions"
+        },
+        {
+          "entry": "`git-commit`",
+          "blurb": "Conventional-commit message from the diff, run safely"
+        },
+        {
+          "entry": "`git-operations`",
+          "blurb": "Decision router for git operations with undo paths"
+        },
+        {
+          "entry": "`spec-browser`",
+          "blurb": "Catalog and browse a specs/ tree as one doc site"
+        },
+        {
+          "entry": "`release`",
+          "blurb": "Cut a release safely — machinery router (changesets/toolkit/GitHub), dry-run first"
+        },
+        {
+          "entry": "`coding-directive`",
+          "blurb": "The jabworks house style — TS/React/formatting/imports/naming/CSS, enforced tier + judgment tier"
+        },
+        {
+          "entry": "`concord` (plugin)",
+          "blurb": "Continuous memory for Codex — rollout-sync capture, aging tiers, session-start recall (Codex-only hooks). Bundle: `remember` (the memory skill, sources `skills/remember/`) + `concord-doctor`"
+        },
+        {
+          "entry": "`condux` (plugin)",
+          "blurb": "agentic workflow bundle (workflow, discovery, draft-plan, test-first-development, subagent-execution, subagent-deployment, finalize, live-verification, code-review, preflight, root-cause-analysis, plan-review, technical-spec, condux-doctor)"
+        },
+        {
+          "entry": "`docket` (plugin)",
+          "blurb": "file-based backlog bundle (record, groom, docket-doctor) + plugin-level `server/` — dependency-free CLI, MCP server (`.mcp.json`), HTML board, installer (`install.sh`/`INSTALL.md`); sources `skills/record/` (owns `server/`) and `skills/groom/`"
+        },
+        {
+          "entry": "`toolkit-ops` (plugin)",
+          "blurb": "repo-maintenance bundle (toolkit-orientation, toolkit-foundry, toolkit-change-control, toolkit-skill-standards, toolkit-debugging-playbook, toolkit-failure-archaeology, toolkit-plugin-reference, toolkit-research-frontier)"
+        }
+      ]
+    }
+  }
+}

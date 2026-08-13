@@ -148,23 +148,9 @@ test('marketplace.json source paths and plugin.json skills paths resolve on disk
   assert.deepEqual(problems, [], 'unresolved install paths:\n' + problems.join('\n'));
 });
 
-test('condux plugin-level agents/ mirrors its skills/ source verbatim', () => {
-  // scripts/sync.sh copies skills/subagent-execution/agents/ into the plugin's
-  // top-level agents/ dir — which the skill-tree mirror check does NOT cover.
-  const src = path.join(SKILLS_DIR, 'subagent-execution', 'agents');
-  const dst = path.join(REPO_ROOT, 'dist', 'plugins', 'condux', 'agents');
-  assert.ok(fs.existsSync(src), 'source agents dir missing: ' + src);
-  assert.ok(fs.existsSync(dst), 'plugin-level agents dir missing: ' + dst);
-
-  const srcFiles = fs.readdirSync(src).sort();
-  const dstFiles = fs.readdirSync(dst).sort();
-  assert.deepEqual(dstFiles, srcFiles, 'condux/agents file list differs from source — run scripts/sync.sh');
-
-  const drifted = srcFiles.filter(
-    (f) => !fs.readFileSync(path.join(src, f)).equals(fs.readFileSync(path.join(dst, f))),
-  );
-  assert.deepEqual(drifted, [], 'condux/agents drifted from source — run scripts/sync.sh:\n' + drifted.join('\n'));
-});
+// The condux plugin-level agents/ verbatim-mirror check lived here until
+// 2026-08-13. The pair is declared in composition.json and guarded
+// generically by tests/composition.test.mjs — retired rather than duplicated.
 
 // The plan-review no-egress test lived here until 2026-08-09. It was
 // EXTERNAL-DOMAIN hand-scoped to one file, and tests/skill-supply-chain.test.mjs

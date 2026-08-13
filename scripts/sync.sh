@@ -5,12 +5,10 @@
 #   scripts/sync.sh              # sync all skills
 #   scripts/sync.sh <name>       # sync one skill by name
 #
-# Target detection (no config needed):
-#   dist/plugins/<bundle>/skills/<bundle>/<name>/  → bundle skill (condux, toolkit-ops, …)
-#   dist/plugins/<name>/skills/<name>/             → standalone plugin skill
-#
-# New skills with no dist target are skipped with a warning — scaffold
-# them first with plugin-foundry, then run sync.
+# Targets come from composition.json (via scripts/composition.mjs --pairs) —
+# bundle membership, standalone plugins, and the plugin-level dirs are all
+# declared there. A skill missing from the declaration is a hard error:
+# scaffold it with toolkit-foundry, add it to composition.json, then sync.
 
 set -euo pipefail
 
@@ -65,7 +63,24 @@ copy_dir() {
 }
 
 # ---------------------------------------------------------------------------
-# sync_skill <name>
+# Declared sync pairs — composition.json is the source of truth (docket #11).
+# Bundle membership and the plugin-level dirs (condux/agents, condux/hooks,
+# docket/server) used to be inferred by probing dist/ plus three hardcoded
+# name checks; each of those failed quietly (silent SKIP, the 6ba6572 blind
+# spot). Now composition.mjs validates the declaration and prints every
+# src<TAB>dest pair; a skill it doesn't know is a hard error, not a SKIP.
+# ---------------------------------------------------------------------------
+PAIR_SRCS=()
+PAIR_DESTS=()
+while IFS=$'\t' read -r pair_src pair_dest; do
+  PAIR_SRCS+=("$pair_src")
+  PAIR_DESTS+=("$pair_dest")
+done < <(node "$REPO_ROOT/scripts/composition.mjs" --pairs)
+[[ ${#PAIR_SRCS[@]} -gt 0 ]] || { echo "ERROR  composition.mjs produced no pairs" >&2; exit 1; }
+
+# ---------------------------------------------------------------------------
+# sync_skill <name> — copy every declared pair owned by skills/<name>: its
+# skill tree, plus any pluginDirs sourced from inside it (skills/<name>/…).
 # ---------------------------------------------------------------------------
 sync_skill() {
   local name="$1"
@@ -76,54 +91,19 @@ sync_skill() {
     return 1
   fi
 
-  # Bundle target: dist/plugins/<p>/skills/<p>/<name> for any bundle plugin <p>.
-  local bundle_dst="" p_dir p
-  for p_dir in "$DIST_DIR"/*/; do
-    p=$(basename "$p_dir")
-    if [[ -d "$DIST_DIR/$p/skills/$p/$name" ]]; then
-      bundle_dst="$DIST_DIR/$p/skills/$p/$name"
-      break
+  local i matched=0
+  for i in "${!PAIR_SRCS[@]}"; do
+    local pair_src="${PAIR_SRCS[$i]}" pair_dest="${PAIR_DESTS[$i]}"
+    if [[ "$pair_src" == "skills/$name" || "$pair_src" == "skills/$name/"* ]]; then
+      copy_dir "$REPO_ROOT/$pair_src" "$REPO_ROOT/$pair_dest"
+      echo "synced  $pair_src  →  $pair_dest"
+      matched=1
     fi
   done
-  local standalone_dst="$DIST_DIR/$name/skills/$name"
 
-  if [[ -n "$bundle_dst" ]]; then
-    copy_dir "$src" "$bundle_dst"
-    echo "synced  skills/$name  →  ${bundle_dst#"$REPO_ROOT"/}"
-  elif [[ -d "$standalone_dst" ]]; then
-    copy_dir "$src" "$standalone_dst"
-    echo "synced  skills/$name  →  dist/plugins/$name/skills/$name"
-  else
-    echo "SKIP    skills/$name — no dist target (scaffold with plugin-foundry first)" >&2
-  fi
-
-  # The condux plugin also loads named agents from a plugin-level agents/ dir,
-  # which is NOT reached by the skill copy above. Mirror them from their source
-  # (the subagent-execution skill owns the canonical agent definitions).
-  if [[ "$name" == "subagent-execution" && -d "$src/agents" ]]; then
-    copy_dir "$src/agents" "$DIST_DIR/condux/agents"
-    echo "synced  skills/$name/agents  →  dist/plugins/condux/agents"
-  fi
-
-  # Same shape as agents/ above: both hosts load hooks from the PLUGIN root, not
-  # from a skill tree, so the skill copy never reaches them. This dir was
-  # hand-maintained in dist/ until 2026-08-05 — exactly the blind spot 6ba6572
-  # produced doctrine about ("every out-of-tree mirror target needs its own sync
-  # step AND its own test"). workflow owns it because the payload is its routing
-  # rule; plan-review's Codex Stop hook rides along in the same manifest.
-  if [[ "$name" == "workflow" && -d "$src/hooks" ]]; then
-    copy_dir "$src/hooks" "$DIST_DIR/condux/hooks"
-    echo "synced  skills/$name/hooks  →  dist/plugins/condux/hooks"
-  fi
-
-  # docket's machinery (CLI, MCP server, renderer, installer) is loaded from
-  # the PLUGIN root — .mcp.json points at server/mcp-server.mjs — so the skill
-  # copy never reaches it. Same doctrine as agents/ and hooks/ above: every
-  # out-of-tree mirror target gets its own sync step AND its own test
-  # (tests/docket-server.test.mjs). record owns the canonical source.
-  if [[ "$name" == "record" && -d "$src/server" ]]; then
-    copy_dir "$src/server" "$DIST_DIR/docket/server"
-    echo "synced  skills/$name/server  →  dist/plugins/docket/server"
+  if [[ $matched -eq 0 ]]; then
+    echo "ERROR  skills/$name — not declared in composition.json; add it to a plugin there" >&2
+    return 1
   fi
 }
 
@@ -196,6 +176,7 @@ check_generated() {
 if [[ $# -gt 0 ]]; then
   sync_skill "$1"
   sync_plugin_files
+  node "$REPO_ROOT/scripts/generate-catalogs.mjs"
   node "$REPO_ROOT/scripts/build-opencode.mjs"
   check_generated
 else
@@ -212,6 +193,7 @@ else
     fi
   done
   sync_plugin_files
+  node "$REPO_ROOT/scripts/generate-catalogs.mjs"
   node "$REPO_ROOT/scripts/build-opencode.mjs"
   check_generated
   echo ""
