@@ -3,9 +3,12 @@
 ## The review surface
 
 A three-pane layout over a **decision bar**: a left sidebar with two tabs —
-**Contents** (heading outline with per-section note counts; in directory mode,
-each document is a top-level node with its headings nested, click to switch
-docs) and **Files** (paths the plan touches, parsed from inline code and
+**Contents** (heading outline with per-section note counts; in directory mode
+it becomes a doc-site tree: collapsible folders — everything folded except the
+active doc's ancestors, collapsed folders roll up their docs' note counts — a
+filter box matching doc names and headings, and the active doc's headings
+nested under it; a breadcrumb and prev/next footer ride the content pane) and
+**Files** (paths the plan touches, parsed from inline code and
 fences, badged **exists**/**new** against the repo; click jumps to the first
 mention, repeat clicks cycle) — the centered rendered plan (middle), and a
 **Review** rail (right) holding your notes and messages. The decisions live in
