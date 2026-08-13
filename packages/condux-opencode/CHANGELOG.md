@@ -1,5 +1,11 @@
 # @jabworks/condux
 
+## 0.8.2
+
+### Patch Changes
+
+- [#57](https://github.com/jabworks/agentic-toolkit/pull/57) [`504dff2`](https://github.com/jabworks/agentic-toolkit/commit/504dff2caf39cd9e7c25957b1821ee0b7861cbe8) Thanks [@vi-hieu](https://github.com/vi-hieu)! - plan-review: directory mode docs said "every top-level `*.md`"; the server walks the whole tree (grouped by folder, `index.md` first, dotdirs skipped). Prose now matches the code (docket [#24](https://github.com/jabworks/agentic-toolkit/issues/24)).
+
 ## 0.8.1
 
 ### Patch Changes
