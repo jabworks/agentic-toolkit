@@ -224,4 +224,17 @@ is why this is separate from #22.
 
 Depends on #21 only for the token core; the navigation work is independent.
 
+### 26. Worktree operations skill — safe git worktree workflows (create, switch, prune, agent isolation) (2026-08-13)
+
+Sibling to `git-commit` / `git-operations`: a decision router for `git worktree`
+— create/list/switch, prune stale trees, move work between trees, and the
+undo paths. Motivation: agent hosts now lean on worktrees for isolation
+(Claude Code's `EnterWorktree` / `isolation: "worktree"` agents), and the
+existing `git-operations` skill doesn't cover them. Scope question to settle
+at design time: standalone skill vs a section grown inside `git-operations`
+(the router-with-undo-paths shape is identical; what differs is trigger
+vocabulary — "worktree", "parallel checkout", "agent sandbox tree").
+
+Filed 2026-08-13 mid-#22 (unrelated to that change).
+
 ## Loose threads

@@ -132,8 +132,7 @@
       .nav .tab:last-child { border-right: none; }
       .nav .tab:hover { color: var(--foreground); }
       .nav .tab.active { background: var(--accent); color: var(--foreground); }
-      .nav .group { font: 600 10px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--subtle); margin: 14px 6px 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-      .nav a.doc { font-weight: 600; color: var(--foreground); margin-top: 10px; }
+      .nav a.doc { font-weight: 600; color: var(--foreground); }
       .nav a.doc.active { border-left-color: var(--primary); background: var(--accent); }
       .nav a.file .t { font-size: 12px; }
       .nav .none { color: var(--subtle); font-size: 12px; padding: 4px 6px; }
@@ -144,6 +143,29 @@
       .nav a:hover { background: var(--accent); color: var(--foreground); }
       .nav a.active { color: var(--foreground); border-left-color: var(--primary); background: var(--accent); }
       .nav a.lvl2 { padding-left: 16px; } .nav a.lvl3 { padding-left: 28px; font-size: 12px; color: var(--subtle); }
+
+      /* Directory mode: doc-site tree — folder rows fold, filter narrows, the
+         active doc alone carries its headings. All of it DIRMODE-gated. */
+      .nav .tree-filter { display: none; margin: 0 0 10px; }
+      .nav .tree-filter input { width: 100%; font: inherit; font-size: 13px; color: var(--foreground); background: var(--background);
+        border: 1px solid var(--border); border-radius: var(--radius); padding: 6px 8px; outline: none; }
+      .nav .tree-filter input:focus { border-color: var(--ring); }
+      .nav a.folder { font-weight: 600; color: var(--muted-foreground); }
+      .nav a.folder .arrow { flex: none; width: 12px; color: var(--subtle); font-size: 10px; }
+      .crumbs { display: none; max-width: 760px; margin: 0 auto 18px; font: 12px var(--mono); color: var(--subtle);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .crumbs .seg { color: var(--muted-foreground); }
+      .crumbs a.seg { color: var(--muted-foreground); text-decoration: none; cursor: pointer; }
+      .crumbs a.seg:hover { color: var(--foreground); text-decoration: underline; }
+      .crumbs .sep { margin: 0 6px; color: var(--subtle); }
+      .crumbs .cur { color: var(--foreground); }
+      .pnav { display: none; max-width: 760px; margin: 32px auto 0; padding-top: 14px; border-top: 1px solid var(--border);
+        justify-content: space-between; gap: 12px; }
+      .pnav a { display: inline-flex; align-items: center; gap: 6px; max-width: 48%; color: var(--muted-foreground);
+        text-decoration: none; font-size: 13px; padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .pnav a:hover { background: var(--accent); color: var(--foreground); }
+      .pnav .spacer { flex: 1; }
 
       /* Center: plan */
       .main { overflow-y: auto; padding: 28px 44px 120px; position: relative;
@@ -282,7 +304,10 @@
           <button type="button" class="tab active" id="tab-contents">Contents</button>
           <button type="button" class="tab" id="tab-files">Files</button>
         </div>
-        <div id="pane-contents"><nav id="toc"></nav></div>
+        <div id="pane-contents">
+          <div class="tree-filter" id="tree-filter"><input type="search" id="tree-q" placeholder="Filter docs…" aria-label="Filter documents"></div>
+          <nav id="toc"></nav>
+        </div>
         <div id="pane-files" style="display:none"><nav id="filelist"></nav></div>
       </aside>
 
@@ -296,7 +321,9 @@
             <button type="button" class="btn btn-ghost btn-sm" id="rb-dismiss">Dismiss</button>
           </span>
         </div>
+        <div class="crumbs" id="crumbs"></div>
         <div class="doc" id="plan">Loading plan…</div>
+        <div class="pnav" id="pnav"></div>
         <div class="diffwrap" id="diffwrap"><div class="diffview" id="diffview"></div></div>
         <div class="popover" id="popover">
           <div class="q" id="pop-quote"></div>
@@ -411,42 +438,123 @@
         });
       }
 
-      function buildToc(){
-        tocEl.innerHTML='';
-        var lastGroup=null;
+      // ---- Directory-mode doc-site tree: collapsible folders, filter, chrome ----
+      // Collapse state lives in memory only (review tabs are short-lived); seeded
+      // so the active doc's ancestors are always open. The filter is a transient
+      // view — it never touches openFolders (snapshot restored on clear) and
+      // never affects what gets submitted.
+      let openFolders=new Set(), treeFilter='', preFilterOpen=null;
+      function parentOf(p){ const s=p.lastIndexOf('/'); return s>=0?p.slice(0,s):''; }
+      function seedOpen(doc){ let f=parentOf(doc); while(f){ openFolders.add(f); f=parentOf(f); } }
+      function headingAnchor(doc,h,lvl){
+        const a=document.createElement('a'); a.href='#'+h.id;
+        a.className='lvl'+lvl; a.dataset.target=h.id; a.dataset.doc=doc;
+        const t=document.createElement('span'); t.className='t'; t.textContent=h.text; a.appendChild(t);
+        const bd=document.createElement('span'); bd.className='badge badge-warning'; bd.style.display='none'; bd.dataset.for=h.id; a.appendChild(bd);
+        a.onclick=function(e){ e.preventDefault(); if(doc!==activeDoc)switchDoc(doc);
+          document.getElementById(h.id).scrollIntoView({behavior:'smooth',block:'start'}); };
+        return a;
+      }
+      function renderTree(){
+        const q=treeFilter.trim().toLowerCase(), mcache={};
+        // docs[] arrives folder-grouped (root first, index.md first per folder);
+        // rebuilding the tree and walking docs-then-sorted-dirs reproduces that
+        // order exactly — docs[] stays the one source of truth.
+        const root={dirs:{},docs:[]};
         docs.forEach(function(doc){
-          const st=docState[doc];
-          if(DIRMODE){
-            const slash=doc.lastIndexOf('/');
-            const group=slash>=0?doc.slice(0,slash):'';
-            if(group && group!==lastGroup){ const g=document.createElement('div'); g.className='group'; g.title=group; g.textContent=group; tocEl.appendChild(g); }
-            lastGroup=group;
-            const d=document.createElement('a'); d.href='#'; d.className='doc'; d.dataset.doc=doc;
-            const t=document.createElement('span'); t.className='t'; t.textContent=slash>=0?doc.slice(slash+1):doc; d.appendChild(t);
+          const parts=doc.split('/'); let node=root;
+          for(let i=0;i<parts.length-1;i++) node=node.dirs[parts[i]]||(node.dirs[parts[i]]={dirs:{},docs:[]});
+          node.docs.push(doc);
+        });
+        function matches(doc){
+          if(!q) return {show:true,heads:null};
+          if(mcache[doc]) return mcache[doc];
+          const heads=docState[doc].headings.filter(function(h){return h.text.toLowerCase().indexOf(q)>=0;});
+          const name=doc.toLowerCase().indexOf(q)>=0;
+          return (mcache[doc]={show:name||heads.length>0,heads:heads});
+        }
+        function indent(el,depth){ el.style.paddingLeft=(6+Math.min(depth,3)*12)+'px'; }
+        function hasMatch(node){
+          return node.docs.some(function(d){return matches(d).show;})
+            || Object.keys(node.dirs).some(function(k){return hasMatch(node.dirs[k]);});
+        }
+        (function walk(node,pathStr,depth){
+          node.docs.forEach(function(doc){
+            const m=matches(doc); if(!m.show) return;
+            const d=document.createElement('a'); d.href='#'; d.className='doc'+(doc===activeDoc?' active':''); d.dataset.doc=doc; d.title=doc;
+            indent(d,depth);
+            const t=document.createElement('span'); t.className='t'; t.textContent=doc.slice(pathStr?pathStr.length+1:0); d.appendChild(t);
             const bd=document.createElement('span'); bd.className='badge badge-warning'; bd.style.display='none'; bd.dataset.fordoc=doc; d.appendChild(bd);
             d.onclick=function(e){ e.preventDefault(); switchDoc(doc); main.scrollTop=0; };
             tocEl.appendChild(d);
-          }
-          st.headings.forEach(function(h){
-            const a=document.createElement('a'); a.href='#'+h.id;
-            a.className='lvl'+(DIRMODE?Math.min(h.level+1,3):h.level); a.dataset.target=h.id; a.dataset.doc=doc;
-            const t=document.createElement('span'); t.className='t'; t.textContent=h.text; a.appendChild(t);
-            const bd=document.createElement('span'); bd.className='badge badge-warning'; bd.style.display='none'; bd.dataset.for=h.id; a.appendChild(bd);
-            a.onclick=function(e){ e.preventDefault(); if(doc!==activeDoc)switchDoc(doc);
-              document.getElementById(h.id).scrollIntoView({behavior:'smooth',block:'start'}); };
-            tocEl.appendChild(a);
+            // Headings: the active doc's under it normally; matched ones under any
+            // hit while filtering. A doc with no headings gets no stub.
+            const hs=q?m.heads:(doc===activeDoc?docState[doc].headings:[]);
+            hs.forEach(function(h){ const a=headingAnchor(doc,h,Math.min(h.level+1,3)); indent(a,depth+1); tocEl.appendChild(a); });
           });
+          Object.keys(node.dirs).sort().forEach(function(name){
+            const sub=pathStr?pathStr+'/'+name:name;
+            if(q&&!hasMatch(node.dirs[name])) return;
+            const open=q?true:openFolders.has(sub);
+            const row=document.createElement('a'); row.href='#'; row.className='folder'; row.title=sub;
+            indent(row,depth);
+            const ar=document.createElement('span'); ar.className='arrow'; ar.textContent=open?'▾':'▸'; row.appendChild(ar);
+            const t=document.createElement('span'); t.className='t'; t.textContent=name+'/'; row.appendChild(t);
+            const bd=document.createElement('span'); bd.className='badge badge-warning'; bd.style.display='none'; bd.dataset.forfolder=sub; bd.dataset.open=open?'1':''; row.appendChild(bd);
+            row.onclick=function(e){ e.preventDefault(); if(q)return;
+              if(openFolders.has(sub))openFolders.delete(sub); else openFolders.add(sub); buildToc(); };
+            tocEl.appendChild(row);
+            if(open) walk(node.dirs[name],sub,depth+1);
+          });
+        })(root,'',0);
+        if(q&&!tocEl.children.length){ const n=document.createElement('div'); n.className='none'; n.textContent='No matches.'; tocEl.appendChild(n); }
+      }
+      function buildToc(){
+        tocEl.innerHTML='';
+        if(DIRMODE){ renderTree(); }
+        else docs.forEach(function(doc){
+          docState[doc].headings.forEach(function(h){ tocEl.appendChild(headingAnchor(doc,h,h.level)); });
         });
         observeHeadings(); updateBadges();
+      }
+
+      function updateChrome(){
+        if(!DIRMODE||!activeDoc) return;
+        const crumbs=document.getElementById('crumbs'); crumbs.innerHTML=''; crumbs.style.display='block';
+        const rootName=document.title.replace(/^review:\s*/,'');
+        const r=document.createElement('span'); r.className='seg'; r.textContent=rootName; crumbs.appendChild(r);
+        const parts=activeDoc.split('/');
+        parts.forEach(function(seg,i){
+          const sep=document.createElement('span'); sep.className='sep'; sep.textContent='›'; crumbs.appendChild(sep);
+          if(i<parts.length-1){
+            const f=parts.slice(0,i+1).join('/');
+            const a=document.createElement('a'); a.className='seg'; a.textContent=seg;
+            a.onclick=function(e){ e.preventDefault();
+              const qEl=document.getElementById('tree-q');
+              if(qEl&&qEl.value){ qEl.value=''; qEl.oninput(); }   // a filtered tree ignores fold state — clear first
+              let g=f; while(g){ openFolders.add(g); g=parentOf(g); } buildToc(); };
+            crumbs.appendChild(a);
+          } else { const c=document.createElement('span'); c.className='seg cur'; c.textContent=seg; crumbs.appendChild(c); }
+        });
+        const pnav=document.getElementById('pnav'); pnav.innerHTML=''; pnav.style.display='flex';
+        const idx=docs.indexOf(activeDoc);
+        function jump(d,label){
+          const a=document.createElement('a'); a.href='#'; a.title=d;
+          a.textContent=label; a.onclick=function(e){ e.preventDefault(); switchDoc(d); main.scrollTop=0; };
+          return a;
+        }
+        if(idx>0) pnav.appendChild(jump(docs[idx-1],'← '+docs[idx-1].split('/').pop()));
+        const sp=document.createElement('span'); sp.className='spacer'; pnav.appendChild(sp);
+        if(idx>=0&&idx<docs.length-1) pnav.appendChild(jump(docs[idx+1],docs[idx+1].split('/').pop()+' →'));
       }
 
       function switchDoc(doc){
         if(activeDoc&&docState[activeDoc]) docState[activeDoc].scroll=main.scrollTop;
         activeDoc=doc;
         docs.forEach(function(d){ docState[d].pane.style.display=d===doc?'':'none'; });
-        tocEl.querySelectorAll('a.doc').forEach(function(a){ a.classList.toggle('active',a.dataset.doc===doc); });
         main.scrollTop=docState[doc].scroll||0;
-        observeHeadings();
+        if(DIRMODE){ seedOpen(doc); buildToc(); updateChrome(); }
+        else observeHeadings();
       }
 
       // ---- Selection -> highlight ----
@@ -589,6 +697,13 @@
           if(a.doc)docCounts[a.doc]=(docCounts[a.doc]||0)+1; });
         document.querySelectorAll('.nav .badge[data-for]').forEach(function(b){ const c=counts[b.dataset.for]||0; b.textContent=c; b.style.display=c?'inline-flex':'none'; });
         document.querySelectorAll('.nav .badge[data-fordoc]').forEach(function(b){ const c=docCounts[b.dataset.fordoc]||0; b.textContent=c; b.style.display=c?'inline-flex':'none'; });
+        // Collapsed folders roll up their docs' counts (doc-level only — heading
+        // badges would double-count) so pending feedback is never invisible.
+        document.querySelectorAll('.nav .badge[data-forfolder]').forEach(function(b){
+          const f=b.dataset.forfolder+'/'; let c=0;
+          Object.keys(docCounts).forEach(function(d){ if(d.indexOf(f)===0)c+=docCounts[d]; });
+          b.textContent=c; b.style.display=(c&&!b.dataset.open)?'inline-flex':'none';
+        });
       }
 
       let spy;
@@ -761,6 +876,19 @@
         // decided — and single-file review when the server was started with
         // --no-reject (discovery's design stage).
         if(DIRMODE||meta.noReject){ const rj=document.getElementById('btn-reject'); if(rj)rj.style.display='none'; }
+        if(DIRMODE){
+          document.getElementById('tree-filter').style.display='block';
+          const qEl=document.getElementById('tree-q');
+          qEl.oninput=function(){
+            const v=qEl.value;
+            if(v&&preFilterOpen===null) preFilterOpen=new Set(openFolders);   // snapshot on first keystroke
+            treeFilter=v;
+            if(!v&&preFilterOpen!==null){ openFolders=new Set(preFilterOpen); preFilterOpen=null;
+              if(activeDoc)seedOpen(activeDoc); }          // doc switched while filtered — keep its ancestors open
+            buildToc();
+          };
+          qEl.onkeydown=function(e){ if(e.key==='Escape'){ qEl.value=''; qEl.oninput(); qEl.blur(); } };
+        }
         planEl.innerHTML='';
         docs.forEach(function(d,i){
           const pane=document.createElement('div'); pane.className='docpane'; pane.style.display='none';
@@ -768,7 +896,8 @@
           docState[d]={md:null,pane:pane,scroll:0,key:'d'+i,headings:[]};
         });
         for(let i=0;i<docs.length;i++){ const d=docs[i]; renderDocPane(d,await fetchDoc(d)); }
-        buildToc(); paint();
+        if(!DIRMODE||!docs.length) buildToc();   // DIRMODE: switchDoc below builds the tree once, seeded
+        paint();
         if(docs.length) switchDoc(docs[0]);
         buildFilesIndex();
       }

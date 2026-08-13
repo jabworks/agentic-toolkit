@@ -12,9 +12,13 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## condux 2.15.0 — 2026-08-13
+
+- feat(plan-review): directory mode's sidebar becomes a doc-site tree — collapsible folders with rolled-up note counts, filter over doc names and headings, breadcrumb, prev/next (docket #22)
+
 ## condux 2.14.2 — 2026-08-13
 
-- docs(plan-review): directory mode reviews every `*.md` in the tree, not just top-level — prose now matches `listDocs()` (docket #24)
+- docs(plan-review): directory mode walks the tree, not just top-level (2.14.2) (#57)
 
 ## session-report 1.6.5 — 2026-08-12
 

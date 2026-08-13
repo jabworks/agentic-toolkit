@@ -46,9 +46,9 @@ the test suite; also right for headless/CI runs). Use this for ad-hoc review of 
 are not in plan mode. After submitting, read `<file>.feedback.md` to action it.
 
 **Directory mode** reviews a whole spec folder (e.g. `specs/wan-config/` from
-the `technical-spec` skill): every `*.md` in the tree is listed in the sidebar
-(grouped by folder, `index.md` first, dotdirs skipped),
-notes are tagged with their source file, edits to any file live-reload (with a
+the `technical-spec` skill): every `*.md` in the tree appears in a doc-site
+sidebar — collapsible folders (`index.md` first, dotdirs skipped), a filter
+over doc names and headings, breadcrumb and prev/next — notes are tagged with their source file, edits to any file live-reload (with a
 per-file revision diff), and the decision lands in `<dir>/review.feedback.md`
 grouped by file. Works in manual and `--steer` modes; this is also the live
 preview surface for `technical-spec` (its old preview server is retired).
