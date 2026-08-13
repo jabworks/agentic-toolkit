@@ -1,6 +1,6 @@
 {
   "name": "condux",
-  "version": "2.14.1",
+  "version": "2.14.2",
   "description": "Claude Code skills for lean agentic workflow: tier routing, discovery, plan drafting, tests-first, subagent coordination, finalize, live verification, code review, preflight, root-cause debugging, interactive plan review, and feature spec management.",
   "author": {
     "name": "jabworks"

@@ -224,17 +224,4 @@ is why this is separate from #22.
 
 Depends on #21 only for the token core; the navigation work is independent.
 
-### 24. plan-review docs say directory mode lists top-level *.md; the code walks recursively (2026-08-12) (2026-08-12)
-
-`plan-review/SKILL.md:49` and `:101` both describe directory mode as listing
-"every top-level `*.md`". `annotate-server.js:96` (`listDocs()`) walks the whole
-tree — its own comment says "every *.md in the tree" — and the client groups
-sub-folder docs and resolves subdirectory links.
-
-The code outgrew the prose. Two-line doc fix; matters because #22 depends on
-directory mode being understood as a recursive doc-site, and the SKILL.md is
-what an agent reads first.
-
-Found 2026-08-12 verifying #20's claims against the files.
-
 ## Loose threads
