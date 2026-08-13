@@ -1,5 +1,11 @@
 # @jabworks/condux
 
+## 0.9.0
+
+### Minor Changes
+
+- [#59](https://github.com/jabworks/agentic-toolkit/pull/59) [`c86da1a`](https://github.com/jabworks/agentic-toolkit/commit/c86da1a4af9d7f9624b0dd55109555dbd020787e) Thanks [@vi-hieu](https://github.com/vi-hieu)! - plan-review: directory mode's sidebar is now a doc-site tree — collapsible folders (collapsed except the active doc's ancestors, note counts rolled up), a filter matching doc names and headings, breadcrumb, and prev/next navigation. Single-file plan review is unchanged (docket [#22](https://github.com/jabworks/agentic-toolkit/issues/22)).
+
 ## 0.8.2
 
 ### Patch Changes
