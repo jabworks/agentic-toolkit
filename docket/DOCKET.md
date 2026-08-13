@@ -173,30 +173,6 @@ eval runs — what we do by hand across dated reports), `max-repeat` and
 
 Found 2026-08-09 surveying awesome-copilot's maintenance machinery.
 
-### 23. Long-document navigation for session-report and session-handoff (split from #20, 2026-08-12) (2026-08-12)
-
-The two long single documents have the weakest navigation relative to their
-size. Design signed off 2026-08-12; the pattern is agreed, the work is not
-scoped.
-
-`session-report/template.html` is 1442 lines — the largest artifact this toolkit
-ships — with no nav, no TOC, and no search. Its only keyboard interaction is
-arrow-key day selection (`:1153-1161`). It is the clear first target: a sticky
-TOC is the pattern that fits a long single document.
-
-`session-handoff/references/handoff-template.html` is 603 lines with 11 anchors
-and nothing else. It may need nothing at all — it is a fill-in document whose
-markdown twin has no navigation either. Decide before building rather than
-adding a TOC on symmetry grounds.
-
-Explicitly not a defect list for the other two surfaces. #20's uniform
-four-feature table reads as one, but "sticky: no" on plan-review's `100vh` pane
-app and "TOC: no" on a fill-in handoff are correct outcomes. One navigation
-pattern does not serve a long document, a board, and a multi-file tree — which
-is why this is separate from #22.
-
-Depends on #21 only for the token core; the navigation work is independent.
-
 ### 26. Worktree operations skill — safe git worktree workflows (create, switch, prune, agent isolation) (2026-08-13)
 
 Sibling to `git-commit` / `git-operations`: a decision router for `git worktree`
