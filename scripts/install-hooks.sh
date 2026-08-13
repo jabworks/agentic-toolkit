@@ -46,8 +46,12 @@ fi
 echo "→ syncing skills/ to dist/ ..."
 bash "$REPO_ROOT/scripts/sync.sh"
 
-# Stage any dist/ files added or changed by the sync
-git add "$REPO_ROOT/dist/"
+# Stage any dist/ files added or changed by the sync, plus the generated
+# catalog surfaces outside dist/ (marketplace.json and the marker blocks in
+# README.md / CLAUDE.md) and the declaration they come from — sync regenerates
+# them, so a commit made without staging them would leave the tree dirty.
+git add "$REPO_ROOT/dist/" "$REPO_ROOT/.claude-plugin/marketplace.json" \
+  "$REPO_ROOT/README.md" "$REPO_ROOT/CLAUDE.md" "$REPO_ROOT/composition.json"
 EOF
 
 chmod +x "$HOOK"

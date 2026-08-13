@@ -120,20 +120,24 @@ Both agents read from the same plugin root (`dist/plugins/<name>/`) but look in 
 
 The `skills` path is relative to the plugin root and must start with `./`.
 
-### 4. Register in marketplace.json
+### 4. Declare in composition.json
 
-Add an entry to `.claude-plugin/marketplace.json` — this is exactly the field set every
-existing entry uses, no more:
+`composition.json` (repo root) is the source of truth for what every plugin is
+made of. Register the skill there — never hand-edit
+`.claude-plugin/marketplace.json` or the catalog tables in README.md /
+CLAUDE.md; sync generates all of them from the declaration
+(`scripts/generate-catalogs.mjs`).
 
-```json
-{
-  "name": "<name>",
-  "description": "<short description>",
-  "author": { "name": "Hieu Vi" },
-  "source": "./dist/plugins/<name>",
-  "category": "development"
-}
-```
+- **Standalone plugin:** add a `plugins.<name>` entry with
+  `marketplace.description` (the marketplace text — deliberately independent
+  of the SKILL.md description, a ratified divergence).
+- **Bundle member:** add the skill name to the bundle's `skills` array.
+- **Either way:** add a catalog row — `catalogs.readme-skills` (or the
+  bundle's block) and, for a new plugin, a `catalogs.claude-md-skills` row.
+  A plugin with no catalog row fails validation before anything is written.
+- A plugin-level dir loaded from the plugin root (like condux `agents/` /
+  `hooks/` or docket `server/`) is one `pluginDirs` entry — data, not a new
+  sync.sh case.
 
 ### 5. Sync the generated trees
 
@@ -141,10 +145,11 @@ existing entry uses, no more:
 bash scripts/sync.sh <name>
 ```
 
-The script auto-detects whether the skill belongs to a bundle (any
-`dist/plugins/<p>/skills/<p>/<name>` target, e.g. condux or toolkit-ops) or a
-standalone plugin and copies to the right target. Run without arguments to sync
-everything.
+The script copies every pair `composition.json` declares for the skill —
+bundle membership, standalone target, and any plugin-level dirs — then
+regenerates `marketplace.json` and the doc catalog blocks. Run without
+arguments to sync everything. A skill missing from the declaration is a hard
+error, so step 4 must land first.
 
 Either way it then runs `node scripts/build-opencode.mjs`, which regenerates
 **all** of `dist/opencode/skills/`, `packages/condux-opencode/agents/`, and
@@ -152,9 +157,10 @@ Either way it then runs `node scripts/build-opencode.mjs`, which regenerates
 first) — one command covers every generated tree, so never invoke the pieces
 separately expecting different results, and never hand-edit any of the three.
 
-A brand-new skill has no `dist/plugins/` target until step 1 scaffolds one; sync
-prints `SKIP` and moves on. The OpenCode build has no such gate — it picks up
-every dir under `skills/` unconditionally.
+A brand-new skill that step 4 has not declared fails the sync outright (the
+old behavior — a silent `SKIP` — is exactly the quiet failure the declaration
+replaced). The OpenCode build has no such gate — it picks up every dir under
+`skills/` unconditionally.
 
 ### 6. Verify
 
@@ -168,10 +174,10 @@ Runs the invariant suite. What each file guards:
 |---|---|
 | `dist-mirror` | `dist/plugins/` skill trees match `skills/` byte-for-byte |
 | `opencode-dist` | `dist/opencode/skills/` + `packages/condux-opencode/agents/` match the build script's output; merged descriptions within OpenCode's 1024-char cap; the plugin loads and never clobbers user-defined agents |
-| `skill-invariants` | frontmatter budgets, kebab-case `name` == dir, marketplace/plugin paths resolve, condux `agents/` mirror, plan-review no-egress |
+| `composition` | every pair `composition.json` declares mirrors byte-for-byte; nothing undeclared in any `dist/plugins/` root; marketplace.json + doc catalog blocks match the generator |
+| `skill-invariants` | frontmatter budgets, kebab-case `name` == dir, marketplace/plugin paths resolve, plan-review no-egress |
 | `plugin-manifests` | `plugin.json` / `marketplace.json` validity, `./`-prefixed paths |
 | `manifest-parity` | the `.claude-plugin`/`.codex-plugin` pair agrees on name/version/skills; `interface` codex-only (absent from the Claude manifest); `hooks` codex-only; trigger contract per skill |
-| `docs-catalog` | every marketplace plugin appears in README.md and CLAUDE.md |
 | `skill-routing-contracts` | mutually-guarded trigger pairs name each other in frontmatter |
 | `scaffold` / `script-safety` / `annotate-server` / `browser-security` / `session-report` | shipped reference scripts: syntax, no-egress, server behavior |
 | `concord-*` (4 files) | the concord plugin's store, rollout sync, paths, budget |
@@ -192,7 +198,7 @@ manifest on 2026-07-29 precisely so `--strict` passes clean; see
 ### 7. Commit and push
 
 ```bash
-git add skills/<name>/ dist/ packages/ .claude-plugin/marketplace.json
+git add skills/<name>/ dist/ packages/ composition.json .claude-plugin/marketplace.json README.md CLAUDE.md
 git commit -s -m "feat: add <name> skill"
 git push origin main
 ```

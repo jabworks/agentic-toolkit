@@ -171,20 +171,22 @@ cp -r /tmp/agentic-toolkit/skills/<name> <skills-directory>/
 
 ## Skills
 
-| Skill                                        | Description                                                                                           |
-| -------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| [session-report](./skills/session-report/)   | Generate an explorable HTML report of session usage — tokens, cache, cost, subagents, skills          |
-| [session-handoff](./skills/session-handoff/) | Preserve and restore session context across agentic coding sessions                                   |
+<!-- catalog:begin readme-skills -->
+| Skill | Description |
+|---|---|
+| [session-report](./skills/session-report/) | Generate an explorable HTML report of session usage — tokens, cache, cost, subagents, skills |
+| [session-handoff](./skills/session-handoff/) | Preserve and restore session context across agentic coding sessions |
 | [adapting-skills](./skills/adapting-skills/) | Stack and style priors for adapting skills to the jabworks conventions _(opinionated — fork the priors for your own stack)_ |
-| [git-commit](./skills/git-commit/)           | Conventional-commit message from the diff, run safely — review before staging, no blind `git add .`   |
-| [git-operations](./skills/git-operations/)   | Decision router for git — pick the right operation (undo/discard/stash/merge/push) with an undo path  |
-| [spec-browser](./skills/spec-browser/)       | Catalog and browse a specs/ tree — markdown index + folder-grouped doc site                           |
-| [release](./skills/release/)                 | Cut releases safely — machinery detection (changesets/toolkit/GitHub), dry-run first, rollback paths  |
-| [coding-directive](./skills/coding-directive/) | House style for @jabworks repos — TypeScript, React, formatting, imports, naming, CSS _(personal)_  |
-| [remember](./skills/remember/)               | Continuous memory for Codex (`concord` plugin) — captures each session from the rollout, ages it into tiers, recalls it |
-| [concord-doctor](./skills/concord-doctor/)   | Health check for the concord plugin — probes its Codex hooks and memory store on this host           |
-| [condux-doctor](./skills/condux-doctor/)     | Health check for the condux plugin — runs the SessionStart routing hook and checks the agents shipped |
-| [docket-doctor](./skills/docket-doctor/)     | Health check for the docket plugin — probes the MCP registration on every host and the CLI fallback  |
+| [git-commit](./skills/git-commit/) | Conventional-commit message from the diff, run safely — review before staging, no blind `git add .` |
+| [git-operations](./skills/git-operations/) | Decision router for git — pick the right operation (undo/discard/stash/merge/push) with an undo path |
+| [spec-browser](./skills/spec-browser/) | Catalog and browse a specs/ tree — markdown index + folder-grouped doc site |
+| [release](./skills/release/) | Cut releases safely — machinery detection (changesets/toolkit/GitHub), dry-run first, rollback paths |
+| [coding-directive](./skills/coding-directive/) | House style for @jabworks repos — TypeScript, React, formatting, imports, naming, CSS _(personal)_ |
+| [remember](./skills/remember/) | Continuous memory for Codex (`concord` plugin) — captures each session from the rollout, ages it into tiers, recalls it |
+| [concord-doctor](./skills/concord-doctor/) | Health check for the concord plugin — probes its Codex hooks and memory store on this host |
+| [condux-doctor](./skills/condux-doctor/) | Health check for the condux plugin — runs the SessionStart routing hook and checks the agents shipped |
+| [docket-doctor](./skills/docket-doctor/) | Health check for the docket plugin — probes the MCP registration on every host and the CLI fallback |
+<!-- catalog:end readme-skills -->
 
 ### Condux
 
@@ -270,6 +272,9 @@ opt-in at checkpoints or justified by genuinely parallel work.
 
 | Skill | Description |
 |---|---|
+<!-- catalog:begin readme-condux -->
+| Skill | Description |
+|---|---|
 | [/workflow](./skills/workflow/) | Tier router — infer Small/Medium/Large, confirm with user, load only the skills the tier needs |
 | [/discovery](./skills/discovery/) | Design gate — goal-round questions, alternatives, then a post-approach detail round (contracts, mappings, edge cases); sign-off saves the design doc and, default-on, a structured tech spec |
 | [/draft-plan](./skills/draft-plan/) | Lean task-card plan (what/why/gotchas/deps), Markdown, LARGE tasks only |
@@ -283,6 +288,7 @@ opt-in at checkpoints or justified by genuinely parallel work.
 | [/root-cause-analysis](./skills/root-cause-analysis/) | Root-cause-first bug investigation — enforces the 4-phase sequence before any fix |
 | [/technical-spec](./skills/technical-spec/) | Scaffold and persist feature specs (decisions, API, fields, quirks) with a live HTML preview |
 | [/plan-review](./skills/plan-review/) | Annotate a plan in a local browser with a categorized comment toolbar, then return approve/revise/deny to the agent — auto via a Claude Code ExitPlanMode hook or a Codex Stop hook, or manually. Self-contained, no egress |
+<!-- catalog:end readme-condux -->
 
 ### Concord
 
@@ -329,6 +335,9 @@ Repo-maintenance bundle (`toolkit-ops`) for working on this toolkit itself:
 
 | Skill | Description |
 |---|---|
+<!-- catalog:begin readme-toolkit-ops -->
+| Skill | Description |
+|---|---|
 | [toolkit-orientation](./skills/toolkit-orientation/) | Zero-context map of the repo — trees, bundles, manifest pairing, docs trust order |
 | [toolkit-foundry](./skills/toolkit-foundry/) | Create and maintain skills — scaffold, register, sync, publish (formerly standalone `plugin-foundry`) |
 | [toolkit-change-control](./skills/toolkit-change-control/) | Classify a change, pick the version bump, gate on the publish checklist |
@@ -337,6 +346,7 @@ Repo-maintenance bundle (`toolkit-ops`) for working on this toolkit itself:
 | [toolkit-failure-archaeology](./skills/toolkit-failure-archaeology/) | Git-evidenced incident ledger — don't re-fight settled battles |
 | [toolkit-plugin-reference](./skills/toolkit-plugin-reference/) | Verified plugin.json / marketplace.json schema, Claude↔Codex divergences |
 | [toolkit-research-frontier](./skills/toolkit-research-frontier/) | Open problems, assets, next steps, and the library-health campaign |
+<!-- catalog:end readme-toolkit-ops -->
 
 ## Where artifacts land
 
