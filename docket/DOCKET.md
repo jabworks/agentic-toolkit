@@ -173,33 +173,6 @@ eval runs — what we do by hand across dated reports), `max-repeat` and
 
 Found 2026-08-09 surveying awesome-copilot's maintenance machinery.
 
-### 22. Spec-site navigation in plan-review's DIR_MODE (split from #20, 2026-08-12) (2026-08-12)
-
-The pain that raised #20: navigation is hard in practice when browsing a specs
-tree. Design signed off 2026-08-12 settled *who owns the surface*; what the
-navigation should become is still undesigned.
-
-Ownership was already ratified before #20 was written.
-`technical-spec/SKILL.md:100-107` routes spec preview to plan-review's annotate
-server in directory mode, and `plan-review/SKILL.md:53` records that
-technical-spec's own preview server was **retired into it**.
-
-#20's framing — "the spec doc-site is a plan reviewer wearing a hat" — is
-backwards. `listDocs()` (`annotate-server.js:96`) walks every `*.md` in the tree
-grouped by folder; the client builds a folder-grouped sidebar with per-doc TOC;
-cross-doc relative links resolve specifically so a spec catalog's `index.md`
-renders — the very file `spec-browser/references/build-index.js` generates. It
-is a doc-site server that grew a verdict strip, not the reverse.
-
-So: invest here, and spec-browser stays rung 1 of the dependency ladder — the
-agent-readable `index.md` catalog, working with zero servers and zero condux.
-Giving it its own renderer would create a fifth HTML surface, the disease #20
-diagnoses. The cross-reference between them stays descriptive, never a
-dependency.
-
-Needs its own discovery before planning: whether the gap is a sidebar redesign,
-a search index, or only grouping and ordering fixes is undecided.
-
 ### 23. Long-document navigation for session-report and session-handoff (split from #20, 2026-08-12) (2026-08-12)
 
 The two long single documents have the weakest navigation relative to their
