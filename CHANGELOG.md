@@ -12,17 +12,21 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## condux 2.14.2 — 2026-08-13
+
+- docs(plan-review): directory mode reviews every `*.md` in the tree, not just top-level — prose now matches `listDocs()` (docket #24)
+
 ## session-report 1.6.5 — 2026-08-12
 
-- chore(session-report): version 1.6.5
+- feat(tokens,docket): one colour core with a checker, and a board that filters (2.14.1, 0.5.0, 1.6.5, 1.6.8) (#54)
 
 ## session-handoff 1.6.8 — 2026-08-12
 
-- chore(session-handoff): version 1.6.8
+- feat(tokens,docket): one colour core with a checker, and a board that filters (2.14.1, 0.5.0, 1.6.5, 1.6.8) (#54)
 
 ## docket 0.5.0 — 2026-08-12
 
-- chore(docket): version 0.5.0
+- feat(tokens,docket): one colour core with a checker, and a board that filters (2.14.1, 0.5.0, 1.6.5, 1.6.8) (#54)
 
 ## docket 0.4.0 — 2026-08-12
 
@@ -34,7 +38,7 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## condux 2.14.1 — 2026-08-12
 
-- chore(condux): version 2.14.1
+- feat(tokens,docket): one colour core with a checker, and a board that filters (2.14.1, 0.5.0, 1.6.5, 1.6.8) (#54)
 
 ## condux 2.14.0 — 2026-08-12
 

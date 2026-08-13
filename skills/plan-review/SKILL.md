@@ -46,7 +46,8 @@ the test suite; also right for headless/CI runs). Use this for ad-hoc review of 
 are not in plan mode. After submitting, read `<file>.feedback.md` to action it.
 
 **Directory mode** reviews a whole spec folder (e.g. `specs/wan-config/` from
-the `technical-spec` skill): every top-level `*.md` is listed in the sidebar,
+the `technical-spec` skill): every `*.md` in the tree is listed in the sidebar
+(grouped by folder, `index.md` first, dotdirs skipped),
 notes are tagged with their source file, edits to any file live-reload (with a
 per-file revision diff), and the decision lands in `<dir>/review.feedback.md`
 grouped by file. Works in manual and `--steer` modes; this is also the live
@@ -98,7 +99,7 @@ Full UI walkthrough + guarantees: `references/ui.md`.
 
 | File | Role |
 |---|---|
-| `references/annotate-server.js` | Local server. `--hook` (Claude ExitPlanMode), `--codex-stop` (Codex Stop), `<file> --steer` (agent-invoked blocking loop), or `<file|dir>` alone for manual mode. A directory argument reviews every top-level `*.md` in it. `--no-reject` hides the Reject verdict for accept-or-fix reviews (discovery's design stage passes it; directory mode implies it). |
+| `references/annotate-server.js` | Local server. `--hook` (Claude ExitPlanMode), `--codex-stop` (Codex Stop), `<file> --steer` (agent-invoked blocking loop), or `<file|dir>` alone for manual mode. A directory argument reviews every `*.md` in the tree. `--no-reject` hides the Reject verdict for accept-or-fix reviews (discovery's design stage passes it; directory mode implies it). |
 | `references/install-codex-hook.sh` | Registers the Codex `Stop` hook in `~/.codex` and enables the hooks feature flag. |
 | `references/plan-review-template.html` | Self-contained review UI (renderer + annotation surface). |
 
