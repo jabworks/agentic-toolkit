@@ -107,31 +107,4 @@ vocabulary — "worktree", "parallel checkout", "agent sandbox tree").
 
 Filed 2026-08-13 mid-#22 (unrelated to that change).
 
-### 30. Agent Plugins follow-up — toolkit-ops docs never gained the root plugin.json (docket #29) (2026-08-14)
-
-Sibling debt to #28, found while closing it. The Agent Plugins conformance work
-(#29, PR #68) added a THIRD manifest per plugin — the generated root
-`plugin.json` (agent-plugins.org 1.0.0, from
-`scripts/generate-agent-manifests.mjs`) plus docket's spec-dialect `mcp.json` —
-and the toolkit-ops docs never absorbed it.
-
-Concretely:
-
-1. `toolkit-plugin-reference` is *the* manifest schema reference and documents
-   only the `.claude-plugin` / `.codex-plugin` pair. It has no entry for the
-   root `plugin.json`: not its closed schema, not that it is generated (never
-   hand-edited), not the `${PLUGIN_ROOT}` vs `${CLAUDE_PLUGIN_ROOT}` split
-   between docket's spec `mcp.json` and Claude's `.mcp.json`. Someone reading
-   it to answer "what manifests does a plugin need" gets a two-thirds answer.
-2. `toolkit-change-control` classifies changes by what they touch; a
-   manifest-only fix row says "both `.{claude,codex}-plugin/plugin.json`" and
-   does not mention that sync regenerates the root manifest too.
-
-What #28 already fixed in passing (do NOT redo): the flattened bundle layout
-(`dist/plugins/<bundle>/skills/<name>/`, depth one) in toolkit-orientation,
-toolkit-foundry and toolkit-change-control, and the `agent-plugins` row in
-foundry's test table.
-
-Filed 2026-08-14 while closing #28.
-
 ## Loose threads

@@ -38,7 +38,7 @@ Gate every change to this toolkit through classification → checklist → evide
 | New standalone skill | `skills/<n>/`, `dist/plugins/<n>/**`, marketplace.json | new plugin at 1.0.0 |
 | New bundle-member skill | `skills/<n>/`, `dist/plugins/<bundle>/skills/<n>/`, bundle manifests | bundle minor |
 | Skill edit | `skills/<n>/` + its dist mirror (via sync) | owning plugin patch (minor if new capability) |
-| Manifest-only fix | both `dist/plugins/<p>/.{claude,codex}-plugin/plugin.json` | patch |
+| Manifest-only fix | both `dist/plugins/<p>/.{claude,codex}-plugin/plugin.json`, then sync — it regenerates the root `plugin.json` from the claude manifest | patch |
 | Marketplace-only fix | `.claude-plugin/marketplace.json` | none (no version field there) |
 | Doc-only fix | README.md / CLAUDE.md / skill README.md | none, unless the doc ships inside a plugin (then patch) |
 | Dist-only resync | `dist/` via `scripts/sync.sh` | none — but ask WHY it drifted first |
@@ -46,8 +46,13 @@ Gate every change to this toolkit through classification → checklist → evide
 
 **Rules that override everything:** `skills/` is the only editable skill source;
 `dist/` skill trees are generated (edit manifests only). Version bumps go in **both**
-plugin.json manifests, kept identical — installed caches only refresh on a version
-change (git `a4f4aa8`).
+hand-edited plugin.json manifests, kept identical — installed caches only refresh on
+a version change (git `a4f4aa8`).
+
+"Both" means the `.claude-plugin/` + `.codex-plugin/` pair. The **root**
+`plugin.json` is a third manifest and carries a version too, but it is generated
+from the claude manifest by sync — never bump it by hand, and stage it with the
+rest of `dist/` (`tests/agent-plugins.test.mjs` fails on a stale one).
 
 ### 2. Run the publish checklist (all must pass)
 
