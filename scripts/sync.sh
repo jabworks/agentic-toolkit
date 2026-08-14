@@ -178,6 +178,7 @@ if [[ $# -gt 0 ]]; then
   sync_plugin_files
   node "$REPO_ROOT/scripts/generate-catalogs.mjs"
   node "$REPO_ROOT/scripts/build-opencode.mjs"
+  node "$REPO_ROOT/scripts/build-cursor.mjs"
   check_generated
 else
   synced=0
@@ -195,6 +196,7 @@ else
   sync_plugin_files
   node "$REPO_ROOT/scripts/generate-catalogs.mjs"
   node "$REPO_ROOT/scripts/build-opencode.mjs"
+  node "$REPO_ROOT/scripts/build-cursor.mjs"
   check_generated
   echo ""
   echo "done — ${synced} synced, ${skipped} skipped, ${failed} failed"

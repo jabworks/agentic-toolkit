@@ -19,7 +19,8 @@ server only removes per-operation shell prompts.
 - `SERVER` = absolute path to `mcp-server.mjs` in this directory
 - Check `node` exists. Without it, stop: FATAL, nothing to register.
 - Which hosts are present? `~/.claude/` (Claude Code), `~/.codex/` (Codex),
-  an `opencode` binary or `~/.config/opencode/` (OpenCode).
+  an `opencode` binary or `~/.config/opencode/` (OpenCode), `~/.cursor/`
+  (Cursor).
 
 ## 1. Claude Code — skip
 
@@ -59,7 +60,31 @@ File: `${XDG_CONFIG_HOME:-~/.config}/opencode/opencode.json`.
 }
 ```
 
-## 4. Verify
+## 4. Cursor — merge one JSON key
+
+File: `~/.cursor/mcp.json` (global). A project-level `.cursor/mcp.json` uses
+the same shape and wins on name collision — use it when the server should
+only exist for one project.
+
+1. If `mcpServers.docket` already exists in it → report `skipped`.
+2. Otherwise back the file up (when it exists), then merge — touching only
+   this key:
+
+```json
+{
+  "mcpServers": {
+    "docket": { "type": "stdio", "command": "node", "args": ["<absolute path to mcp-server.mjs>"] }
+  }
+}
+```
+
+**WSL split-home:** when Cursor runs on Windows against a WSL filesystem,
+`~/.cursor` inside WSL is not the Windows-side Cursor home — the installer
+reports `absent` there rather than guessing. Write the project-level
+`.cursor/mcp.json` in the repo instead (Cursor reads it through the WSL
+remote), using the WSL-visible absolute path to `mcp-server.mjs`.
+
+## 5. Verify
 
 Pipe one initialize request through the server and expect its name back:
 
@@ -71,7 +96,7 @@ The response must contain `"name":"docket"`. A registration that was written
 but does not answer this is a **failure to report, not a success** — that is
 the convention's whole reason for the verify step.
 
-## 5. Report
+## 6. Report
 
 One line per host — `done` / `skipped` / `absent` / `failed` — plus the
 verify result. Nothing silent: a host that was skipped is named, with why.

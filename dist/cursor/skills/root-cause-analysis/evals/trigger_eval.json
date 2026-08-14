@@ -1,0 +1,22 @@
+[
+  { "query": "checkout crashes on empty cart", "should_trigger": true, "expected_skill": "root-cause-analysis" },
+  { "query": "TypeError: cannot read property of undefined in the orders page", "should_trigger": true, "expected_skill": "root-cause-analysis" },
+  { "query": "why does this test fail intermittently", "should_trigger": true, "expected_skill": "root-cause-analysis" },
+  { "query": "debug the 500 on the orders endpoint", "should_trigger": true, "expected_skill": "root-cause-analysis" },
+  { "query": "the app broke after the last deploy", "should_trigger": true, "expected_skill": "root-cause-analysis" },
+  { "query": "trace this bug to its root cause", "should_trigger": true, "expected_skill": "root-cause-analysis" },
+  { "query": "3 fixes failed already, whats the next idea", "should_trigger": true, "expected_skill": "root-cause-analysis" },
+  { "query": "reproduce this issue first before touching anything", "should_trigger": true, "expected_skill": "root-cause-analysis" },
+  { "query": "just patch it quickly, we can investigate later", "should_trigger": true, "expected_skill": "root-cause-analysis" },
+  { "query": "systematic debugging pls", "should_trigger": true, "expected_skill": "root-cause-analysis" },
+  { "query": "regression after the refactor, find the cause", "should_trigger": true, "expected_skill": "root-cause-analysis" },
+  { "query": "why is prod slower since tuesday", "should_trigger": true, "expected_skill": "root-cause-analysis" },
+  { "query": "what does this stack trace mean", "should_trigger": true, "expected_skill": "root-cause-analysis" },
+  { "query": "two unrelated failures showed up, split the work", "should_trigger": true, "expected_skill": "subagent-deployment" },
+  { "query": "add error handling to this function", "should_trigger": true, "expected_skill": "workflow" },
+  { "query": "fix the bug — I already know exactly whats wrong", "should_trigger": true, "expected_skill": "workflow" },
+  { "query": "my toolkit skill isnt triggering", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },
+  { "query": "dist looks out of date vs skills/", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },
+  { "query": "bug bounty writeup for the blog", "should_trigger": false, "expected_skill": null },
+  { "query": "debug my printer connection", "should_trigger": false, "expected_skill": null }
+]

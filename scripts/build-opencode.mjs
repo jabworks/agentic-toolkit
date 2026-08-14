@@ -157,8 +157,9 @@ export function translateAgent(text, label) {
 
 // Only the skill's own top-level SKILL.md is transformed (depth 0) — a nested
 // SKILL.md (e.g. an eval fixture under references/ or evals/) is data and must
-// copy byte-for-byte.
-function copyTransformed(srcDir, dstDir, label, depth = 0) {
+// copy byte-for-byte. Exported for build-cursor.mjs, which applies the same
+// fold to its own output tree.
+export function copyTransformed(srcDir, dstDir, label, depth = 0) {
   fs.mkdirSync(dstDir, { recursive: true });
   for (const entry of fs.readdirSync(srcDir, { withFileTypes: true })) {
     const src = path.join(srcDir, entry.name);

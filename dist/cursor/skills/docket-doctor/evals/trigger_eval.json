@@ -1,0 +1,20 @@
+[
+  { "query": "is docket actually working on this machine?", "should_trigger": true, "expected_skill": "docket-doctor" },
+  { "query": "check my docket install", "should_trigger": true, "expected_skill": "docket-doctor" },
+  { "query": "the docket mcp tools stopped showing up", "should_trigger": true, "expected_skill": "docket-doctor" },
+  { "query": "verify the docket registration on this host", "should_trigger": true, "expected_skill": "docket-doctor" },
+  { "query": "docket_add isn't available anymore, what happened", "should_trigger": true, "expected_skill": "docket-doctor" },
+  { "query": "I just installed the docket plugin on my laptop — did it register?", "should_trigger": true, "expected_skill": "docket-doctor" },
+  { "query": "run a health check on docket", "should_trigger": true, "expected_skill": "docket-doctor" },
+  { "query": "is the docket mcp server answering?", "should_trigger": true, "expected_skill": "docket-doctor" },
+  { "query": "why isn't my skill triggering", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },
+  { "query": "dist looks out of date compared to skills/", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },
+  { "query": "the plugin isn't showing up after I edited the marketplace file", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },
+  { "query": "add this to the docket: probe the opencode registration", "should_trigger": true, "expected_skill": "record" },
+  { "query": "groom the backlog and tell me what's stale", "should_trigger": true, "expected_skill": "groom" },
+  { "query": "close #1, the doctor shipped", "should_trigger": true, "expected_skill": "record" },
+  { "query": "how do I write an MCP server?", "should_trigger": false, "expected_skill": null },
+  { "query": "my doctor's appointment is on Tuesday, remind me", "should_trigger": false, "expected_skill": null },
+  { "query": "what does a JSON-RPC initialize request look like?", "should_trigger": false, "expected_skill": null },
+  { "query": "check the health endpoint of the staging API", "should_trigger": false, "expected_skill": null }
+]

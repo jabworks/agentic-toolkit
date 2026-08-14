@@ -1,0 +1,19 @@
+[
+  { "query": "adapt this generic skill template to my stack", "should_trigger": true, "expected_skill": "adapting-skills" },
+  { "query": "convert this superpowers skill for our toolkit", "should_trigger": true, "expected_skill": "adapting-skills" },
+  { "query": "clone this skill and make it match our conventions", "should_trigger": true, "expected_skill": "adapting-skills" },
+  { "query": "scaffold the new module the way we usually structure things", "should_trigger": true, "expected_skill": "adapting-skills" },
+  { "query": "improve the description of the skill in my api gateway repo", "should_trigger": true, "expected_skill": "adapting-skills" },
+  { "query": "update this project's local skill so it triggers better", "should_trigger": true, "expected_skill": "adapting-skills" },
+  { "query": "the skill in .codex/skills never fires, fix its frontmatter", "should_trigger": true, "expected_skill": "adapting-skills" },
+  { "query": "tighten the trigger contract on this repo's implement-api skill", "should_trigger": true, "expected_skill": "adapting-skills" },
+  { "query": "add eval cases for the skill we ship in the other project", "should_trigger": true, "expected_skill": "adapting-skills" },
+  { "query": "bring this skill up to my authoring standards", "should_trigger": true, "expected_skill": "adapting-skills" },
+  { "query": "create a new skill for the toolkit and register it", "should_trigger": true, "expected_skill": "toolkit-foundry" },
+  { "query": "review this skill description for collisions", "should_trigger": true, "expected_skill": "toolkit-skill-standards" },
+  { "query": "why isn't my toolkit skill triggering after install", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },
+  { "query": "write up what we decided as a spec", "should_trigger": true, "expected_skill": "technical-spec" },
+  { "query": "improve the performance of this function", "should_trigger": false, "expected_skill": null, "accept": ["workflow"] },
+  { "query": "update the npm package to the latest version", "should_trigger": false, "expected_skill": null },
+  { "query": "adapt the design to mobile breakpoints", "should_trigger": false, "expected_skill": null, "accept": ["workflow"] }
+]

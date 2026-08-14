@@ -145,6 +145,56 @@ else
   report opencode absent "no opencode install found"
 fi
 
+# --- Cursor ------------------------------------------------------------------
+# Cursor reads ~/.cursor/mcp.json (global) with the standard mcpServers shape;
+# a project-level .cursor/mcp.json wins on name collision and stays the user's
+# to write by hand (snippet in INSTALL.md). On a WSL box the Windows-side
+# Cursor has its own home — this section only sees a ~/.cursor in THIS
+# filesystem and reports absent otherwise, rather than guessing Windows paths.
+CURSOR_CONFIG="$HOME/.cursor/mcp.json"
+if [ -d "$HOME/.cursor" ]; then
+  if [ "$MODE" = "uninstall" ]; then
+    RESULT=$(node -e '
+      const fs = require("node:fs");
+      const [config] = process.argv.slice(1);
+      if (!fs.existsSync(config)) { console.log("skipped"); process.exit(0); }
+      const data = JSON.parse(fs.readFileSync(config, "utf8"));
+      if (!data.mcpServers?.docket) { console.log("skipped"); process.exit(0); }
+      fs.copyFileSync(config, config + ".bak");
+      delete data.mcpServers.docket;
+      if (data.mcpServers && Object.keys(data.mcpServers).length === 0) delete data.mcpServers;
+      fs.writeFileSync(config, JSON.stringify(data, null, 2) + "\n");
+      console.log("done");
+    ' "$CURSOR_CONFIG")
+    if [ "$RESULT" = "skipped" ]; then
+      report cursor skipped "not registered in mcp.json"
+    else
+      report cursor done "removed from mcp.json (backup: mcp.json.bak)"
+    fi
+  else
+    RESULT=$(node -e '
+      const fs = require("node:fs");
+      const [config, server] = process.argv.slice(1);
+      let data = {};
+      if (fs.existsSync(config)) {
+        data = JSON.parse(fs.readFileSync(config, "utf8"));
+        if (data.mcpServers?.docket) { console.log("skipped"); process.exit(0); }
+        fs.copyFileSync(config, config + ".bak");
+      }
+      data.mcpServers = { ...data.mcpServers, docket: { type: "stdio", command: "node", args: [server] } };
+      fs.writeFileSync(config, JSON.stringify(data, null, 2) + "\n");
+      console.log("done");
+    ' "$CURSOR_CONFIG" "$SERVER")
+    if [ "$RESULT" = "skipped" ]; then
+      report cursor skipped "already registered in mcp.json"
+    else
+      report cursor done "registered in mcp.json (backup kept when it existed)"
+    fi
+  fi
+else
+  report cursor absent "no ~/.cursor found"
+fi
+
 # The verify beat checks what the run claimed to do, not that the binary works.
 # On uninstall "the server still answers initialize" is true and beside the
 # point — what needs confirming is that no registration survived.
@@ -153,6 +203,9 @@ if [ "$MODE" = "uninstall" ]; then
   [ -f "$CODEX_CONFIG" ] && grep -q '^\[mcp_servers\.docket\]' "$CODEX_CONFIG" && LEFTOVER="config.toml"
   if [ -f "$OPENCODE_CONFIG" ] && node -e 'const fs=require("node:fs");const d=JSON.parse(fs.readFileSync(process.argv[1],"utf8"));process.exit(d.mcp?.docket?0:1)' "$OPENCODE_CONFIG" 2>/dev/null; then
     LEFTOVER="${LEFTOVER:+$LEFTOVER, }opencode.json"
+  fi
+  if [ -f "$CURSOR_CONFIG" ] && node -e 'const fs=require("node:fs");const d=JSON.parse(fs.readFileSync(process.argv[1],"utf8"));process.exit(d.mcpServers?.docket?0:1)' "$CURSOR_CONFIG" 2>/dev/null; then
+    LEFTOVER="${LEFTOVER:+$LEFTOVER, }cursor mcp.json"
   fi
 
   if [ -n "$LEFTOVER" ]; then

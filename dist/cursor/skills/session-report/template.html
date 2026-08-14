@@ -1,0 +1,1516 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>session report</title>
+    <!-- No remote fonts: this report carries project names, costs, and
+         timestamps, and a webfont request tells its host the file was opened
+         and when. --mono falls back through JetBrains Mono to ui-monospace, so
+         this renders the same on any machine that has a dev font. -->
+    <style>
+/* tokens:core:start */
+/* Shared colour core — do not hand-edit; edit scripts/tokens/core.css. */
+:root {
+  --background: #111110;
+  --card: #191918;
+  --card-foreground: #eeeeec;
+  --popover: #222221;
+  --foreground: #eeeeec;
+  --muted: #222221;
+  --muted-foreground: #b5b3ad;
+  --border: #3b3a37;
+  --input: #3b3a37;
+  --primary: #978365;
+  --primary-foreground: #ffffff;
+  --primary-hover: #a39073;
+  --primary-muted: #24231f;
+  --primary-text: #cbb99f;
+  --ring: #978365;
+  --accent: #2a2a28;
+  --success: #71d083;
+  --success-muted: #1b2a1e;
+  --success-border: #2d5736;
+  --warning: #ffca16;
+  --warning-muted: #302008;
+  --warning-border: #5c3d05;
+  --destructive: #ff977d;
+  --destructive-muted: #391714;
+  --destructive-border: #6e2920;
+  --info: #70b8ff;
+  --info-muted: #0d2847;
+  --info-border: #104d87;
+  --outline: rgba(237, 237, 236, 0.08);
+  --subtle: #686560;
+  --radius: 0.25rem;
+  --mono: "Geist Mono", "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Monaco, "Cascadia Code", monospace;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --background: #f6f5ef;
+    --card: #fcfbf6;
+    --card-foreground: #36302a;
+    --popover: #fcfbf6;
+    --foreground: #36302a;
+    --muted: #f0efe3;
+    --muted-foreground: #726c5e;
+    --border: #ddd6c6;
+    --input: #ddd6c6;
+    --primary: #967e60;
+    --primary-foreground: #ffffff;
+    --primary-hover: #897254;
+    --primary-muted: #efece0;
+    --primary-text: #6f5e44;
+    --ring: #967e60;
+    --accent: #eae7da;
+    --success: #3f7a34;
+    --success-muted: #e6f5e2;
+    --success-border: #c2e1b3;
+    --warning: #93761d;
+    --warning-muted: #fbf4c4;
+    --warning-border: #ebd87f;
+    --destructive: #bf4f3b;
+    --destructive-muted: #fbe8e2;
+    --destructive-border: #f0c9ba;
+    --info: #3f6fa6;
+    --info-muted: #e6f1fc;
+    --info-border: #bed7ef;
+    --outline: rgba(54, 48, 42, 0.08);
+    --subtle: #a8a294;
+  }
+}
+/* tokens:core:end */
+
+      /* session-report extensions — semantic variants, named palette entries,
+         and terminal colours. Outside the markers on purpose: anything
+         inside them is replaced by check-tokens.mjs --fix. */
+      :root {
+        --secondary:          #222221;
+        --card-hover:         #222221;
+        --card-active:        #2a2a28;
+        --popover-foreground: #eeeeec;
+        --border-hover:       #494844;
+        --gold-9:             #978365;
+        --gold-10:            #a39073;
+        --success-foreground: #ffffff;
+        --success-solid:      #46a758;
+        --warning-foreground: #21180b;
+        --warning-solid:      #ffc53d;
+        --info-foreground:    #ffffff;
+        --info-solid:         #0090ff;
+        --destructive-foreground:#ffffff;
+        --destructive-solid:  #e54d2e;
+        --term-bg:            var(--background);
+        --term-fg:            var(--foreground);
+        --titlebar:           var(--secondary);
+        --hover:              var(--accent);
+        --clay:               var(--primary);
+        --dim:                var(--muted-foreground);
+        --green:              var(--success);
+        --red:                var(--destructive);
+        --blue:               var(--info);
+        --yellow:             var(--warning);
+        --ivory:              var(--background);
+      }
+
+      @media (prefers-color-scheme: light) {
+        :root {
+          --secondary:          #f0efe3;
+          --card-hover:         #f0efe3;
+          --card-active:        #eae7da;
+          --popover-foreground: #36302a;
+          --border-hover:       #cfc8b6;
+          --gold-10:            #897254;
+          --success-foreground: #ffffff;
+          --success-solid:      #46a758;
+          --warning-foreground: #21180b;
+          --warning-solid:      #ffc53d;
+          --info-foreground:    #ffffff;
+          --info-solid:         #0090ff;
+          --destructive-foreground:#ffffff;
+          --destructive-solid:  #e54d2e;
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        background: var(--ivory);
+      }
+      body {
+        margin: 0;
+        padding: 48px 24px 80px;
+        font: 13px/1.55 var(--mono);
+        font-variant-numeric: tabular-nums;
+        color: var(--term-fg);
+        position: relative;
+        min-height: 100vh;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(
+            to right,
+            color-mix(in oklch, var(--foreground) 2%, transparent) 1px,
+            transparent 1px
+          ),
+          linear-gradient(
+            to bottom,
+            color-mix(in oklch, var(--foreground) 2%, transparent) 1px,
+            transparent 1px
+          );
+        background-size: 40px 40px;
+      }
+
+      body::after {
+        content: "";
+        position: fixed;
+        top: -240px;
+        left: 50%;
+        width: 640px;
+        height: 640px;
+        z-index: 0;
+        pointer-events: none;
+        transform: translateX(-50%);
+        background: radial-gradient(
+          circle,
+          color-mix(in oklch, var(--gold-9) 9%, transparent) 0%,
+          transparent 70%
+        );
+      }
+
+      ::-webkit-scrollbar {
+        width: 9px;
+        height: 9px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background-color: var(--primary);
+        border-radius: 9999px;
+        border: 2px solid transparent;
+        background-clip: padding-box;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .term {
+        max-width: 1180px;
+        margin: 0 auto;
+        background: var(--term-bg);
+        border-radius: 12px;
+        outline: 1px solid var(--outline);
+        box-shadow: 0 20px 60px rgba(20, 20, 19, 0.22);
+        position: relative;
+        z-index: 1;
+      }
+      .titlebar {
+        background: var(--titlebar);
+        border-radius: 12px 12px 0 0;
+        border-bottom: 1px solid var(--outline);
+        padding: 10px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .titlebar .tag {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--clay);
+        padding: 1px 6px;
+        background: color-mix(in oklch, var(--clay) 12%, transparent);
+        border-radius: 9999px;
+      }
+      .titlebar .path {
+        color: var(--dim);
+        font-size: 11px;
+      }
+      /* Sticky section nav — one chip per h2, built at load, scroll-spy active.
+         Same pill vocabulary as the docket board; z-index above the sticky th. */
+      .secnav {
+        position: sticky;
+        top: 0;
+        z-index: 3;
+        display: flex;
+        gap: 6px;
+        padding: 8px 16px;
+        background: var(--term-bg);
+        border-bottom: 1px solid var(--outline);
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .secnav::-webkit-scrollbar { display: none; }
+      .secnav .chip {
+        flex: none;
+        font: inherit;
+        font-size: 11px;
+        color: var(--subtle);
+        background: transparent;
+        border: 1px solid var(--outline);
+        border-radius: 9999px;
+        padding: 2px 10px;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .secnav .chip:hover { color: var(--foreground); border-color: var(--dim); }
+      .secnav .chip.active {
+        color: var(--clay);
+        border-color: color-mix(in oklch, var(--clay) 45%, transparent);
+        background: color-mix(in oklch, var(--clay) 10%, transparent);
+      }
+      .term-body section { scroll-margin-top: 46px; }
+      .term-body {
+        padding: 22px 30px 30px;
+      }
+
+      .cmd {
+        color: var(--dim);
+        margin-bottom: 6px;
+      }
+      .cmd .prompt {
+        color: var(--clay);
+      }
+      .cmd .flag {
+        color: var(--blue);
+      }
+      #meta-line {
+        color: var(--subtle);
+        font-size: 11px;
+      }
+
+      #hero {
+        margin: 14px 0 6px;
+      }
+      #hero-total {
+        font-size: 56px;
+        font-weight: 700;
+        line-height: 1;
+      }
+      #hero-total .unit {
+        color: var(--clay);
+      }
+      #hero-total .label {
+        font-size: 18px;
+        font-weight: 400;
+        color: var(--dim);
+        margin-left: 8px;
+      }
+      #hero-split {
+        color: var(--dim);
+        margin-top: 8px;
+      }
+      #hero-split b {
+        color: var(--term-fg);
+        font-weight: 500;
+      }
+      #hero-split .ok {
+        color: var(--green);
+      }
+      #hero-split .warn {
+        color: var(--yellow);
+      }
+      #hero-cost {
+        color: var(--dim);
+        margin-top: 4px;
+      }
+      #hero-cost b {
+        color: var(--term-fg);
+        font-weight: 500;
+      }
+      #hero-cost .ok {
+        color: var(--green);
+      }
+      .cost-note {
+        color: var(--subtle);
+        font-size: 11px;
+      }
+      .stat .val.cost {
+        font-size: 15px;
+        color: var(--yellow);
+      }
+
+      section {
+        margin-top: 26px;
+      }
+      .hr {
+        color: var(--subtle);
+        overflow: hidden;
+        white-space: nowrap;
+        user-select: none;
+        margin-bottom: 8px;
+      }
+      .hr::after {
+        content: "────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────";
+      }
+      h2 {
+        all: unset;
+        display: block;
+        color: var(--clay);
+        font-weight: 500;
+      }
+      h2::before {
+        content: "▸ ";
+      }
+      h2 .hint {
+        color: var(--subtle);
+        font-size: 11px;
+        font-weight: 400;
+        margin-left: 10px;
+      }
+      .section-body {
+        margin-top: 10px;
+      }
+
+      #overall-grid {
+        display: grid;
+        gap: 4px 28px;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      }
+      .stat {
+        padding: 4px 0;
+      }
+      .stat .label {
+        font-size: 11px;
+        color: var(--dim);
+      }
+      .stat .val {
+        font-size: 20px;
+        font-weight: 500;
+      }
+      .stat .detail {
+        font-size: 11px;
+        color: var(--subtle);
+      }
+
+      .take {
+        display: grid;
+        grid-template-columns: 9ch 1fr;
+        gap: 18px;
+        padding: 6px 0;
+        align-items: baseline;
+      }
+      .take .fig {
+        text-align: right;
+        font-weight: 700;
+        font-size: 15px;
+      }
+      .take .txt {
+        color: var(--dim);
+      }
+      .take .txt b {
+        color: var(--term-fg);
+        font-weight: 500;
+      }
+      .take.bad .fig {
+        color: var(--red);
+      }
+      .take.good .fig {
+        color: var(--green);
+      }
+      .take.info .fig {
+        color: var(--blue);
+      }
+
+      .callout {
+        padding: 6px 0 6px 14px;
+        border-left: 2px solid var(--subtle);
+        color: var(--dim);
+        margin: 6px 0;
+      }
+      .callout b,
+      .callout code {
+        color: var(--term-fg);
+      }
+
+      .days {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+      }
+      .dpill {
+        flex: 1;
+        min-width: 84px;
+        max-width: 140px;
+        background: none;
+        border: 1px solid var(--subtle);
+        border-radius: 8px;
+        padding: 9px 6px;
+        font: inherit;
+        color: var(--dim);
+        cursor: pointer;
+        text-align: center;
+      }
+      .dpill:hover {
+        border-color: var(--dim);
+        background: var(--hover);
+      }
+      .dpill .dow {
+        font-size: 10px;
+        color: var(--subtle);
+        display: block;
+      }
+      .dpill .date {
+        font-size: 11px;
+        color: var(--term-fg);
+        font-weight: 500;
+        display: block;
+        margin: 2px 0 4px;
+      }
+      .dpill .pct {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--term-fg);
+        display: block;
+      }
+      .dpill .ns {
+        font-size: 10px;
+        color: var(--subtle);
+        display: block;
+        margin-top: 2px;
+      }
+      .dpill.heaviest .pct {
+        color: var(--clay);
+      }
+      .dpill.sel {
+        border-color: var(--clay);
+        background: color-mix(in oklch, var(--primary) 10%, transparent);
+      }
+      .gantt-hd {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 6px;
+      }
+      .gantt-hd .day {
+        color: var(--term-fg);
+        font-weight: 500;
+      }
+      .gantt-hd .stats {
+        font-size: 11px;
+        color: var(--dim);
+      }
+      .gantt-hd .stats b {
+        color: var(--clay);
+      }
+      .gantt {
+        position: relative;
+        border-top: 1px solid var(--outline);
+        border-bottom: 1px solid var(--outline);
+        min-height: 32px;
+      }
+      .lane {
+        position: relative;
+        height: 16px;
+        border-bottom: 1px dashed
+          color-mix(in oklch, var(--foreground) 4%, transparent);
+      }
+      .seg {
+        position: absolute;
+        top: 2px;
+        height: 12px;
+        border-radius: 4px;
+        opacity: 0.85;
+        cursor: crosshair;
+      }
+      .seg:hover {
+        opacity: 1;
+        outline: 1px solid var(--term-fg);
+        z-index: 2;
+      }
+      .gantt-rule {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 0;
+        border-left: 1px dashed var(--subtle);
+        opacity: 0.4;
+        pointer-events: none;
+      }
+      .gantt-axis {
+        display: flex;
+        justify-content: space-between;
+        font-size: 10px;
+        color: var(--subtle);
+        padding: 4px 0;
+      }
+      .gantt-leg {
+        font-size: 10px;
+        color: var(--subtle);
+        margin-top: 8px;
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+      .gantt-leg .sw {
+        display: inline-block;
+        width: 14px;
+        height: 10px;
+        border-radius: 4px;
+        vertical-align: middle;
+        margin-right: 4px;
+      }
+
+      .bar {
+        display: grid;
+        grid-template-columns: 26ch 1fr 8ch;
+        gap: 14px;
+        padding: 2px 0;
+        align-items: center;
+      }
+      .bar .name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .bar .blocks {
+        color: var(--clay);
+        white-space: pre;
+        overflow: hidden;
+      }
+      .bar .blocks .empty {
+        color: var(--subtle);
+      }
+      .bar .pct {
+        text-align: right;
+        color: var(--dim);
+      }
+      .bar:hover .name {
+        color: var(--clay);
+      }
+
+      .drill details {
+        border-top: 1px solid var(--outline);
+      }
+      .drill details:last-of-type {
+        border-bottom: 1px solid var(--outline);
+      }
+      .drill summary {
+        list-style: none;
+        cursor: pointer;
+        display: grid;
+        grid-template-columns: 8ch 1fr;
+        gap: 16px;
+        padding: 9px 4px;
+        align-items: baseline;
+      }
+      .drill summary::-webkit-details-marker {
+        display: none;
+      }
+      .drill summary:hover {
+        background: var(--hover);
+      }
+      .drill .amt {
+        font-weight: 700;
+        text-align: right;
+        color: var(--clay);
+      }
+      .drill .desc {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .drill .meta {
+        grid-column: 2;
+        font-size: 11px;
+        color: var(--subtle);
+      }
+      .drill details[open] summary .desc {
+        white-space: normal;
+      }
+      .drill .body {
+        padding: 4px 4px 14px calc(8ch + 20px);
+        font-size: 12px;
+        color: var(--dim);
+      }
+
+      .ctx {
+        margin: 8px 0 12px;
+        padding: 10px 14px;
+        background: var(--muted);
+        color: var(--foreground);
+        border-radius: 8px;
+        font-size: 12px;
+      }
+      .ctx-msg {
+        padding: 4px 0;
+        white-space: pre-wrap;
+      }
+      .ctx-msg .who {
+        color: var(--dim);
+        font-size: 11px;
+      }
+      .ctx-msg .ts {
+        color: var(--dim);
+        font-size: 10px;
+        margin-left: 8px;
+      }
+      .ctx-msg.here {
+        margin: 2px -14px;
+        padding: 6px 11px 6px 14px;
+        border-left: 3px solid var(--clay);
+        background: color-mix(in oklch, var(--primary) 10%, transparent);
+      }
+      .ctx-msg.here .who {
+        color: var(--clay);
+        font-weight: 500;
+      }
+      .ctx-gap {
+        color: var(--dim);
+        font-size: 11px;
+        padding: 3px 0 3px 7ch;
+      }
+      .ctx-gap::before {
+        content: "⟨ ";
+      }
+      .ctx-gap::after {
+        content: " ⟩";
+      }
+      .ctx-break {
+        margin: 2px -14px;
+        padding: 8px 11px 8px 14px;
+        border-left: 3px solid var(--destructive);
+        background: var(--destructive-muted);
+        color: var(--destructive);
+      }
+      .ctx-break b {
+        color: var(--foreground);
+        margin-right: 6px;
+      }
+
+      .more-btn {
+        display: block;
+        width: 100%;
+        margin-top: 10px;
+        padding: 9px;
+        background: none;
+        border: 1px dashed var(--subtle);
+        cursor: pointer;
+        font: 500 11px/1 var(--mono);
+        letter-spacing: 0.06em;
+        color: var(--dim);
+      }
+      .more-btn:hover {
+        border-color: var(--dim);
+        color: var(--term-fg);
+      }
+
+      .scroll {
+        max-height: 440px;
+        overflow: auto;
+        border-top: 1px solid var(--outline);
+        border-bottom: 1px solid var(--outline);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 6px 10px;
+      }
+      td {
+        border-top: 1px solid
+          color-mix(in oklch, var(--foreground) 4%, transparent);
+      }
+      th {
+        position: sticky;
+        top: 0;
+        background: var(--term-bg);
+        z-index: 1;
+        font-weight: 500;
+        font-size: 11px;
+        color: var(--subtle);
+        cursor: pointer;
+        user-select: none;
+        border-bottom: 1px solid var(--outline);
+        white-space: nowrap;
+      }
+      th:hover {
+        color: var(--dim);
+      }
+      th.sorted {
+        color: var(--clay);
+      }
+      th.sorted::after {
+        content: " ↓";
+      }
+      th.sorted.asc::after {
+        content: " ↑";
+      }
+      td.num,
+      th.num {
+        text-align: right;
+      }
+      tbody tr:hover td {
+        background: var(--hover);
+      }
+
+      footer {
+        margin-top: 28px;
+        color: var(--subtle);
+        font-size: 11px;
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      code {
+        color: var(--blue);
+      }
+      a {
+        color: var(--clay);
+      }
+      ::selection {
+        background: var(--clay);
+        color: var(--term-bg);
+      }
+
+      @media (max-width: 760px) {
+        body {
+          padding: 20px 12px 48px;
+        }
+        .term-body {
+          padding: 16px 16px 24px;
+        }
+        #hero-total {
+          font-size: 40px;
+        }
+        .bar {
+          grid-template-columns: 14ch 1fr 7ch;
+          gap: 8px;
+        }
+        .drill summary {
+          grid-template-columns: 6ch 1fr;
+        }
+        .drill .body {
+          padding-left: 12px;
+        }
+        .take {
+          grid-template-columns: 7ch 1fr;
+          gap: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="term">
+      <div class="titlebar">
+        <span class="tag">session-report</span>
+        <span class="path" id="title-path">~/.claude — session-report</span>
+      </div>
+      <nav class="secnav" id="secnav" aria-label="Report sections"></nav>
+      <div class="term-body">
+        <div class="cmd">
+          <span class="prompt">&gt;</span>
+          <span id="cmd-text">claude usage</span> <span id="cmd-flags"></span>
+        </div>
+        <div id="meta-line">loading…</div>
+
+        <div id="hero">
+          <div id="hero-total">—</div>
+          <div id="hero-split"></div>
+          <div id="hero-cost"></div>
+        </div>
+
+        <!-- ====================================================================
+         FINDINGS — agent fills this. 3–5 one-line takeaways. Use .bad for
+         waste/anomalies, .good for healthy signals, .info for neutral.
+         ==================================================================== -->
+        <section>
+          <div class="hr"></div>
+          <h2>findings</h2>
+          <div class="section-body" id="takeaways">
+            <!-- AGENT: anomalies -->
+            <div class="take">
+              <div class="fig">—</div>
+              <div class="txt">No findings generated yet.</div>
+            </div>
+            <!-- /AGENT -->
+          </div>
+        </section>
+
+        <!-- Everything below renders automatically from #report-data. -->
+        <section>
+          <div class="hr"></div>
+          <h2>summary</h2>
+          <div class="section-body" id="overall-grid"></div>
+        </section>
+
+        <section>
+          <div class="hr"></div>
+          <h2>tokens by project<span class="hint">share of total</span></h2>
+          <div class="section-body" id="project-bars"></div>
+        </section>
+
+        <section id="timeline-section">
+          <div class="hr"></div>
+          <h2>
+            session timeline by day<span class="hint"
+              >click a day · ←/→ to navigate</span
+            >
+          </h2>
+          <div class="section-body">
+            <div class="days" id="day-pills"></div>
+            <div class="gantt-hd">
+              <span class="day" id="g-day">—</span>
+              <span class="stats" id="g-stats"></span>
+            </div>
+            <div class="gantt-axis">
+              <span>00:00</span><span>06:00</span><span>12:00</span
+              ><span>18:00</span><span>24:00</span>
+            </div>
+            <div class="gantt" id="gantt"></div>
+            <div class="gantt-leg" id="gantt-leg"></div>
+          </div>
+        </section>
+
+        <section>
+          <div class="hr"></div>
+          <h2>
+            most expensive prompts<span class="hint"
+              >click to expand context</span
+            >
+          </h2>
+          <div class="section-body drill" id="top-prompts"></div>
+        </section>
+
+        <section>
+          <div class="hr"></div>
+          <h2>
+            cache breaks<span class="hint"
+              >&gt;100k uncached · click for context</span
+            >
+          </h2>
+          <div class="section-body drill" id="cache-breaks"></div>
+        </section>
+
+        <section>
+          <div class="hr"></div>
+          <h2>projects</h2>
+          <div class="section-body scroll">
+            <table id="tbl-projects"></table>
+          </div>
+        </section>
+
+        <section>
+          <div class="hr"></div>
+          <h2>subagent types</h2>
+          <div class="section-body scroll">
+            <table id="tbl-subagents"></table>
+          </div>
+        </section>
+
+        <section>
+          <div class="hr"></div>
+          <h2 id="skill-heading">skills</h2>
+          <div class="section-body scroll"><table id="tbl-skills"></table></div>
+        </section>
+
+        <section>
+          <div class="hr"></div>
+          <h2>model usage</h2>
+          <div class="section-body scroll"><table id="tbl-models"></table></div>
+        </section>
+
+        <section>
+          <div class="hr"></div>
+          <h2>tool calls</h2>
+          <div class="section-body scroll"><table id="tbl-tools"></table></div>
+        </section>
+
+        <section>
+          <div class="hr"></div>
+          <h2>prompt size distribution</h2>
+          <div class="section-body" id="prompt-histogram"></div>
+        </section>
+
+        <section>
+          <div class="hr"></div>
+          <h2>recommendations</h2>
+          <div class="section-body">
+            <!-- AGENT: optimizations -->
+            <div class="callout">No suggestions generated yet.</div>
+            <!-- /AGENT -->
+          </div>
+        </section>
+
+        <footer>
+          <span id="foot-gen"></span>
+          <span id="foot-stats"></span>
+        </footer>
+      </div>
+    </div>
+
+    <script id="report-data" type="application/json">
+      {}
+    </script>
+
+    <script>
+      (function () {
+        const DATA = JSON.parse(
+          document.getElementById("report-data").textContent || "{}",
+        );
+        const $ = (id) => document.getElementById(id);
+        const fmt = (n) =>
+          n >= 1e9
+            ? (n / 1e9).toFixed(2) + "B"
+            : n >= 1e6
+              ? (n / 1e6).toFixed(2) + "M"
+              : n >= 1e3
+                ? (n / 1e3).toFixed(1) + "k"
+                : String(n);
+        const fmtUSD = (n) =>
+          n === 0 ? "$0.00" : n < 0.01 ? "$" + n.toFixed(4) : "$" + n.toFixed(2);
+        const pct = (a, b) => (b > 0 ? ((100 * a) / b).toFixed(1) + "%" : "—");
+        const esc = (s) =>
+          String(s).replace(
+            /[&<>"]/g,
+            (c) =>
+              ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+          );
+        const short = (p) =>
+          String(p || "")
+            .replace(/^-Users-[^-]+-/, "")
+            .replace(/^code-/, "");
+        const MON = [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ];
+        const niceDate = (iso) => {
+          const d = new Date(iso);
+          return isNaN(d)
+            ? ""
+            : `${MON[d.getMonth()]} ${d.getDate()} · ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+        };
+
+        if (!DATA.overall) {
+          $("meta-line").textContent = "no data — embed JSON in #report-data.";
+          return;
+        }
+
+        // Tool-aware chrome
+        const isCodex = DATA.tool === "codex";
+        $("title-path").textContent = isCodex
+          ? "~/.codex — session-report"
+          : "~/.claude — session-report";
+        $("cmd-text").textContent = isCodex ? "codex usage" : "claude usage";
+        if (isCodex) {
+          $("skill-heading").innerHTML =
+            'skills<span class="hint">extracted from message text</span>';
+        }
+
+        // header + hero
+        const o = DATA.overall,
+          it = o.input_tokens;
+        const GRAND = it.total + o.output_tokens;
+        const share = (n) =>
+          GRAND > 0 ? ((100 * n) / GRAND).toFixed(1) + "%" : "—";
+        const span = o.span;
+        $("cmd-flags").innerHTML = DATA.since
+          ? `<span class="flag">--since</span> ${esc(DATA.since.slice(0, 10))}`
+          : "";
+        $("meta-line").textContent =
+          (span ? `${span.from.slice(0, 10)} → ${span.to.slice(0, 10)}` : "") +
+          ` · ${DATA.root || ""}`;
+        const priceNote = (() => {
+          const p = DATA.pricing;
+          if (!p) return "";
+          if (p.source === "live") return " · prices: live";
+          if (p.source === "cache")
+            return ` · prices: cached ${p.fetched_at?.slice(0, 10) || "?"}`;
+          return " · prices: bundled (offline — may be stale)";
+        })();
+        $("foot-gen").textContent =
+          `generated ${DATA.generated_at?.slice(0, 16).replace("T", " ") || ""}` +
+          priceNote;
+        $("foot-stats").textContent =
+          `${o.sessions} sessions · ${o.api_calls} api calls · ${o.human_messages} prompts`;
+
+        const num = fmt(GRAND),
+          m = num.match(/^([\d.]+)([A-Za-z]*)$/);
+        $("hero-total").innerHTML =
+          `${m ? m[1] : num}<span class="unit">${m ? m[2] : ""}</span><span class="label">tokens</span>`;
+        const cacheCls = it.pct_cached >= 85 ? "ok" : "warn";
+        $("hero-split").innerHTML =
+          `<b>${fmt(it.total)}</b> input ` +
+          `<span class="${cacheCls}">(${fmt(it.cache_read)} cached · ${it.pct_cached}%)</span> · ` +
+          `<b>${fmt(o.output_tokens)}</b> output · all figures below are % of this total`;
+
+        const c = o.cost_usd;
+        if (c && c.total > 0) {
+          const fc = (n) => n >= 1 ? "$" + n.toFixed(2) : n >= 0.01 ? "$" + n.toFixed(4) : "<$0.01";
+          const savCls = c.savings_vs_no_cache > 0 ? "ok" : "";
+          $("hero-cost").innerHTML =
+            `<b>${fc(c.total)}</b> equiv. API cost · ` +
+            `cache-read ${fc(c.cache_read)} · cache-write ${fc(c.cache_create)} · ` +
+            `input ${fc(c.input)} · output ${fc(c.output)} · ` +
+            `<span class="${savCls}">${fc(Math.max(0, c.savings_vs_no_cache))} saved via cache</span>` +
+            ` <span class="cost-note">· subscription users pay flat rate — this is a reference estimate</span>`;
+        }
+
+        // overall stat grid
+        $("overall-grid").innerHTML = [
+          ["sessions", o.sessions],
+          ["api calls", o.api_calls],
+          ["human msgs", o.human_messages],
+          ["active hours", o.hours.active, `${o.hours.wall_clock} wall-clock`],
+          ["cache breaks", o.cache_breaks_over_100k, ">100k uncached"],
+          [
+            "subagent calls",
+            o.subagent.calls,
+            `avg ${fmt(o.subagent.avg_tokens_per_call)}`,
+          ],
+          ["efficiency", (o.efficiency_score ?? "—") + (o.efficiency_score != null ? "/100" : ""), "cache·msg·subagent"],
+        ]
+          .map(
+            ([l, v, d]) =>
+              `<div class="stat"><div class="label">${l}</div>` +
+              `<div class="val">${typeof v === "number" && v >= 1e4 ? fmt(v) : v}</div>` +
+              (d ? `<div class="detail">${d}</div>` : "") +
+              `</div>`,
+          )
+          .join("");
+
+        // session timeline by day
+        (function () {
+          const days = (DATA.by_day || []);
+          if (!days.length) {
+            $("timeline-section").style.display = "none";
+            return;
+          }
+          const PCOL = [
+            "#52a9ff",
+            "#51a55d",
+            "#978365",
+            "#f1a10d",
+            "#f16a6a",
+            "#9b8cff",
+            "#6ec1d6",
+            "#c792ea",
+          ];
+          const dayTotal = days.reduce((a, d) => a + d.tokens, 0) || 1;
+          const tokMax = Math.max(...days.map((d) => d.tokens));
+          const projects = [
+            ...new Set(days.flatMap((d) => d.sessions.map((s) => s.project))),
+          ];
+          const colorOf = (p) => PCOL[projects.indexOf(p) % PCOL.length];
+          const hhmm = (m) =>
+            (m >= 1440 ? `+${Math.floor(m / 1440)}d ` : "") +
+            `${String(Math.floor(m / 60) % 24).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+          const md = (iso) => {
+            const [, mo, da] = iso.split("-");
+            return `${MON[+mo - 1]} ${+da}`;
+          };
+          let sel = days.findIndex((d) => d.tokens === tokMax);
+
+          function pills() {
+            $("day-pills").innerHTML = days
+              .map(
+                (d, i) =>
+                  `<button class="dpill${d.tokens === tokMax ? " heaviest" : ""}${i === sel ? " sel" : ""}" data-i="${i}">` +
+                  `<span class="dow">${esc(d.dow)}</span>` +
+                  `<span class="date">${esc(md(d.date))}</span>` +
+                  `<span class="pct">${((100 * d.tokens) / dayTotal).toFixed(1)}%</span>` +
+                  `<span class="ns">${d.sessions.length} sess</span></button>`,
+              )
+              .join("");
+            $("day-pills")
+              .querySelectorAll(".dpill")
+              .forEach(
+                (el) =>
+                  (el.onclick = () => {
+                    sel = +el.dataset.i;
+                    pills();
+                    gantt();
+                  }),
+              );
+          }
+          function gantt() {
+            const d = days[sel],
+              DAY = 1440;
+            $("g-day").textContent = `${d.dow} ${md(d.date)}`;
+            const fc2 = (n) => n >= 1 ? "$" + n.toFixed(2) : n >= 0.001 ? "$" + n.toFixed(4) : n > 0 ? "<$0.001" : "";
+            $("g-stats").innerHTML =
+              `${d.sessions.length} sessions · ${fmt(d.tokens)} tokens` +
+              (d.cost > 0 ? ` · ${fc2(d.cost)} est. cost` : "") +
+              ` · peak <b>${d.peak}</b> concurrent at <b>${hhmm(d.peak_at_min)}</b>`;
+            const lanes = [];
+            for (const s of d.sessions) {
+              let placed = false;
+              for (const L of lanes)
+                if (L[L.length - 1].end_min <= s.start_min) {
+                  L.push(s);
+                  placed = true;
+                  break;
+                }
+              if (!placed) lanes.push([s]);
+            }
+            let h = "";
+            for (let t = 0; t <= 24; t += 6)
+              h += `<div class="gantt-rule" style="left:${(100 * t) / 24}%"></div>`;
+            h += lanes
+              .map(
+                (L) =>
+                  `<div class="lane">${L.map((s) => {
+                    const end = Math.min(s.end_min, DAY);
+                    const w = Math.max(0.15, (100 * (end - s.start_min)) / DAY);
+                    const tip =
+                      `folder: ${short(s.project)}\n` +
+                      `${hhmm(s.start_min)}–${hhmm(s.end_min)} · ${fmt(s.tokens)} tokens` +
+                      (s.cost > 0 ? ` · ${fc2(s.cost)} est.` : "") + "\n" +
+                      `session ${s.id}`;
+                    return (
+                      `<span class="seg" style="left:${(100 * s.start_min) / DAY}%;width:${w}%;` +
+                      `background:${colorOf(s.project)}" title="${esc(tip)}"></span>`
+                    );
+                  }).join("")}</div>`,
+              )
+              .join("");
+            $("gantt").innerHTML =
+              h || '<div class="callout">no sessions</div>';
+          }
+          document.addEventListener("keydown", (e) => {
+            if (e.key === "ArrowRight" && sel < days.length - 1) {
+              sel++;
+              pills();
+              gantt();
+              e.preventDefault();
+            }
+            if (e.key === "ArrowLeft" && sel > 0) {
+              sel--;
+              pills();
+              gantt();
+              e.preventDefault();
+            }
+          });
+          $("gantt-leg").innerHTML = projects
+            .slice(0, 12)
+            .map(
+              (p) =>
+                `<span><span class="sw" style="background:${colorOf(p)}"></span>${esc(short(p))}</span>`,
+            )
+            .join("");
+          pills();
+          gantt();
+        })();
+
+        // block-char project bars
+        (function () {
+          const W = 48;
+          const rows = Object.entries(DATA.by_project || {})
+            .map(([k, v]) => [k, v.input_tokens.total + v.output_tokens])
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 15);
+          const max = rows[0]?.[1] || 1;
+          $("project-bars").innerHTML = rows
+            .map(([k, v]) => {
+              const n = Math.max(1, Math.round((W * v) / max));
+              return (
+                `<div class="bar"><span class="name" title="${esc(k)} — ${fmt(v)}">${esc(short(k))}</span>` +
+                `<span class="blocks">${"█".repeat(n)}<span class="empty">${"░".repeat(W - n)}</span></span>` +
+                `<span class="pct">${share(v)}</span></div>`
+              );
+            })
+            .join("");
+        })();
+
+        function renderContext(ctx, mark) {
+          if (!ctx || !ctx.length)
+            return '<div class="ctx-gap">no transcript context available</div>';
+          let h = '<div class="ctx">';
+          ctx.forEach((m, i) => {
+            const who = m.here ? "&gt; user" : "  user";
+            h +=
+              `<div class="ctx-msg${m.here ? " here" : ""}">` +
+              `<span class="who">${who}</span>  ${esc(m.text || "(non-text)")}` +
+              `<span class="ts">${niceDate(m.ts)}</span></div>`;
+            if (m.here && mark) h += mark;
+            if (i < ctx.length - 1 || m.here)
+              h += `<div class="ctx-gap">${m.calls} api call${m.calls === 1 ? "" : "s"}</div>`;
+          });
+          return h + "</div>";
+        }
+
+        function drillList(hostId, items, rowFn, empty) {
+          const SHOW = 5;
+          const host = $(hostId);
+          if (!items.length) {
+            host.innerHTML = `<div class="callout">${empty}</div>`;
+            return;
+          }
+          const head = items.slice(0, SHOW).map(rowFn).join("");
+          const rest = items.slice(SHOW).map(rowFn).join("");
+          host.innerHTML =
+            head +
+            (rest
+              ? `<div hidden>${rest}</div><button class="more-btn">show ${items.length - SHOW} more</button>`
+              : "");
+          const btn = host.querySelector(".more-btn");
+          if (btn)
+            btn.onclick = () => {
+              const r = btn.previousElementSibling;
+              r.hidden = !r.hidden;
+              btn.textContent = r.hidden
+                ? `show ${items.length - SHOW} more`
+                : "show less";
+            };
+        }
+
+        drillList(
+          "top-prompts",
+          (DATA.top_prompts || []).slice(0, 100),
+          (p) => {
+            const inTot =
+              p.input.uncached + p.input.cache_create + p.input.cache_read;
+            return (
+              `<details><summary>` +
+              `<span class="amt">${share(p.total_tokens)}</span>` +
+              `<span class="desc">${esc(p.text)}</span>` +
+              `<span class="meta">${niceDate(p.ts)} · ${esc(short(p.project))} · ${p.api_calls} calls` +
+              (p.subagent_calls ? ` · ${p.subagent_calls} subagents` : "") +
+              ` · ${pct(p.input.cache_read, inTot)} cached</span>` +
+              `</summary><div class="body">` +
+              renderContext(p.context) +
+              `<div>session <code>${esc(p.session)}</code></div>` +
+              `<div>in: uncached ${fmt(p.input.uncached)} · cache-create ${fmt(p.input.cache_create)} · ` +
+              `cache-read ${fmt(p.input.cache_read)} · out ${fmt(p.output)}</div>` +
+              `</div></details>`
+            );
+          },
+          "No prompts in range.",
+        );
+
+        drillList(
+          "cache-breaks",
+          (DATA.cache_breaks || []).slice(0, 100),
+          (b) =>
+            `<details><summary>` +
+            `<span class="amt">${fmt(b.uncached)}</span>` +
+            `<span class="desc">${esc(short(b.project))} · ` +
+            `${b.kind === "subagent" ? esc(b.agentType || "subagent") : "main"}</span>` +
+            `<span class="meta">${niceDate(b.ts)} · ${pct(b.uncached, b.total)} of ${fmt(b.total)} uncached</span>` +
+            `</summary><div class="body">` +
+            renderContext(
+              b.context,
+              `<div class="ctx-break"><b>${fmt(b.uncached)}</b> uncached ` +
+                `(${pct(b.uncached, b.total)} of ${fmt(b.total)}) — cache break here</div>`,
+            ) +
+            `<div>session <code>${esc(b.session)}</code></div>` +
+            `</div></details>`,
+          "No cache breaks over threshold.",
+        );
+
+        function table(el, cols, rows) {
+          let sortIdx = cols.findIndex((c) => c.sort),
+            asc = false;
+          function render() {
+            const sorted = rows.slice().sort((a, b) => {
+              const va = a[sortIdx],
+                vb = b[sortIdx];
+              return (
+                (asc ? 1 : -1) *
+                (typeof va === "number"
+                  ? va - vb
+                  : String(va).localeCompare(String(vb)))
+              );
+            });
+            el.innerHTML = `<thead><tr>${cols
+              .map(
+                (c, i) =>
+                  `<th class="${c.num ? "num" : ""} ${i === sortIdx ? "sorted" + (asc ? " asc" : "") : ""}" data-i="${i}">${c.h}</th>`,
+              )
+              .join("")}</tr></thead><tbody>${sorted
+              .map(
+                (r) =>
+                  `<tr>${r
+                    .map(
+                      (v, i) =>
+                        `<td class="${cols[i].num ? "num" : ""}">${
+                          cols[i].fmt ? cols[i].fmt(v) : esc(v)
+                        }</td>`,
+                    )
+                    .join("")}</tr>`,
+              )
+              .join("")}</tbody>`;
+            el.querySelectorAll("th").forEach(
+              (th) =>
+                (th.onclick = () => {
+                  const i = +th.dataset.i;
+                  if (i === sortIdx) asc = !asc;
+                  else {
+                    sortIdx = i;
+                    asc = false;
+                  }
+                  render();
+                }),
+            );
+          }
+          render();
+        }
+
+        const fc3 = (n) => n == null || n === 0 ? "—" : n >= 1 ? "$" + n.toFixed(2) : "$" + n.toFixed(4);
+        function statRows(obj) {
+          return Object.entries(obj || {}).map(([k, v]) => [
+            short(k),
+            GRAND > 0
+              ? (100 * (v.input_tokens.total + v.output_tokens)) / GRAND
+              : 0,
+            v.sessions,
+            v.api_calls,
+            v.human_messages,
+            v.input_tokens.total,
+            v.input_tokens.pct_cached,
+            v.output_tokens,
+            v.hours.active,
+            v.cache_breaks_over_100k,
+            v.subagent.calls,
+            v.subagent.avg_tokens_per_call,
+            v.cost_usd ? v.cost_usd.total : 0,
+            v.efficiency_score ?? 0,
+          ]);
+        }
+        const statCols = [
+          { h: "name" },
+          { h: "% total", num: 1, sort: 1, fmt: (v) => v.toFixed(1) + "%" },
+          { h: "sess", num: 1 },
+          { h: "calls", num: 1 },
+          { h: "msgs", num: 1 },
+          { h: "input", num: 1, fmt: fmt },
+          { h: "%cached", num: 1, fmt: (v) => v + "%" },
+          { h: "output", num: 1, fmt: fmt },
+          { h: "active h", num: 1 },
+          { h: "breaks", num: 1 },
+          { h: "subagents", num: 1 },
+          { h: "avg sub tok", num: 1, fmt: fmt },
+          { h: "est. cost", num: 1, fmt: fc3 },
+          { h: "efficiency", num: 1, fmt: (v) => v > 0 ? v + "/100" : "—" },
+        ];
+        table($("tbl-projects"), statCols, statRows(DATA.by_project));
+        table($("tbl-subagents"), statCols, statRows(DATA.by_subagent_type));
+        table($("tbl-skills"), statCols, statRows(DATA.by_skill));
+
+        // model usage table
+        (function () {
+          const overall = DATA.overall || {};
+          const byModel = overall.by_model || {};
+          const GRAND_ALL = (overall.input_tokens?.total || 0) + (overall.output_tokens || 0);
+          const rows = Object.entries(byModel)
+            .map(([model, m]) => {
+              const tot = m.inputUncached + m.inputCacheCreate + m.inputCacheRead + m.outputTokens;
+              const inTot = m.inputUncached + m.inputCacheCreate + m.inputCacheRead;
+              return [
+                model,
+                GRAND_ALL > 0 ? (100 * tot) / GRAND_ALL : 0,
+                m.calls,
+                inTot,
+                inTot > 0 ? +(100 * m.inputCacheRead / inTot).toFixed(1) : 0,
+                m.outputTokens,
+                m.costTotal || 0,
+              ];
+            })
+            .sort((a, b) => b[1] - a[1]);
+          table($("tbl-models"), [
+            { h: "model" },
+            { h: "% total", num: 1, sort: 1, fmt: (v) => v.toFixed(1) + "%" },
+            { h: "calls", num: 1 },
+            { h: "input", num: 1, fmt: fmt },
+            { h: "%cached", num: 1, fmt: (v) => v + "%" },
+            { h: "output", num: 1, fmt: fmt },
+            { h: "est. cost", num: 1, fmt: fc3 },
+          ], rows);
+        })();
+
+        // tool calls table
+        (function () {
+          const tools = (DATA.overall || {}).tool_calls || {};
+          const total = Object.values(tools).reduce((a, b) => a + b, 0) || 1;
+          const rows = Object.entries(tools)
+            .map(([name, count]) => [name, (100 * count) / total, count])
+            .sort((a, b) => b[2] - a[2]);
+          table($("tbl-tools"), [
+            { h: "tool" },
+            { h: "% of calls", num: 1, sort: 1, fmt: (v) => v.toFixed(1) + "%" },
+            { h: "calls", num: 1 },
+          ], rows);
+        })();
+
+        // prompt size histogram
+        (function () {
+          const hist = DATA.prompt_size_histogram || [];
+          if (!hist.length) return;
+          const maxCount = Math.max(...hist.map((b) => b.count), 1);
+          const W = 40;
+          $("prompt-histogram").innerHTML = hist
+            .filter((b) => b.label !== "0" || b.count > 0)
+            .map((b) => {
+              const n = Math.max(0, Math.round((W * b.count) / maxCount));
+              const total = hist.reduce((a, x) => a + x.count, 0) || 1;
+              const pct = ((100 * b.count) / total).toFixed(1);
+              return (
+                `<div class="bar">` +
+                `<span class="name" style="min-width:5ch">${esc(b.label)}</span>` +
+                `<span class="blocks">${"█".repeat(n)}<span class="empty">${"░".repeat(W - n)}</span></span>` +
+                `<span class="pct">${b.count} (${pct}%)</span></div>`
+              );
+            })
+            .join("");
+        })();
+      })();
+
+      // Section nav: one chip per h2, ids assigned to the wrapping <section>,
+      // scroll-spy via IntersectionObserver. Chips derive from the DOM so a
+      // renamed section can never drift the nav.
+      (() => {
+        const nav = document.getElementById("secnav");
+        if (!nav) return;
+        const secs = [...document.querySelectorAll(".term-body section")].filter((s) => s.querySelector("h2"));
+        secs.forEach((sec, i) => {
+          const h = sec.querySelector("h2");
+          const label = (h.childNodes[0]?.textContent || h.textContent).trim(); // drop span hints
+          if (!sec.id) sec.id = "sec-" + (label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || i);
+          const chip = document.createElement("button");
+          chip.type = "button";
+          chip.className = "chip";
+          chip.dataset.sec = sec.id;
+          chip.textContent = label;
+          chip.addEventListener("click", () => sec.scrollIntoView({ behavior: "smooth", block: "start" }));
+          nav.appendChild(chip);
+        });
+        if (!secs.length) { nav.style.display = "none"; return; }
+        const spy = new IntersectionObserver(
+          (es) => {
+            es.forEach((en) => {
+              if (!en.isIntersecting) return;
+              nav.querySelectorAll(".chip").forEach((c) => c.classList.toggle("active", c.dataset.sec === en.target.id));
+              const on = nav.querySelector(".chip.active");
+              if (on) on.scrollIntoView({ block: "nearest", inline: "nearest" });
+            });
+          },
+          { rootMargin: "-45px 0px -70% 0px", threshold: 0 },
+        );
+        secs.forEach((s) => spy.observe(s));
+      })();
+    </script>
+  </body>
+</html>
