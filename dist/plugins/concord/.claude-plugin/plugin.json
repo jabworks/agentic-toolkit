@@ -1,6 +1,6 @@
 {
   "name": "concord",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "Continuous memory for Codex: captures each session from the rollout, ages it into tiers, and injects the relevant slice back at the next session start.",
   "author": {
     "name": "jabworks"
@@ -15,5 +15,5 @@
     "codex",
     "recall"
   ],
-  "skills": "./skills/concord"
+  "skills": "./skills"
 }

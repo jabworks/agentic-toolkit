@@ -14,6 +14,13 @@ The skills work without any of this — they fall back to
 `node <skill-base>/server/docket.mjs` via the shell. Registering the MCP
 server only removes per-operation shell prompts.
 
+Agent Plugins clients (Cursor and other agent-plugins.org hosts) need none
+of this either: the plugin root ships a spec `mcp.json` (`${PLUGIN_ROOT}`
+variables, `type` required) that such hosts read on install. It coexists
+with Claude's `.mcp.json` (`${CLAUDE_PLUGIN_ROOT}`, no `type`) — different
+consumers, different variable grammars; when the server path moves, change
+both (both live in `plugins/docket/`).
+
 ## 0. Detect
 
 - `SERVER` = absolute path to `mcp-server.mjs` in this directory

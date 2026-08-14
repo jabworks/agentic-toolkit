@@ -18,7 +18,12 @@ function findFiles(dir, name, out = []) {
 }
 
 test('every plugin.json is valid JSON with required fields and a ./-prefixed skills path', () => {
-  const files = findFiles(REPO_ROOT, 'plugin.json');
+  // Root plugin.json files are Agent Plugins manifests — a different, closed
+  // schema with no "skills" field (discovery is by fixed location). They are
+  // generated and guarded by tests/agent-plugins.test.mjs; this test owns the
+  // host manifests in .claude-plugin/ and .codex-plugin/.
+  const files = findFiles(REPO_ROOT, 'plugin.json')
+    .filter((f) => f.includes('.claude-plugin') || f.includes('.codex-plugin'));
   assert.ok(files.length > 0, 'expected to find at least one plugin.json');
   for (const file of files) {
     const json = JSON.parse(fs.readFileSync(file, 'utf8')); // throws on invalid JSON

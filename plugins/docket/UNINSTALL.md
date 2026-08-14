@@ -56,7 +56,7 @@ set, leave it alone unless you have removed those too.
 ## Verify
 
 ```bash
-node skills/docket/docket-doctor/doctor.mjs
+node skills/docket-doctor/doctor.mjs
 ```
 
 The doctor probes the MCP registration on every host and the CLI fallback. After

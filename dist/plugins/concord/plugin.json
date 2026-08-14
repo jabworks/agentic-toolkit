@@ -1,0 +1,19 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "concord",
+  "version": "0.5.0",
+  "description": "Continuous memory for Codex: captures each session from the rollout, ages it into tiers, and injects the relevant slice back at the next session start.",
+  "author": {
+    "name": "jabworks"
+  },
+  "repository": "https://github.com/jabworks/agentic-toolkit",
+  "license": "MIT",
+  "keywords": [
+    "memory",
+    "context",
+    "persistence",
+    "session",
+    "codex",
+    "recall"
+  ]
+}

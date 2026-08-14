@@ -1,0 +1,24 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "docket",
+  "version": "0.7.0",
+  "description": "Claude Code skills for file-based backlog management: a docket/ folder with never-reused item ids, capture and lifecycle via the record skill, grooming and pick-next via groom, a dependency-free CLI, a bundled MCP server, a self-contained HTML board, and a per-host health check.",
+  "author": {
+    "name": "jabworks"
+  },
+  "repository": "https://github.com/jabworks/agentic-toolkit",
+  "license": "MIT",
+  "keywords": [
+    "backlog",
+    "docket",
+    "record",
+    "groom",
+    "tracker",
+    "capture",
+    "mcp",
+    "grooming",
+    "pick-next",
+    "doctor",
+    "health-check"
+  ]
+}

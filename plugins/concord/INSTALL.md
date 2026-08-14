@@ -1,13 +1,13 @@
 # Installing concord
 
 Front door for concord's install story. The procedure itself lives four levels
-down, at `skills/concord/remember/references/INSTALL.md` — this document exists
+down, at `skills/remember/references/INSTALL.md` — this document exists
 so you do not have to find it, and so the per-host outcome is readable before
 you commit to anything.
 
 ```bash
-bash skills/concord/remember/references/install-codex-hook.sh
-bash skills/concord/remember/references/install-codex-hook.sh --dry-run
+bash skills/remember/references/install-codex-hook.sh
+bash skills/remember/references/install-codex-hook.sh --dry-run
 ```
 
 Both the script and that document implement the same procedure — run the script
@@ -42,7 +42,7 @@ idempotent; clearing it would break them, which is why no uninstaller touches it
 ## Verify
 
 ```bash
-node skills/concord/concord-doctor/doctor.mjs
+node skills/concord-doctor/doctor.mjs
 ```
 
 The doctor is the standing version of the installer's verify step: it probes

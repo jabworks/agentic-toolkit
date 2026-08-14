@@ -6,7 +6,8 @@
     "api.github.com": "cited in the awesome-copilot survey as a re-verification command for the reader to run, not executed by anything we ship.",
     "developers.openai.com": "documentation URL in a source comment in install-codex-agents.mjs recording where the Codex subagent schema was verified. Not fetched.",
     "raw.githubusercontent.com": "session-report's analyzers fetch litellm's public pricing table at runtime — see remoteFetches for the specific URL and its risk.",
-    "www.npmjs.com": "prose citation in plugins/condux/README.md — the package page for @jabworks/condux, the OpenCode install channel this repo publishes. Nothing fetches it."
+    "www.npmjs.com": "prose citation in plugins/condux/README.md — the package page for @jabworks/condux, the OpenCode install channel this repo publishes. Nothing fetches it.",
+    "agent-plugins.org": "the $schema identifier in Agent Plugins manifests (plugins/docket/mcp.json, generated root plugin.json) — a spec version selector clients match as a constant string. Nothing fetches it."
   },
 
   "remoteFetches": {

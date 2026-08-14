@@ -1,6 +1,6 @@
 {
   "name": "git-commit",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "description": "Craft a conventional-commit message from the diff and run the commit safely: review before staging, no blind `git add .`, multiline bodies via -F, branch check first.",
   "author": {
     "name": "jabworks"

@@ -36,11 +36,11 @@ function writeJson(file, value) {
 function docketFixture({ version = '0.2.0' } = {}) {
   const root = scratch();
   const plugin = path.join(root, 'plugin');
-  const skill = path.join(plugin, 'skills', 'docket', 'docket-doctor');
+  const skill = path.join(plugin, 'skills', 'docket-doctor');
 
   fs.mkdirSync(skill, { recursive: true });
   fs.cpSync(DOCKET_SERVER, path.join(plugin, 'server'), { recursive: true });
-  fs.cpSync(DOCKET_SERVER, path.join(plugin, 'skills', 'docket', 'record', 'server'), { recursive: true });
+  fs.cpSync(DOCKET_SERVER, path.join(plugin, 'skills', 'record', 'server'), { recursive: true });
   fs.copyFileSync(DOCKET_DOCTOR, path.join(skill, 'doctor.mjs'));
 
   writeJson(path.join(plugin, '.claude-plugin', 'plugin.json'), { name: 'docket', version });
@@ -307,8 +307,8 @@ test('newer than the marketplace clone is fine and says so', () => {
 function conduxFixture({ version = '2.11.0' } = {}) {
   const root = scratch();
   const plugin = path.join(root, 'plugin');
-  const skill = path.join(plugin, 'skills', 'condux', 'condux-doctor');
-  const annotate = path.join(plugin, 'skills', 'condux', 'plan-review', 'references', 'annotate-server.js');
+  const skill = path.join(plugin, 'skills', 'condux-doctor');
+  const annotate = path.join(plugin, 'skills', 'plan-review', 'references', 'annotate-server.js');
 
   fs.mkdirSync(skill, { recursive: true });
   fs.mkdirSync(path.dirname(annotate), { recursive: true });
@@ -380,7 +380,7 @@ test('condux: a resolvable SessionStart with a dangling Stop target still fails 
   try {
     host(fixture, 'claude');
     enableCodexHooks(host(fixture, 'codex'));
-    fs.rmSync(path.join(fixture.plugin, 'skills', 'condux', 'plan-review'), { recursive: true, force: true });
+    fs.rmSync(path.join(fixture.plugin, 'skills', 'plan-review'), { recursive: true, force: true });
 
     const result = runDoctor(fixture);
 
@@ -529,16 +529,16 @@ const CONCORD_DOCTOR = path.join(REPO_ROOT, 'skills', 'concord-doctor', 'doctor.
 function concordFixture({ version = '0.3.0', manifestHooks = false } = {}) {
   const root = scratch();
   const plugin = path.join(root, 'plugin');
-  const skill = path.join(plugin, 'skills', 'concord', 'concord-doctor');
+  const skill = path.join(plugin, 'skills', 'concord-doctor');
 
   fs.mkdirSync(skill, { recursive: true });
-  fs.cpSync(CONCORD_SKILL, path.join(plugin, 'skills', 'concord', 'remember'), { recursive: true });
+  fs.cpSync(CONCORD_SKILL, path.join(plugin, 'skills', 'remember'), { recursive: true });
   fs.copyFileSync(CONCORD_DOCTOR, path.join(skill, 'doctor.mjs'));
   writeJson(path.join(plugin, '.claude-plugin', 'plugin.json'), { name: 'concord', version });
   writeJson(path.join(plugin, '.codex-plugin', 'plugin.json'), {
     name: 'concord',
     version,
-    ...(manifestHooks ? { hooks: './skills/concord/remember/hooks/codex-hooks.json' } : {}),
+    ...(manifestHooks ? { hooks: './skills/remember/hooks/codex-hooks.json' } : {}),
   });
 
   const home = path.join(root, 'home');
@@ -549,7 +549,7 @@ function concordFixture({ version = '0.3.0', manifestHooks = false } = {}) {
     plugin,
     home,
     doctor: path.join(skill, 'doctor.mjs'),
-    bin: path.join(plugin, 'skills', 'concord', 'remember', 'bin'),
+    bin: path.join(plugin, 'skills', 'remember', 'bin'),
   };
 }
 
@@ -678,7 +678,7 @@ test('concord: probes never touch the memory store', () => {
 // real installer runs against it with the doctor as its sibling — which is the
 // arrangement its verify step depends on.
 function runInstaller(fixture, args = [], { installer } = {}) {
-  const script = installer ?? path.join(fixture.plugin, 'skills', 'concord', 'remember', 'references', 'install-codex-hook.sh');
+  const script = installer ?? path.join(fixture.plugin, 'skills', 'remember', 'references', 'install-codex-hook.sh');
   const res = spawnSync('bash', [script, ...args], {
     encoding: 'utf8',
     timeout: 30000,
@@ -734,7 +734,7 @@ test('concord installer: verifies without the doctor and says which path it took
   const fixture = concordFixture();
   try {
     host(fixture, 'codex');
-    fs.rmSync(path.join(fixture.plugin, 'skills', 'concord', 'concord-doctor'), { recursive: true, force: true });
+    fs.rmSync(path.join(fixture.plugin, 'skills', 'concord-doctor'), { recursive: true, force: true });
 
     const result = runInstaller(fixture);
 
@@ -770,7 +770,7 @@ test('concord installer: a registration that does not answer exits 1, not 0', ()
   const fixture = concordFixture({ manifestHooks: true });
   try {
     host(fixture, 'codex');
-    fs.rmSync(path.join(fixture.plugin, 'skills', 'concord', 'remember', 'hooks'), { recursive: true, force: true });
+    fs.rmSync(path.join(fixture.plugin, 'skills', 'remember', 'hooks'), { recursive: true, force: true });
 
     const result = runInstaller(fixture);
 
@@ -789,7 +789,7 @@ test('concord --fix: an installer that fails is said out loud, not left as silen
   const fixture = concordFixture({ manifestHooks: true });
   try {
     host(fixture, 'codex');
-    fs.rmSync(path.join(fixture.plugin, 'skills', 'concord', 'remember', 'hooks'), { recursive: true, force: true });
+    fs.rmSync(path.join(fixture.plugin, 'skills', 'remember', 'hooks'), { recursive: true, force: true });
 
     const result = runDoctor(fixture, ['--host', 'codex', '--fix']);
 

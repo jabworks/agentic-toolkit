@@ -15,7 +15,7 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const SKILL_BASE = path.dirname(fileURLToPath(import.meta.url));
-const PLUGIN_ROOT = path.resolve(SKILL_BASE, '..', '..', '..');
+const PLUGIN_ROOT = path.resolve(SKILL_BASE, '..', '..');
 const HOME = os.homedir();
 const EXEC_TIMEOUT = 5000;
 const PACKAGE = '@jabworks/condux';

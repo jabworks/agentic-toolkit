@@ -1,6 +1,6 @@
 {
   "name": "session-handoff",
-  "version": "1.6.8",
+  "version": "1.7.0",
   "description": "Claude Code skill for creating and resuming handoff documents across agentic coding sessions.",
   "author": {
     "name": "jabworks"

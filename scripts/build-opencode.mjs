@@ -44,7 +44,7 @@ export const AGENTS_DST_DIR = path.join(REPO_ROOT, 'packages', 'condux-opencode'
 // sync.sh reads to route a skill into the bundle. Deriving the list from here
 // (rather than a second hardcoded list) keeps the npm-bundled subset in lockstep
 // with the marketplace bundle.
-export const CONDUX_BUNDLE_DIR = path.join(REPO_ROOT, 'dist', 'plugins', 'condux', 'skills', 'condux');
+export const CONDUX_BUNDLE_DIR = path.join(REPO_ROOT, 'dist', 'plugins', 'condux', 'skills');
 export const CONDUX_OPENCODE_SKILLS_DIR = path.join(REPO_ROOT, 'packages', 'condux-opencode', 'skills');
 
 export function conduxSkillNames() {

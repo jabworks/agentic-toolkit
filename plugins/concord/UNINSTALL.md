@@ -1,11 +1,11 @@
 # Uninstalling concord
 
 Reverse of [INSTALL.md](INSTALL.md). The full procedure is the `## Removal`
-section of `skills/concord/remember/references/INSTALL.md`; this document is the
+section of `skills/remember/references/INSTALL.md`; this document is the
 front door to it, and the script below is the same procedure automated.
 
 ```bash
-bash skills/concord/remember/references/install-codex-hook.sh --uninstall
+bash skills/remember/references/install-codex-hook.sh --uninstall
 ```
 
 Follows the toolkit **ease-of-removal convention**: `detect → reverse → verify →
@@ -48,7 +48,7 @@ really want it gone.
 ## Verify
 
 ```bash
-node skills/concord/concord-doctor/doctor.mjs
+node skills/concord-doctor/doctor.mjs
 ```
 
 The doctor probes both Codex registration paths, all three hook events, the
