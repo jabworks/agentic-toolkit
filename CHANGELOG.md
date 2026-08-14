@@ -12,9 +12,13 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## toolkit-ops 1.7.2 — 2026-08-14
+
+- docs(toolkit-ops): document the root plugin.json and both MCP dialects (#30)
+
 ## toolkit-ops 1.7.1 — 2026-08-14
 
-- docs(toolkit-ops): four-channel docs + docket-doctor cursor probe (#28)
+- docs(toolkit-ops): four-channel docs + docket-doctor cursor probe (#28) (#71)
 
 ## toolkit-ops 1.7.0 — 2026-08-14
 
@@ -50,7 +54,7 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## docket 0.8.0 — 2026-08-14
 
-- docs(toolkit-ops): four-channel docs + docket-doctor cursor probe (#28)
+- docs(toolkit-ops): four-channel docs + docket-doctor cursor probe (#28) (#71)
 
 ## docket 0.7.0 — 2026-08-14
 

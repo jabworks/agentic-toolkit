@@ -33,7 +33,13 @@ executable source of truth.
 
 ## Procedure — the schema facts
 
-### plugin.json (both `.claude-plugin/` and `.codex-plugin/` variants)
+**Three manifests per plugin, not two.** `.claude-plugin/plugin.json` and
+`.codex-plugin/plugin.json` are the hand-edited pair; the root `plugin.json`
+beside them is **generated** (Agent Plugins 1.0.0) and never hand-written. Docket
+additionally ships two MCP files in two dialects. Each section below says which
+kind it is.
+
+### plugin.json (both `.claude-plugin/` and `.codex-plugin/` variants) — hand-edited
 
 | Field | Status in this repo |
 |---|---|
@@ -41,10 +47,10 @@ executable source of truth.
 | `version` | required (test-enforced); the pair must match — bump policy (which bump when, cache rationale) has its home in `toolkit-change-control` |
 | `description` | required (test-enforced); may carry platform wording ("Claude Code skill for…" / "Codex skill for…") — identity fields `name`/`version`/`skills` must match across the pair |
 | `author.name` | required (test-enforced) |
-| `repository`, `license`, `keywords` | convention — present in every manifest (22 at the 2026-08-04 re-eval; 11 plugin pairs) |
-| `skills` | required (test-enforced), must be `"./skills/<plugin-dir-name>"` — same rule for standalone AND bundle plugins |
+| `repository`, `license`, `keywords` | convention — present in every manifest (24 at the 2026-08-14 count; 12 plugin pairs) |
+| `skills` | required (test-enforced). **Two shapes since 2026-08-14 (docket #29):** a standalone plugin uses `"./skills/<plugin-dir-name>"`; a bundle uses `"./skills"` — the dir of skill dirs — because bundle members flattened to depth one for Agent Plugins discovery. Both hosts accept either. Was one rule for both before the flattening |
 | `interface` | **codex manifest only** since 2026-07-29 (parity-test-enforced: present in codex, absent in claude). Codex-native install-surface block (displayName, shortDescription ≤125 chars per Codex docs, longDescription, developerName, category, defaultPrompt; optionally capabilities/websiteURL/logo/screenshots). **Verified 2026-07-08: unknown to Claude Code** — ignored at load, validator warns, `--strict` errors. Previously duplicated into the claude manifest for parity; dropped so `claude plugin validate --strict` passes clean, since Claude Code never read the field anyway |
-| `hooks` | **codex manifest only** — two carriers with two path shapes: condux points at plugin root (`"hooks": "./hooks/codex-hooks.json"`), concord points into its skill dir (`"hooks": "./skills/concord/remember/hooks/codex-hooks.json"`); both resolve relative to the plugin root, so either shape is valid. BOTH hosts default to loading `hooks/hooks.json` when no manifest field exists (verified in both hosts' docs); the codex-side field overrides that default so Codex loads the Stop-only file instead of Claude's PreToolUse file (commit 95425c8). A missing claude-side `hooks` field is BY DESIGN, not a parity bug. **Hook commands use the host's own plugin-root variable** — Claude Code substitutes `${CLAUDE_PLUGIN_ROOT}`, Codex substitutes `${PLUGIN_ROOT}` and does NOT set Claude's (verified 2026-07-10, Codex 0.144.1: the unexpanded variable made condux's Stop hook exit 1 on every turn; parity-test-enforced) |
+| `hooks` | **codex manifest only** — two carriers with two path shapes: condux points at plugin root (`"hooks": "./hooks/codex-hooks.json"`), concord points into its skill dir (`"hooks": "./skills/remember/hooks/codex-hooks.json"` — one level shallower since the 2026-08-14 flattening); both resolve relative to the plugin root, so either shape is valid. BOTH hosts default to loading `hooks/hooks.json` when no manifest field exists (verified in both hosts' docs); the codex-side field overrides that default so Codex loads the Stop-only file instead of Claude's PreToolUse file (commit 95425c8). A missing claude-side `hooks` field is BY DESIGN, not a parity bug. **Hook commands use the host's own plugin-root variable** — Claude Code substitutes `${CLAUDE_PLUGIN_ROOT}`, Codex substitutes `${PLUGIN_ROOT}` and does NOT set Claude's (verified 2026-07-10, Codex 0.144.1: the unexpanded variable made condux's Stop hook exit 1 on every turn; parity-test-enforced) |
 
 ### Verified host field support (2026-07-08)
 
@@ -67,6 +73,66 @@ the official plugin directory — submissions are reviewed against unstated "qua
 security standards", and a `--strict` failure is the most visible thing a reviewer can
 run. Wiring `claude plugin validate --strict` into CI is now safe; it is not wired yet
 (it would add a `claude` CLI dependency to the test job).
+
+### Root `plugin.json` (Agent Plugins 1.0.0) — GENERATED, never hand-edited
+
+Since 2026-08-14 (docket #29) every plugin also carries a spec manifest at
+`dist/plugins/<name>/plugin.json`, making it loadable by Cursor and any
+[agent-plugins.org](https://agent-plugins.org) client with no changes. Claude
+Code and Codex ignore it — they read their own `.{claude,codex}-plugin/` files,
+and the root manifest is inert on both (`claude plugin validate --strict` passes
+with it present).
+
+`scripts/generate-agent-manifests.mjs` derives it from
+`.claude-plugin/plugin.json` (the richer manifest) during sync. Same doctrine as
+`marketplace.json` and the doc catalogs: **registration data has one declared
+source.** Hand-editing it is the drift the generator exists to prevent —
+`tests/agent-plugins.test.mjs` fails on any byte that differs from generator
+output.
+
+The spec schema is **closed**. Only these fields may appear:
+
+| Field | Source | Notes |
+|---|---|---|
+| `$schema` | constant | `https://agent-plugins.org/schemas/1.0.0/plugin.schema.json` |
+| `name` | `name` | must match `^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$`, ≤64, no `--` or `..` |
+| `version` | `version` | semver recommended, not enforced |
+| `description` | `description` | |
+| `author` | `author` | object; only `name`/`email`/`url` keys allowed |
+| `repository` | `repository` | plain string |
+| `license` | `license` | SPDX recommended |
+| `keywords` | `keywords` | string array |
+
+**Never emitted:** `skills` (the spec has no such field — discovery is by fixed
+location), `interface` (codex-only), `hooks` (not a spec component), `homepage`
+(no source field today), `extensions` (reserved for client-specific data).
+
+Two severities, and the difference matters: an unknown *top-level* field is
+reported-and-ignored, but **any other schema violation is fatal** — the client
+rejects the whole plugin without loading a single component. The generator emits
+only the closed set so there is nothing to reject.
+
+**Discovery never recurses.** Spec clients read skills only as immediate children
+of `skills/`; a nested tree fails *silently* — plugin valid, zero skills. That is
+why bundle members flattened to `dist/plugins/<bundle>/skills/<skill>/`, and why
+`tests/agent-plugins.test.mjs` pins depth one.
+
+### docket's two MCP dialects — `mcp.json` (generated placement) vs `.mcp.json`
+
+Docket ships both, side by side, because neither host reads the other's file:
+
+| | Claude Code | Agent Plugins spec |
+|---|---|---|
+| File | `.mcp.json` | `mcp.json` |
+| `type` | omitted | `"stdio"` — **required** |
+| Root variable | `${CLAUDE_PLUGIN_ROOT}` | `${PLUGIN_ROOT}` |
+| `$schema` | none | `…/1.0.0/mcp.schema.json` |
+
+The variable grammar is the whole reason two files exist — one file would be
+wrong for one host. Both are sourced from `plugins/docket/` and copied by
+`sync_plugin_files`. **Keep them in lockstep by hand when the server path
+changes**; `tests/agent-plugins.test.mjs` asserts the spec file keeps its dialect
+but cannot know the two should agree on the path.
 
 ### marketplace.json (`.claude-plugin/marketplace.json`, repo root)
 
@@ -156,6 +222,17 @@ A correct manifest (or a field-level diff of what to change), pair-consistent.
 ## Common traps
 
 - "Fixing" the missing claude-side `hooks` field on condux — it's by design.
+- Hand-editing the root `plugin.json` — it's generated from
+  `.claude-plugin/plugin.json`; edit that and run sync.
+- Adding a useful-looking field to the root `plugin.json` — the spec schema is
+  closed, and only *unknown top-level* fields degrade gracefully. Anything else
+  is fatal: the client drops the whole plugin.
+- Nesting a new bundle's skills below `skills/<name>/` — spec discovery never
+  recurses, and the failure is silent (valid plugin, zero skills).
+- Adding `.cursor-plugin/plugin.json` beside the root manifest — Cursor detects
+  the format *from* the manifest, so shipping both is ambiguous. Never both.
+- Changing docket's server path in one MCP file — `.mcp.json` and `mcp.json` are
+  two dialects of the same registration and drift silently.
 - Copying `strict`/`skills` arrays into marketplace entries from upstream examples.
 - Editing one manifest of the pair (`ba69d2b` precedent).
 - Looking for a manifest to register a skill with OpenCode or Cursor — there
@@ -183,7 +260,9 @@ one, so `--strict` stays clean for directory submissions.
 ## Provenance and maintenance
 
 Re-verify volatile claims with:
-- `node --test tests/plugin-manifests.test.mjs tests/manifest-parity.test.mjs tests/opencode-dist.test.mjs tests/cursor-dist.test.mjs`
+- `node --test tests/plugin-manifests.test.mjs tests/manifest-parity.test.mjs tests/opencode-dist.test.mjs tests/cursor-dist.test.mjs tests/agent-plugins.test.mjs`
+- `node scripts/generate-agent-manifests.mjs && git status --short` — clean tree
+  means every root `plugin.json` matches its generator
 - `node -e 'for (const m of require("fs").globSync("dist/plugins/*/.{claude,codex}-plugin/plugin.json")) console.log(m, require("./" + m).skills)'`
 - `claude plugin validate dist/plugins/<p> --strict` — official validator (expect a
   clean pass, no warnings, since `interface` moved to the codex manifest on 2026-07-29)
@@ -194,7 +273,8 @@ Re-verify volatile claims with:
 Last generated: 2026-07-08 (host-support matrix verified same day; OpenCode +
 npm-package sections added 2026-07-23; hooks row + counts refreshed 2026-08-04;
 Cursor channel folded in 2026-08-14 — three channels became four, and the OpenCode
-section became the shared variant-trees section)
+section became the shared variant-trees section; root `plugin.json` + docket's two
+MCP dialects documented 2026-08-14, making it three manifests per plugin, not two)
 Known uncertainty:
 - Codex's tolerance of fields IT doesn't recognize is untested — this repo's manifests
   contain only Codex-documented fields, so it's never exercised. No codex-side
@@ -208,6 +288,11 @@ Known uncertainty:
 - No OpenCode-side manifest validator exists to check against, and the
   description-only routing claim comes from the host's `<available_skills>`
   listing, not from a schema.
+- No Agent Plugins validator was run against the generated root manifests — the
+  closed field set is honoured by construction (the generator emits only it) and
+  asserted by `tests/agent-plugins.test.mjs`, not confirmed by a spec client.
+  Cursor loaded the plugins in a local-install check; that is evidence one client
+  accepts them, not that the schema is fully satisfied.
 - Cursor's 1024-char cap is assumed equal to OpenCode's and enforced locally by
   `tests/cursor-dist.test.mjs`; no Cursor-side validator or documented limit was
   found to confirm it. The repo has stayed well under either way.
