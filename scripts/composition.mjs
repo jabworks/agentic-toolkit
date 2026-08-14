@@ -63,7 +63,11 @@ export function loadComposition(repoRoot = REPO_ROOT) {
       }
       claimedSkills.set(skill, name);
       const src = `skills/${skill}`;
-      const dest = `dist/plugins/${name}/skills/${name}${plugin.bundle ? `/${skill}` : ''}`;
+      // Flat on purpose: Agent Plugins clients discover skills only as
+      // immediate children of skills/ (no recursion), so bundle members sit
+      // at dist/plugins/<bundle>/skills/<skill> — same shape as standalone
+      // plugins, where skill === name.
+      const dest = `dist/plugins/${name}/skills/${skill}`;
       if (!fs.existsSync(path.join(repoRoot, src))) {
         problems.push(`${name}: declared skill has no source dir: ${src}`);
       }

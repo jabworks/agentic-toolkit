@@ -28,10 +28,10 @@ install story wrong for as long as it was undocumented.
   a plugin install. Absent → a source tree or `npx skills add` layout. This is
   the discriminator for step 3, not a guess about which host is in use.
 - Sub-installers, probed plugin-root first and then the source tree:
-  - `$PLUGIN_ROOT/skills/condux/subagent-execution/references/install-codex-agents.mjs`
-  - `$PLUGIN_ROOT/skills/condux/plan-review/references/install-codex-hook.sh`
-  - `$PLUGIN_ROOT/skills/condux/condux-doctor/doctor.mjs`
-  - `$PLUGIN_ROOT/skills/condux/condux-doctor/conflicts.json` and
+  - `$PLUGIN_ROOT/skills/subagent-execution/references/install-codex-agents.mjs`
+  - `$PLUGIN_ROOT/skills/plan-review/references/install-codex-hook.sh`
+  - `$PLUGIN_ROOT/skills/condux-doctor/doctor.mjs`
+  - `$PLUGIN_ROOT/skills/condux-doctor/conflicts.json` and
     `conflicts.mjs` — the known-conflicts registry and its reader, shared with
     the doctor so the same warning is not written twice (step 5)
 - Check `node` exists and record its **absolute path**. Codex Desktop does not
@@ -131,7 +131,7 @@ OpenCode install.
 
 condux is not the only library that routes dev work, and the closest one is
 the one it learned from. Read the registry —
-`skills/condux/condux-doctor/conflicts.json` in a plugin install,
+`skills/condux-doctor/conflicts.json` in a plugin install,
 `skills/condux-doctor/conflicts.json` in the source tree — and match each
 entry's `detect` block against what is already on this machine. Name matching
 only; nothing here reaches the network or compares skills by meaning.

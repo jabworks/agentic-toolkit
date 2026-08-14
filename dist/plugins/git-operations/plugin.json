@@ -1,0 +1,19 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "git-operations",
+  "version": "1.1.0",
+  "description": "Decision router for git: given a situation, pick the right operation (undo/discard/stash/merge/push) and run it safely with an undo path. Favours modern porcelain over legacy checkout; cross-links to git-commit.",
+  "author": {
+    "name": "jabworks"
+  },
+  "repository": "https://github.com/jabworks/agentic-toolkit",
+  "license": "MIT",
+  "keywords": [
+    "git",
+    "vcs",
+    "undo",
+    "reflog",
+    "recovery",
+    "workflow"
+  ]
+}

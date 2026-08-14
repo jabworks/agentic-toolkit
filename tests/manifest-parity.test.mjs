@@ -3,6 +3,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { loadComposition } from '../scripts/composition.mjs';
+
+const composition = loadComposition();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, '..');
@@ -41,8 +44,11 @@ test('every dist plugin ships a Claude/Codex manifest pair with matching identit
       }
     }
 
-    // One skills-path shape for standalone AND bundle plugins.
-    const expectedSkills = './skills/' + p;
+    // Standalone plugins point at their single skill dir; bundles point at the
+    // flat skills/ root — Agent Plugins clients discover skills only as
+    // immediate children of skills/, so bundle members sit at depth one and
+    // the manifest path follows. Bundle-ness comes from the declaration.
+    const expectedSkills = composition.plugins[p]?.bundle ? './skills' : './skills/' + p;
     if (claude.skills !== expectedSkills) {
       problems.push(`${p}: skills path ${JSON.stringify(claude.skills)} — must be ${JSON.stringify(expectedSkills)}`);
     }

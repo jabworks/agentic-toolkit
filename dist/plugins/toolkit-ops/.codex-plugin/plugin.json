@@ -1,6 +1,6 @@
 {
   "name": "toolkit-ops",
-  "version": "1.6.4",
+  "version": "1.7.0",
   "description": "Codex skills for operating the jabworks/agentic-toolkit repo itself: orientation, skill foundry (create/register/publish), change control, skill-authoring standards, debugging playbook, failure archaeology, plugin schema reference, and research frontier.",
   "author": {
     "name": "jabworks"
@@ -15,7 +15,7 @@
     "claude-code",
     "codex"
   ],
-  "skills": "./skills/toolkit-ops",
+  "skills": "./skills",
   "interface": {
     "displayName": "Toolkit Ops",
     "shortDescription": "Operate and maintain the agentic-toolkit skill library.",

@@ -20,7 +20,12 @@ plugins/<name>/         # Plugin-level source — README.md (the plugin's homepa
                         # repo root the same way. Never hand-edit the dist copies
 
 dist/plugins/<name>/    # Install mirror — never edit directly; sync from skills/
-  skills/<name>/        # Mirrors skills/<name>/
+  plugin.json           # GENERATED Agent Plugins manifest (agent-plugins.org 1.0.0)
+                        # — scripts/generate-agent-manifests.mjs, from the Claude
+                        # manifest; never hand-edit
+  skills/<skill>/       # Mirrors skills/<skill>/ — bundles ship FLAT (one dir per
+                        # member skill): Agent Plugins clients discover skills only
+                        # as immediate children of skills/, never recursively
   .claude-plugin/
     plugin.json         # Claude Code plugin metadata
   .codex-plugin/
@@ -167,6 +172,12 @@ committing — it fails the build otherwise. The suite now needs
   `dist/opencode/skills/`), merged descriptions stay within OpenCode's 1024-char
   cap, restricted agents keep their `permission` denials, and the plugin loads,
   registers its bundled skills path, and never clobbers user-defined agents
+- `agent-plugins.test.mjs` — every plugin's root `plugin.json` matches
+  `scripts/generate-agent-manifests.mjs` output byte-for-byte and stays inside
+  the spec's closed schema, every plugin's full skill set sits at `skills/`
+  depth one (spec discovery never recurses), and docket's spec `mcp.json`
+  keeps the spec dialect (`type` required, `${PLUGIN_ROOT}`) beside Claude's
+  `.mcp.json` (`${CLAUDE_PLUGIN_ROOT}`)
 - `cursor-dist.test.mjs` — `dist/cursor/skills/` matches `scripts/build-cursor.mjs`
   output (same fold transform, imported from build-opencode.mjs), no orphaned
   dirs, `when_to_use` never survives, frontmatter `name` matches its folder

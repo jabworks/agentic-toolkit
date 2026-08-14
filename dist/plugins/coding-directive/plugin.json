@@ -1,0 +1,19 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "coding-directive",
+  "version": "1.2.0",
+  "description": "Write code that matches the jabworks house style the first time — TypeScript, React/Next.js, formatting, import order, monorepo boundaries, naming, error handling, CSS/Tailwind.",
+  "author": {
+    "name": "jabworks"
+  },
+  "repository": "https://github.com/jabworks/agentic-toolkit",
+  "license": "MIT",
+  "keywords": [
+    "style-guide",
+    "typescript",
+    "react",
+    "eslint",
+    "prettier",
+    "conventions"
+  ]
+}
