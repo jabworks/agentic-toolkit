@@ -9,14 +9,6 @@ Stale open markers cost real sessions — closing means moving.
 
 ## Committed
 
-### 29. Agent Plugins spec conformance — root plugin.json for every dist plugin (2026-08-14)
-
-Cursor supports the open agent-plugins.org standard: "spec-conformant plugins with a plugin.json manifest at the plugin root, packaging skills and MCP servers... loads in Cursor without changes" (cursor.com/docs/plugins). Our dist plugins carry only .claude-plugin/ and .codex-plugin/ manifests — not conformant. Adding a root plugin.json (schema https://agent-plugins.org/schemas/1.0.0/plugin.schema.json) makes every plugin loadable in Cursor directly (~/.cursor/plugins/local, team marketplaces, cursor.com/marketplace submission) and portable to other spec hosts.
-
-Scope: root plugin.json per dist plugin (generated, not hand-maintained — pair with the existing manifests via sync), manifest-parity coverage for the third manifest, check the spec's expectations for skills/ layout and mcp.json vs docket's .mcp.json. Hooks/rules stay out — those are Cursor-Plugin-format components.
-
-Origin: 2026-08-14 Cursor-channel session — the docs check that corrected "Cursor reads Claude Code plugin format" (undocumented import) to "Cursor supports Agent Plugins" (documented standard).
-
 ## Someday
 
 ### 7. Spec MCP server — revisit when specs gain write-side invariants (2026-08-05)
@@ -114,36 +106,6 @@ at design time: standalone skill vs a section grown inside `git-operations`
 vocabulary — "worktree", "parallel checkout", "agent sandbox tree").
 
 Filed 2026-08-13 mid-#22 (unrelated to that change).
-
-### 27. Cursor compatibility — verify the skills channel, decide on a trigger-variant build (2026-08-14)
-
-README claims Cursor support via `npx skills add` (the vercel-labs CLI
-auto-detects the host), but no Cursor install has ever been verified
-end-to-end. Two open questions:
-
-1. **Does the skills channel actually work on Cursor?** Install the toolkit
-   into a real Cursor setup and check the skills land, load, and trigger.
-
-2. **Does Cursor surface `when_to_use`?** Condux-style skills carry their
-   trigger conditions in `when_to_use` frontmatter. OpenCode only surfaces
-   `description`, which is why `dist/opencode/skills/` exists (build folds
-   `when_to_use` into `description`, 1024-char cap). If Cursor has the same
-   constraint, it needs the same treatment — likely a `dist/cursor/` variant
-   out of `scripts/build-opencode.mjs` generalized, or reuse of the OpenCode
-   tree if the caps align.
-
-What Cursor will NOT get regardless (host-feature gaps, document rather than
-build): the condux SessionStart routing hook (routing falls back to catalog
-inference, ~80% in evals), plan-review's ExitPlanMode/Codex Stop hooks, named
-agents. Docket's MCP server could work on Cursor via a manual mcp.json entry —
-the installer only targets Claude Code/Codex/OpenCode today; the dependency-
-free CLI fallback (degrade-ladder rung 2) should work as-is.
-
-Outcome shape: a verified compatibility row in README (what works, what
-degrades, what's absent), plus a build decision on the trigger variant.
-
-Filed 2026-08-14 after the "are we compatible with cursor?" question — the
-honest answer was "advertised, never tested".
 
 ### 28. Cursor follow-ups — toolkit-ops channel docs, docket-doctor cursor probe (2026-08-14)
 
