@@ -1,0 +1,911 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>review: {{PLAN_NAME}}</title>
+    <!-- Self-contained: no external fonts, scripts, or styles. Zero network egress.
+         UI components styled after the Terminus UI design system (Button, Badge,
+         Card, Textarea, Popover, Separator) — adapted as vanilla CSS, no React. -->
+    <style>
+/* tokens:core:start */
+/* Shared colour core — do not hand-edit; edit scripts/tokens/core.css. */
+:root {
+  --background: #111110;
+  --card: #191918;
+  --card-foreground: #eeeeec;
+  --popover: #222221;
+  --foreground: #eeeeec;
+  --muted: #222221;
+  --muted-foreground: #b5b3ad;
+  --border: #3b3a37;
+  --input: #3b3a37;
+  --primary: #978365;
+  --primary-foreground: #ffffff;
+  --primary-hover: #a39073;
+  --primary-muted: #24231f;
+  --primary-text: #cbb99f;
+  --ring: #978365;
+  --accent: #2a2a28;
+  --success: #71d083;
+  --success-muted: #1b2a1e;
+  --success-border: #2d5736;
+  --warning: #ffca16;
+  --warning-muted: #302008;
+  --warning-border: #5c3d05;
+  --destructive: #ff977d;
+  --destructive-muted: #391714;
+  --destructive-border: #6e2920;
+  --info: #70b8ff;
+  --info-muted: #0d2847;
+  --info-border: #104d87;
+  --outline: rgba(237, 237, 236, 0.08);
+  --subtle: #686560;
+  --radius: 0.25rem;
+  --mono: "Geist Mono", "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Monaco, "Cascadia Code", monospace;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --background: #f6f5ef;
+    --card: #fcfbf6;
+    --card-foreground: #36302a;
+    --popover: #fcfbf6;
+    --foreground: #36302a;
+    --muted: #f0efe3;
+    --muted-foreground: #726c5e;
+    --border: #ddd6c6;
+    --input: #ddd6c6;
+    --primary: #967e60;
+    --primary-foreground: #ffffff;
+    --primary-hover: #897254;
+    --primary-muted: #efece0;
+    --primary-text: #6f5e44;
+    --ring: #967e60;
+    --accent: #eae7da;
+    --success: #3f7a34;
+    --success-muted: #e6f5e2;
+    --success-border: #c2e1b3;
+    --warning: #93761d;
+    --warning-muted: #fbf4c4;
+    --warning-border: #ebd87f;
+    --destructive: #bf4f3b;
+    --destructive-muted: #fbe8e2;
+    --destructive-border: #f0c9ba;
+    --info: #3f6fa6;
+    --info-muted: #e6f1fc;
+    --info-border: #bed7ef;
+    --outline: rgba(54, 48, 42, 0.08);
+    --subtle: #a8a294;
+  }
+}
+/* tokens:core:end */
+
+      /* plan-review extensions — the annotation highlight and a second radius
+         step. Outside the markers on purpose: anything inside is replaced. */
+      :root {
+        --hl: rgba(255, 202, 22, 0.30); --hl-active: rgba(255, 202, 22, 0.55);
+        --radius-md: 0.25rem;
+      }
+      @media (prefers-color-scheme: light) {
+        :root { --hl: rgba(234, 179, 8, 0.42); --hl-active: rgba(202, 138, 4, 0.62); }
+      }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body { margin: 0; background: var(--background); color: var(--foreground); font: 13px/1.6 var(--mono); font-variant-numeric: tabular-nums; display: flex; flex-direction: column; height: 100vh; }
+      .app { display: grid; grid-template-columns: 248px minmax(0, 1fr) 372px; flex: 1 1 auto; min-height: 0; }
+      ::-webkit-scrollbar { width: 9px; height: 9px; }
+      ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 9999px; border: 2px solid transparent; background-clip: padding-box; }
+      ::-webkit-scrollbar-track { background: transparent; }
+
+      /* ---- Terminus: Button ---- */
+      .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;
+        font: 500 13px var(--mono); border-radius: var(--radius-md); padding: 8px 14px; border: 1px solid transparent;
+        background: transparent; color: var(--foreground); cursor: pointer; transition: background-color .12s, border-color .12s, color .12s; }
+      .btn:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--background), 0 0 0 4px color-mix(in oklch, var(--ring) 45%, transparent); }
+      .btn:disabled { pointer-events: none; opacity: .4; }
+      .btn-sm { padding: 6px 10px; font-size: 12px; }
+      .btn-block { width: 100%; }
+      .btn-solid { background: var(--primary); color: var(--primary-foreground); border-color: var(--primary); }
+      .btn-solid:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
+      .btn-soft { background: var(--primary-muted); color: var(--primary-text); }
+      .btn-soft:hover { background: var(--accent); }
+      .btn-surface { background: var(--card); border-color: var(--border); color: var(--foreground); }
+      .btn-surface:hover { border-color: var(--primary); }
+      .btn-outline { background: transparent; border-color: var(--border); color: var(--foreground); }
+      .btn-outline:hover { background: var(--accent); border-color: var(--border); }
+      .btn-ghost { background: transparent; color: var(--muted-foreground); }
+      .btn-ghost:hover { background: var(--accent); color: var(--foreground); }
+      .btn-danger { background: var(--destructive-muted); color: var(--destructive); border-color: var(--destructive-border); }
+      .btn-danger:hover { background: color-mix(in oklch, var(--destructive-muted) 70%, var(--destructive)); }
+
+      /* ---- Terminus: Badge ---- */
+      .badge { display: inline-flex; align-items: center; gap: 4px; border-radius: var(--radius-md); border: 1px solid transparent;
+        font: 500 11px var(--mono); padding: 1px 6px; min-width: 18px; justify-content: center; }
+      .badge-warning { background: var(--warning-muted); color: var(--warning); border-color: var(--warning-border); }
+      .badge-soft { background: var(--primary-muted); color: var(--primary-text); }
+
+      /* Left: navigation — Contents (docs + headings) | Files (paths touched) */
+      .nav { border-right: 1px solid var(--border); background: var(--card); overflow-y: auto; padding: 18px 14px 40px; }
+      .nav .tabs { display: flex; margin: 0 0 12px; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+      .nav .tab { flex: 1; font: 500 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; padding: 6px 4px;
+        background: transparent; border: none; border-right: 1px solid var(--border); color: var(--subtle); cursor: pointer; }
+      .nav .tab:last-child { border-right: none; }
+      .nav .tab:hover { color: var(--foreground); }
+      .nav .tab.active { background: var(--accent); color: var(--foreground); }
+      .nav a.doc { font-weight: 600; color: var(--foreground); }
+      .nav a.doc.active { border-left-color: var(--primary); background: var(--accent); }
+      .nav a.file .t { font-size: 12px; }
+      .nav .none { color: var(--subtle); font-size: 12px; padding: 4px 6px; }
+      code.mention-flash { outline: 2px solid var(--warning); outline-offset: 1px; }
+      .nav .label, .chat .label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--subtle); margin: 0 0 12px; padding: 0 6px; }
+      .nav a { display: flex; align-items: center; gap: 6px; color: var(--muted-foreground); text-decoration: none; padding: 4px 6px; border-radius: 4px; border-left: 2px solid transparent; }
+      .nav a span.t { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
+      .nav a:hover { background: var(--accent); color: var(--foreground); }
+      .nav a.active { color: var(--foreground); border-left-color: var(--primary); background: var(--accent); }
+      .nav a.lvl2 { padding-left: 16px; } .nav a.lvl3 { padding-left: 28px; font-size: 12px; color: var(--subtle); }
+
+      /* Directory mode: doc-site tree — folder rows fold, filter narrows, the
+         active doc alone carries its headings. All of it DIRMODE-gated. */
+      .nav .tree-filter { display: none; margin: 0 0 10px; }
+      .nav .tree-filter input { width: 100%; font: inherit; font-size: 13px; color: var(--foreground); background: var(--background);
+        border: 1px solid var(--border); border-radius: var(--radius); padding: 6px 8px; outline: none; }
+      .nav .tree-filter input:focus { border-color: var(--ring); }
+      .nav a.folder { font-weight: 600; color: var(--muted-foreground); }
+      .nav a.folder .arrow { flex: none; width: 12px; color: var(--subtle); font-size: 10px; }
+      .crumbs { display: none; max-width: 760px; margin: 0 auto 18px; font: 12px var(--mono); color: var(--subtle);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .crumbs .seg { color: var(--muted-foreground); }
+      .crumbs a.seg { color: var(--muted-foreground); text-decoration: none; cursor: pointer; }
+      .crumbs a.seg:hover { color: var(--foreground); text-decoration: underline; }
+      .crumbs .sep { margin: 0 6px; color: var(--subtle); }
+      .crumbs .cur { color: var(--foreground); }
+      .pnav { display: none; max-width: 760px; margin: 32px auto 0; padding-top: 14px; border-top: 1px solid var(--border);
+        justify-content: space-between; gap: 12px; }
+      .pnav a { display: inline-flex; align-items: center; gap: 6px; max-width: 48%; color: var(--muted-foreground);
+        text-decoration: none; font-size: 13px; padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .pnav a:hover { background: var(--accent); color: var(--foreground); }
+      .pnav .spacer { flex: 1; }
+
+      /* Center: plan */
+      .main { overflow-y: auto; padding: 28px 44px 120px; position: relative;
+        background-image:
+          linear-gradient(to right, color-mix(in oklab, var(--foreground) 3%, transparent) 1px, transparent 1px),
+          linear-gradient(to bottom, color-mix(in oklab, var(--foreground) 3%, transparent) 1px, transparent 1px);
+        background-size: 32px 32px; }
+      .main .hint { color: var(--subtle); margin: 0 auto 24px; font-size: 12px; max-width: 760px; }
+      .doc { max-width: 760px; margin: 0 auto; }
+
+      /* Revision diff — on a revised plan, show what changed instead of a silent swap. */
+      .revbar { display: none; align-items: center; gap: 10px; max-width: 760px; margin: 0 auto 20px;
+        padding: 9px 12px; border: 1px solid var(--warning-border); background: var(--warning-muted); border-radius: var(--radius); }
+      .revbar.show { display: flex; }
+      .revbar .rb-text { color: var(--warning); font: 600 12px var(--mono); }
+      .revbar .rb-stat { color: var(--muted-foreground); font-size: 12px; }
+      .revbar .rb-actions { margin-left: auto; display: flex; gap: 6px; }
+      .diffwrap { display: none; max-width: 760px; margin: 0 auto; }
+      .diffwrap.show { display: block; }
+      .diffview { background: var(--muted); border: 1px solid var(--border); border-radius: var(--radius);
+        padding: 8px 0; overflow-x: auto; font: 12px/1.55 var(--mono); }
+      .diffline { display: flex; white-space: pre; padding: 0 12px; }
+      .diffline .g { width: 14px; flex: none; color: var(--subtle); user-select: none; }
+      .diffline.ctx { color: var(--muted-foreground); }
+      .diffline.add { background: var(--success-muted); color: var(--success); }
+      .diffline.add .g { color: var(--success); }
+      .diffline.del { background: var(--destructive-muted); color: var(--destructive); }
+      .diffline.del .g { color: var(--destructive); }
+      .diffline.fold { justify-content: center; color: var(--subtle); font-style: italic; padding: 3px 12px; }
+      h1, h2, h3, h4, h5, h6 { line-height: 1.3; margin: 1.5em 0 0.6em; scroll-margin-top: 24px; }
+      h1 { font-size: 21px; } h2 { font-size: 16px; } h3 { font-size: 14px; color: var(--muted-foreground); }
+      h4 { font-size: 13px; } h5, h6 { font-size: 12px; color: var(--muted-foreground); }
+      p { margin: 0.6em 0; }
+      ul, ol { margin: 0.6em 0; padding-left: 22px; } li { margin: 0.25em 0; }
+      li.task { list-style: none; margin-left: -18px; }
+      del { color: var(--subtle); }
+      a { color: var(--info); }
+      code { background: var(--muted); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; font-size: 12px; }
+      pre { background: var(--muted); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; overflow-x: auto; }
+      pre code { background: none; border: none; padding: 0; }
+      blockquote { margin: 0.6em 0; padding: 2px 14px; color: var(--muted-foreground); border-left: 3px solid var(--primary); }
+      hr { border: none; border-top: 1px solid var(--border); margin: 1.6em 0; }
+      table { border-collapse: collapse; margin: 0.9em 0; width: 100%; display: block; overflow-x: auto; font-size: 13px; }
+      th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+      th { background: var(--muted); font-weight: 600; }
+      tbody tr:nth-child(even) { background: color-mix(in oklch, var(--muted) 40%, transparent); }
+      .blk { border-radius: 4px; padding: 1px 8px; margin: 0 -8px; }
+      mark.hl { background: var(--hl); color: inherit; border-radius: 2px; cursor: pointer; padding: 0 1px; }
+      mark.hl.active { background: var(--hl-active); box-shadow: 0 0 0 1px var(--warning-border); }
+
+      /* Floating "comment" button (Button surface) + comment Popover */
+      /* Step 1: menubar only. Step 2 (.expanded): reveal the input + actions. */
+      .popover:not(.expanded) .ta, .popover:not(.expanded) .row { display: none; }
+      .popover:not(.expanded) .cats { border-bottom: none; }
+      .popover:not(.expanded) .chip:first-child { border-bottom-left-radius: var(--radius); }
+      .popover:not(.expanded) .chip:last-child { border-bottom-right-radius: var(--radius); }
+      /* Floating annotation toolbar — a menubar of category items over an input. */
+      .popover { position: absolute; z-index: 31; display: none; width: 340px; background: var(--popover); border: 1px solid var(--border);
+        border-radius: var(--radius); box-shadow: 0 12px 32px rgba(0,0,0,0.45); padding: 0; }
+      .popover .q { color: var(--muted-foreground); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        padding: 6px 10px; margin: 0; background: var(--muted); border-bottom: 1px solid var(--border); border-radius: var(--radius) var(--radius) 0 0; }
+      /* Menubar strip: category items, evenly split, divider-separated */
+      .popover .cats { display: flex; margin: 0; border-bottom: 1px solid var(--border); }
+      .chip { flex: 1; font: 500 11px var(--mono); padding: 6px 8px; text-align: center; border: none; border-right: 1px solid var(--border);
+        background: transparent; color: var(--muted-foreground); cursor: pointer; transition: background-color .12s, color .12s; }
+      .chip:last-child { border-right: none; }
+      .chip:hover { background: var(--accent); color: var(--foreground); }
+      .chip.active { background: var(--primary-muted); color: var(--primary-text); }
+      .popover .row { display: flex; justify-content: flex-end; gap: 8px; align-items: center; padding: 6px 8px; border-top: 1px solid var(--border); }
+      .popover .hintk { color: var(--subtle); font-size: 11px; margin-right: auto; }
+      /* Caret pointing at the selection (down when the toolbar sits above it) */
+      .popover::after { content: ''; position: absolute; left: 18px; width: 9px; height: 9px; background: var(--popover);
+        border: 1px solid var(--border); transform: rotate(45deg); display: none; }
+      .popover.above::after { display: block; bottom: -5px; border-top: none; border-left: none; }
+      .popover.below::after { display: block; top: -5px; background: var(--muted); border-bottom: none; border-right: none; }
+
+      /* ---- Terminus: Textarea ---- */
+      .ta { width: 100%; resize: vertical; font: 13px/1.5 var(--mono); color: var(--foreground); background: transparent;
+        border: 1px solid var(--input); border-radius: var(--radius-md); padding: 8px 10px; }
+      .ta::placeholder { color: var(--subtle); }
+      .ta:focus-visible { outline: none; border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 28%, transparent); }
+      .popover .ta { min-height: 132px; border: none; border-radius: 0; padding: 8px 10px; } .popover .ta:focus-visible { outline: none; box-shadow: none; }
+      .composer .ta { min-height: 52px; }
+
+      /* Right: annotations (Cards) + composer + decisions */
+      .chat { border-left: 1px solid var(--border); background: var(--card); display: flex; flex-direction: column; }
+      .chat .label { padding: 16px 16px 0; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+      .thread { flex: 1; overflow-y: auto; padding: 6px 14px; display: flex; flex-direction: column; gap: 8px; }
+      .thread .empty { color: var(--subtle); padding: 8px 4px; }
+      /* Terminus: Card */
+      .msg { border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; background: var(--card); box-shadow: 0 1px 2px rgba(0,0,0,0.16); cursor: default; }
+      .msg.note { border-color: var(--warning-border); cursor: pointer; }
+      .msg.note.active { box-shadow: 0 0 0 2px var(--warning); }
+      .msg .meta { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 4px; align-items: center; }
+      .msg .who { color: var(--muted-foreground); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; } .msg.note .who { color: var(--warning); }
+      .msg .del { cursor: pointer; border: none; background: none; color: var(--subtle); font-size: 11px; padding: 0 2px; } .msg .del:hover { color: var(--destructive); }
+      .msg .quote { color: var(--muted-foreground); font-size: 11px; border-left: 2px solid var(--warning); padding: 1px 8px; margin-bottom: 5px; max-height: 42px; overflow: hidden; }
+      .msg .body { white-space: pre-wrap; word-break: break-word; color: var(--card-foreground); }
+
+      /* Terminus: Separator + composer */
+      .composer { border-top: 1px solid var(--border); padding: 12px 14px; }
+      .actions { padding: 0 14px 14px; }
+      .count { color: var(--subtle); font-size: 11px; }
+
+      /* Bottom decision bar — decisions read as the end of the review. Reject sits
+         isolated on the left; the two "continue" actions group on the right. The
+         summary in the middle says what rides along with the decision. */
+      .dbar { flex: none; display: flex; align-items: center; border-top: 1px solid var(--border); background: var(--card); padding: 10px 16px; min-height: 58px; }
+      .dbar-live { display: flex; flex: 1; align-items: center; gap: 12px; }
+      .dbar-summary { flex: 1; text-align: center; color: var(--subtle); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .dbar-group { display: flex; gap: 8px; }
+
+      /* Post-submit confirmation — replaces the decision bar content once a decision
+         is sent. Per-decision copy tells you exactly what the agent does next. */
+      .sent { display: none; flex: 1; align-items: center; gap: 14px; border: 1px solid var(--border); border-radius: var(--radius); padding: 9px 14px; }
+      .sent.show { display: flex; }
+      .sent.approve { border-color: var(--success-border); background: var(--success-muted); }
+      .sent.revise  { border-color: var(--warning-border); background: var(--warning-muted); }
+      .sent.deny    { border-color: var(--destructive-border); background: var(--destructive-muted); }
+      .sent .h { display: flex; align-items: center; gap: 8px; font: 600 13px var(--mono); }
+      .sent.approve .h { color: var(--success); }
+      .sent.revise  .h { color: var(--warning); }
+      .sent.deny    .h { color: var(--destructive); }
+      .sent .h { flex: none; }
+      .sent .sub { color: var(--muted-foreground); font-size: 12px; line-height: 1.5; }
+      .sent .ico { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; }
+      .sent .again { margin-top: 10px; }
+      .dot { width: 7px; height: 7px; border-radius: 9999px; background: currentColor; animation: pulse 1.3s ease-in-out infinite; }
+      @keyframes pulse { 0%, 100% { opacity: .3; } 50% { opacity: 1; } }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="nav">
+        <div class="tabs">
+          <button type="button" class="tab active" id="tab-contents">Contents</button>
+          <button type="button" class="tab" id="tab-files">Files</button>
+        </div>
+        <div id="pane-contents">
+          <div class="tree-filter" id="tree-filter"><input type="search" id="tree-q" placeholder="Filter docs…" aria-label="Filter documents"></div>
+          <nav id="toc"></nav>
+        </div>
+        <div id="pane-files" style="display:none"><nav id="filelist"></nav></div>
+      </aside>
+
+      <main class="main">
+        <p class="hint">Select any text to comment on it. Or chat with the agent on the right. Then decide.</p>
+        <div class="revbar" id="revbar">
+          <span class="rb-text">Plan revised</span>
+          <span class="rb-stat" id="rb-stat"></span>
+          <span class="rb-actions">
+            <button type="button" class="btn btn-surface btn-sm" id="rb-toggle">View changes</button>
+            <button type="button" class="btn btn-ghost btn-sm" id="rb-dismiss">Dismiss</button>
+          </span>
+        </div>
+        <div class="crumbs" id="crumbs"></div>
+        <div class="doc" id="plan">Loading plan…</div>
+        <div class="pnav" id="pnav"></div>
+        <div class="diffwrap" id="diffwrap"><div class="diffview" id="diffview"></div></div>
+        <div class="popover" id="popover">
+          <div class="q" id="pop-quote"></div>
+          <div class="cats" id="pop-cats">
+            <button type="button" class="chip active" data-cat="Comment">Comment</button>
+            <button type="button" class="chip" data-cat="Issue">Issue</button>
+            <button type="button" class="chip" data-cat="Question">Question</button>
+            <button type="button" class="chip" data-cat="Suggestion">Suggestion</button>
+            <button type="button" class="chip" data-cat="Nitpick">Nitpick</button>
+          </div>
+          <textarea class="ta" id="pop-text" rows="6" placeholder="Your note on this selection…"></textarea>
+          <div class="row"><span class="hintk">⌘↵ to save</span>
+            <button class="btn btn-ghost btn-sm" id="pop-cancel">Cancel</button>
+            <button class="btn btn-solid btn-sm" id="pop-save">Save</button></div>
+        </div>
+      </main>
+
+      <aside class="chat">
+        <p class="label">Review <span class="count" id="count"></span></p>
+        <div class="thread" id="thread"><div class="empty">No notes yet. Select text to comment, or send a message.</div></div>
+        <div class="composer">
+          <textarea class="ta" id="input" placeholder="Message the agent about this plan…"></textarea>
+        </div>
+        <div class="actions">
+          <button class="btn btn-soft btn-block" id="send">Send message</button>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Decisions live in a fixed bottom bar — the rail above is purely
+         conversational (notes + messages). Reject is isolated on the left. -->
+    <footer class="dbar">
+      <div class="dbar-live" id="dbar-live">
+        <button class="btn btn-danger" id="btn-reject" data-decision="Reject">Reject</button>
+        <span class="dbar-summary" id="dbar-summary"></span>
+        <span class="dbar-group">
+          <button class="btn btn-outline" data-decision="Request Revisions">Request revisions</button>
+          <button class="btn btn-solid" data-decision="Approve">Approve</button>
+        </span>
+      </div>
+      <div class="sent" id="sent">
+        <div class="h"><span class="ico" id="sent-ico"></span><span id="sent-title"></span></div>
+        <div class="sub" id="sent-sub"></div>
+      </div>
+    </footer>
+
+    <script>
+      // ---- Self-contained Markdown renderer (no external deps) ----
+      function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+      function safeHref(s){const h=String(s).trim();const compact=h.replace(/[\u0000-\u0020]+/g,'');return /^(javascript|data|vbscript):/i.test(compact)?'#':h;}
+      function inline(s){
+        const codes=[];
+        s=esc(s).replace(/`([^`]+)`/g,function(_,c){codes.push('<code>'+c+'</code>');return '\u0000'+(codes.length-1)+'\u0000';});
+        s=s.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
+           .replace(/__([^_]+)__/g,'<strong>$1</strong>')
+           .replace(/(^|[^*])\*([^*]+)\*/g,'$1<em>$2</em>')
+           .replace(/(^|[^\w_])_([^_]+)_(?![\w_])/g,'$1<em>$2</em>')
+           .replace(/~~([^~]+)~~/g,'<del>$1</del>')
+           .replace(/\[([^\]]+)\]\(([^)]+)\)/g,function(_,label,href){return '<a href="'+safeHref(href)+'" rel="noopener noreferrer">'+label+'</a>';});
+        return s.replace(/\u0000(\d+)\u0000/g,function(_,n){return codes[+n];});
+      }
+      function renderBlocks(md){
+        const lines=md.replace(/\r\n/g,'\n').split('\n'); const out=[]; let i=0;
+        function tcells(row){ return row.trim().replace(/^\|/,'').replace(/\|\s*$/,'').split('|').map(function(c){return c.trim();}); }
+        function isDelim(row){ if(row.indexOf('|')<0) return false; const cs=tcells(row); return cs.length>0 && cs.every(function(c){return /^:?-{1,}:?$/.test(c);}); }
+        while(i<lines.length){let line=lines[i];
+          if(/^```/.test(line)){const buf=[];i++;while(i<lines.length&&!/^```/.test(lines[i]))buf.push(lines[i++]);i++;out.push({html:'<pre><code>'+esc(buf.join('\n'))+'</code></pre>',heading:null});continue;}
+          if(/^\s*$/.test(line)){i++;continue;}
+          if(/^#{1,6}\s/.test(line)){const lvl=line.match(/^#+/)[0].length;const text=line.replace(/^#+\s/,'');out.push({html:'<h'+lvl+'>'+inline(text)+'</h'+lvl+'>',heading:{level:lvl,text:text}});i++;continue;}
+          if(/^---+\s*$/.test(line)){out.push({html:'<hr>',heading:null});i++;continue;}
+          if(/^\s*>/.test(line)){const buf=[];while(i<lines.length&&/^\s*>/.test(lines[i]))buf.push(lines[i++].replace(/^\s*>\s?/,''));out.push({html:'<blockquote>'+inline(buf.join(' '))+'</blockquote>',heading:null});continue;}
+          if(/^\s*([-*+]|\d+\.)\s/.test(line)){const ordered=/^\s*\d+\./.test(line);const buf=[];while(i<lines.length&&/^\s*([-*+]|\d+\.)\s/.test(lines[i])){let it=lines[i].replace(/^\s*([-*+]|\d+\.)\s/,'');const cb=it.match(/^\[([ xX])\]\s+/);if(cb){it=it.slice(cb[0].length);buf.push('<li class="task">'+(/[xX]/.test(cb[1])?'☑':'☐')+' '+inline(it)+'</li>');}else{buf.push('<li>'+inline(it)+'</li>');}i++;}out.push({html:'<'+(ordered?'ol':'ul')+'>'+buf.join('')+'</'+(ordered?'ol':'ul')+'>',heading:null});continue;}
+          if(line.indexOf('|')>=0&&i+1<lines.length&&isDelim(lines[i+1])){const header=tcells(line);const aligns=tcells(lines[i+1]).map(function(c){const l=/^:/.test(c),r=/:$/.test(c);return l&&r?'center':r?'right':l?'left':'';});i+=2;const rows=[];while(i<lines.length&&lines[i].indexOf('|')>=0&&!/^\s*$/.test(lines[i])&&!/^(#{1,6}\s|```|---+\s*$)/.test(lines[i])){rows.push(tcells(lines[i]));i++;}let h='<table><thead><tr>';header.forEach(function(c,ci){h+='<th'+(aligns[ci]?' style="text-align:'+aligns[ci]+'"':'')+'>'+inline(c)+'</th>';});h+='</tr></thead><tbody>';rows.forEach(function(cs){h+='<tr>';header.forEach(function(_,ci){h+='<td'+(aligns[ci]?' style="text-align:'+aligns[ci]+'"':'')+'>'+inline(cs[ci]!==undefined?cs[ci]:'')+'</td>';});h+='</tr>';});h+='</tbody></table>';out.push({html:h,heading:null});continue;}
+          const buf=[];while(i<lines.length&&!/^\s*$/.test(lines[i])&&!/^(#{1,6}\s|```|\s*>|\s*([-*+]|\d+\.)\s|---+\s*$)/.test(lines[i])&&!(lines[i].indexOf('|')>=0&&i+1<lines.length&&isDelim(lines[i+1])))buf.push(lines[i++]);
+          out.push({html:'<p>'+inline(buf.join(' '))+'</p>',heading:null});}
+        return out;
+      }
+
+      // ---- State ----
+      const annotations = []; let nextId = 1;
+      const planEl=document.getElementById('plan');
+      const tocEl=document.getElementById('toc');
+      const pop=document.getElementById('popover');
+      const popQuote=document.getElementById('pop-quote');
+      const popText=document.getElementById('pop-text');
+      const popCats=document.getElementById('pop-cats');
+      const main=document.querySelector('.main');
+      let pendingRange=null, pendingQuote='', pendingSection='', pendingCat=null, selDoc=null;
+      function setCat(cat){ pendingCat=cat; popCats.querySelectorAll('.chip').forEach(function(x){x.classList.toggle('active',x.dataset.cat===cat);}); }
+      // Step 1 shows just the quote + category menubar. Choosing a category expands
+      // the toolbar to reveal the note input and action buttons (step 2).
+      popCats.querySelectorAll('.chip').forEach(function(c){
+        c.onmousedown=function(e){ e.preventDefault(); }; // keep the text selection alive
+        c.onclick=function(){ setCat(c.dataset.cat); pop.classList.add('expanded'); placePopover(); popText.focus(); };
+      });
+
+      // ---- Documents: one pane per doc (a single plan file, or a spec dir) ----
+      // Panes stay in the DOM when hidden, so highlights and note anchors on an
+      // inactive doc survive switching back and forth.
+      let DIRMODE=false, docs=[], activeDoc=null;
+      const docState={}; // name -> { md, pane, scroll, key, headings }
+
+      function renderDocPane(doc, md){
+        const st=docState[doc];
+        st.md=md; st.pane.innerHTML=''; st.headings=[];
+        let section='(top)';
+        renderBlocks(md).forEach(function(b,idx){
+          const id=st.key+'-blk-'+idx;
+          const wrap=document.createElement('div'); wrap.className='blk'; wrap.id=id; wrap.innerHTML=b.html;
+          if(b.heading){ section=id; st.headings.push({id:id,level:b.heading.level,text:b.heading.text}); }
+          wrap.dataset.section=section; st.pane.appendChild(wrap);
+        });
+      }
+
+      // ---- Directory-mode doc-site tree: collapsible folders, filter, chrome ----
+      // Collapse state lives in memory only (review tabs are short-lived); seeded
+      // so the active doc's ancestors are always open. The filter is a transient
+      // view — it never touches openFolders (snapshot restored on clear) and
+      // never affects what gets submitted.
+      let openFolders=new Set(), treeFilter='', preFilterOpen=null;
+      function parentOf(p){ const s=p.lastIndexOf('/'); return s>=0?p.slice(0,s):''; }
+      function seedOpen(doc){ let f=parentOf(doc); while(f){ openFolders.add(f); f=parentOf(f); } }
+      function headingAnchor(doc,h,lvl){
+        const a=document.createElement('a'); a.href='#'+h.id;
+        a.className='lvl'+lvl; a.dataset.target=h.id; a.dataset.doc=doc;
+        const t=document.createElement('span'); t.className='t'; t.textContent=h.text; a.appendChild(t);
+        const bd=document.createElement('span'); bd.className='badge badge-warning'; bd.style.display='none'; bd.dataset.for=h.id; a.appendChild(bd);
+        a.onclick=function(e){ e.preventDefault(); if(doc!==activeDoc)switchDoc(doc);
+          document.getElementById(h.id).scrollIntoView({behavior:'smooth',block:'start'}); };
+        return a;
+      }
+      function renderTree(){
+        const q=treeFilter.trim().toLowerCase(), mcache={};
+        // docs[] arrives folder-grouped (root first, index.md first per folder);
+        // rebuilding the tree and walking docs-then-sorted-dirs reproduces that
+        // order exactly — docs[] stays the one source of truth.
+        const root={dirs:{},docs:[]};
+        docs.forEach(function(doc){
+          const parts=doc.split('/'); let node=root;
+          for(let i=0;i<parts.length-1;i++) node=node.dirs[parts[i]]||(node.dirs[parts[i]]={dirs:{},docs:[]});
+          node.docs.push(doc);
+        });
+        function matches(doc){
+          if(!q) return {show:true,heads:null};
+          if(mcache[doc]) return mcache[doc];
+          const heads=docState[doc].headings.filter(function(h){return h.text.toLowerCase().indexOf(q)>=0;});
+          const name=doc.toLowerCase().indexOf(q)>=0;
+          return (mcache[doc]={show:name||heads.length>0,heads:heads});
+        }
+        function indent(el,depth){ el.style.paddingLeft=(6+Math.min(depth,3)*12)+'px'; }
+        function hasMatch(node){
+          return node.docs.some(function(d){return matches(d).show;})
+            || Object.keys(node.dirs).some(function(k){return hasMatch(node.dirs[k]);});
+        }
+        (function walk(node,pathStr,depth){
+          node.docs.forEach(function(doc){
+            const m=matches(doc); if(!m.show) return;
+            const d=document.createElement('a'); d.href='#'; d.className='doc'+(doc===activeDoc?' active':''); d.dataset.doc=doc; d.title=doc;
+            indent(d,depth);
+            const t=document.createElement('span'); t.className='t'; t.textContent=doc.slice(pathStr?pathStr.length+1:0); d.appendChild(t);
+            const bd=document.createElement('span'); bd.className='badge badge-warning'; bd.style.display='none'; bd.dataset.fordoc=doc; d.appendChild(bd);
+            d.onclick=function(e){ e.preventDefault(); switchDoc(doc); main.scrollTop=0; };
+            tocEl.appendChild(d);
+            // Headings: the active doc's under it normally; matched ones under any
+            // hit while filtering. A doc with no headings gets no stub.
+            const hs=q?m.heads:(doc===activeDoc?docState[doc].headings:[]);
+            hs.forEach(function(h){ const a=headingAnchor(doc,h,Math.min(h.level+1,3)); indent(a,depth+1); tocEl.appendChild(a); });
+          });
+          Object.keys(node.dirs).sort().forEach(function(name){
+            const sub=pathStr?pathStr+'/'+name:name;
+            if(q&&!hasMatch(node.dirs[name])) return;
+            const open=q?true:openFolders.has(sub);
+            const row=document.createElement('a'); row.href='#'; row.className='folder'; row.title=sub;
+            indent(row,depth);
+            const ar=document.createElement('span'); ar.className='arrow'; ar.textContent=open?'▾':'▸'; row.appendChild(ar);
+            const t=document.createElement('span'); t.className='t'; t.textContent=name+'/'; row.appendChild(t);
+            const bd=document.createElement('span'); bd.className='badge badge-warning'; bd.style.display='none'; bd.dataset.forfolder=sub; bd.dataset.open=open?'1':''; row.appendChild(bd);
+            row.onclick=function(e){ e.preventDefault(); if(q)return;
+              if(openFolders.has(sub))openFolders.delete(sub); else openFolders.add(sub); buildToc(); };
+            tocEl.appendChild(row);
+            if(open) walk(node.dirs[name],sub,depth+1);
+          });
+        })(root,'',0);
+        if(q&&!tocEl.children.length){ const n=document.createElement('div'); n.className='none'; n.textContent='No matches.'; tocEl.appendChild(n); }
+      }
+      function buildToc(){
+        tocEl.innerHTML='';
+        if(DIRMODE){ renderTree(); }
+        else docs.forEach(function(doc){
+          docState[doc].headings.forEach(function(h){ tocEl.appendChild(headingAnchor(doc,h,h.level)); });
+        });
+        observeHeadings(); updateBadges();
+      }
+
+      function updateChrome(){
+        if(!DIRMODE||!activeDoc) return;
+        const crumbs=document.getElementById('crumbs'); crumbs.innerHTML=''; crumbs.style.display='block';
+        const rootName=document.title.replace(/^review:\s*/,'');
+        const r=document.createElement('span'); r.className='seg'; r.textContent=rootName; crumbs.appendChild(r);
+        const parts=activeDoc.split('/');
+        parts.forEach(function(seg,i){
+          const sep=document.createElement('span'); sep.className='sep'; sep.textContent='›'; crumbs.appendChild(sep);
+          if(i<parts.length-1){
+            const f=parts.slice(0,i+1).join('/');
+            const a=document.createElement('a'); a.className='seg'; a.textContent=seg;
+            a.onclick=function(e){ e.preventDefault();
+              const qEl=document.getElementById('tree-q');
+              if(qEl&&qEl.value){ qEl.value=''; qEl.oninput(); }   // a filtered tree ignores fold state — clear first
+              let g=f; while(g){ openFolders.add(g); g=parentOf(g); } buildToc(); };
+            crumbs.appendChild(a);
+          } else { const c=document.createElement('span'); c.className='seg cur'; c.textContent=seg; crumbs.appendChild(c); }
+        });
+        const pnav=document.getElementById('pnav'); pnav.innerHTML=''; pnav.style.display='flex';
+        const idx=docs.indexOf(activeDoc);
+        function jump(d,label){
+          const a=document.createElement('a'); a.href='#'; a.title=d;
+          a.textContent=label; a.onclick=function(e){ e.preventDefault(); switchDoc(d); main.scrollTop=0; };
+          return a;
+        }
+        if(idx>0) pnav.appendChild(jump(docs[idx-1],'← '+docs[idx-1].split('/').pop()));
+        const sp=document.createElement('span'); sp.className='spacer'; pnav.appendChild(sp);
+        if(idx>=0&&idx<docs.length-1) pnav.appendChild(jump(docs[idx+1],docs[idx+1].split('/').pop()+' →'));
+      }
+
+      function switchDoc(doc){
+        if(activeDoc&&docState[activeDoc]) docState[activeDoc].scroll=main.scrollTop;
+        activeDoc=doc;
+        docs.forEach(function(d){ docState[d].pane.style.display=d===doc?'':'none'; });
+        main.scrollTop=docState[doc].scroll||0;
+        if(DIRMODE){ seedOpen(doc); buildToc(); updateChrome(); }
+        else observeHeadings();
+      }
+
+      // ---- Selection -> highlight ----
+      function blockOf(node){ while(node&&node!==planEl){ if(node.classList&&node.classList.contains('blk')) return node; node=node.parentNode; } return null; }
+
+      // Anchor the toolbar to the stored selection; sits above it, flips below
+      // only when the selection is too near the top of the scroll area.
+      function placePopover(){
+        if(!selDoc) return;
+        const pw=pop.offsetWidth, ph=pop.offsetHeight;
+        const left=Math.max(4, Math.min(selDoc.left, main.scrollWidth-pw-8));
+        let top=selDoc.top-ph-10;
+        if(top < main.scrollTop+4){ top=selDoc.bottom+10; pop.classList.add('below'); pop.classList.remove('above'); }
+        else { pop.classList.add('above'); pop.classList.remove('below'); }
+        pop.style.left=left+'px'; pop.style.top=top+'px';
+      }
+      function openToolbar(){
+        popQuote.textContent='“'+pendingQuote+'”'; popText.value='';
+        pendingCat=null; popCats.querySelectorAll('.chip').forEach(function(x){x.classList.remove('active');});
+        pop.classList.remove('expanded');
+        pop.style.display='block'; placePopover();
+      }
+      // Selecting text in the plan opens the menubar above the selection.
+      document.addEventListener('mouseup', function(e){
+        if(pop.contains(e.target)) return;
+        setTimeout(function(){
+          const sel=window.getSelection();
+          if(!sel.rangeCount||sel.isCollapsed) return;
+          const r=sel.getRangeAt(0);
+          if(!planEl.contains(r.commonAncestorContainer)||!sel.toString().trim()) return;
+          pendingRange=r.cloneRange(); pendingQuote=sel.toString().trim();
+          const blk=blockOf(pendingRange.startContainer); pendingSection=blk?blk.dataset.section:'(top)';
+          const rect=pendingRange.getBoundingClientRect(); const host=main.getBoundingClientRect();
+          selDoc={ left: rect.left-host.left+main.scrollLeft, top: rect.top-host.top+main.scrollTop, bottom: rect.bottom-host.top+main.scrollTop };
+          openToolbar();
+        },0);
+      });
+
+      function highlight(range, aid){
+        const root=range.commonAncestorContainer; const base=root.nodeType===3?root.parentNode:root;
+        const walker=document.createTreeWalker(base,NodeFilter.SHOW_TEXT,null); const nodes=[]; let n;
+        while(n=walker.nextNode()){ if(range.intersectsNode(n)&&n.nodeValue.trim()!=='') nodes.push(n); }
+        nodes.forEach(function(node){
+          let s=0,e=node.nodeValue.length;
+          if(node===range.startContainer) s=range.startOffset;
+          if(node===range.endContainer) e=range.endOffset;
+          if(s>=e) return;
+          const rng=document.createRange(); rng.setStart(node,s); rng.setEnd(node,e);
+          const m=document.createElement('mark'); m.className='hl'; m.dataset.aid=String(aid);
+          try{ rng.surroundContents(m); }catch(err){}
+        });
+      }
+      function unhighlight(aid){
+        document.querySelectorAll('mark.hl[data-aid="'+aid+'"]').forEach(function(m){
+          const p=m.parentNode; while(m.firstChild) p.insertBefore(m.firstChild,m); p.removeChild(m); p.normalize();
+        });
+      }
+
+      function saveNote(){
+        const text=popText.value.trim(); if(!text||!pendingRange) { closePop(); return; }
+        const id=nextId++;
+        try{ highlight(pendingRange,id); }catch(e){}
+        annotations.push({id:id,kind:'note',cat:pendingCat,quote:pendingQuote,text:text,section:pendingSection,doc:activeDoc});
+        closePop(); window.getSelection().removeAllRanges(); paint();
+      }
+      function closePop(){ pop.style.display='none'; pop.classList.remove('expanded'); pendingRange=null; }
+      document.getElementById('pop-save').onclick=saveNote;
+      document.getElementById('pop-cancel').onclick=function(){closePop();window.getSelection().removeAllRanges();};
+      popText.addEventListener('keydown',function(e){ if((e.metaKey||e.ctrlKey)&&e.key==='Enter')saveNote(); if(e.key==='Escape')closePop(); });
+      document.addEventListener('mousedown',function(e){ if(!pop.contains(e.target)&&pop.style.display==='block') closePop(); });
+
+      // Intra-tree markdown links (e.g. the spec catalog's [x](wan-config/index.md))
+      // point at real relative paths so they stay correct for agents/GitHub. In the
+      // viewer there is no such URL — resolve the href against the active doc's folder
+      // and, if it names a known doc, switch panes instead of hard-navigating to a 404.
+      function resolveDocHref(href){
+        if(!href||/^(https?:|mailto:|tel:|#|\/\/)/i.test(href)) return null;
+        let frag=''; const hash=href.indexOf('#'); if(hash>=0){ frag=href.slice(hash+1); href=href.slice(0,hash); }
+        if(!href) return {doc:activeDoc,frag:frag};
+        const baseDir=activeDoc&&activeDoc.indexOf('/')>=0?activeDoc.slice(0,activeDoc.lastIndexOf('/')):'';
+        const stack=[];
+        (baseDir?baseDir.split('/'):[]).concat(href.split('/')).forEach(function(p){
+          if(p===''||p==='.')return; if(p==='..')stack.pop(); else stack.push(p);
+        });
+        const cand=stack.join('/');
+        return docs.indexOf(cand)>=0?{doc:cand,frag:frag}:null;
+      }
+      planEl.addEventListener('click',function(e){
+        const a=e.target.closest&&e.target.closest('a');
+        if(a&&planEl.contains(a)){
+          const t=resolveDocHref(a.getAttribute('href'));
+          if(t){ e.preventDefault(); if(t.doc!==activeDoc)switchDoc(t.doc); main.scrollTop=0;
+            if(t.frag){ const el=document.getElementById(t.frag); if(el)el.scrollIntoView({behavior:'smooth',block:'start'}); }
+            return; }
+        }
+        const m=e.target.closest&&e.target.closest('mark.hl'); if(!m) return;
+        focusNote(m.dataset.aid,true);
+      });
+      function focusNote(aid,scroll){
+        document.querySelectorAll('mark.hl').forEach(function(x){x.classList.toggle('active',x.dataset.aid===String(aid));});
+        document.querySelectorAll('.msg.note').forEach(function(x){x.classList.toggle('active',x.dataset.aid===String(aid));});
+        if(scroll){const el=document.querySelector('.msg.note[data-aid="'+aid+'"]'); if(el)el.scrollIntoView({block:'nearest'});}
+      }
+
+      function sendChat(){ const ta=document.getElementById('input'); const text=ta.value.trim(); if(!text)return;
+        annotations.push({id:nextId++,kind:'chat',quote:'',text:text,section:''}); ta.value=''; paint(); }
+
+      function paint(){
+        const box=document.getElementById('thread'); box.innerHTML='';
+        document.getElementById('count').textContent=annotations.length?'('+annotations.length+')':'';
+        if(!annotations.length){ box.innerHTML='<div class="empty">No notes yet. Select text to comment, or send a message.</div>'; updateBadges(); updateSummary(); return; }
+        annotations.forEach(function(a){
+          const m=document.createElement('div'); m.className='msg'+(a.kind==='note'?' note':''); if(a.kind==='note')m.dataset.aid=String(a.id);
+          const meta=document.createElement('div'); meta.className='meta';
+          const who=document.createElement('span'); who.className='who'; who.textContent=a.kind==='note'?(a.cat||'Note'):'message';
+          const del=document.createElement('button'); del.className='del'; del.textContent='×';
+          del.onclick=function(ev){ev.stopPropagation(); if(a.kind==='note')unhighlight(a.id); const i=annotations.indexOf(a); annotations.splice(i,1); paint();};
+          meta.appendChild(who); meta.appendChild(del); m.appendChild(meta);
+          if(a.quote){ const q=document.createElement('div'); q.className='quote'; q.textContent='“'+a.quote+'”'; m.appendChild(q); }
+          const body=document.createElement('div'); body.className='body'; body.textContent=a.text; m.appendChild(body);
+          if(a.kind==='note') m.onclick=function(){ if(a.doc&&a.doc!==activeDoc)switchDoc(a.doc);
+            focusNote(a.id,false); const el=document.getElementById(a.section); if(el)el.scrollIntoView({behavior:'smooth',block:'center'}); };
+          box.appendChild(m);
+        });
+        updateBadges(); updateSummary();
+      }
+      // Live summary in the decision bar — what rides along with the decision.
+      function updateSummary(){
+        const n=annotations.filter(function(a){return a.kind==='note';}).length;
+        const m=annotations.filter(function(a){return a.kind==='chat';}).length;
+        const parts=[];
+        if(n)parts.push(n+' note'+(n>1?'s':'')); if(m)parts.push(m+' message'+(m>1?'s':''));
+        document.getElementById('dbar-summary').textContent=
+          parts.length?parts.join(' · ')+' will be sent with your decision':'No notes or messages yet — a decision sends on its own';
+      }
+      function updateBadges(){
+        const counts={}, docCounts={};
+        annotations.forEach(function(a){ if(a.kind!=='note')return;
+          if(a.section)counts[a.section]=(counts[a.section]||0)+1;
+          if(a.doc)docCounts[a.doc]=(docCounts[a.doc]||0)+1; });
+        document.querySelectorAll('.nav .badge[data-for]').forEach(function(b){ const c=counts[b.dataset.for]||0; b.textContent=c; b.style.display=c?'inline-flex':'none'; });
+        document.querySelectorAll('.nav .badge[data-fordoc]').forEach(function(b){ const c=docCounts[b.dataset.fordoc]||0; b.textContent=c; b.style.display=c?'inline-flex':'none'; });
+        // Collapsed folders roll up their docs' counts (doc-level only — heading
+        // badges would double-count) so pending feedback is never invisible.
+        document.querySelectorAll('.nav .badge[data-forfolder]').forEach(function(b){
+          const f=b.dataset.forfolder+'/'; let c=0;
+          Object.keys(docCounts).forEach(function(d){ if(d.indexOf(f)===0)c+=docCounts[d]; });
+          b.textContent=c; b.style.display=(c&&!b.dataset.open)?'inline-flex':'none';
+        });
+      }
+
+      let spy;
+      function observeHeadings(){ if(spy)spy.disconnect();
+        spy=new IntersectionObserver(function(es){es.forEach(function(en){ if(en.isIntersecting){document.querySelectorAll('#toc a[data-target]').forEach(function(a){a.classList.toggle('active',a.dataset.target===en.target.id);});} });},{root:document.querySelector('.main'),rootMargin:'0px 0px -75% 0px',threshold:0});
+        document.querySelectorAll('#toc a[data-target]').forEach(function(a){ if(a.dataset.doc!==activeDoc)return; const el=document.getElementById(a.dataset.target); if(el)spy.observe(el);});
+      }
+
+      // Per-decision confirmation copy — what the agent does with each verdict.
+      const SENT={
+        'Approve':          {cls:'approve',ico:'✓',wait:false,title:'Approved',sub:'Sent to the agent — it will proceed and implement the plan.'},
+        'Request Revisions':{cls:'revise', ico:'',wait:true, title:'Revisions requested',sub:'Your notes are on their way. The agent will revise the plan; the updated version reloads here when it’s ready.'},
+        'Reject':           {cls:'deny',   ico:'✕',wait:false,title:'Rejected',sub:'Sent to the agent — it will not implement this. It steps back to reconsider whether the feature should be built at all.'},
+      };
+      let submitting=false;
+      function clearAllNotes(){
+        annotations.slice().forEach(function(a){ if(a.kind==='note') unhighlight(a.id); });
+        annotations.length=0; nextId=1; paint();
+      }
+      function showSent(decision){
+        const cfg=SENT[decision]||SENT['Request Revisions'];
+        document.getElementById('dbar-live').style.display='none';
+        const ico=document.getElementById('sent-ico');
+        ico.className='ico'+(cfg.wait?' dot':''); ico.textContent=cfg.wait?'':cfg.ico;
+        document.getElementById('sent-title').textContent=cfg.title;
+        document.getElementById('sent-sub').textContent=cfg.sub;
+        document.getElementById('sent').className='sent show '+cfg.cls;
+      }
+      function resetDecisionUI(){
+        document.getElementById('sent').className='sent';
+        const a=document.getElementById('dbar-live'); a.style.display='';
+        a.querySelectorAll('button').forEach(function(b){b.disabled=false;});
+      }
+      async function submit(decision){
+        if(submitting) return; submitting=true;
+        document.querySelectorAll('.dbar button').forEach(function(b){b.disabled=true;});
+        try{ await fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({decision:decision,thread:annotations})}); }
+        catch(e){}
+        clearAllNotes();        // notes clear the moment the decision is sent
+        showSent(decision);
+        submitting=false;
+      }
+      document.getElementById('send').onclick=sendChat;
+      document.getElementById('input').addEventListener('keydown',function(e){if((e.metaKey||e.ctrlKey)&&e.key==='Enter')sendChat();});
+      document.querySelectorAll('.dbar button[data-decision]').forEach(function(b){b.onclick=function(){submit(b.dataset.decision);};});
+
+      // ---- Revision diff (self-contained line-level LCS, no deps) ----
+      function lineDiff(a,b){
+        const A=(a||'').replace(/\r\n/g,'\n').split('\n'), B=(b||'').replace(/\r\n/g,'\n').split('\n');
+        const n=A.length,m=B.length; const dp=[]; for(let i=0;i<=n;i++)dp.push(new Int32Array(m+1));
+        for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--)
+          dp[i][j]=A[i]===B[j]?dp[i+1][j+1]+1:(dp[i+1][j]>=dp[i][j+1]?dp[i+1][j]:dp[i][j+1]);
+        const out=[]; let i=0,j=0;
+        while(i<n&&j<m){ if(A[i]===B[j]){out.push({t:'ctx',s:A[i]});i++;j++;}
+          else if(dp[i+1][j]>=dp[i][j+1]){out.push({t:'del',s:A[i]});i++;}
+          else{out.push({t:'add',s:B[j]});j++;} }
+        while(i<n)out.push({t:'del',s:A[i++]}); while(j<m)out.push({t:'add',s:B[j++]});
+        return out;
+      }
+      function renderDiff(diff){
+        const view=document.getElementById('diffview'); view.innerHTML=''; const FOLD=6; let run=[];
+        function line(t,s){ const el=document.createElement('div'); el.className='diffline '+t;
+          const g=document.createElement('span'); g.className='g'; g.textContent=t==='add'?'+':t==='del'?'-':' ';
+          el.appendChild(g); el.appendChild(document.createTextNode(s||' ')); view.appendChild(el); }
+        function flush(){ if(!run.length)return;
+          if(run.length>FOLD){ line('ctx',run[0].s); line('ctx',run[1].s);
+            const f=document.createElement('div'); f.className='diffline fold'; f.textContent='⋯ '+(run.length-4)+' unchanged lines'; view.appendChild(f);
+            line('ctx',run[run.length-2].s); line('ctx',run[run.length-1].s); }
+          else run.forEach(function(r){line('ctx',r.s);}); run=[]; }
+        diff.forEach(function(d){ if(d.t==='ctx')run.push(d); else{ flush(); line(d.t,d.s); } }); flush();
+      }
+      const diffwrap=document.getElementById('diffwrap');
+      function setDiffView(on){
+        diffwrap.classList.toggle('show',on);
+        planEl.style.display=on?'none':'';
+        document.getElementById('rb-toggle').textContent=on?'View rendered':'View changes';
+      }
+      function showRevBar(diff,doc){
+        const adds=diff.filter(function(d){return d.t==='add';}).length;
+        const dels=diff.filter(function(d){return d.t==='del';}).length;
+        document.querySelector('#revbar .rb-text').textContent=(DIRMODE&&doc)?doc+' revised':'Plan revised';
+        document.getElementById('rb-stat').textContent='+'+adds+' / -'+dels+' lines';
+        renderDiff(diff); document.getElementById('revbar').classList.add('show'); setDiffView(false);
+      }
+      function hideRevBar(){ document.getElementById('revbar').classList.remove('show'); setDiffView(false); }
+      document.getElementById('rb-toggle').onclick=function(){ setDiffView(!diffwrap.classList.contains('show')); };
+      document.getElementById('rb-dismiss').onclick=hideRevBar;
+
+      // ---- Files tab: paths the plan/spec touches ----
+      // Heuristic scan of inline code + fence contents. Conservative on purpose:
+      // false negatives are fine, noisy false positives are not.
+      function considerPath(tok,set){
+        tok=tok.replace(/^['"(<]+|[)>'".,;:!?]+$/g,'').replace(/^\.\//,'');
+        if(!tok||tok.length>200||/\s/.test(tok)||tok.indexOf('://')>=0||tok[0]==='#'||tok[0]==='-') return;
+        const segs=tok.split('/'); const last=segs[segs.length-1];
+        const hasExt=/^[\w@-][\w@.-]*\.[A-Za-z][A-Za-z0-9]{0,5}$/.test(last);
+        if(segs.length>=2&&/^[\w@.-]+(\/[\w@.-]+)+$/.test(tok)&&(hasExt||segs.length>=3)) set.add(tok);
+      }
+      function scanDocPaths(md,set){
+        const lines=(md||'').replace(/\r\n/g,'\n').split('\n'); let inFence=false;
+        lines.forEach(function(line){
+          if(/^```/.test(line)){ inFence=!inFence; return; }
+          if(inFence){ line.split(/\s+/).forEach(function(w){considerPath(w,set);}); return; }
+          const re=/`([^`]+)`/g; let m;
+          while((m=re.exec(line))){ m[1].split(/\s+/).forEach(function(w){considerPath(w,set);}); }
+        });
+      }
+      const mentionCycle={};
+      function jumpToMention(pth){
+        const hits=[];
+        docs.forEach(function(d){
+          docState[d].pane.querySelectorAll('code').forEach(function(c){ if(c.textContent.indexOf(pth)>=0) hits.push({doc:d,el:c}); });
+        });
+        if(!hits.length) return;
+        const i=(mentionCycle[pth]||0)%hits.length; mentionCycle[pth]=i+1;
+        const h=hits[i];
+        if(h.doc!==activeDoc) switchDoc(h.doc);
+        h.el.scrollIntoView({behavior:'smooth',block:'center'});
+        h.el.classList.add('mention-flash'); setTimeout(function(){h.el.classList.remove('mention-flash');},1200);
+      }
+      async function buildFilesIndex(){
+        const set=new Set();
+        docs.forEach(function(d){ scanDocPaths(docState[d].md,set); });
+        const paths=Array.from(set).sort();
+        let results={};
+        try{ const r=await (await fetch('/api/verify-paths',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({paths:paths})})).json(); results=r.results||{}; }catch(e){}
+        const box=document.getElementById('filelist'); box.innerHTML='';
+        if(!paths.length){ box.innerHTML='<div class="none">No file paths mentioned.</div>'; return; }
+        paths.forEach(function(pth){
+          const a=document.createElement('a'); a.href='#'; a.className='file'; a.title=pth;
+          const t=document.createElement('span'); t.className='t'; t.textContent=pth; a.appendChild(t);
+          if(pth in results){
+            const bd=document.createElement('span'); bd.className='badge '+(results[pth]?'badge-soft':'badge-warning');
+            bd.textContent=results[pth]?'exists':'new'; a.appendChild(bd);
+          }
+          a.onclick=function(e){ e.preventDefault(); jumpToMention(pth); };
+          box.appendChild(a);
+        });
+      }
+      const tabC=document.getElementById('tab-contents'), tabF=document.getElementById('tab-files');
+      function setTab(files){ tabC.classList.toggle('active',!files); tabF.classList.toggle('active',files);
+        document.getElementById('pane-contents').style.display=files?'none':'';
+        document.getElementById('pane-files').style.display=files?'':'none'; }
+      tabC.onclick=function(){setTab(false);}; tabF.onclick=function(){setTab(true);};
+
+      // ---- Load + live reload ----
+      function fetchDoc(doc){ return fetch(DIRMODE?'/api/plan?doc='+encodeURIComponent(doc):'/api/plan').then(function(r){return r.text();}); }
+      async function reloadDoc(doc){
+        if(!docState[doc]) return;
+        const md=await fetchDoc(doc);
+        const st=docState[doc];
+        if(md===st.md) return;                   // spurious watch event, no content change
+        const prev=st.md, revised=prev!==null;
+        if(revised){
+          // A revised doc invalidates its anchors. Drop that doc's notes only,
+          // restore the decision bar, and diff old vs new for this round.
+          annotations.slice().forEach(function(a){ if(a.doc===doc){ if(a.kind==='note')unhighlight(a.id); annotations.splice(annotations.indexOf(a),1); } });
+          resetDecisionUI();
+        }
+        renderDocPane(doc,md); buildToc(); paint(); buildFilesIndex();
+        if(revised){ if(doc!==activeDoc)switchDoc(doc); showRevBar(lineDiff(prev,md),doc); }
+        else hideRevBar();
+      }
+      async function boot(){
+        let meta={dir:false,docs:['plan']};
+        try{ meta=await (await fetch('/api/docs')).json(); }catch(e){}
+        DIRMODE=!!meta.dir; docs=meta.docs||[];
+        // Accept-or-fix reviews hide the plan-only "Reject / don't build it"
+        // verdict: directory (spec) review always — a spec documents work already
+        // decided — and single-file review when the server was started with
+        // --no-reject (discovery's design stage).
+        if(DIRMODE||meta.noReject){ const rj=document.getElementById('btn-reject'); if(rj)rj.style.display='none'; }
+        if(DIRMODE){
+          document.getElementById('tree-filter').style.display='block';
+          const qEl=document.getElementById('tree-q');
+          qEl.oninput=function(){
+            const v=qEl.value;
+            if(v&&preFilterOpen===null) preFilterOpen=new Set(openFolders);   // snapshot on first keystroke
+            treeFilter=v;
+            if(!v&&preFilterOpen!==null){ openFolders=new Set(preFilterOpen); preFilterOpen=null;
+              if(activeDoc)seedOpen(activeDoc); }          // doc switched while filtered — keep its ancestors open
+            buildToc();
+          };
+          qEl.onkeydown=function(e){ if(e.key==='Escape'){ qEl.value=''; qEl.oninput(); qEl.blur(); } };
+        }
+        planEl.innerHTML='';
+        docs.forEach(function(d,i){
+          const pane=document.createElement('div'); pane.className='docpane'; pane.style.display='none';
+          planEl.appendChild(pane);
+          docState[d]={md:null,pane:pane,scroll:0,key:'d'+i,headings:[]};
+        });
+        for(let i=0;i<docs.length;i++){ const d=docs[i]; renderDocPane(d,await fetchDoc(d)); }
+        if(!DIRMODE||!docs.length) buildToc();   // DIRMODE: switchDoc below builds the tree once, seeded
+        paint();
+        if(docs.length) switchDoc(docs[0]);
+        buildFilesIndex();
+      }
+      try{const es=new EventSource('/api/events');es.onmessage=function(ev){
+        const m=String((ev&&ev.data)||''); const doc=m.indexOf('change:')===0?m.slice(7):docs[0];
+        reloadDoc(doc);
+      };}catch(e){}
+      boot();
+    </script>
+  </body>
+</html>

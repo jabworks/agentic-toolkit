@@ -1,6 +1,6 @@
 {
   "name": "docket",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Codex skills for file-based backlog management: a docket/ folder with never-reused item ids, capture and lifecycle via the record skill, grooming and pick-next via groom, a dependency-free CLI, a bundled MCP server, a self-contained HTML board, and a per-host health check.",
   "author": {
     "name": "jabworks"

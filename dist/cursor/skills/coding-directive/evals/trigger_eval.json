@@ -1,0 +1,18 @@
+[
+  { "query": "what's our convention for naming boolean props", "should_trigger": true, "expected_skill": "coding-directive" },
+  { "query": "does this component file follow my style guide", "should_trigger": true, "expected_skill": "coding-directive" },
+  { "query": "fix the import order in this file to match our convention", "should_trigger": true, "expected_skill": "coding-directive" },
+  { "query": "should this be an interface or a type in our codebase", "should_trigger": true, "expected_skill": "coding-directive" },
+  { "query": "set up prettier and tsconfig with my usual settings", "should_trigger": true, "expected_skill": "coding-directive" },
+  { "query": "lint bans nested ternaries here, rewrite this the way I'd want it", "should_trigger": true, "expected_skill": "coding-directive" },
+  { "query": "why do we ban default exports", "should_trigger": true, "expected_skill": "coding-directive" },
+  { "query": "make this file match house code style", "should_trigger": true, "expected_skill": "coding-directive" },
+  { "query": "review this component for style conformance", "should_trigger": true, "expected_skill": "coding-directive", "accept": ["code-review"] },
+  { "query": "adapt this generic skill template to my stack", "should_trigger": true, "expected_skill": "adapting-skills" },
+  { "query": "scaffold a new package the way we usually structure things", "should_trigger": true, "expected_skill": "adapting-skills" },
+  { "query": "run the end-of-task quality gates", "should_trigger": true, "expected_skill": "finalize" },
+  { "query": "add a search input to the header", "should_trigger": false, "expected_skill": null, "accept": ["workflow"] },
+  { "query": "why is the checkout page returning 500", "should_trigger": false, "expected_skill": null, "accept": ["root-cause-analysis"] },
+  { "query": "commit these changes", "should_trigger": true, "expected_skill": "git-commit" },
+  { "query": "update the npm packages to latest", "should_trigger": false, "expected_skill": null }
+]

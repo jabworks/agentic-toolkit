@@ -1,0 +1,21 @@
+[
+  { "query": "groom the backlog", "should_trigger": true, "expected_skill": "groom" },
+  { "query": "anything stale on the docket?", "should_trigger": true, "expected_skill": "groom" },
+  { "query": "check the ids", "should_trigger": true, "expected_skill": "groom" },
+  { "query": "what should I work on next?", "should_trigger": true, "expected_skill": "groom" },
+  { "query": "what's on the docket right now?", "should_trigger": true, "expected_skill": "groom", "accept": ["record"] },
+  { "query": "run the stale sweep", "should_trigger": true, "expected_skill": "groom" },
+  { "query": "found #18 still open but we shipped it last week", "should_trigger": true, "expected_skill": "groom", "accept": ["record"] },
+  { "query": "sanity-check the id space for dupes", "should_trigger": true, "expected_skill": "groom" },
+  { "query": "recommend what to tackle from the open board", "should_trigger": true, "expected_skill": "groom" },
+  { "query": "does the docket need grooming?", "should_trigger": true, "expected_skill": "groom" },
+  { "query": "any ghost work sitting open?", "should_trigger": true, "expected_skill": "groom" },
+  { "query": "close #14, it shipped", "should_trigger": true, "expected_skill": "record" },
+  { "query": "add a note to #3 about the flaky CI", "should_trigger": true, "expected_skill": "record" },
+  { "query": "capture this for later: migrate to pnpm", "should_trigger": true, "expected_skill": "record" },
+  { "query": "archive #21 with a verification note", "should_trigger": true, "expected_skill": "record" },
+  { "query": "groom the dog before the vet appointment", "should_trigger": false, "expected_skill": null },
+  { "query": "check the ids of these database rows for duplicates", "should_trigger": false, "expected_skill": null },
+  { "query": "clear the stale cache entries in redis", "should_trigger": false, "expected_skill": null },
+  { "query": "what's next on the meeting agenda?", "should_trigger": false, "expected_skill": null }
+]

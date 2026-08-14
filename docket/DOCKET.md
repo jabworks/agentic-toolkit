@@ -137,4 +137,13 @@ degrades, what's absent), plus a build decision on the trigger variant.
 Filed 2026-08-14 after the "are we compatible with cursor?" question — the
 honest answer was "advertised, never tested".
 
+### 28. Cursor follow-ups — toolkit-ops channel docs, docket-doctor cursor probe (2026-08-14)
+
+The Cursor channel shipped (docket #27): dist/cursor/skills via scripts/build-cursor.mjs, cursor-dist.test.mjs, docket installer cursor target (0.6.0), README/CLAUDE.md channel docs. Deliberately scoped out, same precedent as the OpenCode channel:
+
+1. toolkit-ops docs still describe three channels — toolkit-orientation (SKILL.md + references/porting.md), toolkit-plugin-reference, toolkit-foundry mention build-opencode/dist layout without the cursor tree. Refresh + toolkit-ops patch bump.
+2. docket-doctor probes Claude/Codex/OpenCode registrations but not ~/.cursor/mcp.json — add a cursor row mirroring the installer's target.
+
+Verification evidence for the shipped channel: .condux/verification/2026-08-14-cursor-channel/report.md. Upstream caveat to re-check before advertising global installs: vercel-labs/skills#421 (fix PR #464 unmerged as of 2026-08-14).
+
 ## Loose threads

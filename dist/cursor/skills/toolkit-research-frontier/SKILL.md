@@ -1,0 +1,161 @@
+---
+name: toolkit-research-frontier
+description: Use when planning improvement work on jabworks/agentic-toolkit itself — open problems (trigger-collision automation, YAML-strict frontmatter checks, docs-catalog enforcement), existing assets, the next three concrete steps, and the four-front library-health campaign with commands and success criteria. Triggers include "let's improve our toolkit", "let's improve this repo", "what should we improve next", "toolkit roadmap", "open problems", "run the health campaign".
+---
+
+# Toolkit Research Frontier
+
+## Purpose
+
+Keep improvement work on this toolkit honest: what is genuinely open, what already
+exists, what to do next, and how to know a result is real.
+
+## When to use
+
+- Choosing the next investment in this repo's tooling or skills.
+- Someone proposes "we should add a check for X" — verify X isn't already covered.
+- Executing or resuming the library-health campaign.
+
+## When not to use
+
+- Day-to-day authoring/shipping → `toolkit-foundry` + `toolkit-change-control`.
+- Fixing a live defect → `toolkit-debugging-playbook`.
+
+## Inputs required
+
+Current repo state (`node --test`, `git log --oneline -10`) — this skill's lists go
+stale precisely when the work it proposes gets done.
+
+## Assets already in place (do not re-propose)
+
+- `node --test` suite in CI: dist-mirror byte parity (bundle-aware), frontmatter
+  budgets/naming, marketplace + plugin.json validity, manifest pair parity,
+  condux agents mirror, plan-review no-egress, scaffold + annotate-server behavior.
+- `scripts/sync.sh` (multi-bundle target detection), `scripts/install-hooks.sh`.
+- The condux and toolkit-ops bundles; toolkit-foundry's authoring runbook.
+- Per-skill trigger evals under `skills/*/evals/` (23 skills, 398 queries) + the
+  trigger matrix and model-transfer eval under `distillation/` (2026-07-08 audit).
+- `scripts/eval-triggers.mjs` — live routing scorer (`claude -p` judge; baseline
+  76.0% recorded in `references/health-campaign.md` Front A3).
+
+## Open problems (verified open as of 2026-07-08)
+
+1. ~~Trigger-eval routing~~ — closed 2026-07-08 at **91.7%** (three-run
+   progression 76.0→85.8→91.7 in `references/health-campaign.md` Front A3).
+   Remaining: A4 collision automation, seeded by the 31 residual misses
+   (discovery↔session-handoff "resume" space is the strongest).
+2. ~~YAML-strict frontmatter validation~~ — closed 2026-08-05, **after the gap it
+   described shipped a fourth incident** (condux 2.9.1 failed to load in Codex).
+   Left open ~7 weeks as a backlog item; treat a documented gap in a
+   twice-shipped class as an incident with a pending date, not a nice-to-have.
+   Closed by two gates: `tests/frontmatter-canonical.test.mjs` (narrow grammar
+   via `scripts/check-frontmatter.mjs`, dependency-free, also gates `sync.sh`
+   and pre-commit) and `tests/frontmatter-yaml.test.mjs` (real strict `yaml`
+   parse). Deviates from the original prescription below — "dependency-free" was
+   kept for the gate that must run in a fresh clone, and a real parser was added
+   as the oracle, since a hand-rolled one cannot prove its own premise.
+3. ~~Docs-catalog enforcement~~ — closed 2026-07-09: `tests/docs-catalog.test.mjs`
+   fails CI when a marketplace plugin is missing from either catalog.
+4. ~~Trigger-collision automation~~ — closed 2026-07-09 as **falsified**: lexical
+   overlap scoring cannot reproduce the observed (semantic) collisions — 5%
+   recall vs the ≥80% criterion (`scripts/collision-scan.mjs --check` is the
+   record). Detection stays empirical: periodic eval runs + the flaky list.
+   **Reopened as a question 2026-08-09**: that result falsifies *n-grams*, not
+   semantic detection, which the preregistration never covered — see
+   `references/awesome-copilot-survey-2026-08-09.md` §1 for an upstream design
+   (semantic compare + a durable human accept-list) and docket #10 for the work.
+5. ~~Hook parity on clones~~ — closed 2026-07-08 as a warning; **re-closed
+   2026-08-05 as a hard failure**. Warn-only was defensible while the hook only
+   synced `dist/` (CI caught drift regardless). It stopped being defensible when
+   the hook became a frontmatter gate — and the warning had in fact been ignored:
+   the primary development clone had no hook at all. `tests/local-hooks.test.mjs`
+   now fails on a missing or stale hook, and skips under `CI`, where the workflow
+   runs the same checks directly. Lesson for any future warn-only guard: a
+   warning nobody acts on is data about the guard, not about the clone.
+
+## First three concrete steps
+
+1. A4 follow-up: work down the 31 residual eval misses empirically — periodic
+   `scripts/eval-triggers.mjs` runs plus targeted guard clauses for the strongest
+   collision spaces (discovery↔session-handoff "resume" first); lexical automation
+   is falsified, so this stays manual-with-evals.
+2. ~~Replace the frontmatter regex parse with a strict mini-YAML check~~ — done
+   2026-08-05 (open problem 2), as a canonical-grammar gate plus a real strict
+   parse rather than a mini-YAML implementation.
+3. Run the trigger evals against a weaker model to test transfer (the known
+   uncertainty below — needs owner confirmation on which model/harness).
+
+## You have a result when…
+
+- A command exists that fails CI when a trigger-eval query routes to the wrong skill.
+- `node --test` fails on an unquoted-`:` description (today it passes).
+- `node --test` fails when a registered plugin is absent from either catalog doc.
+- A fresh `git clone` + documented setup leaves no safety net uninstalled
+  (2026-07-08: README/CLAUDE.md notes + a warn test — which the primary clone
+  then ignored for four weeks; 2026-08-05: the local-hooks test fails instead).
+
+## The library-health campaign (five fronts)
+
+Full phased campaign — commands, expected observations, branch conditions, wrong paths
+fenced off, publish protocol, success criteria — lives in
+`references/health-campaign.md`. Fronts: A trigger precision, B manifest parity,
+C sync/publish automation, D docs staleness (all selected by the owner,
+2026-07-08; B–D substantially executed in the same audit), E contract adherence
+(added 2026-08-04 after the CP-1 menu-erosion miss — transcripts audited against
+what loaded skills *prescribe*, not just whether they fire).
+
+## External surveys
+
+How other public skill/plugin repos solve the same four problems (mirror
+integrity, registration, frontmatter parsing, collision detection). Read these
+before proposing machinery — prior art beats a fresh design, and the negative
+findings stop a re-investigation.
+
+- `references/awesome-copilot-survey-2026-08-09.md` — github/awesome-copilot
+  (MIT) and `@microsoft/vally` (MIT). Six findings, all tracked as docket
+  #10–#15: A4's falsification was lexical-only (#10), declared bundle
+  composition vs `sync.sh`'s hardcoded arms (#11), generated catalogs vs
+  asserted ones (#12), supply-chain lint on skill content (#13),
+  trajectory-based routing measurement (#14), three cheap validation checks
+  (#15). Includes what NOT to copy and what was checked and rejected.
+
+## Evidence required
+
+Before proposing any item as "open," verify it against the current test suite and
+scripts — this file's own lists are the first thing to distrust.
+
+## Output artifact
+
+An updated frontier list, or a campaign-front status report with evidence.
+
+## Common traps
+
+- Restating solved problems as gaps (dist drift and manifest validity/parity are
+  test-enforced now — proposing checks for them wastes a cycle).
+- Building the collision-automation moonshot before running the cheap static evals
+  that already exist.
+
+## Bad behavior this prevents
+
+Proposing "add a script that fails when skills/ and dist/ diverge" — that script has
+existed since `d4118ae` (tests/dist-mirror.test.mjs; the invariant suite grew again at
+`eb2b5b5`, and CI runs it all). The assets list makes already-solved problems visibly
+solved.
+
+## Related skills
+
+`toolkit-change-control` (shipping campaign outputs), `toolkit-skill-standards`
+(collision discipline the automation would mechanize), `toolkit-failure-archaeology`
+(incidents that motivate each front).
+
+## Provenance and maintenance
+
+Re-verify volatile claims with:
+- `node --test` — what's currently enforced
+- `ls skills/*/evals/ 2>/dev/null` — which skills carry trigger evals
+- `git log --oneline -10` — whether a frontier item has since been done
+
+Last generated: 2026-07-08 (steps/counts refreshed 2026-08-04)
+Known uncertainty:
+- No weaker-model eval run has happened yet; trigger-eval quality is untested against
+  a real model (owner-confirmation-needed for which model/harness to use).
