@@ -9,6 +9,14 @@ Stale open markers cost real sessions — closing means moving.
 
 ## Committed
 
+### 29. Agent Plugins spec conformance — root plugin.json for every dist plugin (2026-08-14)
+
+Cursor supports the open agent-plugins.org standard: "spec-conformant plugins with a plugin.json manifest at the plugin root, packaging skills and MCP servers... loads in Cursor without changes" (cursor.com/docs/plugins). Our dist plugins carry only .claude-plugin/ and .codex-plugin/ manifests — not conformant. Adding a root plugin.json (schema https://agent-plugins.org/schemas/1.0.0/plugin.schema.json) makes every plugin loadable in Cursor directly (~/.cursor/plugins/local, team marketplaces, cursor.com/marketplace submission) and portable to other spec hosts.
+
+Scope: root plugin.json per dist plugin (generated, not hand-maintained — pair with the existing manifests via sync), manifest-parity coverage for the third manifest, check the spec's expectations for skills/ layout and mcp.json vs docket's .mcp.json. Hooks/rules stay out — those are Cursor-Plugin-format components.
+
+Origin: 2026-08-14 Cursor-channel session — the docs check that corrected "Cursor reads Claude Code plugin format" (undocumented import) to "Cursor supports Agent Plugins" (documented standard).
+
 ## Someday
 
 ### 7. Spec MCP server — revisit when specs gain write-side invariants (2026-08-05)

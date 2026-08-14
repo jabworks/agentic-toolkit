@@ -55,12 +55,12 @@ function firstExisting(candidates) {
 function findMachinery(file) {
   return firstExisting([
     path.join(SKILL_BASE, '..', 'record', 'server', file),
-    path.join(SKILL_BASE, '..', '..', '..', 'server', file),
+    path.join(SKILL_BASE, '..', '..', 'server', file),
     path.join(SKILL_BASE, 'server', file),
   ]);
 }
 
-const PLUGIN_ROOT = path.resolve(SKILL_BASE, '..', '..', '..');
+const PLUGIN_ROOT = path.resolve(SKILL_BASE, '..', '..');
 
 function detectHosts() {
   const configHome = process.env.XDG_CONFIG_HOME || path.join(HOME, '.config');

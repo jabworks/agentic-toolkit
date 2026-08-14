@@ -1,0 +1,18 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "git-commit",
+  "version": "1.1.0",
+  "description": "Craft a conventional-commit message from the diff and run the commit safely: review before staging, no blind `git add .`, multiline bodies via -F, branch check first.",
+  "author": {
+    "name": "jabworks"
+  },
+  "repository": "https://github.com/jabworks/agentic-toolkit",
+  "license": "MIT",
+  "keywords": [
+    "git",
+    "commit",
+    "conventional-commits",
+    "staging",
+    "vcs"
+  ]
+}

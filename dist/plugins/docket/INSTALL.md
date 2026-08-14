@@ -39,7 +39,7 @@ a failure, and neither is omitted from the report.
 ## Verify
 
 ```bash
-node skills/docket/docket-doctor/doctor.mjs
+node skills/docket-doctor/doctor.mjs
 ```
 
 The doctor is the standing version of the installer's verify step: it probes the

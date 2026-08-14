@@ -61,7 +61,7 @@ gone.
 ## Verify
 
 ```bash
-node skills/condux/condux-doctor/doctor.mjs
+node skills/condux-doctor/doctor.mjs
 ```
 
 The doctor reports what is still registered on each host. After a successful

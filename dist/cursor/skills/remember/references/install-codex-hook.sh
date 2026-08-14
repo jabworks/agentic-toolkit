@@ -23,7 +23,7 @@ SKILL_DIR=$(cd "$SCRIPT_DIR/.." && pwd)
 RECALL="$SKILL_DIR/bin/recall.mjs"
 CAPTURE="$SKILL_DIR/bin/capture.mjs"
 # concord-doctor is this skill's sibling in every tree — skills/concord-doctor/
-# in the source repo, skills/concord/concord-doctor/ in a plugin install. It may
+# in the source repo and in a plugin install alike (bundles ship flat). It may
 # legitimately be missing: `npx skills add` ships bare skill trees, so verify
 # falls back to reading the registration back rather than requiring it.
 DOCTOR="$SKILL_DIR/../concord-doctor/doctor.mjs"

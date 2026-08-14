@@ -75,6 +75,11 @@ test('nothing undeclared exists at any plugin root in dist/', () => {
       fs.existsSync(pluginSrc) ? fs.readdirSync(pluginSrc) : [],
     );
     pluginFiles.add('LICENSE');
+    // Root plugin.json is the generated Agent Plugins manifest
+    // (scripts/generate-agent-manifests.mjs, byte-guarded by
+    // tests/agent-plugins.test.mjs) — the one root file with a generator,
+    // not a plugins/<name>/ source.
+    pluginFiles.add('plugin.json');
 
     for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
       if (entry.isDirectory()) {

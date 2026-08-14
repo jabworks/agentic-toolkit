@@ -12,13 +12,61 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## toolkit-ops 1.7.0 — 2026-08-14
+
+- feat(plugins): Agent Plugins spec conformance across all 12 plugins
+
 ## toolkit-ops 1.6.4 — 2026-08-14
 
 - feat(build): declare plugin composition as data, generate the catalogs (#64)
 
+## spec-browser 1.1.0 — 2026-08-14
+
+- feat(plugins): Agent Plugins spec conformance across all 12 plugins
+
+## session-report 1.8.0 — 2026-08-14
+
+- feat(plugins): Agent Plugins spec conformance across all 12 plugins
+
+## session-handoff 1.7.0 — 2026-08-14
+
+- feat(plugins): Agent Plugins spec conformance across all 12 plugins
+
+## release 1.3.0 — 2026-08-14
+
+- feat(plugins): Agent Plugins spec conformance across all 12 plugins
+
+## git-operations 1.1.0 — 2026-08-14
+
+- feat(plugins): Agent Plugins spec conformance across all 12 plugins
+
+## git-commit 1.1.0 — 2026-08-14
+
+- feat(plugins): Agent Plugins spec conformance across all 12 plugins
+
+## docket 0.7.0 — 2026-08-14
+
+- feat(plugins): Agent Plugins spec conformance across all 12 plugins
+
 ## docket 0.6.0 — 2026-08-14
 
 - feat(cursor): fourth distribution channel + docket cursor target
+
+## condux 2.16.0 — 2026-08-14
+
+- feat(plugins): Agent Plugins spec conformance across all 12 plugins
+
+## concord 0.5.0 — 2026-08-14
+
+- feat(plugins): Agent Plugins spec conformance across all 12 plugins
+
+## coding-directive 1.2.0 — 2026-08-14
+
+- feat(plugins): Agent Plugins spec conformance across all 12 plugins
+
+## adapting-skills 1.4.0 — 2026-08-14
+
+- feat(plugins): Agent Plugins spec conformance across all 12 plugins
 
 ## session-report 1.7.0 — 2026-08-13
 

@@ -16,14 +16,14 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const SKILL_BASE = path.dirname(fileURLToPath(import.meta.url));
-const PLUGIN_ROOT = path.resolve(SKILL_BASE, '..', '..', '..');
+const PLUGIN_ROOT = path.resolve(SKILL_BASE, '..', '..');
 const HOME = os.homedir();
 const EXEC_TIMEOUT = 5000;
 const EVENTS = ['SessionStart', 'UserPromptSubmit', 'SessionEnd'];
 
 // One candidate covers every tree: the memory skill is always this doctor's
-// sibling — skills/remember/ in the source tree, skills/concord/remember/ in a
-// plugin install.
+// sibling — skills/remember/ in the source tree and in a plugin install alike
+// (bundle skills ship flat since the Agent Plugins conformance change).
 const SKILL_DIR = path.resolve(SKILL_BASE, '..', 'remember');
 
 const USAGE = `usage: doctor [options]
