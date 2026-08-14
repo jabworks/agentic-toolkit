@@ -55,85 +55,6 @@ reads as though collision automation is a dead end in general.
 
 Found 2026-08-09 surveying awesome-copilot's maintenance machinery.
 
-### 11. Declare bundle composition as data instead of if-arms in sync.sh (2026-08-09)
-
-`scripts/sync.sh:55-114` decides what goes where using two mechanisms that both
-fail quietly:
-
-1. **Bundle membership is inferred by probing the build artifact** —
-   `if [[ -d "$DIST_DIR/$p/skills/$p/$name" ]]` walks `dist/plugins/*/` looking
-   for an existing directory. So `dist/` is partly its own source of truth, and
-   a skill whose dist target does not exist yet prints `SKIP` and syncs nothing.
-2. **Plugin-level dirs are three hardcoded name equality checks** —
-   `subagent-execution -> condux/agents`, `workflow -> condux/hooks`,
-   `record -> docket/server`. Each carries a comment admitting it is a repeat of
-   the `6ba6572` blind spot, and `hooks/` stayed hand-maintained in `dist/`
-   until 2026-08-05 anyway.
-
-Current doctrine — "every out-of-tree mirror target needs its own sync step AND
-its own test" — is a discipline fix for something that wants to be a data fix.
-
-Upstream precedent: `github/awesome-copilot`, `eng/materialize-plugins.mjs`
-(MIT). Their `plugin.json` carries a composition manifest listing repo-relative
-sources (`extensions["com.github.awesome-copilot"].{agents,skills,hooks,commands}`);
-the build resolves each entry, copies it, then projects the manifest down to a
-spec-field allow-list so build-only fields never reach the served manifest.
-Adding a new plugin-level dir there is a data edit, not a code edit plus a
-remembered bespoke test.
-
-**Do not copy the other half.** Verified from their git tree: `plugins/` holds
-only `plugin.json` + `README.md` (92 of each) and **zero materialized content is
-committed** — it is assembled at publish time and removed by
-`clean-materialized-plugins.mjs`. Our three install channels read committed
-trees (`npx skills add` <- `skills/`, marketplace <- `dist/plugins/`, OpenCode
-<- `dist/opencode/`), so `dist/` stays committed and `dist-mirror.test.mjs`
-keeps guarding it byte-for-byte. Only the declaration transfers.
-
-Decide before writing code:
-
-- where the declaration lives — inside each `plugin.json` (one file, but adds a
-  non-spec field both hosts must tolerate) or a sibling `composition.json`
-- whether one generic "every declared source->dest pair is mirrored, and no
-  undeclared dir exists in dist" test replaces the three bespoke mirror tests
-  (`condux-hooks.test.mjs`, the agents check in `skill-invariants.test.mjs`,
-  `docket-server.test.mjs`) or runs alongside them
-
-Touches every plugin manifest and `dist/`, so it runs through the
-toolkit-change-control gate.
-
-Found 2026-08-09 surveying awesome-copilot's maintenance machinery.
-
-### 12. Generate marketplace.json and the README catalogs instead of testing them (2026-08-09)
-
-We hand-maintain `.claude-plugin/marketplace.json` and the plugin catalogs in
-`README.md` / `CLAUDE.md`, then assert completeness after the fact —
-`docs-catalog.test.mjs` fails when a marketplace plugin is missing from a
-catalog, and `skill-invariants.test.mjs` checks the marketplace paths resolve on
-disk.
-
-Validating catches the omission; generating makes it unrepresentable. "Missed
-registration" is already a named entry in the failure ledger
-(`skills/toolkit-failure-archaeology/`), and everything in those files is
-derivable from `plugin.json` plus the skills tree.
-
-Upstream precedent (MIT): `eng/generate-marketplace.mjs` builds the marketplace
-from `plugins/*/plugin.json` — name, description, version, source path — sorted
-case-insensitively, as part of `npm run build`. `eng/update-readme.mjs` (36 KB)
-generates the README and the `docs/README.*.md` catalogs the same way; their
-skills catalog is 207 KB and entirely generated.
-
-Caveat that shapes the design: marketplace descriptions were deliberately
-allowed to diverge from their SKILL.md descriptions (ratified by-design
-2026-08-04, PR #16). A generator must take that divergence as declared input —
-a per-plugin marketplace-description field — rather than flattening the two back
-together. Getting this wrong silently reverts a ratified decision.
-
-Sequencing note: this shares a source of truth with #11. If the composition
-manifest lands first, the generator reads it; if this lands first, it will want
-the same data and the two should be designed together.
-
-Found 2026-08-09 surveying awesome-copilot's maintenance machinery.
-
 ### 14. Price a trajectory-based routing eval against the judge-prompt harness (2026-08-09)
 
 `scripts/eval-triggers.mjs` renders the live skill catalog into a prompt and
@@ -185,5 +106,35 @@ at design time: standalone skill vs a section grown inside `git-operations`
 vocabulary — "worktree", "parallel checkout", "agent sandbox tree").
 
 Filed 2026-08-13 mid-#22 (unrelated to that change).
+
+### 27. Cursor compatibility — verify the skills channel, decide on a trigger-variant build (2026-08-14)
+
+README claims Cursor support via `npx skills add` (the vercel-labs CLI
+auto-detects the host), but no Cursor install has ever been verified
+end-to-end. Two open questions:
+
+1. **Does the skills channel actually work on Cursor?** Install the toolkit
+   into a real Cursor setup and check the skills land, load, and trigger.
+
+2. **Does Cursor surface `when_to_use`?** Condux-style skills carry their
+   trigger conditions in `when_to_use` frontmatter. OpenCode only surfaces
+   `description`, which is why `dist/opencode/skills/` exists (build folds
+   `when_to_use` into `description`, 1024-char cap). If Cursor has the same
+   constraint, it needs the same treatment — likely a `dist/cursor/` variant
+   out of `scripts/build-opencode.mjs` generalized, or reuse of the OpenCode
+   tree if the caps align.
+
+What Cursor will NOT get regardless (host-feature gaps, document rather than
+build): the condux SessionStart routing hook (routing falls back to catalog
+inference, ~80% in evals), plan-review's ExitPlanMode/Codex Stop hooks, named
+agents. Docket's MCP server could work on Cursor via a manual mcp.json entry —
+the installer only targets Claude Code/Codex/OpenCode today; the dependency-
+free CLI fallback (degrade-ladder rung 2) should work as-is.
+
+Outcome shape: a verified compatibility row in README (what works, what
+degrades, what's absent), plus a build decision on the trigger variant.
+
+Filed 2026-08-14 after the "are we compatible with cursor?" question — the
+honest answer was "advertised, never tested".
 
 ## Loose threads
