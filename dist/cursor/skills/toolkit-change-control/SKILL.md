@@ -35,13 +35,13 @@ Gate every change to this toolkit through classification → checklist → evide
 | Class | Touches | Version bump |
 |---|---|---|
 | New standalone skill | `skills/<n>/`, `dist/plugins/<n>/**`, marketplace.json | new plugin at 1.0.0 |
-| New bundle-member skill | `skills/<n>/`, `dist/plugins/<bundle>/skills/<bundle>/<n>/`, bundle manifests | bundle minor |
+| New bundle-member skill | `skills/<n>/`, `dist/plugins/<bundle>/skills/<n>/`, bundle manifests | bundle minor |
 | Skill edit | `skills/<n>/` + its dist mirror (via sync) | owning plugin patch (minor if new capability) |
 | Manifest-only fix | both `dist/plugins/<p>/.{claude,codex}-plugin/plugin.json` | patch |
 | Marketplace-only fix | `.claude-plugin/marketplace.json` | none (no version field there) |
 | Doc-only fix | README.md / CLAUDE.md / skill README.md | none, unless the doc ships inside a plugin (then patch) |
 | Dist-only resync | `dist/` via `scripts/sync.sh` | none — but ask WHY it drifted first |
-| Retired skill | remove `skills/<n>/`, its dist tree (standalone: whole `dist/plugins/<n>/`; bundle-member: its subdir), its marketplace entry (standalone only), then `bash scripts/sync.sh` to regenerate the OpenCode + package trees | standalone: entry gone, no bump target; bundle-member: bundle **major** (an installed skill disappearing is a breaking change to the install surface) |
+| Retired skill | remove `skills/<n>/`, its dist tree (standalone: whole `dist/plugins/<n>/`; bundle-member: its subdir), its marketplace entry (standalone only), then `bash scripts/sync.sh` to regenerate the OpenCode, Cursor, and package trees | standalone: entry gone, no bump target; bundle-member: bundle **major** (an installed skill disappearing is a breaking change to the install surface) |
 
 **Rules that override everything:** `skills/` is the only editable skill source;
 `dist/` skill trees are generated (edit manifests only). Version bumps go in **both**

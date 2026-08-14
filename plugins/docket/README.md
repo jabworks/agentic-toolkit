@@ -68,8 +68,8 @@ hand — that is where half-moves come from.
 The skills work with nothing installed: they fall back to
 `node <skill-base>/server/docket.mjs`, which needs only Node. Registering the bundled
 MCP server removes the per-operation shell prompts, and `server/install.sh` (or the
-agent-followable `server/INSTALL.md`) does that for Codex and OpenCode — Claude Code
-gets it from the shipped `.mcp.json` automatically.
+agent-followable `server/INSTALL.md`) does that for Codex, OpenCode and Cursor —
+Claude Code gets it from the shipped `.mcp.json` automatically.
 
 `docket.mjs browse` renders the whole board to a self-contained HTML file with no
 network access, and `--serve` live-reloads it.

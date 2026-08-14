@@ -20,9 +20,9 @@ const EXEC_TIMEOUT = 5000;
 
 const USAGE = `usage: doctor [options]
 
-  --host <claude|codex|opencode>   probe one host only
-  --fix                            run the installer for anything broken
-  --quiet                          print only broken and absent rows
+  --host <claude|codex|opencode|cursor>   probe one host only
+  --fix                                   run the installer for anything broken
+  --quiet                                 print only broken and absent rows
 `;
 
 function parseFlags(argv) {
@@ -68,6 +68,7 @@ function detectHosts() {
     claude: path.join(HOME, '.claude'),
     codex: path.join(HOME, '.codex'),
     opencode: path.join(configHome, 'opencode'),
+    cursor: path.join(HOME, '.cursor'),
   };
 
   return Object.fromEntries(
@@ -230,6 +231,52 @@ function probeOpencode(hosts, installer) {
   return probeRegisteredServer('opencode', registered, installer);
 }
 
+// Cursor reads ~/.cursor/mcp.json with the standard mcpServers shape — the same
+// file and key install.sh writes. A project-level .cursor/mcp.json wins on name
+// collision but stays hand-written, so it is deliberately not probed here.
+//
+// On WSL the Windows-side Cursor has its own home, so a ~/.cursor in THIS
+// filesystem may simply not exist while Cursor works fine. That is why the
+// no-dir case reports `absent` with the reason rather than `broken` — same
+// judgement install.sh makes, and guessing Windows paths would be worse.
+function probeCursor(hosts, installer) {
+  if (!hosts.cursor) {
+    return {
+      host: 'cursor',
+      status: 'absent',
+      detail: 'no ~/.cursor in this filesystem (expected on WSL — Cursor runs Windows-side with its own home)',
+    };
+  }
+
+  const config = path.join(hosts.cursor, 'mcp.json');
+  const unregistered = {
+    host: 'cursor',
+    status: 'absent',
+    detail: 'not registered — the skills fall back to the bundled CLI',
+    fix: installer,
+  };
+
+  if (!fs.existsSync(config)) return unregistered;
+
+  const { value, error } = readJson(config);
+  if (error) return { host: 'cursor', status: 'broken', detail: `mcp.json is unparseable: ${error}`, fix: installer };
+
+  const entry = value?.mcpServers?.docket;
+  if (!entry) return unregistered;
+
+  // No `enabled === false` check here, unlike probeOpencode — deliberate.
+  // Cursor's McpServerConfig has no such field (verified against
+  // cursor.com/docs/reference/plugins + /sdk/typescript, 2026-08-14): disabling
+  // is out-of-band, via the Customize sidebar toggle or `agent mcp disable`,
+  // which edits a local approved list rather than mcp.json. So a server
+  // disabled in the UI still reads as registered here. Stated in SKILL.md
+  // under "What it cannot prove" rather than guessed at.
+  const registered = Array.isArray(entry.args) ? entry.args[0] : null;
+  if (!registered) return { host: 'cursor', status: 'broken', detail: 'mcpServers.docket has no server path in its args', fix: installer };
+
+  return probeRegisteredServer('cursor', registered, installer);
+}
+
 // Rung 2 of the dependency ladder. It has to hold even when every MCP
 // registration above is absent, because that is the fallback the skills
 // document — and the documented path does not resolve in every install tree.
@@ -374,6 +421,7 @@ function collect(flags) {
     ['claude', () => probeClaude(hosts, installer)],
     ['codex', () => probeCodex(hosts, installer)],
     ['opencode', () => probeOpencode(hosts, installer)],
+    ['cursor', () => probeCursor(hosts, installer)],
   ];
 
   const rows = perHost.filter(([host]) => !only || host === only).map(([, probe]) => probe());

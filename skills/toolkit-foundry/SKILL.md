@@ -31,21 +31,27 @@ skills/<name>/
     package.json        # Only if references/ ships .js — see "CommonJS scripts"
 ```
 
-One source, three generated distributions — `scripts/sync.sh` produces all of them:
+One source, four generated distributions — `scripts/sync.sh` produces all of them:
 
 | Generated tree | Channel | Layout |
 |---|---|---|
 | `dist/plugins/<name>/skills/<name>/` | `/plugin install` (marketplace) | mirrors `skills/<name>/` byte-for-byte |
 | `dist/opencode/skills/<name>/` | OpenCode | same files, but `SKILL.md` has `when_to_use` folded into `description` |
+| `dist/cursor/skills/<name>/` | Cursor (2.4+) | the same fold, emitted to its own tree by `scripts/build-cursor.mjs` |
 | `packages/condux-opencode/agents/` | `@jabworks/condux` on npm | translated from `skills/subagent-execution/agents/*.md` |
 | `packages/condux-opencode/skills/` | `@jabworks/condux` on npm | the 13 condux skills, byte-identical to their `dist/opencode/skills/` form |
 
-`npx skills add` is the fourth channel and needs no generation — it installs from
+`npx skills add` is the remaining channel and needs no generation — it installs from
 top-level `skills/` directly and ignores everything above.
 
-Bundle-member skills mirror to `dist/plugins/<bundle>/skills/<bundle>/<name>/` instead
-(e.g. the condux and toolkit-ops bundles). The OpenCode tree is flat — one dir per
-skill, no bundle nesting, no manifests.
+**Every skills tree is flat — one dir per skill, no bundle nesting.** A
+bundle-member skill mirrors to `dist/plugins/<bundle>/skills/<name>/`, the same
+depth as a standalone plugin's own skill. This changed on 2026-08-14 with Agent
+Plugins conformance (docket #29): the spec discovers skills only as immediate
+children of `skills/`, never recursively, so the old
+`dist/plugins/<bundle>/skills/<bundle>/<name>/` nesting hid every bundle member
+from spec-conformant clients. `tests/agent-plugins.test.mjs` now pins depth one.
+The OpenCode and Cursor trees were always flat, and carry no manifests.
 
 **Never edit a generated tree directly.** Edit `skills/`, then sync.
 
@@ -151,15 +157,17 @@ regenerates `marketplace.json` and the doc catalog blocks. Run without
 arguments to sync everything. A skill missing from the declaration is a hard
 error, so step 4 must land first.
 
-Either way it then runs `node scripts/build-opencode.mjs`, which regenerates
-**all** of `dist/opencode/skills/`, `packages/condux-opencode/agents/`, and
-`packages/condux-opencode/skills/` from scratch (the last two are `rm -rf`'d
-first) — one command covers every generated tree, so never invoke the pieces
-separately expecting different results, and never hand-edit any of the three.
+Either way it then runs both variant builds. `node scripts/build-opencode.mjs`
+regenerates **all** of `dist/opencode/skills/`, `packages/condux-opencode/agents/`,
+and `packages/condux-opencode/skills/` from scratch (the last two are `rm -rf`'d
+first); `node scripts/build-cursor.mjs` regenerates `dist/cursor/skills/` the same
+way, importing the fold transform from the OpenCode script rather than duplicating
+it. One `sync.sh` covers every generated tree, so never invoke the pieces
+separately expecting different results, and never hand-edit any of the four.
 
 A brand-new skill that step 4 has not declared fails the sync outright (the
 old behavior — a silent `SKIP` — is exactly the quiet failure the declaration
-replaced). The OpenCode build has no such gate — it picks up every dir under
+replaced). Neither variant build has such a gate — both pick up every dir under
 `skills/` unconditionally.
 
 ### 6. Verify
@@ -174,6 +182,8 @@ Runs the invariant suite. What each file guards:
 |---|---|
 | `dist-mirror` | `dist/plugins/` skill trees match `skills/` byte-for-byte |
 | `opencode-dist` | `dist/opencode/skills/` + `packages/condux-opencode/agents/` match the build script's output; merged descriptions within OpenCode's 1024-char cap; the plugin loads and never clobbers user-defined agents |
+| `cursor-dist` | `dist/cursor/skills/` matches `build-cursor.mjs` output; no orphaned dirs; `when_to_use` never survives; frontmatter `name` == folder (Cursor requires it); merged descriptions ≤ 1024 chars |
+| `agent-plugins` | each plugin's root `plugin.json` matches the generator and stays inside the spec's closed schema; every skill sits at `skills/` depth one; docket's spec `mcp.json` keeps the spec dialect |
 | `composition` | every pair `composition.json` declares mirrors byte-for-byte; nothing undeclared in any `dist/plugins/` root; marketplace.json + doc catalog blocks match the generator |
 | `skill-invariants` | frontmatter budgets, kebab-case `name` == dir, marketplace/plugin paths resolve, plan-review no-egress |
 | `plugin-manifests` | `plugin.json` / `marketplace.json` validity, `./`-prefixed paths |
@@ -204,8 +214,9 @@ git push origin main
 ```
 
 Stage `dist/` as a whole, not `dist/plugins/<name>/` — the sync regenerated
-`dist/opencode/` too, and leaving it out ships a drifted tree that
-`opencode-dist.test.mjs` fails on. `packages/` is usually clean for a brand-new
+`dist/opencode/` and `dist/cursor/` too, and leaving either out ships a drifted
+tree that `opencode-dist.test.mjs` / `cursor-dist.test.mjs` fails on.
+`packages/` is usually clean for a brand-new
 skill (only agent-source edits dirty it), but staging it costs nothing and keeps
 this command identical to the update flow below.
 
@@ -213,7 +224,7 @@ this command identical to the update flow below.
 
 ```bash
 # 1. Edit skills/<name>/ files
-# 2. Sync (mirrors dist/plugins, regenerates dist/opencode + package agents)
+# 2. Sync (mirrors dist/plugins, regenerates dist/opencode + dist/cursor + package agents)
 bash scripts/sync.sh <name>
 # 3. Verify
 node --test
@@ -293,8 +304,8 @@ Two independent version schemes — don't confuse them:
 | Plugins (`condux`, `toolkit-ops`, standalone skills) | `version` in **both** paired plugin manifests, kept identical | hand-edited |
 | `@jabworks/condux` | `packages/condux-opencode/package.json` | changesets only — never by hand |
 
-`marketplace.json` entries carry no version field, and the OpenCode skill tree has
-no version at all — it refreshes with the repo.
+`marketplace.json` entries carry no version field, and neither variant skill tree
+(`dist/opencode/`, `dist/cursor/`) has a version at all — both refresh with the repo.
 
 For plugins, short form: breaking install path = major, new skill/capability =
 minor, anything else that ships = patch. The full bump policy — and the
@@ -325,7 +336,8 @@ in this repo's marketplace.json).
 | Editing `dist/` directly | Edit `skills/`, then `bash scripts/sync.sh <name>` |
 | Editing `packages/condux-opencode/agents/` | Generated too — edit `skills/subagent-execution/agents/`, then sync |
 | Forgetting to sync after edits | Run `bash scripts/sync.sh` — the pre-commit hook does it only if installed (`bash scripts/install-hooks.sh`); never assume it's present |
-| Staging only `dist/plugins/` after a sync | Stage `dist/` and `packages/` — the same sync regenerated the OpenCode tree and the package agents |
+| Staging only `dist/plugins/` after a sync | Stage `dist/` and `packages/` — the same sync regenerated the OpenCode tree, the Cursor tree, and the package agents |
+| Pointing a Cursor install at top-level `skills/` | Use `dist/cursor/skills/` — Cursor never reads `when_to_use`, so raw source skills load with a thin trigger and fail silently |
 | Committing a condux change straight to `main` | Branch first — a push to `main` arms the release, so main-first collapses review and release into one irreversible step |
 | Shipping a `packages/` change with no changeset | Run `pnpm changeset` and commit the `.changeset/*.md` with the change, or nothing publishes |
 | Assuming an agent-wording tweak needs no changeset | It regenerates `packages/condux-opencode/agents/`, which is published — it does |
