@@ -1,5 +1,15 @@
 # @jabworks/condux
 
+## 0.9.1
+
+### Patch Changes
+
+- [#68](https://github.com/jabworks/agentic-toolkit/pull/68) [`8688e5b`](https://github.com/jabworks/agentic-toolkit/commit/8688e5b8dc5567f9756547a1ded33822bbda37e7) Thanks [@vi-hieu](https://github.com/vi-hieu)! - Flat bundle layout ripple: the condux-doctor now resolves its plugin root at
+  `../..` (bundles ship skills flat for Agent Plugins conformance) and the
+  workflow Codex hooks reference `skills/plan-review/...` instead of
+  `skills/condux/plan-review/...`. No behavior change on OpenCode installs —
+  the bundled skills tree was already flat there.
+
 ## 0.9.0
 
 ### Minor Changes
