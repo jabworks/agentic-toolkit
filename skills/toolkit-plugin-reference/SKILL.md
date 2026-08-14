@@ -1,6 +1,6 @@
 ---
 name: toolkit-plugin-reference
-description: Use when writing or editing plugin.json, marketplace.json, or package manifests in jabworks/agentic-toolkit and the exact schema matters — required fields, the .claude-plugin/.codex-plugin pairing and where it diverges (interface, hooks), the skills-path form, how the three install channels consume the repo, and which SKILL.md frontmatter fields are real. Triggers include "what fields does plugin.json need", "claude vs codex manifest", "marketplace entry format", "how opencode loads skills".
+description: Use when writing or editing plugin.json, marketplace.json, or package manifests in jabworks/agentic-toolkit and the exact schema matters — required fields, the .claude-plugin/.codex-plugin pairing and where it diverges (interface, hooks), the skills-path form, how the four install channels consume the repo, and which SKILL.md frontmatter fields are real. Triggers include "what fields does plugin.json need", "claude vs codex manifest", "marketplace entry format", "how opencode loads skills".
 ---
 
 # Toolkit Plugin Reference
@@ -15,7 +15,7 @@ repo** — nothing generic, nothing unverified.
 - Writing or editing any `plugin.json` (either variant), `marketplace.json`, or
   `packages/condux-opencode/package.json`.
 - Deciding whether a field difference between the two manifests is a bug or by design.
-- Explaining how the three install channels consume this repo.
+- Explaining how the four install channels consume this repo.
 
 ## When not to use
 
@@ -27,8 +27,9 @@ repo** — nothing generic, nothing unverified.
 ## Inputs required
 
 The plugin/manifest in question, plus `tests/plugin-manifests.test.mjs`,
-`tests/manifest-parity.test.mjs`, and — for the OpenCode channel and the npm
-package — `tests/opencode-dist.test.mjs` as the executable source of truth.
+`tests/manifest-parity.test.mjs`, and — for the two variant channels and the npm
+package — `tests/opencode-dist.test.mjs` and `tests/cursor-dist.test.mjs` as the
+executable source of truth.
 
 ## Procedure — the schema facts
 
@@ -82,33 +83,44 @@ entry's `description` is storefront copy for the `/plugin` picker; the
 plugin.json `description` is install metadata and may carry platform wording.
 They are not kept in sync and no test enforces parity — don't "fix" the drift.
 
-### The three install channels
+### The four install channels
 
 | Channel | Reads | Ignores |
 |---|---|---|
 | `npx skills add jabworks/agentic-toolkit` (vercel-labs/skills) | top-level `skills/<name>/SKILL.md` | `dist/`, all manifests |
-| `/plugin install <name>@jabworks-agentic-toolkit` | `marketplace.json` → `source` → the dist plugin dir → its manifest → its `skills` path | `skills/`, `dist/opencode/` |
+| `/plugin install <name>@jabworks-agentic-toolkit` | `marketplace.json` → `source` → the dist plugin dir → its manifest → its `skills` path | `skills/`, `dist/opencode/`, `dist/cursor/` |
 | OpenCode | `dist/opencode/skills/<name>/SKILL.md` | every manifest in the repo |
+| Cursor (2.4+, native SKILL.md) | `dist/cursor/skills/<name>/SKILL.md` | every manifest in the repo |
 
-Consequence: a broken manifest is invisible to two of the three channels — test each
+Consequence: a broken manifest is invisible to three of the four channels — test each
 channel's own inputs, never infer one from another.
 
-### OpenCode (`dist/opencode/`, generated)
+### The variant trees (`dist/opencode/` and `dist/cursor/`, both generated)
 
-No manifest exists or is read. The host surfaces **`description` only** in its
-`<available_skills>` listing and ignores unknown frontmatter, so
-`scripts/build-opencode.mjs` folds `when_to_use` into `description` and drops the
-field; everything else copies byte-for-byte. Two hard limits follow:
+No manifest exists or is read on either host. Both surface **`description` only**
+and ignore unknown frontmatter, so both builds fold `when_to_use` into
+`description` and drop the field; everything else copies byte-for-byte.
+`scripts/build-cursor.mjs` imports the fold (`transformSkill`, `copyTransformed`)
+from `scripts/build-opencode.mjs` — one transform, two output trees, so the
+trees cannot drift from each other until a host deliberately diverges. Hard
+limits:
 
-- The **merged** `description` must fit OpenCode's 1024-char cap
-  (`tests/opencode-dist.test.mjs` enforces it). A skill can pass the 500-char
-  source budget and still blow this — check both after editing either field.
+- The **merged** `description` must fit the 1024-char cap on both hosts
+  (`tests/opencode-dist.test.mjs` and `tests/cursor-dist.test.mjs` each enforce
+  it). A skill can pass the 500-char source budget and still blow this — check
+  after editing either field.
 - Only the skill's own top-level `SKILL.md` is transformed. A nested `SKILL.md`
   (eval fixture under `references/` or `evals/`) is data and copies verbatim.
+- **Cursor only:** frontmatter `name` must equal the skill's folder name.
+  Already guaranteed repo-wide by `tests/skill-invariants.test.mjs`, but a
+  rename that slipped past it would fail on Cursor alone.
+- Never point Cursor at top-level `skills/` — it never reads `when_to_use`, so a
+  condux-style skill would load and then trigger only on its thin `description`.
+  Nothing errors; the breakage is invisible. That is what `dist/cursor/` is for.
 
 ### The npm package (`packages/condux-opencode/` → `@jabworks/condux`)
 
-A fourth surface, not a skills channel — it ships the OpenCode *plugin* (agent
+A fifth surface, not a skills channel — it ships the OpenCode *plugin* (agent
 injection via the config hook, opt-in `CONDUX_PLAN_REVIEW=1` session.idle
 listener), not skills. Standard npm manifest; the repo-specific constraints are:
 
@@ -124,8 +136,8 @@ listener), not skills. Standard npm manifest; the repo-specific constraints are:
 Parsed by every host: `name`, `description`. House convention fields observed in this
 repo: `when_to_use` (second half of the trigger contract), `argument-hint`, `effort`,
 `disable-model-invocation`. Budgets: description ≤ 500 chars,
-frontmatter ≤ 1024 (test-enforced) — plus the merged-description cap above for the
-OpenCode channel.
+frontmatter ≤ 1024 (test-enforced) — plus the merged-description cap above, which
+applies to both variant channels.
 
 ### Cache behavior
 
@@ -146,8 +158,12 @@ A correct manifest (or a field-level diff of what to change), pair-consistent.
 - "Fixing" the missing claude-side `hooks` field on condux — it's by design.
 - Copying `strict`/`skills` arrays into marketplace entries from upstream examples.
 - Editing one manifest of the pair (`ba69d2b` precedent).
-- Looking for a manifest to register a skill with OpenCode — there isn't one;
-  the skill appears the moment `dist/opencode/skills/<name>/` is generated.
+- Looking for a manifest to register a skill with OpenCode or Cursor — there
+  isn't one on either host; the skill appears the moment
+  `dist/opencode/skills/<name>/` or `dist/cursor/skills/<name>/` is generated.
+- Pointing a Cursor install at top-level `skills/` because "that's the source" —
+  Cursor never reads `when_to_use`, so the skill loads with a thin trigger and
+  fails silently. `dist/cursor/skills/` exists for exactly this.
 - Hand-editing `version` in `packages/condux-opencode/package.json` — changesets
   owns that field; a manual bump collides with the version PR.
 
@@ -167,15 +183,18 @@ one, so `--strict` stays clean for directory submissions.
 ## Provenance and maintenance
 
 Re-verify volatile claims with:
-- `node --test tests/plugin-manifests.test.mjs tests/manifest-parity.test.mjs tests/opencode-dist.test.mjs`
+- `node --test tests/plugin-manifests.test.mjs tests/manifest-parity.test.mjs tests/opencode-dist.test.mjs tests/cursor-dist.test.mjs`
 - `node -e 'for (const m of require("fs").globSync("dist/plugins/*/.{claude,codex}-plugin/plugin.json")) console.log(m, require("./" + m).skills)'`
 - `claude plugin validate dist/plugins/<p> --strict` — official validator (expect a
   clean pass, no warnings, since `interface` moved to the codex manifest on 2026-07-29)
-- `node scripts/build-opencode.mjs && git status --short` — clean tree means the
-  OpenCode channel and the package's `agents/` are in sync with source
+- `node scripts/build-opencode.mjs && node scripts/build-cursor.mjs && git status
+  --short` — clean tree means both variant channels and the package's `agents/`
+  are in sync with source
 
 Last generated: 2026-07-08 (host-support matrix verified same day; OpenCode +
-npm-package sections added 2026-07-23; hooks row + counts refreshed 2026-08-04)
+npm-package sections added 2026-07-23; hooks row + counts refreshed 2026-08-04;
+Cursor channel folded in 2026-08-14 — three channels became four, and the OpenCode
+section became the shared variant-trees section)
 Known uncertainty:
 - Codex's tolerance of fields IT doesn't recognize is untested — this repo's manifests
   contain only Codex-documented fields, so it's never exercised. No codex-side
@@ -189,3 +208,11 @@ Known uncertainty:
 - No OpenCode-side manifest validator exists to check against, and the
   description-only routing claim comes from the host's `<available_skills>`
   listing, not from a schema.
+- Cursor's 1024-char cap is assumed equal to OpenCode's and enforced locally by
+  `tests/cursor-dist.test.mjs`; no Cursor-side validator or documented limit was
+  found to confirm it. The repo has stayed well under either way.
+- Cursor global installs are unreliable upstream: vercel-labs/skills#421 (the CLI
+  writes `~/.agents/skills/` where the docs say `~/.cursor/skills/`; fix PR #464
+  unmerged as of 2026-08-14), compounded on WSL by `~` resolving to the Windows
+  home rather than the WSL one. Project-level `.cursor/skills/` is the path
+  verified to work here. Full detail: `specs/cursor-channel/quirks.md`.

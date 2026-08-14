@@ -29,12 +29,26 @@ Everything below is sorted by what actually transfers. The one-line summary:
   the layout is mirrored — a single-tree toolkit skips these entirely, and
   simpler is correct**).
 - The **generated-channel pattern**: one build script owns its output trees
-  outright (`rm -rf` then rebuild — `build-opencode.mjs` owns two), and its
+  outright (`rm -rf` then rebuild — `build-opencode.mjs` owns three), and its
   drift test re-runs the same transforms in memory and diffs against disk, so
   a stale commit fails CI instead of shipping.
   `scripts/build-opencode.mjs` + `tests/opencode-dist.test.mjs` are the
-  reference pair. Port that shape; the transform inside it is host doctrine to
-  re-derive per host, not code to reuse.
+  reference pair. Port that shape.
+
+  **Amended 2026-08-14 by the Cursor channel** — the first channel added after
+  this file was written, and so the only worked test of its advice. The shape
+  held verbatim: `build-cursor.mjs` + `cursor-dist.test.mjs` is the same pair
+  with a different output dir. But the line "the transform inside it is host
+  doctrine to re-derive per host, not code to reuse" was too strong. Cursor's
+  needed transform turned out **identical** to OpenCode's (both hosts route on
+  `description` alone, so both need `when_to_use` folded in), so the transform
+  was extracted — `build-cursor.mjs` imports `transformSkill` and
+  `copyTransformed` and owns only its output location. Corrected rule:
+  **re-derive the transform as doctrine, then share the implementation when two
+  hosts land on the same answer — but keep one output tree per host regardless**,
+  so either can diverge later without touching the other
+  (`specs/cursor-channel/decisions.md`). Sharing the tree is the coupling that
+  bites; sharing the function is not.
 
 ## Layer 2 — Ports as doctrine (re-instantiate against the new repo's facts)
 
@@ -82,9 +96,14 @@ Everything below is sorted by what actually transfers. The one-line summary:
 1. Decide **how many channels, and mirrored vs single-tree, FIRST** — it
    determines which tests and sync machinery exist at all. One channel needs
    none of it; each additional host adds a generated tree, a transform, and a
-   drift test. This repo reached three (npx / marketplace / OpenCode) plus an
-   npm package incrementally, and every channel added after the first cost
-   more in doc drift than in code.
+   drift test. This repo reached four (npx / marketplace / OpenCode / Cursor)
+   plus an npm package incrementally, and every channel added after the first
+   cost more in doc drift than in code. Cursor priced that precisely: the
+   builder, the sync wiring and the drift test landed in one session, while the
+   doc sweep across the meta-skills became its own follow-up ticket. **Budget
+   the doc sweep into the channel, not after it** — and grep the whole repo for
+   the old channel count (`three channels`, `three distributions`) as the last
+   step of adding one.
 2. Copy Layer 1; adjust paths; empty the data registries.
 3. Re-derive the seven meta-skills with `adapting-skills` + this bundle open
    as reference; scope every description to the new repo's name.
@@ -95,7 +114,9 @@ Everything below is sorted by what actually transfers. The one-line summary:
 6. Start the ledger empty; the first entry arrives when reality provides one.
 7. Install `release`; cut baseline tags for every plugin on day one.
 
-Last generated: 2026-07-09
+Last generated: 2026-07-09 (Layer 1 generated-channel entry and checklist step 1
+amended 2026-08-14 by the Cursor channel — the first port-shaped change made
+after this file was written)
 Known uncertainty:
 - Written from a two-toolkit vantage point (this repo + one corp fork
   prototype); Path B (a parameterized meta-bundle) is unbuilt by choice —

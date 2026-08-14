@@ -12,9 +12,13 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## toolkit-ops 1.7.1 — 2026-08-14
+
+- docs(toolkit-ops): four-channel docs + docket-doctor cursor probe (#28)
+
 ## toolkit-ops 1.7.0 — 2026-08-14
 
-- feat(plugins): Agent Plugins spec conformance across all 12 plugins
+- feat(plugins): Agent Plugins spec conformance across all 12 plugins (#68)
 
 ## toolkit-ops 1.6.4 — 2026-08-14
 
@@ -22,51 +26,55 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## spec-browser 1.1.0 — 2026-08-14
 
-- feat(plugins): Agent Plugins spec conformance across all 12 plugins
+- feat(plugins): Agent Plugins spec conformance across all 12 plugins (#68)
 
 ## session-report 1.8.0 — 2026-08-14
 
-- feat(plugins): Agent Plugins spec conformance across all 12 plugins
+- feat(plugins): Agent Plugins spec conformance across all 12 plugins (#68)
 
 ## session-handoff 1.7.0 — 2026-08-14
 
-- feat(plugins): Agent Plugins spec conformance across all 12 plugins
+- feat(plugins): Agent Plugins spec conformance across all 12 plugins (#68)
 
 ## release 1.3.0 — 2026-08-14
 
-- feat(plugins): Agent Plugins spec conformance across all 12 plugins
+- feat(plugins): Agent Plugins spec conformance across all 12 plugins (#68)
 
 ## git-operations 1.1.0 — 2026-08-14
 
-- feat(plugins): Agent Plugins spec conformance across all 12 plugins
+- feat(plugins): Agent Plugins spec conformance across all 12 plugins (#68)
 
 ## git-commit 1.1.0 — 2026-08-14
 
-- feat(plugins): Agent Plugins spec conformance across all 12 plugins
+- feat(plugins): Agent Plugins spec conformance across all 12 plugins (#68)
+
+## docket 0.8.0 — 2026-08-14
+
+- docs(toolkit-ops): four-channel docs + docket-doctor cursor probe (#28)
 
 ## docket 0.7.0 — 2026-08-14
 
-- feat(plugins): Agent Plugins spec conformance across all 12 plugins
+- feat(plugins): Agent Plugins spec conformance across all 12 plugins (#68)
 
 ## docket 0.6.0 — 2026-08-14
 
-- feat(cursor): fourth distribution channel + docket cursor target
+- feat(cursor): fourth distribution channel + docket cursor target (#66)
 
 ## condux 2.16.0 — 2026-08-14
 
-- feat(plugins): Agent Plugins spec conformance across all 12 plugins
+- feat(plugins): Agent Plugins spec conformance across all 12 plugins (#68)
 
 ## concord 0.5.0 — 2026-08-14
 
-- feat(plugins): Agent Plugins spec conformance across all 12 plugins
+- feat(plugins): Agent Plugins spec conformance across all 12 plugins (#68)
 
 ## coding-directive 1.2.0 — 2026-08-14
 
-- feat(plugins): Agent Plugins spec conformance across all 12 plugins
+- feat(plugins): Agent Plugins spec conformance across all 12 plugins (#68)
 
 ## adapting-skills 1.4.0 — 2026-08-14
 
-- feat(plugins): Agent Plugins spec conformance across all 12 plugins
+- feat(plugins): Agent Plugins spec conformance across all 12 plugins (#68)
 
 ## session-report 1.7.0 — 2026-08-13
 

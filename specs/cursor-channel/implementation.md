@@ -44,6 +44,21 @@ collision, and stays a documented manual snippet in INSTALL.md — the right
 path on WSL split-home setups, where the installer honestly reports
 `absent`.
 
+## Docket doctor
+
+`skills/docket-doctor/doctor.mjs` probes the same target the installer writes:
+`~/.cursor/mcp.json` → `mcpServers.docket` → `args[0]`, then an `initialize`
+round-trip against that path. Missing `~/.cursor` reports `absent` with the
+WSL split-home reason rather than guessing Windows paths — the same judgement
+`install.sh` makes. Added 2026-08-14 (docket #28).
+
+No `enabled === false` check, unlike the OpenCode probe: Cursor's
+`McpServerConfig` has no such field (verified against cursor.com/docs
+`/reference/plugins` and `/sdk/typescript`). Disabling is out-of-band — the
+Customize sidebar toggle and `agent mcp disable` write a local approved list,
+not `mcp.json` — so a UI-disabled server still reads as registered. Documented
+as a blind spot in the skill rather than guessed at.
+
 ## Docs
 
 README: channel/Structure section gains the fourth channel; a verified
