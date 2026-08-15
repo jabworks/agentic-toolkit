@@ -1,0 +1,32 @@
+{
+  "name": "git-worktree",
+  "version": "1.0.0",
+  "description": "Decision router for git worktrees: create an isolated workspace, list and switch trees, move work between them, prune and remove, recover a broken one. Native-first — prefer the host's own worktree tooling over `git worktree add`. Sibling to git-operations.",
+  "author": {
+    "name": "jabworks"
+  },
+  "repository": "https://github.com/jabworks/agentic-toolkit",
+  "license": "MIT",
+  "keywords": [
+    "git",
+    "worktree",
+    "isolation",
+    "parallel",
+    "workspace",
+    "agent",
+    "workflow"
+  ],
+  "skills": "./skills/git-worktree",
+  "interface": {
+    "displayName": "Git Worktree",
+    "shortDescription": "Isolated workspaces, done safely.",
+    "longDescription": "A decision router for git worktrees — create an isolated workspace for a task or an agent, list and switch between trees, move work across them, prune and remove cleanly, and recover a broken tree. Native-first: when the host manages worktrees, using `git worktree add` alongside it creates phantom state the harness cannot see. Sibling to git-operations, which owns undo, discard, stash, merge and push.",
+    "developerName": "jabworks",
+    "category": "Productivity",
+    "defaultPrompt": [
+      "Set up an isolated worktree for this feature.",
+      "Why does git say my branch is already checked out?",
+      "Clean up the worktrees I'm no longer using."
+    ]
+  }
+}

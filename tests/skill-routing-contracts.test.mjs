@@ -29,6 +29,7 @@ test('known trigger-collision pairs disambiguate each other mutually', () => {
     ['session-handoff', 'session-report'],
     ['session-handoff', 'subagent-execution'],
     ['git-operations', 'release'],
+    ['git-operations', 'git-worktree'],
     ['toolkit-foundry', 'toolkit-skill-standards'],
     ['code-review', 'plan-review'],
     ['code-review', 'live-verification'],

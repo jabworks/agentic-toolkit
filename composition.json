@@ -56,6 +56,11 @@
         "description": "Decision router for git: given a situation, pick the right operation (undo/discard/stash/merge/push) and run it safely with an undo path. Cross-links to git-commit for committing."
       }
     },
+    "git-worktree": {
+      "marketplace": {
+        "description": "Decision router for git worktrees: create an isolated workspace for a task or an agent, list and switch trees, move work between them, prune and remove cleanly, recover a broken one. Native-first — when the host manages worktrees, using git worktree add alongside it creates phantom state it cannot see."
+      }
+    },
     "toolkit-ops": {
       "bundle": true,
       "skills": [
@@ -129,6 +134,10 @@
         {
           "skill": "git-operations",
           "blurb": "Decision router for git — pick the right operation (undo/discard/stash/merge/push) with an undo path"
+        },
+        {
+          "skill": "git-worktree",
+          "blurb": "Decision router for git worktrees — isolated workspaces, native-first, with cleanup and recovery paths"
         },
         {
           "skill": "spec-browser",
@@ -273,6 +282,10 @@
         {
           "entry": "`git-operations`",
           "blurb": "Decision router for git operations with undo paths"
+        },
+        {
+          "entry": "`git-worktree`",
+          "blurb": "Decision router for git worktrees — native-first isolation, cleanup, recovery"
         },
         {
           "entry": "`spec-browser`",

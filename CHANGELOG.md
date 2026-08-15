@@ -12,9 +12,21 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## toolkit-ops 1.7.3 — 2026-08-15
+
+- feat(git-worktree): native-first worktree isolation router (#26)
+
+## git-worktree 1.0.0 — 2026-08-15
+
+- feat(git-worktree): native-first worktree isolation router (#26)
+
+## git-operations 1.1.1 — 2026-08-15
+
+- feat(git-worktree): native-first worktree isolation router (#26)
+
 ## toolkit-ops 1.7.2 — 2026-08-14
 
-- docs(toolkit-ops): document the root plugin.json and both MCP dialects (#30)
+- docs(toolkit-ops): document the root plugin.json and both MCP dialects (#30) (#72)
 
 ## toolkit-ops 1.7.1 — 2026-08-14
 
