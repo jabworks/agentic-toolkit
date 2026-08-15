@@ -50,15 +50,25 @@ fi
 
 # ---------------------------------------------------------------------------
 # copy_dir <src> <dst>  — mirrors src into dst, removing stale files
+#
+# Returns the copy's exit status. That is load-bearing: sync_skill runs inside
+# an `if`, which disables errexit for everything it calls, so a failed copy is
+# invisible unless the status is propagated by hand (docket #31 — a code-11
+# rsync was reported as `36 synced, 0 skipped, 0 failed`).
+#
+# mkdir -p first because rsync cannot create nested parents: a brand-new
+# standalone plugin has no dist/plugins/<name>/skills/<name>/ yet, and that was
+# the failure the silent path hid.
 # ---------------------------------------------------------------------------
 copy_dir() {
   local src="$1" dst="$2"
+  mkdir -p "$dst" || return 1
   if command -v rsync &>/dev/null; then
-    rsync -a --delete "$src/" "$dst/"
+    rsync -a --delete "$src/" "$dst/" || return 1
   else
     rm -rf "$dst"
     mkdir -p "$dst"
-    cp -r "$src/." "$dst/"
+    cp -r "$src/." "$dst/" || return 1
   fi
 }
 
@@ -95,7 +105,10 @@ sync_skill() {
   for i in "${!PAIR_SRCS[@]}"; do
     local pair_src="${PAIR_SRCS[$i]}" pair_dest="${PAIR_DESTS[$i]}"
     if [[ "$pair_src" == "skills/$name" || "$pair_src" == "skills/$name/"* ]]; then
-      copy_dir "$REPO_ROOT/$pair_src" "$REPO_ROOT/$pair_dest"
+      if ! copy_dir "$REPO_ROOT/$pair_src" "$REPO_ROOT/$pair_dest"; then
+        echo "ERROR  skills/$name — copy failed: $pair_src  →  $pair_dest" >&2
+        return 1
+      fi
       echo "synced  $pair_src  →  $pair_dest"
       matched=1
     fi
@@ -134,7 +147,14 @@ sync_plugin_files() {
 
     # One LICENSE, at the repo root, copied to every plugin — not 12 identical
     # source files that can drift apart.
-    cp "$REPO_ROOT/LICENSE" "$plugin_dir/LICENSE"
+    #
+    # Status-checked for the same reason copy_dir is: this function's return
+    # value is the only thing standing between a failed copy and a "synced"
+    # line claiming it happened (docket #31).
+    if ! cp "$REPO_ROOT/LICENSE" "$plugin_dir/LICENSE"; then
+      echo "ERROR  copy failed: LICENSE  →  dist/plugins/$plugin/LICENSE" >&2
+      return 1
+    fi
 
     if [[ -d "$PLUGIN_SRC/$plugin" ]]; then
       # dotglob so the syncer sees the same files its guard does: bash's `*`
@@ -144,7 +164,11 @@ sync_plugin_files() {
       shopt -s dotglob
       for src in "$PLUGIN_SRC/$plugin"/*; do
         [[ -f "$src" ]] || continue
-        cp "$src" "$plugin_dir/$(basename "$src")"
+        if ! cp "$src" "$plugin_dir/$(basename "$src")"; then
+          echo "ERROR  copy failed: $src  →  dist/plugins/$plugin/" >&2
+          shopt -u dotglob
+          return 1
+        fi
         ((copied++)) || true
       done
       shopt -u dotglob

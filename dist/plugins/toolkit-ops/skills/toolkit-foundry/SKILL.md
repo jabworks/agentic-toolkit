@@ -77,8 +77,12 @@ new skill whose `references/` contains `.js`. CI syntax-checks every one with
 mkdir -p skills/<name>/references
 mkdir -p dist/plugins/<name>/.codex-plugin
 mkdir -p dist/plugins/<name>/.claude-plugin
-mkdir -p dist/plugins/<name>/skills/<name>/references
 ```
+
+The dist skill tree is not in that list on purpose — `sync.sh` creates it. It
+used to be listed, and creating it by hand was load-bearing: rsync cannot make
+nested parents, so a new plugin whose tree was missing failed the copy while
+sync still printed `0 failed` (docket #31).
 
 ### 2. Write SKILL.md
 
