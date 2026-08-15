@@ -42,6 +42,54 @@ Both are small. (1) is the correctness fix and should land regardless; (2) is
 the ergonomic one. Note the interaction: with (2) alone the symptom disappears
 but the silent-failure class stays for every other rsync invocation.
 
+### 32. subagent-deployment routes at 62.5% — four of six misses bleed to workflow (2026-08-15)
+
+Measured 2026-08-15 during the git-worktree eval run (#26), full corpus,
+claude-haiku-4-5-20251001, 582 cases. Overall was 90.0% — in the established
+~89-92% band. **subagent-deployment scored 10/16 = 62.5%**, the weakest skill
+in the corpus by a wide margin and roughly 27pp below band.
+
+Nothing to do with the change that surfaced it. The failure mode is coherent
+rather than noisy, which is what makes it worth fixing:
+
+| query | expected | got |
+|---|---|---|
+| fix these 3 unrelated failing test files at once | subagent-deployment | workflow |
+| two independent bugs in different packages, handle both | subagent-deployment | workflow |
+| batch these lookups together | subagent-deployment | null |
+| spawn a generic subagent with this custom prompt | subagent-deployment | null |
+| one small task, just do it yourself | workflow | null |
+| parallelize the test suite in ci | null | workflow |
+
+**Four of six involve `workflow`** — twice swallowing a case that should reach
+the fan-out skill, once being the expected answer and losing to null, once
+capturing a should-not-trigger case. That is a one-hop adjacency, exactly the
+error class A3 names as dominant.
+
+The plausible mechanism, to be checked not assumed: `workflow`'s trigger
+contract claims *every* implementation request ("Trigger with any
+implementation request… Every dev task starts here"), which is true as routing
+doctrine but makes its description a strong attractor for any multi-task
+phrasing. `subagent-deployment` then has to win against a skill that has
+declared itself the universal entry point. The two do not currently name each
+other in `tests/skill-routing-contracts.test.mjs` — the pairs there are
+`['subagent-deployment','subagent-execution']` only.
+
+Worth considering, in order:
+
+1. Add `['subagent-deployment','workflow']` to the routing-contracts pairs so
+   the seam is at least test-enforced in both directions.
+2. Sharpen subagent-deployment's description on the *independence* signal
+   (nothing shared, no ordering) rather than on the fan-out mechanics, since
+   "3 unrelated files" and "two independent bugs" are the exact phrasings that
+   missed.
+3. Re-measure. Do not tune the corpus — two of the six ("batch these lookups
+   together", "parallelize the test suite in ci") may be genuinely ambiguous
+   cases worth keeping as recorded misses.
+
+Prior art on the seam problem: docket #10 (semantic collision detection) and
+#14 (trajectory-based eval) both bear on measuring exactly this.
+
 ## Someday
 
 ### 7. Spec MCP server — revisit when specs gain write-side invariants (2026-08-05)
