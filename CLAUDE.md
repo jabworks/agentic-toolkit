@@ -81,6 +81,7 @@ See `skills/toolkit-foundry/SKILL.md` for the canonical checklist. Short version
 | `adapting-skills` | Adapt generic skills to the jabworks stack and conventions |
 | `git-commit` | Conventional-commit message from the diff, run safely |
 | `git-operations` | Decision router for git operations with undo paths |
+| `git-worktree` | Decision router for git worktrees — native-first isolation, cleanup, recovery |
 | `spec-browser` | Catalog and browse a specs/ tree as one doc site |
 | `release` | Cut a release safely — machinery router (changesets/toolkit/GitHub), dry-run first |
 | `coding-directive` | The jabworks house style — TS/React/formatting/imports/naming/CSS, enforced tier + judgment tier |

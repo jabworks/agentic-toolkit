@@ -1,6 +1,6 @@
 ---
 name: git-operations
-description: Use when deciding which git operation fits a situation and running it safely — undoing a commit, discarding or unstaging changes, parking work-in-progress, integrating upstream, or recovering from a mistake. A decision router (situation → operation → safe command + undo path) favouring modern porcelain (`switch`, `restore`) over legacy `checkout`. Cross-links to git-commit for committing. Not for tagging or publishing a version — that's release. Everyday + recovery only.
+description: Use when deciding which git operation fits a situation and running it safely — undoing a commit, discarding or unstaging changes, parking work-in-progress, integrating upstream, or recovering from a mistake. A decision router (situation → operation → safe command + undo path) favouring modern porcelain (`switch`, `restore`) over legacy `checkout`. Cross-links to git-commit for committing. Not for tagging or publishing — that's release. Not for worktrees — that's git-worktree.
 ---
 
 # git-operations
@@ -112,16 +112,24 @@ git push --force-with-lease     # aborts if someone else pushed since your last 
   collaborators' reflogs); recover with `git reset --hard <sha>` then a fresh
   `git push --force-with-lease`.
 
-## Out of scope → future sibling skill
+## Out of scope
 
-This skill is **everyday + recovery only**. The following belong to a future history-rewriting skill and are intentionally excluded:
+This skill is **everyday + recovery only**.
+
+**Covered by a sibling skill:**
+
+- Worktrees — isolated workspaces, listing and switching trees, prune/remove, recovery → **`git-worktree`** (added 2026-08-15; previously listed here as excluded)
+- Committing → `git-commit`
+- Tagging and publishing a version → `release`
+
+**Still excluded — a future history-rewriting skill:**
 
 - interactive rebase, amend / fixup / autosquash
 - cherry-pick
 - bare `git push --force` / `-f`, and forcing a **shared** branch (only the safe `--force-with-lease` on your own feature branch is covered)
-- submodules, worktrees, bisect
+- submodules, bisect
 
-If a task needs one of these, say so and stop — don't improvise.
+If a task needs one of the excluded items, say so and stop — don't improvise.
 
 ## ⚙ Adjust these (defaults)
 

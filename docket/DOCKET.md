@@ -9,6 +9,39 @@ Stale open markers cost real sessions — closing means moving.
 
 ## Committed
 
+### 31. sync.sh reports "0 failed" when rsync actually fails (2026-08-15)
+
+Found 2026-08-15 building git-worktree (#26).
+
+A brand-new standalone plugin has no `dist/plugins/<name>/skills/<name>/`
+directory yet. rsync cannot create nested parents, so the skill-tree copy fails:
+
+```
+rsync: [Receiver] mkdir ".../dist/plugins/git-worktree/skills/git-worktree"
+  failed: No such file or directory (2)
+rsync error: error in file IO (code 11)
+```
+
+**`sync.sh` printed `done — 36 synced, 0 skipped, 0 failed` on that same run.**
+The rsync exit status is not checked, so a genuine copy failure is reported as a
+success. It was only caught because `node --test` failed afterwards
+(`dist-mirror` + `agent-plugins`), which is the safety net working — but the
+sync output actively lied first, and a session that trusted it would have
+committed a plugin with no skills.
+
+Two things to decide:
+
+1. **Check the rsync exit status** and count it as a failure. That is the actual
+   bug — the `failed` counter exists and is never incremented from this path.
+2. **Create the dest dir before rsync** (`mkdir -p`), which removes the failure
+   mode for new plugins entirely. `toolkit-foundry`'s scaffold step tells the
+   author to `mkdir -p dist/plugins/<name>/skills/<name>/references` by hand;
+   sync doing it itself makes that step unnecessary rather than load-bearing.
+
+Both are small. (1) is the correctness fix and should land regardless; (2) is
+the ergonomic one. Note the interaction: with (2) alone the symptom disappears
+but the silent-failure class stays for every other rsync invocation.
+
 ## Someday
 
 ### 7. Spec MCP server — revisit when specs gain write-side invariants (2026-08-05)
@@ -93,18 +126,5 @@ eval runs — what we do by hand across dated reports), `max-repeat` and
 `loop-outcome` graders, JSONL/JUnit/markdown reporters.
 
 Found 2026-08-09 surveying awesome-copilot's maintenance machinery.
-
-### 26. Worktree operations skill — safe git worktree workflows (create, switch, prune, agent isolation) (2026-08-13)
-
-Sibling to `git-commit` / `git-operations`: a decision router for `git worktree`
-— create/list/switch, prune stale trees, move work between trees, and the
-undo paths. Motivation: agent hosts now lean on worktrees for isolation
-(Claude Code's `EnterWorktree` / `isolation: "worktree"` agents), and the
-existing `git-operations` skill doesn't cover them. Scope question to settle
-at design time: standalone skill vs a section grown inside `git-operations`
-(the router-with-undo-paths shape is identical; what differs is trigger
-vocabulary — "worktree", "parallel checkout", "agent sandbox tree").
-
-Filed 2026-08-13 mid-#22 (unrelated to that change).
 
 ## Loose threads
