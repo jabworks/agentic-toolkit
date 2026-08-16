@@ -34,6 +34,18 @@ function findSpecs(dir, rel) {
   return specs;
 }
 
+// A spec's purpose is a "> note" or an opening prose line — never the
+// bookkeeping that surrounds it. technical-spec's scaffold opens every
+// index.md with a metadata block (**Last updated:**, **Commit:**,
+// **Status:**) and follows it with a "## Contents" list, so a naive
+// first-non-heading-line rule reports "**Last updated:** 2026-08-13" as the
+// purpose of every scaffold-written spec, and skipping only the metadata just
+// promotes the first Contents bullet instead. Scanning stops at the first
+// "##" section: anything past it is structure, not a description. No purpose
+// is an honest "—", which is a prompt to write one.
+const META = /^\*{1,2}[^*]+:\*{1,2}/;
+const BULLET = /^([-*+]|\d+[.)])\s/;
+
 function metaOf(rel) {
   let title = rel, purpose = '';
   try {
@@ -44,11 +56,38 @@ function metaOf(rel) {
       const h = l.match(/^#\s+(.*)/);
       if (h && title === rel) { title = h[1].trim(); continue; }
       const q = l.match(/^>\s*(.*)/);
-      if (q && !purpose) { purpose = q[1].trim(); break; }
-      if (!q && !/^#/.test(l) && !purpose) { purpose = l; break; }
+      if (q) { purpose = block(lines, i, /^>\s?/); break; }
+      if (/^#{2,}\s/.test(l)) break;
+      if (/^#/.test(l) || META.test(l) || BULLET.test(l)) continue;
+      purpose = block(lines, i, null);
+      break;
     }
   } catch (e) { /* keep defaults */ }
-  return { title: title, purpose: purpose.replace(/\|/g, '\\|') };
+  return { title: title, purpose: clamp(purpose).replace(/\|/g, '\\|') };
+}
+
+// A purpose is a paragraph, not a line. Markdown hard-wraps prose, so taking
+// one line cuts the sentence wherever the author's editor happened to wrap —
+// "…is the single source". Join the contiguous block instead, stopping at the
+// blank line or structural marker that ends it.
+function block(lines, start, strip) {
+  const out = [];
+  for (let i = start; i < lines.length; i++) {
+    const l = lines[i].trim();
+    if (!l) break;
+    if (strip) { if (!strip.test(l)) break; out.push(l.replace(strip, '').trim()); continue; }
+    if (/^[#>]/.test(l) || META.test(l) || BULLET.test(l)) break;
+    out.push(l);
+  }
+  return out.join(' ').replace(/\s+/g, ' ').trim();
+}
+
+// Keep the table scannable: one sentence, or a word-boundary cut.
+function clamp(s) {
+  if (s.length <= 200) return s;
+  const dot = s.slice(0, 200).lastIndexOf('. ');
+  if (dot > 80) return s.slice(0, dot + 1);
+  return s.slice(0, s.slice(0, 199).lastIndexOf(' ')) + '…';
 }
 
 const specs = findSpecs(root, '');

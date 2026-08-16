@@ -12,9 +12,13 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
-## toolkit-ops 1.7.4 — 2026-08-15
+## toolkit-ops 1.7.4 — 2026-08-16
 
-- chore(toolkit-ops): version 1.7.4
+- fix(sync): count a failed copy instead of reporting "0 failed" (#31) (#75)
+
+## spec-browser 1.1.1 — 2026-08-16
+
+- chore(spec-browser): version 1.1.1
 
 ## toolkit-ops 1.7.3 — 2026-08-15
 

@@ -1,5 +1,9 @@
 # CompositionManifest — Tech Spec
 
+> Plugin composition declared as data: `composition.json` is the single source
+> for bundle membership, plugin-level dirs, and marketplace descriptions,
+> feeding sync, `marketplace.json`, and the doc catalogs instead of if-arms.
+
 **Last updated:** 2026-08-13
 **Commit:** f6e006c
 **Status:** draft
