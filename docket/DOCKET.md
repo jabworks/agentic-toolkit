@@ -142,4 +142,49 @@ eval runs — what we do by hand across dated reports), `max-repeat` and
 
 Found 2026-08-09 surveying awesome-copilot's maintenance machinery.
 
+### 33. technical-spec's scaffold writes no purpose line, so every new spec starts at "—" in the catalog (2026-08-16)
+
+Follow-up from #77 (spec-browser 1.1.1), which fixed the reading half of this.
+
+#### The gap
+
+`skills/technical-spec/references/scaffold.sh` writes `index.md` as a title
+followed straight by a metadata block — `**Last updated:**`, `**Commit:**`,
+`**Status:** draft`, then `## Contents`. There is nowhere for a one-line
+purpose to go. spec-browser's catalog looks for a `>` note or an opening prose
+paragraph, finds neither, and renders `—`.
+
+#77 made that `—` *honest* — before it, the catalog reported
+`**Last updated:** 2026-08-13` as the purpose of six of nine specs. But honest
+is not useful: every spec scaffolded from now on still lands in the catalog
+with no description until someone adds one by hand, which is exactly the step
+people skip. Three of this repo's own specs needed one backfilled in #77, and
+they were the oldest ones — the pattern is not hypothetical.
+
+#### Shape of the fix
+
+Add a `>` purpose placeholder to the scaffold template, between the title and
+the metadata block.
+
+Open question worth deciding rather than assuming: a literal placeholder would
+be generated into the catalog verbatim until edited, which is arguably worse
+than `—` because it looks like content. Alternatives: have the scaffold prompt
+for the purpose (it already takes a name argument), or teach build-index.js to
+treat a known placeholder string as absent. Decide before implementing.
+
+#### Why it was not folded into #77
+
+The scaffold belongs to `technical-spec`, which ships in condux — a different
+plugin from spec-browser. Touching it needs its own version bump and, because
+sync regenerates `packages/condux-opencode/skills/`, an npm changeset
+(`pnpm changeset`), or `npm-channel.test.mjs` fails. Deliberately kept out of a
+spec-browser patch.
+
+#### Related
+
+Nothing validates the shape of `specs/` entries. No test walks the tree, so a
+malformed spec dir stays silently malformed — `specs/friction-audit-2026-07-29/`
+has no `index.md` at all and is invisible to the catalog by design, which is
+correct but undetected.
+
 ## Loose threads
