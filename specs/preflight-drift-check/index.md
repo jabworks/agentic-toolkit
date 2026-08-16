@@ -1,5 +1,9 @@
 # PreflightDriftCheck — Tech Spec
 
+> Preflight's drift check: compare the implementation against the task's spec
+> before finalize and surface both directions of drift as soft-gate findings,
+> so a spec and its code cannot silently diverge.
+
 **Last updated:** 2026-07-11
 **Commit:** 6cfa3a1
 **Status:** draft
