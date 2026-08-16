@@ -74,4 +74,5 @@ verify step, and the second toolkit-wide convention after ease-of-install.
   a module load instead (quirks, fields). (3) `absent` covers an unmade
   optional registration as well as a missing host, since the ladder says the
   skill still works a rung down (api).
-- 2026-08-06: Initial spec from signed-off design (`.condux/designs/2026-08-06-plugin-doctor.md`)
+- 2026-08-06: Initial spec from a signed-off design. The design itself was
+  working state and is gone — this spec is the whole surviving record (docket #34)

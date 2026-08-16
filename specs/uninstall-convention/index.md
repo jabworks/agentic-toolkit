@@ -20,5 +20,6 @@ is policy, not machinery.
 - [implementation.md](implementation.md) — the five registration surfaces, files to change, guards, phasing
 
 ## Changelog
-- 2026-08-12 (d415723): Initial spec from signed-off design
-  (.condux/designs/2026-08-12-uninstall-convention.md)
+- 2026-08-12 (d415723): Initial spec from a signed-off design. The design itself
+  was working state and is gone — this spec and PR #51 are the surviving record
+  (docket #34)

@@ -18,6 +18,7 @@ BACKLOG.md conventions.
 - [fields.md](fields.md) — the docket/ file grammar: item syntax, sections, docket.json schema
 - [quirks.md](quirks.md) — id-space rules, legacy BACKLOG.md detection, ghost-work lesson, edge cases
 - [implementation.md](implementation.md) — repo layout, sync/mirror surface, tests, phasing
+- [design.md](design.md) — the signed-off design this spec was written from (2026-08-05)
 
 ## Changelog
 - 2026-08-05 (0.1.1): trigger eval cases for record/groom landed
@@ -25,4 +26,4 @@ BACKLOG.md conventions.
 - 2026-08-05 (preflight): drift decisions — no automated next_id repair flag
   (quirks), installer verifies the server once (api), trigger eval cases
   deferred to a follow-up (quirks)
-- 2026-08-05: Initial spec from signed-off design (.condux/designs/2026-08-05-docket.md)
+- 2026-08-05: Initial spec from signed-off design ([design.md](design.md))
