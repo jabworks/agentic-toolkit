@@ -14,3 +14,4 @@ Origin: docket #29 (2026-08-14), follow-on to the Cursor channel (#27).
 | Manifest field mapping | [fields.md](fields.md) |
 | Generator, flattening, tests | [implementation.md](implementation.md) |
 | Spec constraints + gotchas | [quirks.md](quirks.md) |
+| Live verification evidence (2026-08-14) | [verification.md](verification.md) |

@@ -13,3 +13,4 @@ Origin: docket #27 (2026-08-14) — "advertised, never tested".
 | Frontmatter field policy per host | [fields.md](fields.md) |
 | Builder, sync, tests, installer | [implementation.md](implementation.md) |
 | Host gotchas, upstream bugs | [quirks.md](quirks.md) |
+| Live verification evidence (2026-08-14) | [verification.md](verification.md) |
