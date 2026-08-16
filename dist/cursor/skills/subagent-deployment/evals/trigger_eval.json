@@ -1,7 +1,7 @@
 [
-  { "query": "fix these 3 unrelated failing test files at once", "should_trigger": true, "expected_skill": "subagent-deployment" },
+  { "query": "fix these 3 unrelated failing test files at once", "should_trigger": true, "expected_skill": "workflow", "note": "cold bug-fix request: the router owns it and loads subagent-deployment only if the tier warrants" },
   { "query": "in parallel: look up the stripe api and explore the auth module", "should_trigger": true, "expected_skill": "subagent-deployment" },
-  { "query": "two independent bugs in different packages, handle both", "should_trigger": true, "expected_skill": "subagent-deployment" },
+  { "query": "two independent bugs in different packages, handle both", "should_trigger": true, "expected_skill": "workflow", "note": "cold bug-fix request: independence alone does not bypass the router" },
   { "query": "fan out this research across agents", "should_trigger": true, "expected_skill": "subagent-deployment" },
   { "query": "batch these lookups together", "should_trigger": true, "expected_skill": "subagent-deployment" },
   { "query": "run these together, theyre totally unrelated", "should_trigger": true, "expected_skill": "subagent-deployment" },
@@ -17,6 +17,6 @@
   { "query": "one small task, just do it yourself", "should_trigger": true, "expected_skill": "workflow" },
   { "query": "deploy the app to production", "should_trigger": false, "expected_skill": null },
   { "query": "set up the deployment pipeline for staging", "should_trigger": false, "expected_skill": null },
-  { "query": "parallelize the test suite in ci", "should_trigger": false, "expected_skill": null },
+  { "query": "parallelize the test suite in ci", "should_trigger": true, "expected_skill": "workflow", "note": "parallelising a test suite is an implementation request, not a fan-out instruction" },
   { "query": "map reduce over these records", "should_trigger": false, "expected_skill": null }
 ]

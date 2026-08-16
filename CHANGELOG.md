@@ -18,15 +18,19 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## spec-browser 1.1.2 — 2026-08-16
 
-- feat(condux,spec-browser): a purpose slot that survives the catalog, and a rule about which way a citation may point (#33, #35)
+- feat(condux,spec-browser): a purpose slot that survives the catalog, and a rule about which way a citation may point (#33, #35) (#79)
 
 ## spec-browser 1.1.1 — 2026-08-16
 
 - fix(spec-browser): stop reporting scaffold bookkeeping as a spec's purpose (#77)
 
+## condux 2.17.1 — 2026-08-16
+
+- fix(condux): route subagent-deployment on the fan-out being asked for, and fix the eval oracle that punished the router (#32)
+
 ## condux 2.17.0 — 2026-08-16
 
-- feat(condux,spec-browser): a purpose slot that survives the catalog, and a rule about which way a citation may point (#33, #35)
+- feat(condux,spec-browser): a purpose slot that survives the catalog, and a rule about which way a citation may point (#33, #35) (#79)
 
 ## toolkit-ops 1.7.3 — 2026-08-15
 

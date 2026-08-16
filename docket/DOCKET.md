@@ -9,53 +9,59 @@ Stale open markers cost real sessions — closing means moving.
 
 ## Committed
 
-### 32. subagent-deployment routes at 62.5% — four of six misses bleed to workflow (2026-08-15)
+### 36. Re-measure the generic-subagent contract fix, and decide what to do about a corpus where 8% of cases are flaky (2026-08-16)
 
-Measured 2026-08-15 during the git-worktree eval run (#26), full corpus,
-claude-haiku-4-5-20251001, 582 cases. Overall was 90.0% — in the established
-~89-92% band. **subagent-deployment scored 10/16 = 62.5%**, the weakest skill
-in the corpus by a wide margin and roughly 27pp below band.
+Filed 2026-08-16 when #32 closed. Two things that entry produced but could not
+finish.
 
-Nothing to do with the change that surfaced it. The failure mode is coherent
-rather than noisy, which is what makes it worth fixing:
+#### 1. An unvalidated fix
 
-| query | expected | got |
-|---|---|---|
-| fix these 3 unrelated failing test files at once | subagent-deployment | workflow |
-| two independent bugs in different packages, handle both | subagent-deployment | workflow |
-| batch these lookups together | subagent-deployment | null |
-| spawn a generic subagent with this custom prompt | subagent-deployment | null |
-| one small task, just do it yourself | workflow | null |
-| parallelize the test suite in ci | null | workflow |
+`spawn a generic subagent with this custom prompt` missed **0/3** in the
+variance band — the only perfectly stable miss in `subagent-deployment`'s
+corpus. Cause found: the skill's body bans generic subagents outright ("Never a
+generic subagent with an injected prompt — only condux's four named agents")
+but the trigger contract never said so, so the router could not see the rule it
+was being scored on. The contract now names it.
 
-**Four of six involve `workflow`** — twice swallowing a case that should reach
-the fan-out skill, once being the expected answer and losing to null, once
-capturing a should-not-trigger case. That is a one-hop adjacency, exactly the
-error class A3 names as dominant.
+**No eval has run since that edit.** It ships on reasoning, not measurement.
+One band re-run answers it; the case is stable, so even a single run is
+informative here in a way it was not for the flaky cases.
 
-The plausible mechanism, to be checked not assumed: `workflow`'s trigger
-contract claims *every* implementation request ("Trigger with any
-implementation request… Every dev task starts here"), which is true as routing
-doctrine but makes its description a strong attractor for any multi-task
-phrasing. `subagent-deployment` then has to win against a skill that has
-declared itself the universal entry point. The two do not currently name each
-other in `tests/skill-routing-contracts.test.mjs` — the pairs there are
-`['subagent-deployment','subagent-execution']` only.
+#### 2. The corpus is noisier than the effects being measured
 
-Worth considering, in order:
+The band reported **47 flaky cases out of 582** — 8% of the corpus changes
+answer between identical runs. Mean was 90.9% ± 1.5pp. Every per-case
+conclusion drawn from a single run this session was wrong or unsupported:
 
-1. Add `['subagent-deployment','workflow']` to the routing-contracts pairs so
-   the seam is at least test-enforced in both directions.
-2. Sharpen subagent-deployment's description on the *independence* signal
-   (nothing shared, no ordering) rather than on the fan-out mechanics, since
-   "3 unrelated files" and "two independent bugs" are the exact phrasings that
-   missed.
-3. Re-measure. Do not tune the corpus — two of the six ("batch these lookups
-   together", "parallelize the test suite in ci") may be genuinely ambiguous
-   cases worth keeping as recorded misses.
+- `run these together` looked like a regression caused by an edit; it is 2/3.
+- `parallelize the test suite in ci` looked fixed; it is 1/3.
+- Only `fix these 3 unrelated tests` and `two independent bugs` (3/3) and
+  `spawn a generic subagent` (0/3) said anything at all.
 
-Prior art on the seam problem: docket #10 (semantic collision detection) and
-#14 (trajectory-based eval) both bear on measuring exactly this.
+The operational lesson is cheap and worth writing down somewhere durable: **a
+single run cannot support a per-case claim.** Anything below roughly 3pp needs
+a band, and per-case verdicts need the stability column, not the accuracy
+number.
+
+The deeper question is what a flaky case *is*. Three candidate readings, and
+they want different responses:
+
+1. **Judge variance** — same prompt, different answer, nothing to fix but
+   sample size. Prior art: A3 recorded 44 flaky cases; this run found 47, so
+   the rate is stable across months and skill-set changes.
+2. **Genuinely ambiguous stimulus** — two skills legitimately fit and the
+   corpus forces one. `batch these lookups together` (1/3) reads this way. The
+   `accept` alternates field already exists for exactly this and is underused.
+3. **A real seam** the corpus is detecting intermittently. These are the
+   valuable ones and they are currently indistinguishable from (1).
+
+Deciding that is prerequisite to any future routing work, because right now
+every measurement pays the full cost of a band to learn which bucket a case is
+in.
+
+Related: #14 (trajectory-based eval — `disallowed` assertions and deterministic
+static grading would remove the judge from the loop entirely, which is one
+answer to all of this), #10 (semantic collision detection).
 
 ## Someday
 
