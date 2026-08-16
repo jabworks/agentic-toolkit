@@ -82,8 +82,18 @@ fi
 
 mkdir -p "$SPEC_DIR"
 
+# The comment is the purpose slot. spec-browser's catalog (specs/index.md)
+# shows a spec's "> note" as its description and an honest "—" when there is
+# none, so a spec with no purpose line is listed with nothing to identify it.
+# A visible placeholder would be worse — it generates into the catalog looking
+# like content — so the prompt is an HTML comment, which the catalog skips and
+# no rendered view of the file displays.
 cat > "$SPEC_DIR/index.md" <<EOF
 # $INPUT — Tech Spec
+
+<!-- Replace this comment with a one-line "> …" note saying what this spec is
+     for. It is what specs/index.md shows for this spec; without it the catalog
+     lists this spec with no description. -->
 
 **Last updated:** $DATE
 **Commit:** $COMMIT

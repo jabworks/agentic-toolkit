@@ -23,7 +23,7 @@ to place the spec.
   {feature-slug}/           # cross-cutting, or scaffolded from the repo root
   apps/web/
     {feature-slug}/         # scaffolded while working in apps/web
-      index.md              # TOC, last updated, commit hash, changelog  ← scaffold creates this
+      index.md              # purpose, TOC, last updated, commit hash, changelog  ← scaffold creates this
       decisions.md          # Design decisions with context + rationale
       api.md                # Endpoints, types, external APIs consumed
       fields.md             # Field mappings: BE/3rd-party → UI, or forwarding chains
@@ -88,6 +88,18 @@ Read [references/templates.md](references/templates.md) for the structure of eac
 
 - Write only files that have real content
 - After writing, update the `## Contents` section in `index.md` with links to the files you created
+- Replace the HTML comment the scaffold left below the title with a one-line
+  `> …` note saying what the spec is for. That note is what `spec-browser`'s
+  catalog shows for the spec; leave it and the spec is listed with nothing to
+  identify it
+
+**Cite committed paths only.** The spec is durable; the design and plan it came
+from live in `.condux/`, which is gitignored — a citation into it is dead on
+every machine but this one. When the changelog or a content file needs to point
+at a design or a verification report, copy that file into the spec directory
+first (`design.md`, `verification.md`) and cite that path. If the artifact is
+already gone, say so and name what survives — a PR, a commit — instead of a
+path that resolves nowhere.
 
 ## Updating an Existing Spec
 

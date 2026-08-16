@@ -45,6 +45,7 @@ function findSpecs(dir, rel) {
 // is an honest "—", which is a prompt to write one.
 const META = /^\*{1,2}[^*]+:\*{1,2}/;
 const BULLET = /^([-*+]|\d+[.)])\s/;
+const COMMENT = /<!--[\s\S]*?-->/g;
 
 function metaOf(rel) {
   let title = rel, purpose = '';
@@ -53,6 +54,15 @@ function metaOf(rel) {
     for (let i = 0; i < lines.length; i++) {
       const l = lines[i].trim();
       if (!l) continue;
+      // An HTML comment is never a purpose — it is invisible in every rendered
+      // view of the file, so promoting it into the catalog puts text on the
+      // page that the spec itself does not show. This is what lets the
+      // scaffold leave a "write your purpose here" prompt in the file without
+      // that prompt becoming the description of every new spec.
+      if (l.startsWith('<!--')) {
+        while (i < lines.length && !lines[i].includes('-->')) i++;
+        continue;
+      }
       const h = l.match(/^#\s+(.*)/);
       if (h && title === rel) { title = h[1].trim(); continue; }
       const q = l.match(/^>\s*(.*)/);
@@ -63,6 +73,10 @@ function metaOf(rel) {
       break;
     }
   } catch (e) { /* keep defaults */ }
+  // Skipping comment *lines* above stops one swallowing the real purpose
+  // below it; stripping inline ones here catches the rest — a trailing
+  // "> Purpose. <!-- note -->" or a comment inside the quoted block.
+  purpose = purpose.replace(COMMENT, ' ').replace(/\s+/g, ' ').trim();
   return { title: title, purpose: clamp(purpose).replace(/\|/g, '\\|') };
 }
 

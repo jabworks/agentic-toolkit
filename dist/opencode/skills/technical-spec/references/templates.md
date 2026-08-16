@@ -9,6 +9,9 @@ Copy-paste templates for each spec file. Omit sections that don't apply — don'
 ```markdown
 # {Feature Name} — Tech Spec
 
+> One line: what this spec is for. This is what the catalog (`specs/index.md`)
+> shows for the spec — without it the spec is listed with no description.
+
 **Last updated:** {YYYY-MM-DD}
 **Commit:** {short-hash}
 **Status:** draft | review | stable
@@ -23,6 +26,13 @@ Copy-paste templates for each spec file. Omit sections that don't apply — don'
 ## Changelog
 - {YYYY-MM-DD} ({short-hash}): Initial spec
 ```
+
+**Cite committed paths only.** A spec is durable; the design and plan it came
+from are working state under `.condux/`, gitignored and gone on any other
+machine. If the changelog or body needs to point at a design or a verification
+report, copy that file into this spec's directory first (`design.md`,
+`verification.md`) and cite *that*. Six such citations were written before this
+rule existed and two were already dead when they were found.
 
 ---
 
