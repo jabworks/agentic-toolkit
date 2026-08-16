@@ -1,5 +1,24 @@
 # @jabworks/condux
 
+## 0.10.0
+
+### Minor Changes
+
+- [#79](https://github.com/jabworks/agentic-toolkit/pull/79) [`71b50e8`](https://github.com/jabworks/agentic-toolkit/commit/71b50e88e8c0746e43695e8fabb69ee6b1142dd0) Thanks [@vi-hieu](https://github.com/vi-hieu)! - technical-spec now scaffolds a purpose slot, and the artifact contract states which direction a reference may point.
+
+  Every new spec's `index.md` opens with an HTML comment prompting for the
+  one-line `> …` note that `spec-browser`'s catalog shows as the spec's
+  description. The prompt is a comment rather than visible placeholder text
+  because a placeholder generates into the catalog looking like content; a
+  comment is invisible in every rendered view and the catalog skips it, so an
+  unfilled spec still reads as an honest "no description" (docket [#33](https://github.com/jabworks/agentic-toolkit/issues/33)).
+
+  `workflow`'s artifact contract gains the rule that was missing behind six dead
+  citations: durable content may not depend on ephemeral content. A committed
+  file may not cite a path inside `.condux/` — promote the design or verification
+  report into the spec directory and cite the committed path, or, when the
+  artifact is already gone, name what survives instead (docket [#34](https://github.com/jabworks/agentic-toolkit/issues/34), [#35](https://github.com/jabworks/agentic-toolkit/issues/35)).
+
 ## 0.9.1
 
 ### Patch Changes
