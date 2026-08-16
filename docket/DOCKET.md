@@ -57,6 +57,60 @@ Worth considering, in order:
 Prior art on the seam problem: docket #10 (semantic collision detection) and
 #14 (trajectory-based eval) both bear on measuring exactly this.
 
+### 34. Specs and the docket archive cite .condux/ paths that are gitignored — two already dangle (2026-08-16)
+
+Found while auditing `.condux/` for prunable working state (2026-08-16).
+
+#### The defect
+
+Committed, durable files cite evidence living in `.condux/`, which is
+gitignored working state. The citations are therefore dead for anyone who
+clones this repo, and dead on any second machine.
+
+Six such citations exist. **Two already point at nothing:**
+
+- `specs/plugin-doctor/index.md:77` → `.condux/designs/2026-08-06-plugin-doctor.md` (missing)
+- `specs/uninstall-convention/index.md:24` and `docket/archive/2026.md:25` → `.condux/designs/2026-08-12-uninstall-convention.md` (missing)
+
+Still present, but only on the authoring machine:
+
+- `docket/archive/2026.md:579,598` → `.condux/verification/2026-08-14-cursor-channel/report.md`
+- `docket/archive/2026.md:589` → `.condux/verification/2026-08-14-agent-plugins-conformance/report.md`
+- `docket/archive/2026.md:296,302` → `.condux/designs/2026-08-12-html-surface-tokens-and-navigation.md`
+- `specs/docket/index.md:28` → `.condux/designs/2026-08-05-docket.md`
+
+#### Why it happened
+
+The artifact contract is sound in isolation — workflow's Artifacts table is
+explicit that `specs/` is what you keep and `.condux/` is scaffolding. What is
+missing is a rule about *citation direction*: durable content may not depend on
+ephemeral content. Both `technical-spec` (writing "Initial spec from signed-off
+design (.condux/designs/…)") and the docket's own closing entries do exactly
+that, and neither skill flags it.
+
+Note this is the same failure shape as docket #16 (supply-chain lint not
+covering plugin-level files) — a link-integrity gap in a tree nothing walks.
+
+#### Options, not yet decided
+
+1. **Promote on cite.** When a durable file needs to reference a design or
+   verification report, copy that artifact into the repo first (the specs dir
+   it belongs to) and cite the committed path. Costs repo size; the reports are
+   markdown and small — the 2.4M in `.condux/` is all screenshots, none cited.
+2. **Stop citing.** Treat designs and verification as unciteable by
+   construction: durable files may say "verified live, see PR #66" but never
+   name a `.condux/` path. Cheapest, loses the trail.
+3. **Summarise on close.** The docket entry or spec absorbs the *substance* of
+   the evidence at close time, so the artifact becomes redundant rather than
+   referenced.
+
+#### Enforcement
+
+Whatever is chosen, it wants a test — a walk over `specs/` and `docket/` for
+`.condux/` references, failing on any hit (option 2) or on any hit that does
+not resolve (option 1). Without one this silently recurs, which is how two
+citations died unnoticed.
+
 ## Someday
 
 ### 7. Spec MCP server — revisit when specs gain write-side invariants (2026-08-05)
