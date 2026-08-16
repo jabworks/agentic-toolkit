@@ -227,3 +227,59 @@ test('condux installer --uninstall leaves the shared hooks flag set', () => {
     fs.rmSync(sandbox.root, { recursive: true, force: true });
   }
 });
+
+// --- sync.sh's copy status --------------------------------------------------
+// sync_skill runs inside an `if`, which disables errexit for everything it
+// calls. copy_dir therefore has to propagate the copy's status by hand, or a
+// genuine failure is counted as a success: a code-11 rsync once printed
+// `36 synced, 0 skipped, 0 failed` and only node --test caught the empty
+// plugin afterwards (docket #31).
+//
+// The failure is injected with a stub rsync on PATH, and the whole run happens
+// against a throwaway copy of the repo. Both halves matter: a stub alone does
+// not neuter sync_plugin_files (it uses cp) or the four generators, so a run
+// started from a mid-edit working tree would write a *partial* sync into the
+// real dist/ as a test side effect.
+//
+// It has to be the argument-less full run: the single-skill path calls
+// sync_skill as a plain command, where errexit already aborts on its own. The
+// counting loop is the only place the status was dropped, so it is the only
+// place this regresses.
+const REPO = path.resolve(__dirname, '..');
+
+function cloneRepo() {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ci-sync-repo-'));
+  fs.cpSync(REPO, root, {
+    recursive: true,
+    filter: (src) => !/(^|\/)(\.git|node_modules)$/.test(src),
+  });
+  execFileSync('git', ['init', '-q'], { cwd: root });
+  return root;
+}
+
+test('sync.sh counts a failed copy instead of reporting 0 failed', () => {
+  const stubDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ci-sync-rsync-'));
+  const repo = cloneRepo();
+  try {
+    const stub = path.join(stubDir, 'rsync');
+    fs.writeFileSync(stub, '#!/usr/bin/env bash\necho "rsync: stub failure" >&2\nexit 11\n');
+    fs.chmodSync(stub, 0o755);
+
+    const result = spawnSync('bash', [path.join(repo, 'scripts/sync.sh')], {
+      cwd: repo,
+      encoding: 'utf8',
+      env: { ...process.env, PATH: `${stubDir}${path.delimiter}${process.env.PATH}` },
+    });
+
+    assert.notEqual(result.status, 0, 'a failed copy must fail the run');
+    assert.match(result.stderr, /copy failed/);
+    assert.match(
+      result.stdout,
+      /done — 0 synced, 0 skipped, \d+ failed/,
+      'the summary must count the failure, not report 0 failed',
+    );
+  } finally {
+    fs.rmSync(stubDir, { recursive: true, force: true });
+    fs.rmSync(repo, { recursive: true, force: true });
+  }
+});

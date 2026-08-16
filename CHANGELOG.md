@@ -12,14 +12,17 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## toolkit-ops 1.7.4 — 2026-08-15
+
+- chore(toolkit-ops): version 1.7.4
+
 ## toolkit-ops 1.7.3 — 2026-08-15
 
 - feat(git-worktree): native-first worktree isolation router (#26) (#73)
 
 ## git-worktree 1.0.1 — 2026-08-15
 
-- fix(git-worktree): ship the 'parallel checkout' trigger fix as 1.0.1
-- fix(git-worktree): add 'parallel checkout' to the trigger description
+- fix(git-worktree): ship the 'parallel checkout' trigger fix as 1.0.1 (#74)
 
 ## git-worktree 1.0.0 — 2026-08-15
 
