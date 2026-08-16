@@ -183,6 +183,16 @@ The spec is what you keep; the design and plan are scaffolding for building
 it. Don't promote working state into `docs/` or the repo root — a project's
 `docs/` belongs to the project, not to condux.
 
+**Citation direction: durable content may not depend on ephemeral content.**
+A committed file may not cite a path inside `.condux/` — that path is gone on
+any other machine and on any fresh clone, so the reference is dead for everyone
+but its author. When a spec, a changelog entry or a backlog item needs to point
+at a design or a verification report, **promote it first**: copy that file into
+the durable tree (the spec directory it belongs to) and cite the committed
+path. If the artifact no longer exists, say so and name what survives — a PR, a
+commit — rather than a path that resolves nowhere. The split above says where
+each artifact *lives*; this says which direction a reference may point.
+
 **Bootstrap.** `.condux/` is created on demand at the git root by the first
 skill that writes there. Before that first write, check it's ignored:
 

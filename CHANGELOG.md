@@ -16,9 +16,17 @@ The `@jabworks/condux` npm package has its own changelog at
 
 - fix(sync): count a failed copy instead of reporting "0 failed" (#31) (#75)
 
+## spec-browser 1.1.2 — 2026-08-16
+
+- feat(condux,spec-browser): a purpose slot that survives the catalog, and a rule about which way a citation may point (#33, #35)
+
 ## spec-browser 1.1.1 — 2026-08-16
 
-- chore(spec-browser): version 1.1.1
+- fix(spec-browser): stop reporting scaffold bookkeeping as a spec's purpose (#77)
+
+## condux 2.17.0 — 2026-08-16
+
+- feat(condux,spec-browser): a purpose slot that survives the catalog, and a rule about which way a citation may point (#33, #35)
 
 ## toolkit-ops 1.7.3 — 2026-08-15
 

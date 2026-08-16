@@ -109,6 +109,68 @@ test('build-index: long purposes are clamped on a boundary, never mid-word', () 
   assert.match(purpose, /(word|\.)…?$/, 'clamp landed mid-word');
 });
 
+// An HTML comment is invisible in every rendered view of the file, so
+// promoting one into the catalog puts text on the page that the spec itself
+// does not show. This is what lets technical-spec's scaffold leave a
+// "write your purpose here" prompt in each new index.md (docket #33) without
+// that prompt becoming the description of every new spec.
+test('build-index: an HTML comment is never reported as a purpose', () => {
+  const catalog = buildCatalog({
+    commented: `# Commented — Tech Spec
+
+<!-- One line on what this spec is for, as a "> …" note. -->
+
+**Last updated:** 2026-08-16
+`,
+  });
+  assert.equal(purposeOf(catalog, 'commented'), '—');
+});
+
+test('build-index: a comment does not swallow the purpose written below it', () => {
+  // The comment must be skipped, not merely rejected — treating it as the
+  // purpose and breaking would hide the real note two lines down.
+  const catalog = buildCatalog({
+    both: `# Both — Tech Spec
+
+<!-- a stray note the author left behind -->
+
+> The real purpose survives the comment above it.
+
+**Last updated:** 2026-08-16
+`,
+  });
+  assert.equal(purposeOf(catalog, 'both'), 'The real purpose survives the comment above it.');
+});
+
+test('build-index: a multi-line comment is skipped whole', () => {
+  const catalog = buildCatalog({
+    spanning: `# Spanning — Tech Spec
+
+<!--
+  a comment
+  spanning several lines
+-->
+
+> Purpose after a multi-line comment.
+`,
+  });
+  assert.equal(purposeOf(catalog, 'spanning'), 'Purpose after a multi-line comment.');
+});
+
+test('build-index: an inline trailing comment is stripped from a real purpose', () => {
+  const catalog = buildCatalog({
+    trailing: '# Trailing\n\n> Real purpose. <!-- with a note to self -->\n',
+  });
+  assert.equal(purposeOf(catalog, 'trailing'), 'Real purpose.');
+});
+
+test('build-index: an unterminated comment consumes the rest, not the loop', () => {
+  // No "-->" anywhere: the scan must run out of lines and return an honest
+  // em dash rather than spin or throw.
+  const catalog = buildCatalog({ broken: '# Broken\n\n<!-- never closed\n\n## Contents\n' });
+  assert.equal(purposeOf(catalog, 'broken'), '—');
+});
+
 test("build-index: this repo's own committed catalog is current", () => {
   // spec-browser tells users to keep specs/index.md committed so a fresh
   // checkout can reference it without running anything. A stale catalog is

@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "spec-browser",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Catalog and browse a growing specs/ tree: a plain-markdown index any agent can reference, plus a folder-grouped doc site reusing the plan-review renderer.",
   "author": {
     "name": "jabworks"
