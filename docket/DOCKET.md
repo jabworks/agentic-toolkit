@@ -108,6 +108,25 @@ toolkit-debugging-playbook, accepts workflow + root-cause-analysis) answered
 clause and is arguably correct — it *is* a request to fix a failing test. Adding
 TFD to its accepts is defensible; doing it because the number moved is not.
 
+#### Status 2026-08-17 — family A triaged: 19 accepts, 1 oracle flip, ~24 deliberate misses
+
+Judged all 45 sibling-miss cases under two ratified rules: `workflow` chosen
+over a downstream condux skill stays a miss (the eval's drift signal), and
+expected-null cases are judged on the answering skill's shipped contract.
+
+Shipped as commit `e5403d1` — 19 `accept` alternates and one oracle flip
+(`publish my npm package`: null → release, whose contract covers npm publishing
+outright; same class as the #32 corrections), every edit carrying a `note`.
+`fix this failing test right now` got its TFD accept on the merits argued
+above. Bumps: condux 2.17.3, toolkit-ops 1.7.5, adapting-skills 1.4.1,
+release 1.3.1, plus a changeset.
+
+The ~24 deliberate misses sort into contract gaps and over-trigger evidence,
+recorded as #39 rather than fixed mid-pass (the pass was corpus-only by
+decision). Remaining before this item can close: one validation band, read
+under the stability filter — the accepts change what counts as a hit, so the
+new baseline supersedes both 08-16/08-17 bands and the tfd-contract band.
+
 ## Someday
 
 ### 7. Spec MCP server — revisit when specs gain write-side invariants (2026-08-05)
@@ -257,5 +276,57 @@ bundling.
 If it ships: `condux-doctor` should learn to check it (it already probes the
 OpenCode registration), and any change to `packages/condux-opencode/index.js`
 needs `pnpm changeset` or the npm channel silently stalls.
+
+### 39. Contract gaps surfaced by the #37 triage — cases left as misses deliberately, each naming a weak seam (2026-08-17)
+
+Filed 2026-08-17 while closing out #37's family A. The triage's rule was
+corpus-only: where a miss pointed at a contract defect rather than a
+two-skill stimulus, the case stayed a miss and the defect is recorded here
+instead of being fixed mid-pass. Each cluster is small on its own; together
+they are the residue the accept-alternates pass could not absorb.
+
+**root-cause-analysis loses to workflow on plain bug reports.** `checkout
+crashes on empty cart` went 2/3→workflow and its "theres a bug where…"
+variant 0/3→workflow. RCA's contract triggers on "why is this failing" /
+"this bug" phrasing, but a declarative crash report without a question mark
+reads as an implementation request. Per the ratified rule these stay misses
+(workflow-over-downstream is the drift signal), but the seam is real: the
+fix, if wanted, is RCA claiming declarative bug *reports*, not just
+questions — the same passive-voice-to-user-phrasing move that fixed
+test-first-development in condux 2.17.2.
+
+**subagent-execution's ownership of its own machinery is invisible.**
+`which model should the coder agent get for this task` (0/3) and `whats in
+spawn-rules for picking an agent` (1/3) both miss, yet the skill's body
+owns model tiering and spawn-rules outright. Its when_to_use never names
+them. Same defect class as #32 and family B: rule in the body, absent from
+the contract.
+
+**git-operations' enumerated list reads as exhaustive.** `add a submodule
+to this repo` and `bisect to find the bad commit` (both expected null, both
+2/3 with git-operations misses) sit outside its named situations
+(undo/discard/park/integrate/recover). Either the contract should claim
+routine-but-unlisted git operations, or null is right and these stay
+over-trigger guards. Decide once, not per case.
+
+**remember attracts history questions it cannot answer.** Three cases
+(`what did the 2026-07-08 audit leave open`, `what mistakes did past
+sessions make in this repo`, `has this happened before in my nextjs app`)
+routed to remember, whose contract is about *saving* state, not answering
+history. Evidence its description reads as recall; failure-archaeology owns
+two of the three. Left as misses — routing there serves nobody.
+
+**Over-trigger evidence, no action wanted yet:** release on `deploy the app
+to production` (deploy ≠ cut-a-release), git-commit on `write a good PR
+description` (contract stops before push). These misses are the corpus
+doing its job.
+
+**Ambiguous jargon:** `sdd the plan` (0/3, technical-spec/null) — "sdd"
+reads as spec-driven development at least as naturally as
+subagent-driven-development. Candidate for rewording the stimulus rather
+than accepting anything.
+
+Related: #37 (the triage that produced this list), #14 (a trajectory eval
+would grade several of these on behavior instead of a single routing token).
 
 ## Loose threads
