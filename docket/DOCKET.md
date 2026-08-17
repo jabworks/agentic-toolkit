@@ -9,59 +9,50 @@ Stale open markers cost real sessions — closing means moving.
 
 ## Committed
 
-### 36. Re-measure the generic-subagent contract fix, and decide what to do about a corpus where 8% of cases are flaky (2026-08-16)
+### 37. Triage the 27 case-intrinsic flaky routing cases into accept alternates and one real seam (2026-08-17)
 
-Filed 2026-08-16 when #32 closed. Two things that entry produced but could not
-finish.
+Split from #36, 2026-08-17, once the bucket question it asked was answered.
 
-#### 1. An unvalidated fix
+Two 3-run bands (2026-08-16 and 2026-08-17, identical parameters) share **27
+flaky cases against 4.4 expected under pure judge variance — 6.2× chance**.
+Flakiness is therefore predominantly a property of specific cases, not of the
+judge, which is what makes this triable at all: each of the 27 can be settled
+once instead of costing a full band every time it is re-encountered.
 
-`spawn a generic subagent with this custom prompt` missed **0/3** in the
-variance band — the only perfectly stable miss in `subagent-deployment`'s
-corpus. Cause found: the skill's body bans generic subagents outright ("Never a
-generic subagent with an injected prompt — only condux's four named agents")
-but the trigger contract never said so, so the router could not see the rule it
-was being scored on. The contract now names it.
+Three families, wanting three different responses.
 
-**No eval has run since that edit.** It ships on reasoning, not measurement.
-One band re-run answers it; the case is stable, so even a single run is
-informative here in a way it was not for the flaky cases.
+**A. Two skills legitimately fit — use the `accept` alternates field.** It
+already exists for exactly this and is underused. Clear members: `verify this`
+(preflight / finalize / live-verification), `how is this repo organized` and
+`im new to this repo, give me the lay of the land` (toolkit-orientation and its
+neighbours), `any security issues in this change?` (code-review /
+security-review), `batch these lookups together` (1/3 in both bands).
 
-#### 2. The corpus is noisier than the effects being measured
+Care needed: an `accept` alternate is a claim that both answers are
+doctrinally correct, not a way to make a number go up. Anything added here
+should be defensible as "either routing serves the user."
 
-The band reported **47 flaky cases out of 582** — 8% of the corpus changes
-answer between identical runs. Mean was 90.9% ± 1.5pp. Every per-case
-conclusion drawn from a single run this session was wrong or unsupported:
+**B. A real seam — test-routing.** Four cases cluster on the
+test-first-development ↔ workflow boundary: `the test is failing so just fix
+the test`, `update the failing test to match the new behavior`, `add tests for
+the existing legacy code`, `write e2e tests with playwright for the flow`. Four
+co-located cases is not sampling noise; this is a contract question about which
+skill owns test work that arrives as a plain request. Answer the boundary
+first, then decide what the corpus should expect.
 
-- `run these together` looked like a regression caused by an edit; it is 2/3.
-- `parallelize the test suite in ci` looked fixed; it is 1/3.
-- Only `fix these 3 unrelated tests` and `two independent bugs` (3/3) and
-  `spawn a generic subagent` (0/3) said anything at all.
+**C. Known-hard oracle calls, carried deliberately.** `parallelize the test
+suite in ci` (1/3) was ratified as a known miss on 2026-08-16 — an eval should
+encode the correct answer, not the one the judge finds easy. Leave it, and
+leave the record of why.
 
-The operational lesson is cheap and worth writing down somewhere durable: **a
-single run cannot support a per-case claim.** Anything below roughly 3pp needs
-a band, and per-case verdicts need the stability column, not the accuracy
-number.
+Method note worth keeping: the discriminator here was intersecting two bands'
+flaky *sets*, not comparing their flaky *rates*. The rate was stable across
+months and said nothing about cause; the set overlap answered it in one
+computation. Any future "is this noise or a seam" question should reach for the
+same test.
 
-The deeper question is what a flaky case *is*. Three candidate readings, and
-they want different responses:
-
-1. **Judge variance** — same prompt, different answer, nothing to fix but
-   sample size. Prior art: A3 recorded 44 flaky cases; this run found 47, so
-   the rate is stable across months and skill-set changes.
-2. **Genuinely ambiguous stimulus** — two skills legitimately fit and the
-   corpus forces one. `batch these lookups together` (1/3) reads this way. The
-   `accept` alternates field already exists for exactly this and is underused.
-3. **A real seam** the corpus is detecting intermittently. These are the
-   valuable ones and they are currently indistinguishable from (1).
-
-Deciding that is prerequisite to any future routing work, because right now
-every measurement pays the full cost of a band to learn which bucket a case is
-in.
-
-Related: #14 (trajectory-based eval — `disallowed` assertions and deterministic
-static grading would remove the judge from the loop entirely, which is one
-answer to all of this), #10 (semantic collision detection).
+Related: #14 (trajectory-based eval — deterministic static grading removes the
+judge from the loop, which would dissolve family A rather than annotate it).
 
 ## Someday
 
@@ -147,5 +138,70 @@ eval runs — what we do by hand across dated reports), `max-repeat` and
 `loop-outcome` graders, JSONL/JUnit/markdown reporters.
 
 Found 2026-08-09 surveying awesome-copilot's maintenance machinery.
+
+### 38. OpenCode has no routing enforcement — condux ships the SessionStart hook to Claude and Codex only (2026-08-17)
+
+Noticed 2026-08-17 while answering "how does condux work in OpenCode?".
+
+condux enforces `/workflow` as the entry point with a `SessionStart` hook that
+injects `skills/workflow/hooks/routing.md` (~390 tokens) before the first
+prompt. One payload, one script (`session-start.mjs`), two host dialects:
+Claude Code gets a JSON envelope via `hooks/hooks.json`; Codex gets raw stdout
+via `codex-hooks.json` with `additionalContextLimit: 4000`.
+
+**OpenCode gets nothing.** `packages/condux-opencode/index.js` has one `config`
+hook that injects the four specialist agents and registers the bundled skills
+onto `cfg.skills.paths`, plus an opt-in `session.idle` listener for plan-review.
+No routing injection anywhere. So on OpenCode `/workflow` is reached by catalog
+inference alone — the ~80% path the hook was built to replace.
+
+Why that matters more than it sounds: the hook exists because on catalog
+inference `workflow` scored ~26-27/33, and the misses were condux's *own*
+siblings winning the query (root-cause-analysis on a crash report, draft-plan on
+"write the plan"). That collision cannot be fixed by strengthening workflow's
+description without stealing trigger space from those siblings, which
+toolkit-skill-standards forbids. OpenCode users are living with the exact
+failure mode the hook was built for.
+
+Side effect worth recording: the trigger evals measure catalog inference, so
+they describe OpenCode's real behaviour accurately and *understate* Claude and
+Codex, where the hook does work the corpus never sees.
+
+#### Candidate mechanism
+
+OpenCode supports `instructions` in config — an array of paths/globs
+automatically included as model context, combined with the user's AGENTS.md.
+The existing `config` hook already mutates `cfg` successfully for
+`skills.paths`, so the shape is proven:
+
+```js
+cfg.instructions ??= []
+const routing = path.join(SKILLS_DIR, 'workflow', 'hooks', 'routing.md')
+if (existsSync(routing) && !cfg.instructions.includes(routing)) cfg.instructions.push(routing)
+```
+
+`routing.md` **already ships in the npm package** at
+`skills/workflow/hooks/routing.md` — the build copies the whole skill dir
+including `hooks/`. It is dead weight in the tarball today. Nothing new needs
+bundling.
+
+#### What must be verified before this is treated as a fix
+
+1. **Timing.** `skills.paths` works because the config hook mutates the cached
+   config before OpenCode lazily discovers skills. Whether `instructions` is
+   resolved late enough to catch a plugin mutation is a different question, and
+   this package has already been bitten by exactly this class — a `tools` map
+   set in the config hook is silently ignored because `tools`→`permission`
+   folding happens during config parse, which is over by then. Needs an
+   empirical check on a live OpenCode install, not reasoning.
+2. **Cost and channel.** `SessionStart` fires once per startup/clear/compact;
+   `instructions` is ambient on every turn. Stronger enforcement, permanent
+   token cost, and it lands in the same channel as the user's own AGENTS.md
+   rules rather than as session-start context. Decide whether that trade is
+   wanted before wiring it.
+
+If it ships: `condux-doctor` should learn to check it (it already probes the
+OpenCode registration), and any change to `packages/condux-opencode/index.js`
+needs `pnpm changeset` or the npm channel silently stalls.
 
 ## Loose threads
