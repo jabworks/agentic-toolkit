@@ -1,13 +1,19 @@
 ---
 name: subagent-deployment
 description: Fan out 2+ independent tasks across named agents (explorer/researcher/planner/coder) in a single message when they share no files and no dependencies. For ad-hoc independent work discovered outside a formal plan.
-when_to_use: Trigger when two or more genuinely independent tasks are on the table — nothing shared between them, no ordering — and any mix of named agents fits. Not for executing an ordered plan task-by-task (that's subagent-execution).
+when_to_use: "Trigger when the fan-out is already the ask — \"in parallel\", \"fan out\", \"dispatch these together\", \"kick off explorer and researcher\" — over two or more genuinely independent tasks, nothing shared, no ordering. Independence alone is not the signal: a plain implementation request goes to workflow first, which loads this when the tier warrants it. Also owns which agent gets dispatched: asking to spawn a generic or custom-prompt subagent routes here, where the answer is one of the four named agents instead. Not for executing an ordered plan task-by-task (that's subagent-execution)."
 argument-hint: "<list of independent tasks>"
 ---
 
 # /subagent-deployment
 
 Deploy independent agents at once, not one at a time. For genuinely unrelated work — not for executing an ordered plan.
+
+**This runs inside `/workflow`, not instead of it.** Independent work is a
+precondition, not a trigger: "fix these three unrelated tests" is an
+implementation request and goes to the router, which loads this skill if the
+tier warrants it. What reaches here directly is a request that already names
+the fan-out — parallel, dispatch, fan out, these agents at once.
 
 ## Usage
 
