@@ -54,6 +54,60 @@ same test.
 Related: #14 (trajectory-based eval — deterministic static grading removes the
 judge from the loop, which would dissolve family A rather than annotate it).
 
+#### Status 2026-08-17 — family B settled, harness fixed, family A now has complete data
+
+**Family B is closed by contract edit, not by corpus edit.** `test-first-development`
+gained two clauses (condux 2.17.2, commit `6c9829b`): advisory questions about the
+practice, and requests to change an existing test so it passes, both in user
+phrasing. The old rule existed but was written agent-side in passive voice, so the
+router could not match it against a user message.
+
+Validated by a third 3-run band on identical parameters. Filtering to
+stable→stable transitions only — the sole comparison two bands of 8% flakiness
+support:
+
+- **1 case cured:** `should I tdd ui components`, a stable 0/3 miss in *both*
+  prior bands, is now 3/3. It was the corpus's most stable miss.
+- **0 regressions.** No case that was 3/3 in both prior bands dropped to 0/3.
+- 59 cases already disagreed between the two prior bands and cannot support a
+  per-case claim in either direction.
+
+The four other family-B cases all reached 3/3, including the two expecting
+`workflow`. Weaker claims (they were flaky before), but notable in kind: **no
+exclusion clause was added, and the cases that were leaking away from `workflow`
+stopped leaking anyway.** Sharpening a sibling's *positive* claim did the work a
+negative clause was supposed to do. Worth remembering before writing the next
+"not for X" line into a contract.
+
+Overall accuracy is uninformative as usual: 91.8% ± 3.0pp against 91.6% ± 1.9pp
+and 90.9% ± 1.5pp. The band's own spread widened (93.0 / 91.9 / 90.5).
+
+**Harness fixed first, deliberately** (commit `379c923`, report-only, `isHit`
+untouched so all three bands stay comparable):
+
+1. Every run's answer is kept, not just the final run's. The flaky table gained a
+   `got when missed` column. Without this, family A was unanswerable — a case that
+   hit on the last run hid its own miss target.
+2. Out-of-catalog answers are flagged. The judge sometimes names a Claude Code
+   built-in it was never shown (`security-review`, `dataviz`, `simplify`). Those
+   scored as misses while being contamination, not contract defects. A 24-case
+   smoke run surfaced `simplify` immediately — a case hand-reading the final-run
+   snapshots had missed.
+
+**Family A's premise, corrected.** On 17-of-27 partial data it looked like most
+flaky cases miss to `null`, where an `accept` alternate is meaningless. Complete
+per-run data says the opposite: of **79** imperfect cases, **34** miss only to
+null and **45** miss to a real sibling. So the triage is larger than #37 assumed,
+not smaller — and it is real per-case doctrinal work, since an observed sibling is
+not automatically a defensible one (`what did the 2026-07-08 audit leave open` →
+`remember` is simply wrong).
+
+One case to weigh first: `fix this failing test right now` (expected
+toolkit-debugging-playbook, accepts workflow + root-cause-analysis) answered
+`test-first-development` in one run. That is a direct consequence of the new
+clause and is arguably correct — it *is* a request to fix a failing test. Adding
+TFD to its accepts is defensible; doing it because the number moved is not.
+
 ## Someday
 
 ### 7. Spec MCP server — revisit when specs gain write-side invariants (2026-08-05)
