@@ -12,6 +12,14 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## condux 2.17.2 — 2026-08-17
+
+- fix(condux): let test-first-development claim the advisory questions and the fix-the-test requests it already owned (#37)
+
+## condux 2.17.1 — 2026-08-17
+
+- fix(condux): route subagent-deployment on the fan-out being asked for, and fix the eval oracle that punished the router (#32) (#81)
+
 ## toolkit-ops 1.7.4 — 2026-08-16
 
 - fix(sync): count a failed copy instead of reporting "0 failed" (#31) (#75)
@@ -23,10 +31,6 @@ The `@jabworks/condux` npm package has its own changelog at
 ## spec-browser 1.1.1 — 2026-08-16
 
 - fix(spec-browser): stop reporting scaffold bookkeeping as a spec's purpose (#77)
-
-## condux 2.17.1 — 2026-08-16
-
-- fix(condux): route subagent-deployment on the fan-out being asked for, and fix the eval oracle that punished the router (#32)
 
 ## condux 2.17.0 — 2026-08-16
 
