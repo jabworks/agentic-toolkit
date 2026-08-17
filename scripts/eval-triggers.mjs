@@ -54,6 +54,10 @@ function fmField(block, key) {
   return raw.replace(/^'|'$/g, '');
 }
 const catalog = [];
+// Every name the judge is allowed to answer with. An answer outside this set is
+// the model reaching past its instructions for a skill it knows from elsewhere
+// (Claude Code's built-ins), not a routing decision — see the report section.
+const catalogNames = new Set();
 for (const name of fs.readdirSync(SKILLS_DIR)) {
   const file = path.join(SKILLS_DIR, name, 'SKILL.md');
   if (!fs.existsSync(file)) continue;
@@ -62,6 +66,7 @@ for (const name of fs.readdirSync(SKILLS_DIR)) {
   const desc = fmField(m[1], 'description');
   const wtu = fmField(m[1], 'when_to_use');
   catalog.push(`- ${name}: ${desc}${wtu ? ' | When: ' + wtu : ''}`);
+  catalogNames.add(name);
 }
 
 // --- corpus ----------------------------------------------------------------
@@ -220,18 +225,40 @@ const T95 = { 1: 12.706, 2: 4.303, 3: 3.182, 4: 2.776, 5: 2.571, 6: 2.447, 7: 2.
 const meanAcc = perRunAcc.reduce((a, b) => a + b, 0) / perRunAcc.length;
 const sd = RUNS > 1 ? Math.sqrt(perRunAcc.reduce((s, a) => s + (a - meanAcc) ** 2, 0) / (RUNS - 1)) : 0;
 const ci95 = RUNS > 1 ? (T95[RUNS - 1] || 1.96) * sd / Math.sqrt(RUNS) : 0;
+const caseKey = (r) => r.query + '||' + (r.expected ?? '');
 const hitCounts = new Map();
+// Every run's answer per case, not just the last one's. The runs already happen;
+// keeping only `results` (the final run) threw this away, which made a per-case
+// question like "where does this case go when it misses?" unanswerable without
+// paying for another band. Reporting only — scoring is untouched (docket #37).
+const answers = new Map();
 for (const { results: rr } of runsData) {
   for (const r of rr) {
     if (r.got === '(batch-error)') continue;
-    const key = r.query + '||' + (r.expected ?? '');
+    const key = caseKey(r);
     const cur = hitCounts.get(key) || { case: r, hit: 0, seen: 0 };
     cur.seen++;
     if (isHit(r)) cur.hit++;
     hitCounts.set(key, cur);
+    if (!answers.has(key)) answers.set(key, []);
+    answers.get(key).push(r.got ?? null);
   }
 }
 const flaky = [...hitCounts.values()].filter((c) => c.hit > 0 && c.hit < c.seen);
+// Distinct answers a case gave when it did NOT hit — the miss-target distribution.
+// `accept` alternates are only defensible when this names a real sibling; a case
+// that misses to null has no alternate to accept.
+const missTargets = (c) => [...new Set(
+  (answers.get(caseKey(c)) || [])
+    .filter((g) => !isHit({ ...c, got: g }))
+    .map((g) => g ?? 'null'),
+)];
+// Answers naming a skill the judge was never shown. Scored as-is (changing that
+// would break comparability with prior bands); surfaced so they are not mistaken
+// for contract defects.
+const outOfCatalog = [...hitCounts.values()]
+  .map((c) => ({ case: c.case, seen: [...new Set(answers.get(caseKey(c.case)) || [])].filter((g) => g != null && !catalogNames.has(g)) }))
+  .filter((c) => c.seen.length);
 
 const lines = [];
 lines.push(`# Trigger-routing run — ${new Date().toISOString().slice(0, 10)}`);
@@ -262,10 +289,24 @@ lines.push('');
 if (RUNS > 1 && flaky.length) {
   lines.push(`## Flaky cases (${flaky.length} — hit in some trials, missed in others)`);
   lines.push('');
-  lines.push('| query | expected | hits |');
-  lines.push('|---|---|---|');
+  lines.push('| query | expected | hits | got when missed |');
+  lines.push('|---|---|---|---|');
   for (const f of flaky) {
-    lines.push(`| ${f.case.query.replace(/\|/g, '\\|')} | ${f.case.expected ?? 'null'} | ${f.hit}/${f.seen} |`);
+    lines.push(`| ${f.case.query.replace(/\|/g, '\\|')} | ${f.case.expected ?? 'null'} | ${f.hit}/${f.seen} | ${missTargets(f.case).join(', ')} |`);
+  }
+  lines.push('');
+}
+if (outOfCatalog.length) {
+  lines.push(`## Out-of-catalog answers (${outOfCatalog.length})`);
+  lines.push('');
+  lines.push('The judge named a skill it was never shown. Scored as given — these are');
+  lines.push('harness contamination, not routing defects, and no `accept` alternate can');
+  lines.push('fix one.');
+  lines.push('');
+  lines.push('| query | expected | named |');
+  lines.push('|---|---|---|');
+  for (const o of outOfCatalog) {
+    lines.push(`| ${o.case.query.replace(/\|/g, '\\|')} | ${o.case.expected ?? 'null'} | ${o.seen.join(', ')} |`);
   }
   lines.push('');
 }
@@ -273,7 +314,10 @@ const report = lines.join('\n');
 
 if (OUT) {
   fs.writeFileSync(OUT, report + '\n');
-  fs.writeFileSync(OUT.replace(/\.md$/, '') + '.json', JSON.stringify(results, null, 2) + '\n');
+  // `got` stays the final run's answer so prior analyses keep working; `runs`
+  // carries every trial, which is what per-case questions actually need.
+  const exported = results.map((r) => ({ ...r, runs: answers.get(caseKey(r)) ?? [] }));
+  fs.writeFileSync(OUT.replace(/\.md$/, '') + '.json', JSON.stringify(exported, null, 2) + '\n');
   process.stderr.write(`wrote ${OUT}\n`);
 } else {
   process.stdout.write(report + '\n');
