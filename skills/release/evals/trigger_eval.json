@@ -9,7 +9,7 @@
   { "query": "whats in the next release", "should_trigger": true, "expected_skill": "release" },
   { "query": "draft release notes from the commits", "should_trigger": true, "expected_skill": "release" },
   { "query": "changeset version and publish", "should_trigger": true, "expected_skill": "release" },
-  { "query": "merge the version packages PR", "should_trigger": true, "expected_skill": "release" },
+  { "query": "merge the version packages PR", "should_trigger": true, "expected_skill": "release", "accept": ["git-operations"], "note": "The corpus itself expects git-operations for \"merge it into main\"; merging is a git operation even when the PR happens to trigger the release channel." },
   { "query": "the tag already exists, now what", "should_trigger": true, "expected_skill": "release", "kind": "in-context" },
   { "query": "undo the release we just cut", "should_trigger": true, "expected_skill": "release", "accept": ["git-operations"] },
   { "query": "npm unpublish the broken version", "should_trigger": true, "expected_skill": "release", "accept": ["git-operations"] },

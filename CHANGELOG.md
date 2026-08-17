@@ -12,6 +12,18 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## toolkit-ops 1.7.5 — 2026-08-17
+
+- fix(evals): triage the sibling-miss cases — 19 accept alternates and one oracle flip (#37)
+
+## release 1.3.1 — 2026-08-17
+
+- fix(evals): triage the sibling-miss cases — 19 accept alternates and one oracle flip (#37)
+
+## condux 2.17.3 — 2026-08-17
+
+- fix(evals): triage the sibling-miss cases — 19 accept alternates and one oracle flip (#37)
+
 ## condux 2.17.2 — 2026-08-17
 
 - fix(condux): let test-first-development claim the advisory questions and the fix-the-test requests it already owned (#37)
@@ -19,6 +31,10 @@ The `@jabworks/condux` npm package has its own changelog at
 ## condux 2.17.1 — 2026-08-17
 
 - fix(condux): route subagent-deployment on the fan-out being asked for, and fix the eval oracle that punished the router (#32) (#81)
+
+## adapting-skills 1.4.1 — 2026-08-17
+
+- fix(evals): triage the sibling-miss cases — 19 accept alternates and one oracle flip (#37)
 
 ## toolkit-ops 1.7.4 — 2026-08-16
 

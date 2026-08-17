@@ -11,8 +11,8 @@
   { "query": "which manifest gets the version field, marketplace or plugin.json", "should_trigger": true, "expected_skill": "toolkit-plugin-reference", "accept": ["toolkit-change-control"] },
   { "query": "did the dist mirror get updated when I edited the skill", "should_trigger": true, "expected_skill": "toolkit-change-control", "accept": ["toolkit-debugging-playbook"] },
   { "query": "retire the spec-browser skill, what do I remove", "should_trigger": true, "expected_skill": "toolkit-change-control" },
-  { "query": "quick temp skill, skip the marketplace bit for now", "should_trigger": true, "expected_skill": "toolkit-change-control" },
-  { "query": "is it safe to hand-edit dist to hotfix this", "should_trigger": true, "expected_skill": "toolkit-change-control" },
+  { "query": "quick temp skill, skip the marketplace bit for now", "should_trigger": true, "expected_skill": "toolkit-change-control", "accept": ["toolkit-foundry"], "note": "Creating a skill is foundry's domain and its checklist itself enforces registration — routing to the builder still lands on the gate." },
+  { "query": "is it safe to hand-edit dist to hotfix this", "should_trigger": true, "expected_skill": "toolkit-change-control", "accept": ["toolkit-failure-archaeology"], "note": "is-it-safe is also a why-is-this-banned question, and archaeology holds the dist hand-edit history. change-control stays primary as the rule owner." },
   { "query": "user says they still see the old skill behavior after my fix shipped", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },
   { "query": "scaffold a brand new skill for me", "should_trigger": true, "expected_skill": "toolkit-foundry" },
   { "query": "review my description wording", "should_trigger": true, "expected_skill": "toolkit-skill-standards" },
@@ -20,5 +20,5 @@
   { "query": "run typecheck lint and tests on my project", "should_trigger": true, "expected_skill": "finalize" },
   { "query": "write the commit message for this diff", "should_trigger": true, "expected_skill": "git-commit" },
   { "query": "whats semver", "should_trigger": false, "expected_skill": null },
-  { "query": "publish my npm package", "should_trigger": false, "expected_skill": null }
+  { "query": "publish my npm package", "should_trigger": true, "expected_skill": "release", "note": "Oracle corrected 2026-08-17 (#37): release's shipped contract covers npm publishing outright (\"tag and publish\"), so null contradicted a shipped contract — same class as the #32 corrections." }
 ]

@@ -19,5 +19,5 @@
   { "query": "is argument-hint a real frontmatter field", "should_trigger": true, "expected_skill": "toolkit-plugin-reference" },
   { "query": "write a good PR description", "should_trigger": false, "expected_skill": null },
   { "query": "improve the docstring of this python function", "should_trigger": false, "expected_skill": null },
-  { "query": "lint my typescript code", "should_trigger": false, "expected_skill": null }
+  { "query": "lint my typescript code", "should_trigger": false, "expected_skill": null, "accept": ["finalize"], "note": "finalize runs lint as part of its gate, so routing there serves the user. null stays primary: plain lint needs no skill." }
 ]

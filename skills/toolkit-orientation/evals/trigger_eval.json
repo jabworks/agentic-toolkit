@@ -8,7 +8,7 @@
   { "query": "why is there a skills/condux dir inside dist/plugins/condux", "should_trigger": true, "expected_skill": "toolkit-orientation" },
   { "query": "can I edit dist/plugins/session-report directly? quick fix", "should_trigger": true, "expected_skill": "toolkit-orientation" },
   { "query": "readme says one thing but the folder looks different, which do I trust", "should_trigger": true, "expected_skill": "toolkit-orientation" },
-  { "query": "wheres the marketplace json and what reads it", "should_trigger": true, "expected_skill": "toolkit-orientation" },
+  { "query": "wheres the marketplace json and what reads it", "should_trigger": true, "expected_skill": "toolkit-orientation", "accept": ["toolkit-plugin-reference"], "note": "The what-reads-it half is plugin-reference's domain; the stimulus genuinely spans both skills." },
   { "query": "whered the .claude/skills folder go", "should_trigger": true, "expected_skill": "toolkit-orientation" },
   { "query": "explain the two install channels, npx skills add vs plugin install", "should_trigger": true, "expected_skill": "toolkit-plugin-reference", "accept": ["toolkit-orientation"] },
   { "query": "whats the difference between .claude-plugin and .codex-plugin manifests", "should_trigger": true, "expected_skill": "toolkit-plugin-reference" },

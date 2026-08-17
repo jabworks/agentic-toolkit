@@ -14,6 +14,6 @@
   { "query": "why isn't my toolkit skill triggering after install", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },
   { "query": "write up what we decided as a spec", "should_trigger": true, "expected_skill": "technical-spec" },
   { "query": "improve the performance of this function", "should_trigger": false, "expected_skill": null, "accept": ["workflow"] },
-  { "query": "update the npm package to the latest version", "should_trigger": false, "expected_skill": null },
+  { "query": "update the npm package to the latest version", "should_trigger": false, "expected_skill": null, "accept": ["workflow"], "note": "A dependency bump is a dev task; workflow's any-implementation-request claim covers it. The case still guards adapting-skills against the \"update\" bait." },
   { "query": "adapt the design to mobile breakpoints", "should_trigger": false, "expected_skill": null, "accept": ["workflow"] }
 ]

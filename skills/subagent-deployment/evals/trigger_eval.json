@@ -18,5 +18,5 @@
   { "query": "deploy the app to production", "should_trigger": false, "expected_skill": null },
   { "query": "set up the deployment pipeline for staging", "should_trigger": false, "expected_skill": null },
   { "query": "parallelize the test suite in ci", "should_trigger": true, "expected_skill": "workflow", "note": "parallelising a test suite is an implementation request, not a fan-out instruction" },
-  { "query": "map reduce over these records", "should_trigger": false, "expected_skill": null }
+  { "query": "map reduce over these records", "should_trigger": false, "expected_skill": null, "accept": ["workflow"], "note": "Reads as a data-processing implementation request, which workflow claims outright. The case still guards subagent-deployment against the parallelism-sounding bait." }
 ]

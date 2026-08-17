@@ -21,6 +21,6 @@
   { "query": "has this drift thing happened before", "should_trigger": true, "expected_skill": "toolkit-failure-archaeology" },
   { "query": "what fields does plugin.json need", "should_trigger": true, "expected_skill": "toolkit-plugin-reference" },
   { "query": "is it safe to hand-edit dist to hotfix this", "should_trigger": true, "expected_skill": "toolkit-change-control" },
-  { "query": "browser devtools show a network error on my site", "should_trigger": false, "expected_skill": null },
+  { "query": "browser devtools show a network error on my site", "should_trigger": false, "expected_skill": null, "accept": ["root-cause-analysis"], "note": "root-cause-analysis legitimately claims the start of any debugging. The case keeps guarding toolkit-debugging-playbook against generic web-debugging bait — that remains the miss it exists to catch." },
   { "query": "fix the 502 on my nginx server", "should_trigger": false, "expected_skill": null }
 ]

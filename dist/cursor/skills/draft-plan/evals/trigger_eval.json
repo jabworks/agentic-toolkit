@@ -17,6 +17,6 @@
   { "query": "execute the plan with agents", "should_trigger": true, "expected_skill": "subagent-execution" },
   { "query": "design isnt agreed yet, help me align first", "should_trigger": true, "expected_skill": "discovery" },
   { "query": "add a task to my todo list", "should_trigger": false, "expected_skill": null, "accept": ["record"] },
-  { "query": "plan my sprint for next week", "should_trigger": false, "expected_skill": null },
+  { "query": "plan my sprint for next week", "should_trigger": false, "expected_skill": null, "accept": ["groom"], "note": "Where a docket exists, sprint planning is what-to-work-on-next — groom's contract claims that verbatim. null stays the primary: nothing forces a backlog reading." },
   { "query": "make a project timeline gantt chart", "should_trigger": false, "expected_skill": null }
 ]

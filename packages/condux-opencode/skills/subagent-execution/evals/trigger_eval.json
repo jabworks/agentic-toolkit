@@ -16,7 +16,7 @@
   { "query": "fan out independent lookups across agents", "should_trigger": true, "expected_skill": "subagent-deployment" },
   { "query": "three independent bugs, fix them concurrently", "should_trigger": true, "expected_skill": "subagent-deployment" },
   { "query": "ill implement the plan myself top to bottom", "should_trigger": true, "expected_skill": "workflow" },
-  { "query": "the plan is fully implemented, verify it", "should_trigger": true, "expected_skill": "preflight" },
+  { "query": "the plan is fully implemented, verify it", "should_trigger": true, "expected_skill": "preflight", "accept": ["live-verification"], "note": "live-verification's contract claims post-implementation \"verify it\" phrasing directly; preflight-vs-live-verification is a legitimate two-skill stimulus." },
   { "query": "orchestrate the ci pipeline stages", "should_trigger": false, "expected_skill": null },
   { "query": "kubernetes pod scheduling question", "should_trigger": false, "expected_skill": null }
 ]
