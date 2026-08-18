@@ -1,6 +1,6 @@
 ---
 name: subagent-execution
-description: "Execute a plan using named specialist agents. Default is to implement yourself — only spawn when there is a concrete justification. Trigger when implementing a LARGE plan with tasks that benefit from agent specialization or parallel exploration — including task briefs, review packages, spawn rules, and resuming an interrupted plan from the `.condux/progress/` ledger (not session-handoff). Not for ad-hoc independent tasks outside a plan (that's subagent-deployment)."
+description: "Execute a plan using named specialist agents. Default is to implement yourself — only spawn when there is a concrete justification. Trigger when implementing a LARGE plan with tasks that benefit from agent specialization or parallel exploration — including task briefs, review packages, spawn rules, which model a dispatched agent should get, and resuming an interrupted plan from the `.condux/progress/` ledger (not session-handoff). Not for ad-hoc independent tasks outside a plan (that's subagent-deployment)."
 argument-hint: "<plan file path>"
 ---
 

@@ -13,6 +13,14 @@
 // separate `npx skills add` step for condux. This works because the config hook
 // mutates the cached config before OpenCode lazily discovers skills.
 //
+// It also pushes workflow's routing.md onto config.instructions, giving
+// OpenCode the same `/workflow`-as-entry-point enforcement Claude Code and
+// Codex get from their SessionStart hook — OpenCode has no hook system for
+// that, so `instructions` (ambient every turn, verified via `opencode debug
+// config` against a config-hook mutation) is the closest equivalent. Costs
+// ~390 tokens/turn, permanently; that trade was made deliberately, not by
+// default (docket #38).
+//
 // Optional plan-review listener (CONDUX_PLAN_REVIEW=1): when the primary
 // `plan` agent finishes a turn (session.idle), spawns the plan-review annotate
 // server from an installed condux skill tree. Best-effort only — OpenCode does
@@ -28,6 +36,7 @@ import { fileURLToPath } from 'node:url';
 const PKG_DIR = path.dirname(fileURLToPath(import.meta.url));
 const AGENTS_DIR = path.join(PKG_DIR, 'agents');
 const SKILLS_DIR = path.join(PKG_DIR, 'skills');
+const ROUTING_MD = path.join(SKILLS_DIR, 'workflow', 'hooks', 'routing.md');
 
 // Bundled agent files use exactly the frontmatter the toolkit generator emits:
 // a JSON-quoted `description`, a plain `mode`, an optional `permission` deny map
@@ -106,6 +115,13 @@ export const ConduxPlugin = async ({ worktree }) => {
         cfg.skills ??= {};
         cfg.skills.paths ??= [];
         if (!cfg.skills.paths.includes(SKILLS_DIR)) cfg.skills.paths.push(SKILLS_DIR);
+      }
+
+      // Route through /workflow the same way Claude Code and Codex do —
+      // see the file-header comment for why `instructions` is the mechanism.
+      if (existsSync(ROUTING_MD)) {
+        cfg.instructions ??= [];
+        if (!cfg.instructions.includes(ROUTING_MD)) cfg.instructions.push(ROUTING_MD);
       }
     },
 

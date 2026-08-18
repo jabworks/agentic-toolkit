@@ -333,7 +333,17 @@ function probeOpencode(hosts) {
     return { host: 'opencode', status: 'broken', detail: 'the installed package entry point does not parse', fix: `reinstall ${PACKAGE}` };
   }
 
-  return { host: 'opencode', status: 'done', detail: 'registered, and the installed package ships its agents and skills' };
+  const routing = path.join(pkg, 'skills', 'workflow', 'hooks', 'routing.md');
+  if (!fs.existsSync(routing)) {
+    return {
+      host: 'opencode',
+      status: 'broken',
+      detail: 'the installed package ships no workflow/hooks/routing.md — /workflow routing enforcement is missing',
+      fix: `reinstall ${PACKAGE}`,
+    };
+  }
+
+  return { host: 'opencode', status: 'done', detail: 'registered, and the installed package ships its agents, skills, and /workflow routing enforcement' };
 }
 
 // The four specialist agents are plugin-level and reached by their own sync

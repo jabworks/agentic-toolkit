@@ -11,7 +11,7 @@
   { "query": "continue the wave, tasks 5 and 6 are unblocked", "should_trigger": true, "expected_skill": "subagent-execution" },
   { "query": "we compacted mid-plan, where were we with the agents", "should_trigger": true, "expected_skill": "subagent-execution" },
   { "query": "dont re-dispatch tasks that are already done", "should_trigger": true, "expected_skill": "subagent-execution" },
-  { "query": "sdd the plan", "should_trigger": true, "expected_skill": "subagent-execution" },
+  { "query": "spawn the agents for this plan", "should_trigger": true, "expected_skill": "subagent-execution" },
   { "query": "dispatch these three unrelated fixes in parallel", "should_trigger": true, "expected_skill": "subagent-deployment" },
   { "query": "fan out independent lookups across agents", "should_trigger": true, "expected_skill": "subagent-deployment" },
   { "query": "three independent bugs, fix them concurrently", "should_trigger": true, "expected_skill": "subagent-deployment" },
