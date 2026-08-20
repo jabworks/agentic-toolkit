@@ -1,5 +1,16 @@
 # @jabworks/condux
 
+## 0.12.0
+
+### Minor Changes
+
+- [#85](https://github.com/jabworks/agentic-toolkit/pull/85) [`a0cf2c5`](https://github.com/jabworks/agentic-toolkit/commit/a0cf2c53c14e83a05d1518ea6827e3a71ea5a6cc) Thanks [@vi-hieu](https://github.com/vi-hieu)! - Add the `blueprint` skill — dependency-free design-time visuals: grayscale
+  HTML wireframes for UI screens and flows, inline-SVG diagrams for data models,
+  flows, architecture, and state machines. Loaded by `discovery` at the propose
+  step, citable from `draft-plan` task cards, and triggerable standalone
+  ("mock this up", "visualize the data model"). Also updates the workflow
+  routing payload and skill table to carry the new member.
+
 ## 0.11.0
 
 ### Minor Changes
