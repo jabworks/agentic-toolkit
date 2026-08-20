@@ -110,6 +110,10 @@ implementer (especially a subagent) sees only their own card, so `Consumes`
 is what prevents drift like `clearLayers()` in Task 3 vs `clearFullLayers()`
 in Task 7.
 
+When `blueprint` mockups exist for the feature, a card may cite the relevant
+file under `.condux/designs/<feature>/mockups/` so the implementer sees the
+visual target for their task (ephemeral→ephemeral citation — allowed).
+
 ## Code Sketches
 
 Plans are reviewed by annotation before any code is written, so the cheapest

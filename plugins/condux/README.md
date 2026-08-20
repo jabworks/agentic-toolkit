@@ -120,7 +120,7 @@ data edit.
 
 ---
 
-## The 14 skills
+## The 15 skills
 
 Start with `/workflow` — it is both the entry point and the operating manual.
 
@@ -128,6 +128,7 @@ Start with `/workflow` — it is both the entry point and the operating manual.
 |---|---|
 | `workflow` | Routes any task to Small / Medium / Large and carries the operating rules. Every dev task starts here. |
 | `discovery` | Turns a rough idea into a signed-off design. Goal-level questions, alternatives, then a detail round that feeds the spec. |
+| `blueprint` | Design-time visual clarity: grayscale HTML wireframes for UI, inline-SVG diagrams for data models, flows, and architecture. Structure, never style. |
 | `draft-plan` | Converts a signed-off design into lean task cards — what, why, gotchas, dependencies. |
 | `technical-spec` | Durable feature specs under `specs/`, with a live preview. |
 | `plan-review` | Renders a plan in a local browser for inline annotation, returns approve / revise / deny. |

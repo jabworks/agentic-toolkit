@@ -1,0 +1,96 @@
+[
+  {
+    "query": "mock this up before we build it",
+    "should_trigger": true,
+    "expected_skill": "blueprint"
+  },
+  {
+    "query": "wireframe the settings page so the frontend dev knows what to expect",
+    "should_trigger": true,
+    "expected_skill": "blueprint"
+  },
+  {
+    "query": "can you mock up the checkout flow including the empty and error states",
+    "should_trigger": true,
+    "expected_skill": "blueprint"
+  },
+  {
+    "query": "visualize the data model for orders and customers",
+    "should_trigger": true,
+    "expected_skill": "blueprint"
+  },
+  {
+    "query": "sketch the architecture for the notification service",
+    "should_trigger": true,
+    "expected_skill": "blueprint"
+  },
+  {
+    "query": "diagram the auth flow between the gateway and the identity service",
+    "should_trigger": true,
+    "expected_skill": "blueprint"
+  },
+  {
+    "query": "draw the state machine for the subscription lifecycle",
+    "should_trigger": true,
+    "expected_skill": "blueprint"
+  },
+  {
+    "query": "I want a visual of how the entities relate before we touch the schema",
+    "should_trigger": true,
+    "expected_skill": "blueprint"
+  },
+  {
+    "query": "give me a quick layout mockup of the dashboard so we agree on structure",
+    "should_trigger": true,
+    "expected_skill": "blueprint"
+  },
+  {
+    "query": "show me a wireframe of both options for the onboarding screen",
+    "should_trigger": true,
+    "expected_skill": "blueprint",
+    "accept": ["discovery"]
+  },
+  {
+    "query": "before planning, can we visualize what this feature will look like",
+    "should_trigger": true,
+    "expected_skill": "blueprint",
+    "accept": ["discovery", "workflow"]
+  },
+  {
+    "query": "mock up the ER diagram for the new billing tables",
+    "should_trigger": true,
+    "expected_skill": "blueprint",
+    "kind": "in-context"
+  },
+  {
+    "query": "add a wireframe for the loading state too",
+    "should_trigger": true,
+    "expected_skill": "blueprint",
+    "kind": "in-context"
+  },
+  {
+    "query": "make this landing page look premium",
+    "should_trigger": false,
+    "expected_skill": null
+  },
+  {
+    "query": "plot signups per week as a bar chart",
+    "should_trigger": false,
+    "expected_skill": null
+  },
+  {
+    "query": "build the settings page from the approved design",
+    "should_trigger": false,
+    "expected_skill": null
+  },
+  {
+    "query": "implement this Figma design as a React component",
+    "should_trigger": false,
+    "expected_skill": null
+  },
+  {
+    "query": "pick a color palette and typography for the marketing site",
+    "should_trigger": false,
+    "expected_skill": null
+  }
+]

@@ -150,6 +150,7 @@ Load each only when its step is reached.
 | Skill | When | Gate discipline |
 |---|---|---|
 | `discovery` | LARGE, before planning, or scope unclear | soft gate — ask before skipping |
+| `blueprint` | discovery's propose step, or a standalone mockup/visualization ask | load only when a UI surface or data model is in play; structure, never styling |
 | `draft-plan` | LARGE, after discovery sign-off | needs a signed-off design; no design → apply the discovery soft gate first |
 | `test-first-development` | user asks, or picks it at CP-1 | one upfront consent; always ask before editing an existing test spec |
 | `subagent-execution` | LARGE plan where specialization/parallelism pays off | default is implement yourself |

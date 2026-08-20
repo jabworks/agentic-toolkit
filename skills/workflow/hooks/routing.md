@@ -8,7 +8,7 @@ it with the user, then executes the matching flow, loading downstream skills onl
 when a step needs them.
 
 **These skills execute _within_ workflow, never instead of it:** `discovery`,
-`draft-plan`, `test-first-development`, `subagent-execution`,
+`draft-plan`, `blueprint`, `test-first-development`, `subagent-execution`,
 `subagent-deployment`, `preflight`, `finalize`, `code-review`,
 `root-cause-analysis`, `live-verification`, `plan-review`, `technical-spec`.
 
