@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "toolkit-ops",
-  "version": "1.7.5",
+  "version": "1.7.6",
   "description": "Claude Code skills for operating the jabworks/agentic-toolkit repo itself: orientation, skill foundry (create/register/publish), change control, skill-authoring standards, debugging playbook, failure archaeology, plugin schema reference, and research frontier.",
   "author": {
     "name": "jabworks"

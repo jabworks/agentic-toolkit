@@ -141,4 +141,37 @@ the toolkit ships four dist channels.
 Out of this repo's tree — touches `~/.claude` and `~/.agents` only, which are shared config
 and in bounds, but it is a workstation-hygiene task, not a toolkit change. No commit here.
 
+### 42. Routing hook out-competes test-first-development on its own trigger phrases (7 cases at 2/3 flaky) (2026-08-20)
+
+Surfaced by the 3-run trigger eval on 2026-08-20
+(`skills/toolkit-research-frontier/references/eval-blueprint-2026-08-20.md`).
+Pre-existing, unrelated to blueprint.
+
+Seven `test-first-development` cases sit at **2/3 flaky, every one losing to
+`workflow`** — a coherent pattern, not scatter:
+
+- tdd this feature
+- test-first for the parser module
+- write failing tests before implementing
+- red green refactor cycle please
+- can you do this test driven
+- write unit tests for the date helpers before you code them
+- bug: prove it with a failing test then fix it
+- tets first plz (typo case)
+
+**Hypothesis:** the SessionStart routing payload's "every implementation request
+starts at `/condux:workflow`" claim is absolute enough that the judge routes an
+explicit opt-in skill's own trigger phrases to the router instead. That is
+arguably *correct* runtime behaviour — workflow would then load
+test-first-development at the right checkpoint — in which case the fix is the
+oracle (`accept: ["workflow"]`, the idiom `adapting-skills` and now `blueprint`
+use), not the description.
+
+Decide which before changing anything: if the intent is that these phrases fire
+the skill directly, the routing payload needs an explicit carve-out; if the
+intent is that workflow loads it, eight oracles need `accept` alternates and the
+measured accuracy rises without any behaviour change.
+
+Same question likely applies to the `coding-directive` pair at 2/3 → null.
+
 ## Loose threads
