@@ -104,4 +104,41 @@ eval runs — what we do by hand across dated reports), `max-repeat` and
 
 Found 2026-08-09 surveying awesome-copilot's maintenance machinery.
 
+### 40. Retire the third-party taste-skill installs now that blueprint covers the clarity use case (2026-08-20)
+
+`.agents/skills/` and `skills-lock.json` (both untracked, repo-local only) hold ten
+skills installed from `Leonxlnx/taste-skill` via `npx skills add`: brandkit,
+design-taste-frontend, full-output-enforcement, high-end-visual-design, image-to-code,
+imagegen-frontend-mobile, imagegen-frontend-web, industrial-brutalist-ui, minimalist-ui,
+redesign-existing-projects.
+
+**Why they never fired:** their descriptions are capability blurbs with zero trigger
+conditions — no "Use when…", no `when_to_use`. That is the same trigger-contract defect
+this repo's own `skill-invariants.test.mjs` enforces against first-party skills.
+
+`blueprint` (condux 2.18.0, PR #85) now covers the design-time clarity use case
+first-party and trigger-contracted. Decide per skill whether anything here is still
+wanted — the aesthetic/premium-direction ones (brandkit, high-end-visual-design,
+industrial-brutalist-ui, minimalist-ui) are deliberately *outside* blueprint's boundary,
+so retiring all ten is not automatic.
+
+If any are kept, they need trigger conditions written in, which means forking rather than
+tracking upstream.
+
+Related: [[project-blueprint-skill]] memory, and the split-out symlink item below.
+
+### 41. Repair the dangling ~/.claude/skills symlinks (they point at a near-empty ~/.agents/skills) (2026-08-20)
+
+The global `~/.claude/skills/*` entries are symlinks into `~/.agents/skills/`, but that
+directory only contains `i-have-adhd`. Every other symlink dangles, so those skills are
+unavailable in **every project except this repo** — which is half of why the visual-mockup
+skills "almost never fired" (the other half is the missing trigger contracts, docket #40).
+
+Scope: enumerate the symlinks, decide per target whether to repopulate `~/.agents/skills/`
+or remove the dead link, and settle whether the global layer should exist at all now that
+the toolkit ships four dist channels.
+
+Out of this repo's tree — touches `~/.claude` and `~/.agents` only, which are shared config
+and in bounds, but it is a workstation-hygiene task, not a toolkit change. No commit here.
+
 ## Loose threads
