@@ -464,15 +464,18 @@
       }
       html {
         background: var(--ivory);
+        scroll-behavior: smooth;
       }
       body {
         margin: 0;
-        padding: 48px 24px 80px;
-        font: 13px/1.55 var(--mono);
+        padding: var(--space-8) var(--space-5) calc(var(--space-12) + var(--space-4));
+        font-family: var(--sans);
+        font-size: var(--text-sm);
+        line-height: var(--leading-normal);
         font-variant-numeric: tabular-nums;
         color: var(--term-fg);
         position: relative;
-        min-height: 100vh;
+        min-height: 100dvh;
       }
 
       body::before {
@@ -513,7 +516,7 @@
         max-width: 1000px;
         margin: 0 auto;
         background: var(--term-bg);
-        border-radius: 12px;
+        border-radius: var(--radius-lg);
         outline: 1px solid var(--outline);
         box-shadow: 0 20px 60px rgba(20, 20, 19, 0.22);
         position: relative;
@@ -521,52 +524,102 @@
       }
       .titlebar {
         background: var(--titlebar);
-        border-radius: 12px 12px 0 0;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
         border-bottom: 1px solid var(--outline);
-        padding: 10px 16px;
+        padding: var(--space-3) var(--space-4);
         display: flex;
         align-items: center;
-        gap: 12px;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: var(--space-3);
+      }
+      .titlebar .id {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        min-width: 0;
       }
       .titlebar .tag {
-        font-size: 10px;
+        font-family: var(--mono);
+        font-size: var(--text-2xs);
         font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.1em;
+        letter-spacing: var(--tracking-wide);
         color: var(--primary);
-        padding: 1px 6px;
+        padding: 0.15rem var(--space-2);
         background: color-mix(in oklch, var(--primary) 12%, transparent);
-        border-radius: 9999px;
+        border-radius: var(--radius-full);
+        flex: none;
       }
       .titlebar .path {
+        margin: 0;
         color: var(--dim);
-        font-size: 11px;
+        font-family: var(--mono);
+        font-size: var(--text-2xs);
+        font-weight: 400;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      /* Sticky so a long, filled-in handoff stays navigable; data-kit-section
+         on each <section> below is what makes the kit's g+digit jump work. */
+      .section-nav {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        display: flex;
+        gap: var(--space-1);
+        padding: var(--space-2) var(--space-4);
+        background: var(--titlebar);
+        border-bottom: 1px solid var(--outline);
+        overflow-x: auto;
+      }
+      .section-nav a {
+        flex: none;
+        font-family: var(--sans);
+        font-size: var(--text-2xs);
+        color: var(--muted-foreground);
+        text-decoration: none;
+        padding: var(--space-1) var(--space-2);
+        border-radius: var(--radius-sm);
+        white-space: nowrap;
+        transition:
+          color var(--dur-fast) var(--ease-out),
+          background-color var(--dur-fast) var(--ease-out);
+      }
+      .section-nav a:hover {
+        color: var(--foreground);
+        background: var(--hover);
       }
       .term-body {
-        padding: 22px 30px 30px;
+        padding: var(--space-5) var(--space-6) var(--space-6);
       }
 
       .cmd {
         color: var(--dim);
-        margin-bottom: 6px;
+        font-family: var(--mono);
+        font-size: var(--text-sm);
+        margin-bottom: var(--space-2);
       }
       .cmd .prompt {
         color: var(--clay);
       }
       #meta-line {
         color: var(--subtle);
-        font-size: 11px;
+        font-family: var(--mono);
+        font-size: var(--text-2xs);
       }
 
       section {
-        margin-top: 26px;
+        margin-top: var(--space-6);
+        scroll-margin-top: var(--space-8);
       }
       .hr {
         color: var(--subtle);
         overflow: hidden;
         white-space: nowrap;
         user-select: none;
-        margin-bottom: 8px;
+        margin-bottom: var(--space-2);
       }
       .hr::after {
         content: "────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────";
@@ -574,8 +627,11 @@
       h2 {
         all: unset;
         display: block;
+        font-family: var(--sans);
+        font-size: var(--text-lg);
+        line-height: var(--leading-snug);
         color: var(--clay);
-        font-weight: 500;
+        font-weight: 600;
       }
       h2::before {
         content: "▸ ";
@@ -583,39 +639,40 @@
       h3 {
         all: unset;
         display: block;
+        font-family: var(--sans);
         color: var(--dim);
-        font-size: 11px;
+        font-size: var(--text-2xs);
         text-transform: uppercase;
-        letter-spacing: 0.08em;
-        font-weight: 500;
-        margin-top: 14px;
-        margin-bottom: 6px;
+        letter-spacing: var(--tracking-wide);
+        font-weight: 600;
+        margin-top: var(--space-4);
+        margin-bottom: var(--space-2);
       }
       .section-body {
-        margin-top: 10px;
+        margin-top: var(--space-3);
       }
 
       p {
         margin: 0;
         color: var(--term-fg);
-        font-size: 13px;
       }
 
       /* key-value rows (stack snapshot) */
       .kv {
         display: grid;
         grid-template-columns: 20ch 1fr;
-        gap: 14px;
-        padding: 5px 0;
+        gap: var(--space-4);
+        padding: var(--space-2) 0;
         border-top: 1px solid var(--outline);
         align-items: baseline;
-        font-size: 12px;
+        font-size: var(--text-xs);
       }
       .kv:last-of-type {
         border-bottom: 1px solid var(--outline);
       }
       .kv .key {
         color: var(--subtle);
+        font-family: var(--mono);
         white-space: nowrap;
       }
       .kv .val {
@@ -631,12 +688,12 @@
       table {
         width: 100%;
         border-collapse: collapse;
-        font-size: 12px;
+        font-size: var(--text-xs);
       }
       th,
       td {
         text-align: left;
-        padding: 6px 10px;
+        padding: var(--space-2) var(--space-3);
       }
       td {
         border-top: 1px solid color-mix(in oklch, var(--foreground) 4%, transparent);
@@ -645,8 +702,11 @@
       }
       th {
         background: var(--term-bg);
+        font-family: var(--mono);
         font-weight: 500;
-        font-size: 11px;
+        font-size: var(--text-2xs);
+        text-transform: uppercase;
+        letter-spacing: var(--tracking-wide);
         color: var(--subtle);
         border-bottom: 1px solid var(--outline);
         white-space: nowrap;
@@ -663,7 +723,7 @@
         list-style: none;
         display: flex;
         flex-direction: column;
-        gap: 3px;
+        gap: var(--space-1);
       }
       ul li::before {
         content: "— ";
@@ -679,20 +739,21 @@
       ol li::before {
         content: counter(step, decimal-leading-zero) "  ";
         color: var(--clay);
+        font-family: var(--mono);
         font-weight: 700;
       }
       li {
-        font-size: 12px;
+        font-size: var(--text-xs);
         color: var(--term-fg);
       }
 
       /* callouts */
       .callout {
-        padding: 6px 0 6px 14px;
+        padding: var(--space-2) 0 var(--space-2) var(--space-4);
         border-left: 2px solid var(--subtle);
         color: var(--dim);
-        margin: 6px 0;
-        font-size: 12px;
+        margin: var(--space-2) 0;
+        font-size: var(--text-xs);
       }
       .callout.warn {
         border-color: var(--red);
@@ -707,13 +768,15 @@
       }
 
       code {
+        font-family: var(--mono);
         color: var(--blue);
       }
 
       footer {
-        margin-top: 28px;
+        margin-top: var(--space-6);
         color: var(--subtle);
-        font-size: 11px;
+        font-family: var(--mono);
+        font-size: var(--text-2xs);
       }
 
       ::selection {
@@ -723,44 +786,82 @@
 
       @media (max-width: 640px) {
         body {
-          padding: 20px 12px 48px;
+          padding: var(--space-4) var(--space-3) var(--space-8);
+        }
+        .term {
+          border-radius: var(--radius-md);
+        }
+        .titlebar {
+          border-radius: var(--radius-md) var(--radius-md) 0 0;
+          padding: var(--space-2) var(--space-3);
+        }
+        .section-nav {
+          padding: var(--space-2) var(--space-3);
         }
         .term-body {
-          padding: 16px 16px 24px;
+          padding: var(--space-4) var(--space-4) var(--space-5);
+        }
+        h2 {
+          font-size: var(--text-md);
         }
         .kv {
           grid-template-columns: 14ch 1fr;
-          gap: 8px;
+          gap: var(--space-2);
+        }
+        table,
+        th,
+        td {
+          font-size: var(--text-2xs);
         }
       }
     </style>
   </head>
   <body>
+    <a class="kit-skip" href="#main">Skip to content</a>
     <div class="term">
-      <div class="titlebar">
-        <span class="tag">handoff</span>
-        <span class="path" id="title-path">~/project — session-handoff</span>
-      </div>
+      <header class="titlebar">
+        <div class="id">
+          <span class="tag">handoff</span>
+          <h1 class="path" id="title-path">~/project — session-handoff</h1>
+        </div>
+        <div class="kit-theme" role="group" aria-label="Theme">
+          <button type="button" data-kit-theme="light">Light</button>
+          <button type="button" data-kit-theme="dark">Dark</button>
+          <button type="button" data-kit-theme="system">Auto</button>
+        </div>
+      </header>
+      <nav class="section-nav" aria-label="Sections" data-kit-chrome>
+        <a href="#current-state">current state</a>
+        <a href="#stack-snapshot">stack snapshot</a>
+        <a href="#architecture">architecture</a>
+        <a href="#completed-work">completed work</a>
+        <a href="#decisions">decisions</a>
+        <a href="#next-steps">next steps</a>
+        <a href="#blockers">blockers</a>
+        <a href="#important-context">important context</a>
+        <a href="#deferred">deferred</a>
+      </nav>
       <div class="term-body">
         <div class="cmd">
           <span class="prompt">&gt;</span> /session-handoff
         </div>
         <div id="meta-line">[YYYY-MM-DD HH:MM] · [branch] · [repo]</div>
 
+        <main id="main">
         <article class="session-handoff">
 
-          <section id="current-state">
+          <section data-kit-section id="current-state" aria-labelledby="current-state-heading">
             <div class="hr"></div>
-            <h2>current state</h2>
+            <h2 id="current-state-heading">current state</h2>
             <!-- One paragraph: where things stand right now. What just finished, what's in flight. -->
             <div class="section-body">
               <p>[FILL]</p>
             </div>
           </section>
 
-          <section id="stack-snapshot">
+          <section data-kit-section id="stack-snapshot" aria-labelledby="stack-snapshot-heading">
             <div class="hr"></div>
-            <h2>stack snapshot</h2>
+            <h2 id="stack-snapshot-heading">stack snapshot</h2>
             <div class="section-body">
               <div class="kv">
                 <span class="key">Package / app</span>
@@ -785,15 +886,15 @@
             </div>
           </section>
 
-          <section id="architecture">
+          <section data-kit-section id="architecture" aria-labelledby="architecture-heading">
             <div class="hr"></div>
-            <h2>architecture context</h2>
+            <h2 id="architecture-heading">architecture context</h2>
             <div class="section-body">
               <h3>Critical Files</h3>
               <div class="scroll">
                 <table>
                   <thead>
-                    <tr><th>File</th><th>Why it matters</th></tr>
+                    <tr><th scope="col">File</th><th scope="col">Why it matters</th></tr>
                   </thead>
                   <tbody>
                     <tr>
@@ -811,9 +912,9 @@
             </div>
           </section>
 
-          <section id="completed-work">
+          <section data-kit-section id="completed-work" aria-labelledby="completed-work-heading">
             <div class="hr"></div>
-            <h2>completed work</h2>
+            <h2 id="completed-work-heading">completed work</h2>
             <div class="section-body">
               <h3>Tasks Finished</h3>
               <ul>
@@ -824,7 +925,7 @@
               <div class="scroll">
                 <table>
                   <thead>
-                    <tr><th>File</th><th>Change</th><th>Why</th></tr>
+                    <tr><th scope="col">File</th><th scope="col">Change</th><th scope="col">Why</th></tr>
                   </thead>
                   <tbody>
                     <tr>
@@ -838,17 +939,23 @@
             </div>
           </section>
 
-          <section id="decisions">
+          <section data-kit-section id="decisions" aria-labelledby="decisions-heading">
             <div class="hr"></div>
-            <h2>decisions made</h2>
+            <h2 id="decisions-heading">decisions made</h2>
+            <!-- Nothing decided this session? Drop the table and use this instead:
+            <div class="kit-empty">
+              <p class="kit-empty__title">No decisions recorded</p>
+              <p class="kit-empty__body">Nothing was chosen between alternatives this session.</p>
+            </div>
+            -->
             <div class="section-body scroll">
               <table>
                 <thead>
                   <tr>
-                    <th>Decision</th>
-                    <th>Options considered</th>
-                    <th>Chosen</th>
-                    <th>Rationale</th>
+                    <th scope="col">Decision</th>
+                    <th scope="col">Options considered</th>
+                    <th scope="col">Chosen</th>
+                    <th scope="col">Rationale</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -863,9 +970,9 @@
             </div>
           </section>
 
-          <section id="next-steps">
+          <section data-kit-section id="next-steps" aria-labelledby="next-steps-heading">
             <div class="hr"></div>
-            <h2>immediate next steps</h2>
+            <h2 id="next-steps-heading">immediate next steps</h2>
             <!-- Ordered and specific. "Fix auth" is not acceptable. "Add refreshToken to auth.schema.ts:12" is. -->
             <div class="section-body">
               <ol>
@@ -876,13 +983,19 @@
             </div>
           </section>
 
-          <section id="blockers">
+          <section data-kit-section id="blockers" aria-labelledby="blockers-heading">
             <div class="hr"></div>
-            <h2>blockers</h2>
+            <h2 id="blockers-heading">blockers</h2>
+            <!-- Nothing stuck? Drop the table and use this instead:
+            <div class="kit-empty">
+              <p class="kit-empty__title">No blockers</p>
+              <p class="kit-empty__body">Nothing is currently stuck on an external dependency or open question.</p>
+            </div>
+            -->
             <div class="section-body scroll">
               <table>
                 <thead>
-                  <tr><th>Blocker</th><th>Context</th><th>Workaround tried</th></tr>
+                  <tr><th scope="col">Blocker</th><th scope="col">Context</th><th scope="col">Workaround tried</th></tr>
                 </thead>
                 <tbody>
                   <tr>
@@ -895,9 +1008,9 @@
             </div>
           </section>
 
-          <section id="important-context">
+          <section data-kit-section id="important-context" aria-labelledby="important-context-heading">
             <div class="hr"></div>
-            <h2>important context</h2>
+            <h2 id="important-context-heading">important context</h2>
             <!-- MUST READ. Things the next agent gets wrong without knowing this. -->
             <div class="section-body">
               <div class="callout warn">
@@ -910,9 +1023,15 @@
             </div>
           </section>
 
-          <section id="deferred">
+          <section data-kit-section id="deferred" aria-labelledby="deferred-heading">
             <div class="hr"></div>
-            <h2>deferred / out of scope</h2>
+            <h2 id="deferred-heading">deferred / out of scope</h2>
+            <!-- Nothing deferred? Drop the list and use this instead:
+            <div class="kit-empty">
+              <p class="kit-empty__title">Nothing deferred</p>
+              <p class="kit-empty__body">Everything raised this session is either done or on the next-steps list.</p>
+            </div>
+            -->
             <div class="section-body">
               <ul>
                 <li>[Thing that came up but was intentionally left for later]</li>
@@ -921,6 +1040,7 @@
           </section>
 
         </article>
+        </main>
 
         <footer>Generated [YYYY-MM-DD HH:MM] · Read-only — do not modify after creation</footer>
       </div>
@@ -1014,15 +1134,36 @@
     }
   }
 
+  function reveal(el) {
+    if (el && el.focus) {
+      el.focus();
+      if (el.select) el.select();
+
+      return true;
+    }
+
+    return false;
+  }
+
+  /* A surface whose filter field ships hidden cannot hang the hook on the field
+     itself — a hidden element does not take focus, so the binding would be a
+     silent no-op. Those surfaces put the hook on the control that REVEALS the
+     field instead; activate it, then focus what it revealed via aria-controls.
+     Without this the ? overlay would advertise "Focus filter" for a key that
+     only moves focus to a button, and a generated overlay that misdescribes its
+     own bindings is worse than no overlay. */
   function focusFilter() {
-    var filter = document.querySelector('[data-kit-filter]');
+    var hook = document.querySelector('[data-kit-filter]');
 
-    if (!filter) return false;
+    if (!hook) return false;
 
-    filter.focus();
-    if (filter.select) filter.select();
+    if (hook.tagName === 'BUTTON') {
+      if (hook.getAttribute('aria-expanded') === 'false' && hook.click) hook.click();
 
-    return true;
+      if (reveal(document.getElementById(hook.getAttribute('aria-controls') || ''))) return true;
+    }
+
+    return reveal(hook);
   }
 
   function flashCopied(el) {

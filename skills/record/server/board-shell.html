@@ -402,53 +402,87 @@
    markers on purpose: anything inside them is replaced by --fix. */
 :root{--chip:var(--muted)}
 *{box-sizing:border-box}
-body{margin:0;background:var(--background);color:var(--foreground);font:15px/1.55 ui-sans-serif,system-ui,sans-serif}
-header{position:sticky;top:0;background:var(--background);border-bottom:1px solid var(--border);padding:1rem 1.25rem .75rem;z-index:2}
-h1{margin:0 0 .35rem;font-size:1.15rem;letter-spacing:.04em}
-.stats{display:flex;gap:.75rem;flex-wrap:wrap;color:var(--muted-foreground);font-size:.8rem;margin-bottom:.6rem}
-.stat b{color:var(--foreground)}
-#filter{width:100%;max-width:28rem;padding:.45rem .6rem;border:1px solid var(--border);border-radius:.4rem;background:var(--card);color:var(--foreground)}
-.bar{display:flex;gap:.5rem;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
-.scopes{display:flex;gap:.35rem;flex-wrap:wrap}
-.scope{display:inline-flex;align-items:center;gap:.4rem;font:inherit;font-size:.75rem;padding:.2rem .6rem;border:1px solid var(--border);border-radius:.6rem;background:var(--card);color:var(--muted-foreground);cursor:pointer}
-.scope:hover{color:var(--foreground);border-color:var(--primary)}
+html{scroll-behavior:smooth}
+body{margin:0;min-height:100dvh;background:var(--background);color:var(--foreground);font-family:var(--sans);font-size:var(--text-base);line-height:var(--leading-normal);-webkit-font-smoothing:antialiased}
+header{position:sticky;top:0;background:var(--background);border-bottom:1px solid var(--border);box-shadow:var(--shadow-sm);padding:var(--space-4) var(--space-5) var(--space-3);z-index:2}
+h1{margin:0 0 var(--space-1);font-family:var(--mono);font-size:var(--text-lg);letter-spacing:var(--tracking-tight)}
+header .kit-error{margin-bottom:var(--space-3)}
+.board-nav{display:flex;gap:var(--space-4);flex-wrap:nowrap;overflow-x:auto;margin:0 0 var(--space-3);font-family:var(--mono);font-size:var(--text-xs);letter-spacing:var(--tracking-wide)}
+.board-nav a{color:var(--muted-foreground);text-decoration:none;white-space:nowrap;padding:var(--space-1) 0;border-bottom:2px solid transparent;transition:color var(--dur-fast) var(--ease-out),border-color var(--dur-fast) var(--ease-out)}
+.board-nav a:hover{color:var(--foreground);border-color:color-mix(in oklch, var(--primary) 60%, transparent)}
+.stats{display:flex;gap:var(--space-3);flex-wrap:wrap;color:var(--muted-foreground);font-size:var(--text-sm);margin-bottom:var(--space-2)}
+.stat b{color:var(--foreground);font-family:var(--mono);font-variant-numeric:tabular-nums}
+#filter{width:100%;max-width:28rem;padding:var(--space-2) var(--space-3);border:1px solid var(--border);border-radius:var(--radius-md);background:var(--card);color:var(--foreground);font:inherit}
+.bar{display:flex;gap:var(--space-2);align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+.scopes{display:flex;gap:var(--space-2);flex-wrap:wrap}
+.scope{display:inline-flex;align-items:center;gap:var(--space-1);font:inherit;font-size:var(--text-xs);padding:var(--space-1) var(--space-3);border:1px solid var(--border);border-radius:var(--radius-full);background:var(--card);color:var(--muted-foreground);cursor:pointer;transition:color var(--dur-fast) var(--ease-out),background-color var(--dur-fast) var(--ease-out),border-color var(--dur-fast) var(--ease-out)}
+.scope:hover{color:var(--foreground);border-color:var(--primary);background:color-mix(in oklch, var(--card), var(--primary) 8%)}
 .scope.active{background:var(--primary-muted);color:var(--primary-text);border-color:var(--primary)}
 .scope:focus-visible{outline:2px solid var(--primary);outline-offset:1px}
-.scope .count{margin-left:0;font-variant-numeric:tabular-nums}
+.scope .count{margin-left:0;font-family:var(--mono);font-variant-numeric:tabular-nums}
 .scope.active .count{background:var(--card)}
 .scope[data-total="0"]{opacity:.55}
-.tags{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.45rem}
+.tags{display:flex;gap:var(--space-2);flex-wrap:wrap;margin-top:var(--space-2)}
 .tag{font-variant-numeric:tabular-nums}
 .filter-btn[aria-expanded="true"]{background:var(--primary-muted);color:var(--primary-text);border-color:var(--primary)}
 #filter[hidden]{display:none}
-main{max-width:52rem;margin:0 auto;padding:1rem 1.25rem 4rem}
-h2{font-size:.85rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted-foreground);margin:1.6rem 0 .6rem;border-bottom:1px solid var(--border);padding-bottom:.3rem}
-.count{margin-left:.5rem;background:var(--chip);border-radius:.6rem;padding:.05rem .5rem;font-size:.75rem}
-.item{background:var(--card);border:1px solid var(--border);border-radius:.5rem;padding:.75rem .9rem;margin:.6rem 0}
-.item h3{margin:0 0 .35rem;font-size:.95rem}
-.item h4{margin:.6rem 0 .2rem;font-size:.8rem;color:var(--muted-foreground)}
-.item p{margin:.35rem 0}
+main{max-width:52rem;margin:0 auto;padding:var(--space-4) var(--space-5) var(--space-12)}
+h2{font-family:var(--mono);font-size:var(--text-base);text-transform:uppercase;letter-spacing:var(--tracking-wide);color:var(--muted-foreground);margin:var(--space-6) 0 var(--space-2);border-bottom:1px solid var(--border);padding-bottom:var(--space-1);scroll-margin-top:11rem}
+.count{margin-left:var(--space-2);background:var(--chip);border-radius:var(--radius-full);padding:.05rem var(--space-2);font-family:var(--mono);font-size:var(--text-xs);font-variant-numeric:tabular-nums}
+.item{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-3) var(--space-4);margin:var(--space-2) 0;scroll-margin-top:11rem;transition:border-color var(--dur-fast) var(--ease-out),background-color var(--dur-fast) var(--ease-out),box-shadow var(--dur) var(--ease-out)}
+.item:hover,.item:focus-within{border-color:var(--primary);box-shadow:var(--shadow-md);background:color-mix(in oklch, var(--card), var(--primary) 4%)}
+.item h3{margin:0 0 var(--space-1);font-size:var(--text-md)}
+.item h4{margin:var(--space-2) 0 var(--space-1);font-size:var(--text-sm);color:var(--muted-foreground)}
+.item p{margin:var(--space-1) 0}
 .item.archived{opacity:.85}
-.idlink{color:var(--primary);text-decoration:none;font-variant-numeric:tabular-nums}
-.idlink:hover{text-decoration:underline}
-.item:target{outline:2px solid var(--primary);outline-offset:2px}
-pre{background:var(--chip);border-radius:.4rem;padding:.5rem .7rem;overflow-x:auto;font-size:.85rem}
-code{background:var(--chip);border-radius:.25rem;padding:.05rem .3rem;font-size:.88em}
+.idlink{color:var(--primary);text-decoration:none;font-family:var(--mono);font-variant-numeric:tabular-nums;transition:color var(--dur-fast) var(--ease-out)}
+.idlink:hover{color:color-mix(in oklch, var(--primary), var(--foreground) 25%);text-decoration:underline}
+.item:target{outline:2px solid var(--primary);outline-offset:2px;box-shadow:var(--shadow-md)}
+pre{background:var(--chip);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);overflow-x:auto;font-family:var(--mono);font-size:var(--text-sm)}
+code{background:var(--chip);border-radius:var(--radius);padding:.05rem var(--space-1);font-family:var(--mono);font-size:var(--text-xs)}
 pre code{background:none;padding:0}
-ul{margin:.3rem 0;padding-left:1.3rem}
-details{margin:.5rem 0}
-summary{cursor:pointer;color:var(--muted-foreground)}
-.prose{color:var(--muted-foreground);font-size:.9rem}
-.empty{border:1px dashed var(--border);border-radius:.5rem;padding:1.5rem;text-align:center;color:var(--muted-foreground)}
+ul{margin:var(--space-1) 0;padding-left:1.3rem}
+details{margin:var(--space-2) 0}
+summary{cursor:pointer;color:var(--muted-foreground);font-family:var(--mono);font-size:var(--text-sm);font-variant-numeric:tabular-nums}
+.prose{color:var(--muted-foreground);font-size:var(--text-sm)}
 .hidden{display:none}
+
+/* scroll-margin-top per breakpoint is a static approximation of the sticky
+   header's actual height (measured: ~10rem desktop, up to ~14rem once the
+   scope row wraps twice around 500-540px, up to ~19rem once the theme group
+   drops to its own full-width row below 30rem) — there is no CSS-only way to
+   read it exactly, and adding JS to measure it would be more machinery than a
+   static buffer with headroom justifies. */
+@media (max-width: 48rem) {
+  header{padding:var(--space-3) var(--space-4) var(--space-2)}
+  main{padding:var(--space-3) var(--space-4) var(--space-12)}
+  .board-nav{gap:var(--space-3)}
+  h2,.item{scroll-margin-top:15rem}
+}
+@media (max-width: 30rem) {
+  header{padding:var(--space-2) var(--space-3) var(--space-2)}
+  h1{font-size:var(--text-md)}
+  .bar{gap:var(--space-2)}
+  .kit-theme{order:3;width:100%}
+  .kit-theme button{flex:1}
+  main{padding:var(--space-2) var(--space-3) var(--space-12)}
+  .item{padding:var(--space-2) var(--space-3)}
+  h2,.item{scroll-margin-top:21rem}
+}
 </style>
 </head>
 <body{{BODY_ATTRS}}>
 <header>
   <h1>{{TITLE}}</h1>
+  {{NAV}}
   <div class="bar">
     <div class="scopes" role="group" aria-label="Filter by section">{{SCOPES}}</div>
-    <button type="button" id="filter-toggle" class="scope filter-btn" aria-expanded="false" aria-controls="filter">Filter</button>
+    <div class="kit-theme" role="group" aria-label="Theme" data-kit-chrome>
+      <button type="button" data-kit-theme="light">Light</button>
+      <button type="button" data-kit-theme="dark">Dark</button>
+      <button type="button" data-kit-theme="system">Auto</button>
+    </div>
+    <button type="button" id="filter-toggle" class="scope filter-btn" data-kit-filter data-kit-chrome aria-expanded="false" aria-controls="filter">Filter</button>
   </div>
   <input id="filter" type="search" placeholder="Filter items — title, body, #id" autocomplete="off" hidden>
   {{TAGS}}
@@ -547,15 +581,36 @@ summary{cursor:pointer;color:var(--muted-foreground)}
     }
   }
 
+  function reveal(el) {
+    if (el && el.focus) {
+      el.focus();
+      if (el.select) el.select();
+
+      return true;
+    }
+
+    return false;
+  }
+
+  /* A surface whose filter field ships hidden cannot hang the hook on the field
+     itself — a hidden element does not take focus, so the binding would be a
+     silent no-op. Those surfaces put the hook on the control that REVEALS the
+     field instead; activate it, then focus what it revealed via aria-controls.
+     Without this the ? overlay would advertise "Focus filter" for a key that
+     only moves focus to a button, and a generated overlay that misdescribes its
+     own bindings is worse than no overlay. */
   function focusFilter() {
-    var filter = document.querySelector('[data-kit-filter]');
+    var hook = document.querySelector('[data-kit-filter]');
 
-    if (!filter) return false;
+    if (!hook) return false;
 
-    filter.focus();
-    if (filter.select) filter.select();
+    if (hook.tagName === 'BUTTON') {
+      if (hook.getAttribute('aria-expanded') === 'false' && hook.click) hook.click();
 
-    return true;
+      if (reveal(document.getElementById(hook.getAttribute('aria-controls') || ''))) return true;
+    }
+
+    return reveal(hook);
   }
 
   function flashCopied(el) {
@@ -799,7 +854,15 @@ function applyFilters() {
       const hitQuery = q === '' || item.dataset.search.includes(q);
       const hitTag = tag === '' || tags.includes(tag);
 
-      item.classList.toggle('hidden', !(inScope && hitQuery && hitTag));
+      const shown = inScope && hitQuery && hitTag;
+
+      item.classList.toggle('hidden', !shown);
+      // Keep the kit's j/k walk in sync with what filtering actually hides —
+      // display:none cards would otherwise still match [data-kit-item] and
+      // silently no-op moveItem's .focus() call. Archived cards never carry
+      // this attribute at all (see docket-render.mjs), so they stay excluded
+      // here too rather than being toggled back on by a filter match.
+      if (!item.classList.contains('archived')) item.toggleAttribute('data-kit-item', shown);
       if (hitQuery && hitTag) visible++;
       if (inScope && hitQuery) {
         for (const each of tags) tagCounts.set(each, (tagCounts.get(each) ?? 0) + 1);

@@ -49,9 +49,31 @@ const SHELL = fs.readFileSync(new URL('./board-shell.html', import.meta.url), 'u
 // the prefix of `{{ARCHIVE_SCOPE}}` and leave `_SCOPE}}` stranded in the output.
 function fillShell(values) {
   return SHELL.replace(
-    /\{\{(TITLE|BODY_ATTRS|SCOPES|TAGS|STATS|EMPTY|SECTIONS|ARCHIVE_SCOPE|ARCHIVE|SSE_JS)\}\}/g,
+    /\{\{(TITLE|BODY_ATTRS|SCOPES|TAGS|NAV|STATS|EMPTY|SECTIONS|ARCHIVE_SCOPE|ARCHIVE|SSE_JS)\}\}/g,
     (_, key) => values[key],
   );
+}
+
+// Anchor ids for the section nav / g+N jump targets. Sections are user-authored
+// DOCKET.md names, so they are slugged rather than trusted as id-safe; the
+// archive gets a fixed id since ARCHIVE_SCOPE is not a display name.
+function slugSection(name) {
+  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  return 'sec-' + (slug || 'section');
+}
+
+// Additive: the board had no navigation at all. Order matches the document
+// order of the h2 elements it points at, so the kit's g+N jump lands on the
+// same target this list names as "N".
+function sectionNav(sections, hasArchive) {
+  if (sections.length === 0 && !hasArchive) return '';
+
+  const links = [
+    ...sections.map((section) => `<a href="#${slugSection(section.name)}">${esc(section.name)}</a>`),
+    ...(hasArchive ? ['<a href="#sec-archive">Archive</a>'] : []),
+  ];
+
+  return `<nav class="board-nav" aria-label="Jump to section" data-kit-chrome>${links.join('')}</nav>`;
 }
 
 export function renderHtml(d, { openId = null, date, live = false } = {}) {
@@ -76,12 +98,13 @@ export function renderHtml(d, { openId = null, date, live = false } = {}) {
     BODY_ATTRS: openId !== null ? ' data-open="item-' + Number(openId) + '"' : '',
     SCOPES: scopePills(sections, open.items.length, archivedCount, years.length > 0),
     TAGS: tagPills(open.items, years),
+    NAV: sectionNav(sections, years.length > 0),
     STATS: stats.length > 0 ? `<div class="stats">${stats.join('')}</div>` : '',
     EMPTY: open.items.length === 0 ? EMPTY_STATE : '',
     SECTIONS: sections
       .map(
         (section) => `<section data-section="${esc(section.name)}">
-<h2>${esc(section.name)}${section.items.length > 0 ? `<span class="count">${section.items.length}</span>` : ''}</h2>
+<h2 id="${slugSection(section.name)}" data-kit-section>${esc(section.name)}${section.items.length > 0 ? `<span class="count">${section.items.length}</span>` : ''}</h2>
 ${section.items.map((item) => itemCard(item, open.lines)).join('\n')}
 ${sectionProse(section, open)}
 </section>`,
@@ -89,7 +112,7 @@ ${sectionProse(section, open)}
       .join('\n'),
     ARCHIVE:
       years.length > 0
-        ? `<section class="archive" data-section="${ARCHIVE_SCOPE}"><h2>Archive<span class="count">${archivedCount}</span></h2>
+        ? `<section class="archive" data-section="${ARCHIVE_SCOPE}"><h2 id="sec-archive" data-kit-section>Archive<span class="count">${archivedCount}</span></h2>
 ${years.map((year) => yearBlock(year)).join('\n')}</section>`
         : '',
     SSE_JS: live ? SSE_JS : '',
@@ -160,11 +183,18 @@ function oldestStat(items, date) {
   return stat(days + 'd', 'oldest open');
 }
 
+// data-kit-item only on OPEN cards. Archived entries (yearBlock, below) sit
+// inside a closed <details> by default; kit.js's j/k walk would happily focus
+// an invisible row (moveItem uses history.replaceState, which does not trigger
+// the browser's auto-expand-on-fragment-navigation behaviour), so they are
+// left out of the walk. Their idlink still carries data-kit-copy — that only
+// needs the anchor to receive focus, which a plain Tab into an open <details>
+// still does.
 function itemCard(item, lines) {
   const body = lines.slice(item.start + 1, item.end).join('\n').trim();
 
-  return `<article class="item" id="item-${item.id}" data-tags="${esc(itemTags(item.title).join(' '))}" data-search="${esc((item.idPart + ' ' + item.title + ' ' + body).toLowerCase())}">
-<h3><a class="idlink" href="#item-${item.id}">#${esc(item.idPart)}</a> ${esc(item.title)}</h3>
+  return `<article class="item" id="item-${item.id}" data-kit-item data-tags="${esc(itemTags(item.title).join(' '))}" data-search="${esc((item.idPart + ' ' + item.title + ' ' + body).toLowerCase())}">
+<h3><a class="idlink" href="#item-${item.id}" data-kit-copy="${esc(item.idPart)}">#${esc(item.idPart)}</a> ${esc(item.title)}</h3>
 ${mdLite(body)}
 </article>`;
 }
@@ -204,7 +234,7 @@ function yearBlock(year) {
 ${year.entries
   .map(
     (entry) => `<article class="item archived" id="item-${entry.id}" data-tags="${esc(itemTags(entry.title).join(' '))}" data-search="${esc((entry.idPart + ' ' + entry.title + ' ' + entry.body).toLowerCase())}">
-<h3><a class="idlink" href="#item-${entry.id}">#${esc(entry.idPart)}</a> ${esc(entry.title)}</h3>
+<h3><a class="idlink" href="#item-${entry.id}" data-kit-copy="${esc(entry.idPart)}">#${esc(entry.idPart)}</a> ${esc(entry.title)}</h3>
 ${mdLite(entry.body)}
 </article>`,
   )
@@ -285,11 +315,38 @@ function inline(text) {
     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
 }
 
-const EMPTY_STATE = `<div class="empty">
-<p><strong>Nothing on the docket yet.</strong></p>
-<p>Add the first item: <code>docket add "Title" --section someday</code> — it gets #1.</p>
+const EMPTY_STATE = `<div class="kit-empty">
+<p class="kit-empty__title"><strong>Nothing on the docket yet.</strong></p>
+<p class="kit-empty__body">Add the first item: <code>docket add "Title" --section someday</code> — it gets #1.</p>
 </div>`;
 
+// A banner rather than a new placeholder: SSE_JS is already conditional on
+// --serve, so building the .kit-error element here (instead of shipping it,
+// hidden, in every offline board too) keeps the static-file case untouched.
+// 'error' fires on every failed retry, so the id guard stops it from stacking
+// banners; 'open' fires on a successful reconnect, so the banner clears itself
+// rather than lying once the board is live again. Inserted as the header's
+// first child, not the body's: header is position:sticky, so a banner placed
+// in normal body flow scrolls out of view on the first scroll — exactly the
+// "silently freezing" failure this exists to announce.
 const SSE_JS = `
-new EventSource('/events').addEventListener('reload', () => location.reload());
+(function () {
+  var es = new EventSource('/events');
+  es.addEventListener('reload', function () { location.reload(); });
+  es.addEventListener('error', function () {
+    if (document.getElementById('sse-lost')) return;
+    var banner = document.createElement('div');
+    banner.id = 'sse-lost';
+    banner.className = 'kit-error';
+    banner.setAttribute('role', 'status');
+    banner.textContent = 'Live reload lost connection — this board may be stale.';
+    var header = document.querySelector('header');
+    if (header) header.insertBefore(banner, header.firstChild);
+    else document.body.insertBefore(banner, document.body.firstChild);
+  });
+  es.addEventListener('open', function () {
+    var banner = document.getElementById('sse-lost');
+    if (banner) banner.remove();
+  });
+})();
 `;

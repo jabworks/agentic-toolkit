@@ -80,6 +80,10 @@ class El {
     for (const fn of this.listeners[type] || []) fn({ ...event, currentTarget: this });
   }
 
+  click() {
+    this.dispatch('click', { target: this });
+  }
+
   focus() {
     doc.activeElement = this;
   }
@@ -115,6 +119,7 @@ const doc = {
   createElement: (t) => new El(t),
   querySelectorAll: (sel) => all.filter((e) => matches(e, sel)),
   querySelector: (sel) => all.find((e) => matches(e, sel)) || null,
+  getElementById: (id) => all.find((e) => e.attrs.id === id) || null,
   addEventListener(type, fn) {
     (this.listeners[type] ||= []).push(fn);
   },
@@ -295,4 +300,38 @@ test('? toggles the overlay closed again', () => {
 test('clicking a [data-kit-copy] copies its attribute value, not its text', () => {
   doc.fire('click', { target: copyable });
   assert.equal(copied.text, 'condux--v2.18.1');
+});
+
+// The docket board's filter input ships `hidden`, and a hidden element cannot
+// take focus — so the hook goes on the button that reveals it instead. Without
+// this path `/` would move focus to a button while the ? overlay claimed it
+// focused the filter, which makes the generated overlay a liar.
+test('/ activates a revealing control when the field itself cannot take focus', () => {
+  filter.removeAttribute('data-kit-filter');
+
+  const hidden = new El('input');
+
+  hidden.setAttribute('id', 'hidden-filter');
+  doc.body.appendChild(hidden);
+
+  const toggle = new El('button');
+
+  toggle.setAttribute('data-kit-filter', '');
+  toggle.setAttribute('aria-controls', 'hidden-filter');
+  toggle.setAttribute('aria-expanded', 'false');
+  toggle.addEventListener('click', () => toggle.setAttribute('aria-expanded', 'true'));
+  doc.body.appendChild(toggle);
+
+  doc.activeElement = doc.body;
+  doc.fire('keydown', { key: '/' });
+
+  assert.equal(toggle.getAttribute('aria-expanded'), 'true', 'the revealing control was activated');
+  assert.equal(doc.activeElement, hidden, 'focus landed on the revealed field, not the button');
+
+  // An already-open control must not be toggled shut by pressing / again.
+  doc.activeElement = doc.body;
+  doc.fire('keydown', { key: '/' });
+
+  assert.equal(toggle.getAttribute('aria-expanded'), 'true', 'still open');
+  assert.equal(doc.activeElement, hidden);
 });
