@@ -10,7 +10,7 @@
          this renders the same on any machine that has a dev font. -->
     <style>
 /* tokens:core:start */
-/* Shared colour core — do not hand-edit; edit scripts/tokens/core.css. */
+/* Shared design core — do not hand-edit; edit scripts/tokens/core.css. */
 :root {
   --background: #111110;
   --card: #191918;
@@ -42,11 +42,49 @@
   --info-border: #104d87;
   --outline: rgba(237, 237, 236, 0.08);
   --subtle: #686560;
-  --radius: 0.25rem;
+  --shadow-sm: 0 1px 2px rgba(6, 6, 5, 0.5);
+  --shadow-md: 0 4px 14px rgba(6, 6, 5, 0.55);
+  --shadow-lg: 0 20px 60px rgba(6, 6, 5, 0.62);
   --mono: "Geist Mono", "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Monaco, "Cascadia Code", monospace;
+  --sans: "Geist", "Inter Tight", ui-sans-serif, system-ui, -apple-system, "Segoe UI Variable Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --text-2xs: 0.6875rem;
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.5rem;
+  --text-4xl: 3.5rem;
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading-normal: 1.55;
+  --leading-relaxed: 1.7;
+  --tracking-tight: -0.022em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.06em;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-8: 3rem;
+  --space-12: 4rem;
+  --radius-sm: 0.1875rem;
+  --radius: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-full: 9999px;
+  --dur-fast: 120ms;
+  --dur: 200ms;
+  --dur-slow: 320ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 @media (prefers-color-scheme: light) {
-  :root {
+  :root:not([data-theme="dark"]) {
     --background: #f6f5ef;
     --card: #fcfbf6;
     --card-foreground: #36302a;
@@ -77,9 +115,292 @@
     --info-border: #bed7ef;
     --outline: rgba(54, 48, 42, 0.08);
     --subtle: #a8a294;
+    --shadow-sm: 0 1px 2px rgba(54, 48, 42, 0.1);
+    --shadow-md: 0 4px 14px rgba(54, 48, 42, 0.13);
+    --shadow-lg: 0 20px 60px rgba(54, 48, 42, 0.18);
   }
 }
+:root[data-theme="light"] {
+  --background: #f6f5ef;
+  --card: #fcfbf6;
+  --card-foreground: #36302a;
+  --popover: #fcfbf6;
+  --foreground: #36302a;
+  --muted: #f0efe3;
+  --muted-foreground: #726c5e;
+  --border: #ddd6c6;
+  --input: #ddd6c6;
+  --primary: #967e60;
+  --primary-foreground: #ffffff;
+  --primary-hover: #897254;
+  --primary-muted: #efece0;
+  --primary-text: #6f5e44;
+  --ring: #967e60;
+  --accent: #eae7da;
+  --success: #3f7a34;
+  --success-muted: #e6f5e2;
+  --success-border: #c2e1b3;
+  --warning: #93761d;
+  --warning-muted: #fbf4c4;
+  --warning-border: #ebd87f;
+  --destructive: #bf4f3b;
+  --destructive-muted: #fbe8e2;
+  --destructive-border: #f0c9ba;
+  --info: #3f6fa6;
+  --info-muted: #e6f1fc;
+  --info-border: #bed7ef;
+  --outline: rgba(54, 48, 42, 0.08);
+  --subtle: #a8a294;
+  --shadow-sm: 0 1px 2px rgba(54, 48, 42, 0.1);
+  --shadow-md: 0 4px 14px rgba(54, 48, 42, 0.13);
+  --shadow-lg: 0 20px 60px rgba(54, 48, 42, 0.18);
+}
 /* tokens:core:end */
+
+/* kit:css:start */
+/* Shared state layer — do not hand-edit; edit scripts/tokens/kit.css. */
+
+/* :where() keeps these at zero specificity, so a surface overrides them by
+   writing a plain rule rather than escalating into an !important contest. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Mouse users should not see the ring; keyboard users must. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus:not(:focus-visible) {
+  outline: none;
+}
+
+.kit-skip {
+  position: absolute;
+  left: var(--space-2);
+  top: -4rem;
+  z-index: 999;
+  padding: var(--space-2) var(--space-3);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: top var(--dur) var(--ease-out);
+}
+
+.kit-skip:focus {
+  top: var(--space-2);
+}
+
+/* Empty, loading and error states. Namespaced kit- because three of the four
+   surfaces already own an .empty or .error class of their own. */
+.kit-empty {
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+  color: var(--muted-foreground);
+}
+
+.kit-empty__title {
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-md);
+  color: var(--foreground);
+}
+
+.kit-empty__body {
+  margin: 0 auto;
+  max-width: 44ch;
+  font-size: var(--text-sm);
+  text-wrap: pretty;
+}
+
+.kit-error {
+  display: flex;
+  gap: var(--space-2);
+  align-items: baseline;
+  padding: var(--space-2) var(--space-3);
+  background: var(--destructive-muted);
+  border: 1px solid var(--destructive-border);
+  border-radius: var(--radius);
+  color: var(--destructive);
+  font-size: var(--text-sm);
+}
+
+/* Shaped like the content it stands in for — never a spinner. Width is the
+   caller's job, so one rule serves a title, a row and a paragraph. */
+.kit-skel {
+  height: 0.75rem;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, var(--muted) 0%, var(--accent) 50%, var(--muted) 100%);
+  background-size: 200% 100%;
+  animation: kit-shimmer 1.4s var(--ease-out) infinite;
+}
+
+@keyframes kit-shimmer {
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Keyboard help overlay, populated by kit.js from the live binding registry. */
+.kit-help {
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+  background: color-mix(in oklch, var(--background) 78%, transparent);
+}
+
+.kit-help[hidden] {
+  display: none;
+}
+
+.kit-help__panel {
+  width: min(34rem, 100%);
+  max-height: 80dvh;
+  overflow-y: auto;
+  padding: var(--space-5);
+  background: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+}
+
+.kit-help__title {
+  margin: 0 0 var(--space-4);
+  font-family: var(--mono);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+
+.kit-help__row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-1) 0;
+  font-size: var(--text-sm);
+}
+
+.kit-help__keys {
+  flex: none;
+  display: flex;
+  gap: var(--space-1);
+}
+
+.kit-kbd {
+  min-width: 1.4rem;
+  padding: 0.1rem 0.4rem;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: var(--text-2xs);
+  color: var(--foreground);
+  background: var(--popover);
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.kit-theme {
+  display: inline-flex;
+  gap: 1px;
+}
+
+.kit-theme button {
+  font: inherit;
+  font-size: var(--text-2xs);
+  padding: var(--space-1) var(--space-2);
+  color: var(--muted-foreground);
+  background: var(--card);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+}
+
+.kit-theme button:first-child {
+  border-radius: var(--radius) 0 0 var(--radius);
+}
+
+.kit-theme button:last-child {
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.kit-theme button:hover {
+  color: var(--foreground);
+  border-color: var(--primary);
+}
+
+.kit-theme button[aria-pressed="true"] {
+  color: var(--primary-foreground);
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.kit-copied {
+  color: var(--success);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Browsers do not print background colours by default, so a dark-themed page
+   prints light text onto white and reads as blank. Repointing the tokens is
+   what makes Ctrl-P work at all; hiding chrome is the surface's opt-in. */
+@media print {
+  :root {
+    --background: #ffffff;
+    --card: #ffffff;
+    --popover: #ffffff;
+    --muted: #f4f4f2;
+    --accent: #f4f4f2;
+    --foreground: #000000;
+    --card-foreground: #000000;
+    --muted-foreground: #444444;
+    --subtle: #666666;
+    --border: #999999;
+    --input: #999999;
+    --shadow-sm: none;
+    --shadow-md: none;
+    --shadow-lg: none;
+  }
+
+  body {
+    background: #ffffff;
+    color: #000000;
+  }
+
+  .kit-skip,
+  .kit-help,
+  .kit-theme,
+  [data-kit-chrome] {
+    display: none !important;
+  }
+
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 90%;
+    color: #555555;
+  }
+
+  .kit-skel {
+    animation: none;
+  }
+}
+/* kit:css:end */
 
       /* session-report extensions — semantic variants, named palette entries,
          and terminal colours. Outside the markers on purpose: anything
@@ -954,6 +1275,321 @@
 
     <script id="report-data" type="application/json">
       {}
+    </script>
+
+    <script>
+/* kit:js:start */
+/* Shared behaviour layer — do not hand-edit; edit scripts/tokens/kit.js. */
+
+/* Deliberately free of backticks and interpolation openers. No target is a JS
+   template literal since the board-shell extraction, so this is insurance
+   rather than a requirement — but it is the difference between this file being
+   safe to inline anywhere and being safe only where someone remembered to
+   check. Regexes and escapes are avoided for the same reason. */
+
+(function () {
+  'use strict';
+
+  var THEME_KEY = 'jabworks-theme';
+  var THEME_MODES = ['light', 'dark', 'system'];
+  var root = document.documentElement;
+
+  /* localStorage throws on an opaque origin, which is what a file:// artifact
+     often gets. Degrade to session-only theming; never break the page. */
+  function readStored(key) {
+    try {
+      return window.localStorage.getItem(key);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function writeStored(key, value) {
+    try {
+      window.localStorage.setItem(key, value);
+    } catch (e) {
+      /* no-op */
+    }
+  }
+
+  function applyTheme(mode) {
+    if (mode === 'light' || mode === 'dark') root.setAttribute('data-theme', mode);
+    else root.removeAttribute('data-theme');
+
+    writeStored(THEME_KEY, mode);
+
+    var buttons = document.querySelectorAll('[data-kit-theme]');
+
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].setAttribute('aria-pressed', String(buttons[i].getAttribute('data-kit-theme') === mode));
+    }
+  }
+
+  function currentTheme() {
+    return root.getAttribute('data-theme') || 'system';
+  }
+
+  function cycleTheme() {
+    applyTheme(THEME_MODES[(THEME_MODES.indexOf(currentTheme()) + 1) % THEME_MODES.length]);
+  }
+
+  function items() {
+    return Array.prototype.slice.call(document.querySelectorAll('[data-kit-item]'));
+  }
+
+  /* document.activeElement is null in a detached or not-yet-painted document,
+     and Element.closest is absent on the document node itself. */
+  function activeWithin(selector) {
+    var el = document.activeElement;
+
+    return el && el.closest ? el.closest(selector) : null;
+  }
+
+  function moveItem(step) {
+    var all = items();
+
+    if (all.length === 0) return;
+
+    var index = all.indexOf(activeWithin('[data-kit-item]'));
+    var next = all[Math.min(Math.max(index + step, 0), all.length - 1)] || all[0];
+
+    next.setAttribute('tabindex', '-1');
+    next.focus();
+    next.scrollIntoView({ block: 'nearest' });
+
+    /* Reflect the focused item in the URL so a board or a review can be linked
+       to a specific row. replaceState, not a hash assignment: assigning to
+       location.hash pushes a history entry per keypress. */
+    if (next.id && window.history && window.history.replaceState) {
+      window.history.replaceState(null, '', '#' + next.id);
+    }
+  }
+
+  function focusFilter() {
+    var filter = document.querySelector('[data-kit-filter]');
+
+    if (!filter) return false;
+
+    filter.focus();
+    if (filter.select) filter.select();
+
+    return true;
+  }
+
+  function flashCopied(el) {
+    el.classList.add('kit-copied');
+    window.setTimeout(function () {
+      el.classList.remove('kit-copied');
+    }, 900);
+  }
+
+  function copyFrom(el) {
+    if (!el) return;
+
+    var text = el.getAttribute('data-kit-copy') || el.textContent || '';
+
+    if (!text || !navigator.clipboard || !navigator.clipboard.writeText) return;
+
+    navigator.clipboard.writeText(text.trim()).then(
+      function () {
+        flashCopied(el);
+      },
+      function () {
+        /* Clipboard is permission-gated; a refusal is not an error worth
+           interrupting the page for. */
+      },
+    );
+  }
+
+  function sections() {
+    return Array.prototype.slice.call(document.querySelectorAll('[data-kit-section]'));
+  }
+
+  function jumpToSection(n) {
+    var target = sections()[n - 1];
+
+    if (target) target.scrollIntoView({ block: 'start' });
+  }
+
+  /* One registry drives both the key handler and the help overlay, so the
+     documented shortcuts cannot drift from the implemented ones. */
+  var BINDINGS = [
+    { keys: ['j'], label: 'Next item', when: function () { return items().length > 0; }, run: function () { moveItem(1); } },
+    { keys: ['k'], label: 'Previous item', when: function () { return items().length > 0; }, run: function () { moveItem(-1); } },
+    {
+      keys: ['/'],
+      label: 'Focus filter',
+      when: function () { return Boolean(document.querySelector('[data-kit-filter]')); },
+      run: focusFilter,
+    },
+    {
+      keys: ['y'],
+      label: 'Copy id or path',
+      when: function () { return Boolean(document.querySelector('[data-kit-copy]')); },
+      run: function () {
+        copyFrom(activeWithin('[data-kit-copy]'));
+      },
+    },
+    { keys: ['t'], label: 'Cycle theme', when: function () { return true; }, run: cycleTheme },
+    {
+      keys: ['g', '1-9'],
+      label: 'Jump to section',
+      when: function () { return sections().length > 0; },
+      run: null,
+    },
+    { keys: ['?'], label: 'Show shortcuts', when: function () { return true; }, run: null },
+    { keys: ['Esc'], label: 'Dismiss', when: function () { return true; }, run: null },
+  ];
+
+  var overlay = null;
+
+  function buildOverlay() {
+    var host = document.createElement('div');
+
+    host.className = 'kit-help';
+    host.hidden = true;
+    host.setAttribute('role', 'dialog');
+    host.setAttribute('aria-modal', 'true');
+    host.setAttribute('aria-label', 'Keyboard shortcuts');
+
+    var panel = document.createElement('div');
+
+    panel.className = 'kit-help__panel';
+
+    var title = document.createElement('p');
+
+    title.className = 'kit-help__title';
+    title.textContent = 'Keyboard shortcuts';
+    panel.appendChild(title);
+
+    for (var i = 0; i < BINDINGS.length; i++) {
+      if (!BINDINGS[i].when()) continue;
+
+      var row = document.createElement('div');
+
+      row.className = 'kit-help__row';
+
+      var label = document.createElement('span');
+
+      label.textContent = BINDINGS[i].label;
+      row.appendChild(label);
+
+      var keys = document.createElement('span');
+
+      keys.className = 'kit-help__keys';
+
+      for (var k = 0; k < BINDINGS[i].keys.length; k++) {
+        var kbd = document.createElement('kbd');
+
+        kbd.className = 'kit-kbd';
+        kbd.textContent = BINDINGS[i].keys[k];
+        keys.appendChild(kbd);
+      }
+
+      row.appendChild(keys);
+      panel.appendChild(row);
+    }
+
+    host.appendChild(panel);
+    host.addEventListener('click', function (event) {
+      if (event.target === host) toggleOverlay(false);
+    });
+    document.body.appendChild(host);
+
+    return host;
+  }
+
+  function toggleOverlay(show) {
+    if (!overlay) overlay = buildOverlay();
+
+    overlay.hidden = !show;
+  }
+
+  function isTypingTarget(el) {
+    if (!el) return false;
+
+    var tag = el.tagName;
+
+    return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || el.isContentEditable === true;
+  }
+
+  var pendingJump = false;
+
+  function onKeydown(event) {
+    if (event.metaKey || event.ctrlKey || event.altKey) return;
+
+    if (event.key === 'Escape') {
+      toggleOverlay(false);
+      if (isTypingTarget(event.target) && event.target.blur) event.target.blur();
+
+      return;
+    }
+
+    /* A filter box must be typeable: every other binding is inert while the
+       caret is in a field. Escape above is the deliberate exception. */
+    if (isTypingTarget(event.target)) return;
+
+    if (pendingJump) {
+      pendingJump = false;
+
+      if (event.key >= '1' && event.key <= '9') {
+        jumpToSection(Number(event.key));
+        event.preventDefault();
+
+        return;
+      }
+    }
+
+    if (event.key === 'g' && sections().length > 0) {
+      pendingJump = true;
+      window.setTimeout(function () {
+        pendingJump = false;
+      }, 1200);
+
+      return;
+    }
+
+    if (event.key === '?') {
+      toggleOverlay(overlay ? overlay.hidden : true);
+      event.preventDefault();
+
+      return;
+    }
+
+    for (var i = 0; i < BINDINGS.length; i++) {
+      if (BINDINGS[i].run && BINDINGS[i].keys.indexOf(event.key) !== -1 && BINDINGS[i].when()) {
+        BINDINGS[i].run();
+        event.preventDefault();
+
+        return;
+      }
+    }
+  }
+
+  function init() {
+    applyTheme(readStored(THEME_KEY) || 'system');
+
+    var buttons = document.querySelectorAll('[data-kit-theme]');
+
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].addEventListener('click', function (event) {
+        applyTheme(event.currentTarget.getAttribute('data-kit-theme'));
+      });
+    }
+
+    document.addEventListener('click', function (event) {
+      var target = event.target.closest ? event.target.closest('[data-kit-copy]') : null;
+
+      if (target) copyFrom(target);
+    });
+
+    document.addEventListener('keydown', onKeydown);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+/* kit:js:end */
     </script>
 
     <script>

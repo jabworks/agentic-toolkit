@@ -52,16 +52,42 @@ test('the canonical core is safe to inline into a template literal', () => {
   assert.equal(core.includes('${'), false, 'core.css contains an interpolation opener');
 });
 
-test('the core defines a light override for every theme-varying token', () => {
+// Type, space, radius and motion are theme-invariant — a 4px gap and a 200ms
+// ease do not change with the palette, so they belong in the base block only.
+// Colour and elevation do vary: a shadow tuned for the #111110 ground reads as
+// dirt on #f6f5ef. Stated as a rule rather than a frozen list, because the list
+// was ['--mono', '--radius'] until the scale landed and a list has to be edited
+// every time the core grows — which is the moment the check stops being read.
+const THEME_INVARIANT = /^--(mono|sans|text-|leading-|tracking-|space-|radius|dur|ease-)/;
+
+test('theme-invariant tokens stay in the base block; theme-varying ones are restated', () => {
   const split = CORE.indexOf('@media');
-  const names = (chunk) => new Set([...chunk.matchAll(/(--[a-z-]+):/g)].map((m) => m[1]));
+
+  // [a-z0-9-] not [a-z-]: --text-2xs and --space-1 carry digits, and the old
+  // pattern silently skipped every token that did.
+  const names = (chunk) => new Set([...chunk.matchAll(/(--[a-z0-9-]+)\s*:/g)].map((m) => m[1]));
   const base = names(CORE.slice(0, split));
-  const light = names(CORE.slice(split));
+  const overrides = names(CORE.slice(split));
 
-  // --mono and --radius are theme-invariant; everything else must be restated.
-  const missing = [...base].filter((n) => !light.has(n));
+  const wronglyRestated = [...overrides].filter((n) => THEME_INVARIANT.test(n)).sort();
+  const missingOverride = [...base].filter((n) => !THEME_INVARIANT.test(n) && !overrides.has(n)).sort();
 
-  assert.deepEqual(missing.sort(), ['--mono', '--radius']);
+  assert.deepEqual(wronglyRestated, [], 'theme-invariant token restated inside a theme block');
+  assert.deepEqual(missingOverride, [], 'theme-varying token has no light override');
+});
+
+test('both light blocks define the same token set', () => {
+  // The OS-default block and the explicitly-stamped block must agree, or the
+  // toggle and the system preference disagree about what "light" means.
+  const media = CORE.match(/:root:not\(\[data-theme="dark"\]\) \{([\s\S]*?)\n {2}\}/);
+  const stamped = CORE.match(/:root\[data-theme="light"\] \{([\s\S]*?)\n\}/);
+
+  assert.ok(media, 'core.css has no OS-default light block');
+  assert.ok(stamped, 'core.css has no [data-theme="light"] block');
+
+  const names = (chunk) => [...chunk.matchAll(/(--[a-z0-9-]+)\s*:/g)].map((m) => m[1]).sort();
+
+  assert.deepEqual(names(media[1]), names(stamped[1]));
 });
 
 // ---------------------------------------------------------------------------

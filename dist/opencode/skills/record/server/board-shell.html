@@ -1,20 +1,10 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="created" content="YYYY-MM-DD HH:MM:SS" />
-    <meta name="branch" content="[output of: git branch --show-current]" />
-    <meta name="repo" content="[monorepo package or app, e.g. apps/web, packages/oxlint-config]" />
-    <meta name="task" content="[slug — what were you doing]" />
-    <meta name="continues-from" content="[previous handoff filename | none]" />
-    <meta name="workstream" content="[slug describing the workstream]" />
-    <title>handoff: [task-slug] [YYYY-MM-DD]</title>
-    <!-- No remote fonts: a handoff names projects and open work, and a webfont
-         request tells its host the file was opened and when. --mono falls back
-         through JetBrains Mono to ui-monospace, so this renders the same on any
-         machine that has a dev font. -->
-    <style>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<style>
 /* tokens:core:start */
 /* Shared design core — do not hand-edit; edit scripts/tokens/core.css. */
 :root {
@@ -408,525 +398,68 @@
 }
 /* kit:css:end */
 
-      /* session-handoff extensions — semantic variants, named palette entries,
-         and terminal colours. Outside the markers on purpose: anything
-         inside them is replaced by check-tokens.mjs --fix. */
-      :root {
-        --secondary:          #222221;
-        --card-hover:         #222221;
-        --card-active:        #2a2a28;
-        --popover-foreground: #eeeeec;
-        --border-hover:       #494844;
-        --gold-9:             #978365;
-        --gold-10:            #a39073;
-        --success-foreground: #ffffff;
-        --success-solid:      #46a758;
-        --warning-foreground: #21180b;
-        --warning-solid:      #ffc53d;
-        --info-foreground:    #ffffff;
-        --info-solid:         #0090ff;
-        --destructive-foreground:#ffffff;
-        --destructive-solid:  #e54d2e;
-        --term-bg:            var(--background);
-        --term-fg:            var(--foreground);
-        --titlebar:           var(--secondary);
-        --hover:              var(--accent);
-        --clay:               var(--primary);
-        --dim:                var(--muted-foreground);
-        --green:              var(--success);
-        --red:                var(--destructive);
-        --blue:               var(--info);
-        --yellow:             var(--warning);
-        --ivory:              var(--background);
-      }
-
-      @media (prefers-color-scheme: light) {
-        :root {
-          --secondary:          #f0efe3;
-          --card-hover:         #f0efe3;
-          --card-active:        #eae7da;
-          --popover-foreground: #36302a;
-          --border-hover:       #cfc8b6;
-          --gold-10:            #897254;
-          --success-foreground: #ffffff;
-          --success-solid:      #46a758;
-          --warning-foreground: #21180b;
-          --warning-solid:      #ffc53d;
-          --info-foreground:    #ffffff;
-          --info-solid:         #0090ff;
-          --destructive-foreground:#ffffff;
-          --destructive-solid:  #e54d2e;
-        }
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-      html {
-        background: var(--ivory);
-      }
-      body {
-        margin: 0;
-        padding: 48px 24px 80px;
-        font: 13px/1.55 var(--mono);
-        font-variant-numeric: tabular-nums;
-        color: var(--term-fg);
-        position: relative;
-        min-height: 100vh;
-      }
-
-      body::before {
-        content: '';
-        position: fixed;
-        inset: 0;
-        z-index: 0;
-        pointer-events: none;
-        background-image:
-          linear-gradient(to right,  color-mix(in oklch, var(--foreground) 2%, transparent) 1px, transparent 1px),
-          linear-gradient(to bottom, color-mix(in oklch, var(--foreground) 2%, transparent) 1px, transparent 1px);
-        background-size: 40px 40px;
-      }
-
-      body::after {
-        content: '';
-        position: fixed;
-        top: -240px;
-        left: 50%;
-        width: 640px;
-        height: 640px;
-        z-index: 0;
-        pointer-events: none;
-        transform: translateX(-50%);
-        background: radial-gradient(circle, color-mix(in oklch, var(--gold-9) 9%, transparent) 0%, transparent 70%);
-      }
-
-      ::-webkit-scrollbar { width: 9px; height: 9px; }
-      ::-webkit-scrollbar-thumb {
-        background-color: var(--primary);
-        border-radius: 9999px;
-        border: 2px solid transparent;
-        background-clip: padding-box;
-      }
-      ::-webkit-scrollbar-track { background: transparent; }
-
-      .term {
-        max-width: 1000px;
-        margin: 0 auto;
-        background: var(--term-bg);
-        border-radius: 12px;
-        outline: 1px solid var(--outline);
-        box-shadow: 0 20px 60px rgba(20, 20, 19, 0.22);
-        position: relative;
-        z-index: 1;
-      }
-      .titlebar {
-        background: var(--titlebar);
-        border-radius: 12px 12px 0 0;
-        border-bottom: 1px solid var(--outline);
-        padding: 10px 16px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-      .titlebar .tag {
-        font-size: 10px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        color: var(--primary);
-        padding: 1px 6px;
-        background: color-mix(in oklch, var(--primary) 12%, transparent);
-        border-radius: 9999px;
-      }
-      .titlebar .path {
-        color: var(--dim);
-        font-size: 11px;
-      }
-      .term-body {
-        padding: 22px 30px 30px;
-      }
-
-      .cmd {
-        color: var(--dim);
-        margin-bottom: 6px;
-      }
-      .cmd .prompt {
-        color: var(--clay);
-      }
-      #meta-line {
-        color: var(--subtle);
-        font-size: 11px;
-      }
-
-      section {
-        margin-top: 26px;
-      }
-      .hr {
-        color: var(--subtle);
-        overflow: hidden;
-        white-space: nowrap;
-        user-select: none;
-        margin-bottom: 8px;
-      }
-      .hr::after {
-        content: "────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────";
-      }
-      h2 {
-        all: unset;
-        display: block;
-        color: var(--clay);
-        font-weight: 500;
-      }
-      h2::before {
-        content: "▸ ";
-      }
-      h3 {
-        all: unset;
-        display: block;
-        color: var(--dim);
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        font-weight: 500;
-        margin-top: 14px;
-        margin-bottom: 6px;
-      }
-      .section-body {
-        margin-top: 10px;
-      }
-
-      p {
-        margin: 0;
-        color: var(--term-fg);
-        font-size: 13px;
-      }
-
-      /* key-value rows (stack snapshot) */
-      .kv {
-        display: grid;
-        grid-template-columns: 20ch 1fr;
-        gap: 14px;
-        padding: 5px 0;
-        border-top: 1px solid var(--outline);
-        align-items: baseline;
-        font-size: 12px;
-      }
-      .kv:last-of-type {
-        border-bottom: 1px solid var(--outline);
-      }
-      .kv .key {
-        color: var(--subtle);
-        white-space: nowrap;
-      }
-      .kv .val {
-        color: var(--term-fg);
-      }
-
-      /* tables */
-      .scroll {
-        overflow-x: auto;
-        border-top: 1px solid var(--outline);
-        border-bottom: 1px solid var(--outline);
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 12px;
-      }
-      th,
-      td {
-        text-align: left;
-        padding: 6px 10px;
-      }
-      td {
-        border-top: 1px solid color-mix(in oklch, var(--foreground) 4%, transparent);
-        color: var(--term-fg);
-        vertical-align: top;
-      }
-      th {
-        background: var(--term-bg);
-        font-weight: 500;
-        font-size: 11px;
-        color: var(--subtle);
-        border-bottom: 1px solid var(--outline);
-        white-space: nowrap;
-      }
-      tbody tr:hover td {
-        background: var(--hover);
-      }
-
-      /* lists */
-      ul,
-      ol {
-        margin: 0;
-        padding: 0;
-        list-style: none;
-        display: flex;
-        flex-direction: column;
-        gap: 3px;
-      }
-      ul li::before {
-        content: "— ";
-        color: var(--subtle);
-      }
-      ol {
-        counter-reset: step;
-      }
-      ol li {
-        counter-increment: step;
-        padding-left: 0;
-      }
-      ol li::before {
-        content: counter(step, decimal-leading-zero) "  ";
-        color: var(--clay);
-        font-weight: 700;
-      }
-      li {
-        font-size: 12px;
-        color: var(--term-fg);
-      }
-
-      /* callouts */
-      .callout {
-        padding: 6px 0 6px 14px;
-        border-left: 2px solid var(--subtle);
-        color: var(--dim);
-        margin: 6px 0;
-        font-size: 12px;
-      }
-      .callout.warn {
-        border-color: var(--red);
-        color: var(--term-fg);
-      }
-      .callout b,
-      .callout code {
-        color: var(--term-fg);
-      }
-      .callout.warn b {
-        color: var(--red);
-      }
-
-      code {
-        color: var(--blue);
-      }
-
-      footer {
-        margin-top: 28px;
-        color: var(--subtle);
-        font-size: 11px;
-      }
-
-      ::selection {
-        background: var(--clay);
-        color: var(--term-bg);
-      }
-
-      @media (max-width: 640px) {
-        body {
-          padding: 20px 12px 48px;
-        }
-        .term-body {
-          padding: 16px 16px 24px;
-        }
-        .kv {
-          grid-template-columns: 14ch 1fr;
-          gap: 8px;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="term">
-      <div class="titlebar">
-        <span class="tag">handoff</span>
-        <span class="path" id="title-path">~/project — session-handoff</span>
-      </div>
-      <div class="term-body">
-        <div class="cmd">
-          <span class="prompt">&gt;</span> /session-handoff
-        </div>
-        <div id="meta-line">[YYYY-MM-DD HH:MM] · [branch] · [repo]</div>
-
-        <article class="session-handoff">
-
-          <section id="current-state">
-            <div class="hr"></div>
-            <h2>current state</h2>
-            <!-- One paragraph: where things stand right now. What just finished, what's in flight. -->
-            <div class="section-body">
-              <p>[FILL]</p>
-            </div>
-          </section>
-
-          <section id="stack-snapshot">
-            <div class="hr"></div>
-            <h2>stack snapshot</h2>
-            <div class="section-body">
-              <div class="kv">
-                <span class="key">Package / app</span>
-                <span class="val">[path or package name]</span>
-              </div>
-              <div class="kv">
-                <span class="key">Layer</span>
-                <span class="val">[Frontend | Backend | API | Infra | Tooling | Other]</span>
-              </div>
-              <div class="kv">
-                <span class="key">Docker Compose</span>
-                <span class="val">[up / down / partial — list which services | N/A]</span>
-              </div>
-              <div class="kv">
-                <span class="key">Dev server</span>
-                <span class="val">[running on port X | not running | N/A]</span>
-              </div>
-              <div class="kv">
-                <span class="key">DB migrations in flight</span>
-                <span class="val">[describe | none]</span>
-              </div>
-            </div>
-          </section>
-
-          <section id="architecture">
-            <div class="hr"></div>
-            <h2>architecture context</h2>
-            <div class="section-body">
-              <h3>Critical Files</h3>
-              <div class="scroll">
-                <table>
-                  <thead>
-                    <tr><th>File</th><th>Why it matters</th></tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td><code>path/to/file.ts:42</code></td>
-                      <td>[what it does and why it's relevant now]</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <h3>Key Discoveries</h3>
-              <ul>
-                <li>[Non-obvious thing learned or confirmed this session]</li>
-              </ul>
-            </div>
-          </section>
-
-          <section id="completed-work">
-            <div class="hr"></div>
-            <h2>completed work</h2>
-            <div class="section-body">
-              <h3>Tasks Finished</h3>
-              <ul>
-                <li>[Specific task — include file:line where applicable]</li>
-              </ul>
-
-              <h3>Files Modified</h3>
-              <div class="scroll">
-                <table>
-                  <thead>
-                    <tr><th>File</th><th>Change</th><th>Why</th></tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td><code>path/to/file.ts</code></td>
-                      <td>[what changed]</td>
-                      <td>[rationale]</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </section>
-
-          <section id="decisions">
-            <div class="hr"></div>
-            <h2>decisions made</h2>
-            <div class="section-body scroll">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Decision</th>
-                    <th>Options considered</th>
-                    <th>Chosen</th>
-                    <th>Rationale</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>[What was decided]</td>
-                    <td>[A vs B vs C]</td>
-                    <td>[A]</td>
-                    <td>[The constraint, tradeoff, or intent]</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
-
-          <section id="next-steps">
-            <div class="hr"></div>
-            <h2>immediate next steps</h2>
-            <!-- Ordered and specific. "Fix auth" is not acceptable. "Add refreshToken to auth.schema.ts:12" is. -->
-            <div class="section-body">
-              <ol>
-                <li>[Step 1 — include file:line where applicable]</li>
-                <li>[Step 2]</li>
-                <li>[Step 3]</li>
-              </ol>
-            </div>
-          </section>
-
-          <section id="blockers">
-            <div class="hr"></div>
-            <h2>blockers</h2>
-            <div class="section-body scroll">
-              <table>
-                <thead>
-                  <tr><th>Blocker</th><th>Context</th><th>Workaround tried</th></tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>[What's stuck]</td>
-                    <td>[Why]</td>
-                    <td>[What was attempted]</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
-
-          <section id="important-context">
-            <div class="hr"></div>
-            <h2>important context</h2>
-            <!-- MUST READ. Things the next agent gets wrong without knowing this. -->
-            <div class="section-body">
-              <div class="callout warn">
-                <b>Must read</b> — things the next session gets wrong without knowing this.
-              </div>
-              <ul>
-                <li>[Critical invariant, hidden constraint, or gotcha]</li>
-                <li>[Known pitfall to avoid]</li>
-              </ul>
-            </div>
-          </section>
-
-          <section id="deferred">
-            <div class="hr"></div>
-            <h2>deferred / out of scope</h2>
-            <div class="section-body">
-              <ul>
-                <li>[Thing that came up but was intentionally left for later]</li>
-              </ul>
-            </div>
-          </section>
-
-        </article>
-
-        <footer>Generated [YYYY-MM-DD HH:MM] · Read-only — do not modify after creation</footer>
-      </div>
-    </div>
-
-    <script>
+/* docket board extension — the count chip rides the muted surface. Outside the
+   markers on purpose: anything inside them is replaced by --fix. */
+:root{--chip:var(--muted)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--background);color:var(--foreground);font:15px/1.55 ui-sans-serif,system-ui,sans-serif}
+header{position:sticky;top:0;background:var(--background);border-bottom:1px solid var(--border);padding:1rem 1.25rem .75rem;z-index:2}
+h1{margin:0 0 .35rem;font-size:1.15rem;letter-spacing:.04em}
+.stats{display:flex;gap:.75rem;flex-wrap:wrap;color:var(--muted-foreground);font-size:.8rem;margin-bottom:.6rem}
+.stat b{color:var(--foreground)}
+#filter{width:100%;max-width:28rem;padding:.45rem .6rem;border:1px solid var(--border);border-radius:.4rem;background:var(--card);color:var(--foreground)}
+.bar{display:flex;gap:.5rem;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+.scopes{display:flex;gap:.35rem;flex-wrap:wrap}
+.scope{display:inline-flex;align-items:center;gap:.4rem;font:inherit;font-size:.75rem;padding:.2rem .6rem;border:1px solid var(--border);border-radius:.6rem;background:var(--card);color:var(--muted-foreground);cursor:pointer}
+.scope:hover{color:var(--foreground);border-color:var(--primary)}
+.scope.active{background:var(--primary-muted);color:var(--primary-text);border-color:var(--primary)}
+.scope:focus-visible{outline:2px solid var(--primary);outline-offset:1px}
+.scope .count{margin-left:0;font-variant-numeric:tabular-nums}
+.scope.active .count{background:var(--card)}
+.scope[data-total="0"]{opacity:.55}
+.tags{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.45rem}
+.tag{font-variant-numeric:tabular-nums}
+.filter-btn[aria-expanded="true"]{background:var(--primary-muted);color:var(--primary-text);border-color:var(--primary)}
+#filter[hidden]{display:none}
+main{max-width:52rem;margin:0 auto;padding:1rem 1.25rem 4rem}
+h2{font-size:.85rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted-foreground);margin:1.6rem 0 .6rem;border-bottom:1px solid var(--border);padding-bottom:.3rem}
+.count{margin-left:.5rem;background:var(--chip);border-radius:.6rem;padding:.05rem .5rem;font-size:.75rem}
+.item{background:var(--card);border:1px solid var(--border);border-radius:.5rem;padding:.75rem .9rem;margin:.6rem 0}
+.item h3{margin:0 0 .35rem;font-size:.95rem}
+.item h4{margin:.6rem 0 .2rem;font-size:.8rem;color:var(--muted-foreground)}
+.item p{margin:.35rem 0}
+.item.archived{opacity:.85}
+.idlink{color:var(--primary);text-decoration:none;font-variant-numeric:tabular-nums}
+.idlink:hover{text-decoration:underline}
+.item:target{outline:2px solid var(--primary);outline-offset:2px}
+pre{background:var(--chip);border-radius:.4rem;padding:.5rem .7rem;overflow-x:auto;font-size:.85rem}
+code{background:var(--chip);border-radius:.25rem;padding:.05rem .3rem;font-size:.88em}
+pre code{background:none;padding:0}
+ul{margin:.3rem 0;padding-left:1.3rem}
+details{margin:.5rem 0}
+summary{cursor:pointer;color:var(--muted-foreground)}
+.prose{color:var(--muted-foreground);font-size:.9rem}
+.empty{border:1px dashed var(--border);border-radius:.5rem;padding:1.5rem;text-align:center;color:var(--muted-foreground)}
+.hidden{display:none}
+</style>
+</head>
+<body{{BODY_ATTRS}}>
+<header>
+  <h1>{{TITLE}}</h1>
+  <div class="bar">
+    <div class="scopes" role="group" aria-label="Filter by section">{{SCOPES}}</div>
+    <button type="button" id="filter-toggle" class="scope filter-btn" aria-expanded="false" aria-controls="filter">Filter</button>
+  </div>
+  <input id="filter" type="search" placeholder="Filter items — title, body, #id" autocomplete="off" hidden>
+  {{TAGS}}
+  {{STATS}}
+</header>
+<main>
+{{EMPTY}}
+{{SECTIONS}}
+{{ARCHIVE}}
+</main>
+<script>
 /* kit:js:start */
 /* Shared behaviour layer — do not hand-edit; edit scripts/tokens/kit.js. */
 
@@ -1239,6 +772,122 @@
   else init();
 })();
 /* kit:js:end */
-    </script>
-  </body>
+</script>
+<script>
+const filter = document.getElementById('filter');
+const filterToggle = document.getElementById('filter-toggle');
+const pills = [...document.querySelectorAll('.scopes .scope')];
+const tagButtons = [...document.querySelectorAll('.tags .tag')];
+let scope = '';
+let tag = '';
+
+function applyFilters() {
+  const q = filter.value.trim().toLowerCase();
+  const filtering = q !== '' || tag !== '';
+  // Facet counts: each row reports what picking one of its OWN options would
+  // yield, so a row never discounts itself. Scope counts ignore the active
+  // scope, tag counts ignore the active tag; both respect everything else.
+  const scopeCounts = new Map();
+  const tagCounts = new Map();
+
+  for (const section of document.querySelectorAll('main > section')) {
+    const inScope = scope === '' || section.dataset.section === scope;
+    let visible = 0;
+
+    for (const item of section.querySelectorAll('.item')) {
+      const tags = item.dataset.tags === '' ? [] : item.dataset.tags.split(' ');
+      const hitQuery = q === '' || item.dataset.search.includes(q);
+      const hitTag = tag === '' || tags.includes(tag);
+
+      item.classList.toggle('hidden', !(inScope && hitQuery && hitTag));
+      if (hitQuery && hitTag) visible++;
+      if (inScope && hitQuery) {
+        for (const each of tags) tagCounts.set(each, (tagCounts.get(each) ?? 0) + 1);
+      }
+    }
+
+    scopeCounts.set(section.dataset.section, visible);
+
+    // Collapse a section only when a filter emptied it — a heading with no hits
+    // under it is noise. Unfiltered, an empty section still shows: "Loose
+    // threads, nothing in it" is information, and it is what the page renders
+    // on load, so touching a chip must not make it disappear.
+    section.classList.toggle('hidden', !inScope || (filtering && visible === 0));
+  }
+
+  for (const pill of pills) {
+    const key = pill.dataset.scope;
+    const shown = !filtering
+      ? pill.dataset.total
+      : key === ''
+        ? [...scopeCounts].reduce((sum, [k, n]) => sum + (k === '{{ARCHIVE_SCOPE}}' ? 0 : n), 0)
+        : (scopeCounts.get(key) ?? 0);
+    pill.querySelector('.count').textContent = shown;
+  }
+
+  for (const pill of tagButtons) {
+    const unfiltered = q === '' && scope === '';
+    pill.querySelector('.count').textContent = unfiltered
+      ? pill.dataset.total
+      : (tagCounts.get(pill.dataset.tag) ?? 0);
+  }
+
+  if (q !== '') {
+    for (const details of document.querySelectorAll('details')) details.open = true;
+  }
+}
+
+filter.addEventListener('input', applyFilters);
+
+filterToggle.addEventListener('click', () => {
+  const open = filter.hasAttribute('hidden');
+  filter.toggleAttribute('hidden', !open);
+  filterToggle.setAttribute('aria-expanded', String(open));
+
+  if (open) {
+    filter.focus();
+  } else if (filter.value !== '') {
+    // Collapsing the box must not leave an invisible query filtering the board.
+    filter.value = '';
+    applyFilters();
+  }
+});
+
+// Tags toggle rather than switch: clicking the active one clears it, so there
+// is no "All tags" pill to keep in sync with the scope row's "All".
+for (const button of tagButtons) {
+  button.addEventListener('click', () => {
+    tag = tag === button.dataset.tag ? '' : button.dataset.tag;
+    for (const other of tagButtons) {
+      const on = other.dataset.tag === tag;
+      other.classList.toggle('active', on);
+      other.setAttribute('aria-pressed', String(on));
+    }
+    applyFilters();
+  });
+}
+
+for (const button of pills) {
+  button.addEventListener('click', () => {
+    scope = button.dataset.scope;
+    for (const other of pills) {
+      const on = other === button;
+      other.classList.toggle('active', on);
+      other.setAttribute('aria-pressed', String(on));
+    }
+    applyFilters();
+  });
+}
+const target = document.body.dataset.open;
+if (target) {
+  const el = document.getElementById(target);
+  if (el) {
+    const details = el.closest('details');
+    if (details) details.open = true;
+    el.scrollIntoView();
+    el.style.outline = '2px solid var(--primary)';
+  }
+}
+{{SSE_JS}}</script>
+</body>
 </html>

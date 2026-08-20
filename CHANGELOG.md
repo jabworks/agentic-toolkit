@@ -14,11 +14,27 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## toolkit-ops 1.7.6 — 2026-08-20
 
-- fix(condux): correct two oracle bugs in blueprint's trigger-eval corpus
+- fix(condux): reconcile trigger-eval oracles with routing doctrine (#42) (#87)
+
+## session-report 1.9.0 — 2026-08-20
+
+- chore(session-report): version 1.9.0
+
+## session-handoff 1.8.0 — 2026-08-20
+
+- chore(session-handoff): version 1.8.0
+
+## docket 0.9.0 — 2026-08-20
+
+- chore(docket): version 0.9.0
+
+## condux 2.19.0 — 2026-08-20
+
+- chore(condux): version 2.19.0
 
 ## condux 2.18.1 — 2026-08-20
 
-- fix(condux): correct two oracle bugs in blueprint's trigger-eval corpus
+- fix(condux): reconcile trigger-eval oracles with routing doctrine (#42) (#87)
 
 ## condux 2.18.0 — 2026-08-20
 
@@ -27,7 +43,7 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## coding-directive 1.3.0 — 2026-08-20
 
-- chore(coding-directive): version 1.3.0
+- fix(condux): reconcile trigger-eval oracles with routing doctrine (#42) (#87)
 
 ## toolkit-ops 1.7.5 — 2026-08-17
 

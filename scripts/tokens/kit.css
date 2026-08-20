@@ -1,0 +1,242 @@
+/* Shared state layer — do not hand-edit; edit scripts/tokens/kit.css. */
+
+/* :where() keeps these at zero specificity, so a surface overrides them by
+   writing a plain rule rather than escalating into an !important contest. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Mouse users should not see the ring; keyboard users must. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus:not(:focus-visible) {
+  outline: none;
+}
+
+.kit-skip {
+  position: absolute;
+  left: var(--space-2);
+  top: -4rem;
+  z-index: 999;
+  padding: var(--space-2) var(--space-3);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: top var(--dur) var(--ease-out);
+}
+
+.kit-skip:focus {
+  top: var(--space-2);
+}
+
+/* Empty, loading and error states. Namespaced kit- because three of the four
+   surfaces already own an .empty or .error class of their own. */
+.kit-empty {
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+  color: var(--muted-foreground);
+}
+
+.kit-empty__title {
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-md);
+  color: var(--foreground);
+}
+
+.kit-empty__body {
+  margin: 0 auto;
+  max-width: 44ch;
+  font-size: var(--text-sm);
+  text-wrap: pretty;
+}
+
+.kit-error {
+  display: flex;
+  gap: var(--space-2);
+  align-items: baseline;
+  padding: var(--space-2) var(--space-3);
+  background: var(--destructive-muted);
+  border: 1px solid var(--destructive-border);
+  border-radius: var(--radius);
+  color: var(--destructive);
+  font-size: var(--text-sm);
+}
+
+/* Shaped like the content it stands in for — never a spinner. Width is the
+   caller's job, so one rule serves a title, a row and a paragraph. */
+.kit-skel {
+  height: 0.75rem;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, var(--muted) 0%, var(--accent) 50%, var(--muted) 100%);
+  background-size: 200% 100%;
+  animation: kit-shimmer 1.4s var(--ease-out) infinite;
+}
+
+@keyframes kit-shimmer {
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Keyboard help overlay, populated by kit.js from the live binding registry. */
+.kit-help {
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+  background: color-mix(in oklch, var(--background) 78%, transparent);
+}
+
+.kit-help[hidden] {
+  display: none;
+}
+
+.kit-help__panel {
+  width: min(34rem, 100%);
+  max-height: 80dvh;
+  overflow-y: auto;
+  padding: var(--space-5);
+  background: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+}
+
+.kit-help__title {
+  margin: 0 0 var(--space-4);
+  font-family: var(--mono);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+
+.kit-help__row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-1) 0;
+  font-size: var(--text-sm);
+}
+
+.kit-help__keys {
+  flex: none;
+  display: flex;
+  gap: var(--space-1);
+}
+
+.kit-kbd {
+  min-width: 1.4rem;
+  padding: 0.1rem 0.4rem;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: var(--text-2xs);
+  color: var(--foreground);
+  background: var(--popover);
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.kit-theme {
+  display: inline-flex;
+  gap: 1px;
+}
+
+.kit-theme button {
+  font: inherit;
+  font-size: var(--text-2xs);
+  padding: var(--space-1) var(--space-2);
+  color: var(--muted-foreground);
+  background: var(--card);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+}
+
+.kit-theme button:first-child {
+  border-radius: var(--radius) 0 0 var(--radius);
+}
+
+.kit-theme button:last-child {
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.kit-theme button:hover {
+  color: var(--foreground);
+  border-color: var(--primary);
+}
+
+.kit-theme button[aria-pressed="true"] {
+  color: var(--primary-foreground);
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.kit-copied {
+  color: var(--success);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Browsers do not print background colours by default, so a dark-themed page
+   prints light text onto white and reads as blank. Repointing the tokens is
+   what makes Ctrl-P work at all; hiding chrome is the surface's opt-in. */
+@media print {
+  :root {
+    --background: #ffffff;
+    --card: #ffffff;
+    --popover: #ffffff;
+    --muted: #f4f4f2;
+    --accent: #f4f4f2;
+    --foreground: #000000;
+    --card-foreground: #000000;
+    --muted-foreground: #444444;
+    --subtle: #666666;
+    --border: #999999;
+    --input: #999999;
+    --shadow-sm: none;
+    --shadow-md: none;
+    --shadow-lg: none;
+  }
+
+  body {
+    background: #ffffff;
+    color: #000000;
+  }
+
+  .kit-skip,
+  .kit-help,
+  .kit-theme,
+  [data-kit-chrome] {
+    display: none !important;
+  }
+
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 90%;
+    color: #555555;
+  }
+
+  .kit-skel {
+    animation: none;
+  }
+}
