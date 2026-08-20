@@ -12,7 +12,7 @@
   { "query": "scaffold a new package the way we usually structure things", "should_trigger": true, "expected_skill": "adapting-skills" },
   { "query": "run the end-of-task quality gates", "should_trigger": true, "expected_skill": "finalize" },
   { "query": "add a search input to the header", "should_trigger": false, "expected_skill": null, "accept": ["workflow"] },
-  { "query": "why is the checkout page returning 500", "should_trigger": false, "expected_skill": null, "accept": ["root-cause-analysis"] },
+  { "query": "why is the checkout page returning 500", "should_trigger": false, "expected_skill": null, "accept": ["root-cause-analysis", "workflow"], "note": "A bug report is a dev task, and routing.md sends those to workflow, which loads root-cause-analysis at the right moment. Both are correct first answers; the case exists to guard coding-directive against the \"why is\" bait." },
   { "query": "commit these changes", "should_trigger": true, "expected_skill": "git-commit" },
   { "query": "update the npm packages to latest", "should_trigger": false, "expected_skill": null }
 ]

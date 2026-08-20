@@ -14,16 +14,20 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## toolkit-ops 1.7.6 — 2026-08-20
 
-- chore(toolkit-ops): version 1.7.6
+- fix(condux): correct two oracle bugs in blueprint's trigger-eval corpus
 
 ## condux 2.18.1 — 2026-08-20
 
-- chore(condux): version 2.18.1
+- fix(condux): correct two oracle bugs in blueprint's trigger-eval corpus
 
 ## condux 2.18.0 — 2026-08-20
 
 - feat(condux): add blueprint design-mockup skill (#85)
 - fix(condux): OpenCode routing enforcement, close 4 of 5 contract gaps from #37's triage (#38, #39)
+
+## coding-directive 1.3.0 — 2026-08-20
+
+- chore(coding-directive): version 1.3.0
 
 ## toolkit-ops 1.7.5 — 2026-08-17
 
