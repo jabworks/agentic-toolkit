@@ -1,6 +1,7 @@
 ---
 name: coding-directive
-description: Use when code must conform to the jabworks house conventions — "what's our convention for X", "why does our style ban <lint rule>", "make this match house style", or setting Prettier/ESLint/oxlint/tsconfig to the house settings. Not for what a lint rule or language feature means in general, why a shell command or CLI flag is banned here (toolkit-failure-archaeology), scaffolding or adapting artifacts to the stack (adapting-skills), quality gates (finalize), or design/layout work.
+description: The jabworks house style for application source code — TypeScript/React conventions, formatting, imports, naming, and CSS, split into an enforced tier and a judgment tier. Covers how code is written, never which shell commands or CLI flags are allowed.
+when_to_use: Code must conform to the jabworks house conventions — "what's our convention for X", "why does our style ban <lint rule>", "make this match house style" — or you are checking whether existing code already conforms — "does this file follow our style guide", "review this for style conformance" — or setting Prettier/ESLint/oxlint/tsconfig to the house settings. Not for what a lint rule or language feature means in general, why a shell command or CLI flag is banned here (toolkit-failure-archaeology), scaffolding or adapting artifacts to the stack (adapting-skills), quality gates (finalize), or design/layout work.
 ---
 
 # The jabworks Coding Directive

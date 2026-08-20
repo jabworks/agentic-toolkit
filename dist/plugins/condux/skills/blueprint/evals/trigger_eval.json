@@ -81,12 +81,16 @@
   {
     "query": "build the settings page from the approved design",
     "should_trigger": false,
-    "expected_skill": null
+    "expected_skill": null,
+    "accept": ["workflow"],
+    "note": "Building from an approved design is an implementation request; workflow's any-implementation-request claim covers it. The case still guards blueprint against the \"design\" bait."
   },
   {
     "query": "implement this Figma design as a React component",
     "should_trigger": false,
-    "expected_skill": null
+    "expected_skill": null,
+    "accept": ["workflow"],
+    "note": "Implementing a design in code is an implementation request; workflow covers it. The case still guards blueprint against the \"Figma design\" bait."
   },
   {
     "query": "pick a color palette and typography for the marketing site",
