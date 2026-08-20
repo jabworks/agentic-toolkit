@@ -18,6 +18,7 @@
     "condux": {
       "bundle": true,
       "skills": [
+        "blueprint",
         "code-review",
         "condux-doctor",
         "discovery",
@@ -38,7 +39,7 @@
         "skills/workflow/hooks": "hooks"
       },
       "marketplace": {
-        "description": "Lean agentic workflow skills: tiered task routing, discovery gate, lean plan drafting, opt-in tests-first, subagent coordination, end-of-task quality gate, on-request code review, preflight done-check, root-cause-first debugging, and feature spec management."
+        "description": "Lean agentic workflow skills: tiered task routing, discovery gate, design-time wireframes and diagrams, lean plan drafting, opt-in tests-first, subagent coordination, end-of-task quality gate, on-request code review, preflight done-check, root-cause-first debugging, and feature spec management."
       }
     },
     "spec-browser": {
@@ -180,6 +181,10 @@
           "blurb": "Design gate — goal-round questions, alternatives, then a post-approach detail round (contracts, mappings, edge cases); sign-off saves the design doc and, default-on, a structured tech spec"
         },
         {
+          "skill": "blueprint",
+          "blurb": "Design-time visual clarity — grayscale HTML wireframes for UI surfaces, inline-SVG diagrams (data models, flows, architecture, state machines) for backend work; dependency-free, structure not styling"
+        },
+        {
           "skill": "draft-plan",
           "blurb": "Lean task-card plan (what/why/gotchas/deps), Markdown, LARGE tasks only"
         },
@@ -305,7 +310,7 @@
         },
         {
           "entry": "`condux` (plugin)",
-          "blurb": "agentic workflow bundle (workflow, discovery, draft-plan, test-first-development, subagent-execution, subagent-deployment, finalize, live-verification, code-review, preflight, root-cause-analysis, plan-review, technical-spec, condux-doctor)"
+          "blurb": "agentic workflow bundle (workflow, discovery, blueprint, draft-plan, test-first-development, subagent-execution, subagent-deployment, finalize, live-verification, code-review, preflight, root-cause-analysis, plan-review, technical-spec, condux-doctor)"
         },
         {
           "entry": "`docket` (plugin)",

@@ -12,6 +12,10 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## condux 2.18.0 — 2026-08-20
+
+- fix(condux): OpenCode routing enforcement, close 4 of 5 contract gaps from #37's triage (#38, #39)
+
 ## toolkit-ops 1.7.5 — 2026-08-17
 
 - fix(evals): triage the sibling-miss cases — 19 accept alternates and one oracle flip (#37)

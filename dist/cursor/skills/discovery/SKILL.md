@@ -49,6 +49,9 @@ as any other soft gate in this skill.
 │  Present 2-3 approaches with tradeoffs.                        │
 │  Show design in sections — get acknowledgment per section      │
 │  before moving on.                                              │
+│  UI surface or data model involved? Load `blueprint` to        │
+│  render the proposal visually — wireframes and diagrams        │
+│  become part of what gets signed off.                           │
 │                                                                  │
 │  Step 4: DETAIL ROUND — feed the spec                           │
 │  With the approach chosen, ask ONE more batch, grouped by      │
@@ -168,7 +171,10 @@ design that lives only in conversation doesn't count as signed off.
 ignored — see the bootstrap step there. Honour an `AGENTS.md` path override
 if the project defines one.
 
-For side-by-side layout comparisons or architecture diagrams during the design phase, see `references/mockup-picker.md`.
+For full design mockups — grayscale UI wireframes, data-model / flow /
+architecture diagrams — load the `blueprint` skill; the design doc links the
+files it produces. For *picking between* side-by-side options in the browser,
+see `references/mockup-picker.md` (it can point at blueprint's files).
 
 ## Design Review Loop
 
