@@ -333,6 +333,44 @@ in this repo's marketplace.json).
 | Reference scripts | `skills/<name>/references/*.js` + `references/package.json` | Skill ships runnable helpers (CommonJS) |
 | Trigger evals | `skills/<name>/evals/trigger_eval.json` | Skill needs a measured routing baseline |
 
+### Writing trigger-eval oracles
+
+The oracle is what the corpus asserts is correct. Get it wrong and the harness
+scores a *correct* routing decision as a miss — and since each run is compared
+against the last, one wrong oracle poisons every later comparison.
+
+condux's routing payload states that every implementation request starts at
+`/workflow`, and names the skills that execute **within** workflow rather than
+instead of it (`discovery`, `draft-plan`, `blueprint`, `test-first-development`,
+`preflight`, `finalize`, `code-review`, `root-cause-analysis`,
+`live-verification`, `plan-review`, `technical-spec`, `subagent-*`). For any of
+those, `workflow` is a legitimate first answer whenever the prompt asks to build,
+fix, or change something.
+
+Encode that by the **shape of the request**, never by which cases happened to
+flake — loosening only the observed failures overfits to model variance and has
+to be re-chased every run:
+
+| Request shape | Oracle |
+|---|---|
+| implementation request aimed at a within-workflow skill | `accept: ["workflow"]` |
+| bug-shaped | also `accept` `root-cause-analysis` |
+| question about the practice itself, or ownership of an artifact only that skill owns | strict — no `accept` |
+
+Keep some cases strict on purpose. A corpus where every case accepts `workflow`
+measures nothing.
+
+Two failure signatures, two different fixes:
+
+- **Missing to another skill that doctrine also allows** → too-strict oracle.
+  Widen `accept`. Changes no behaviour, so no re-run is needed.
+- **Missing to `null`** → a reach gap in the description; nothing fired at all.
+  That is a real routing defect, and fixing it *changes behaviour*, so it needs
+  an eval re-run to verify — and watch the neighbouring skills' scores, not just
+  the ones you meant to fix.
+- **An answer the judge was never shown** → out-of-catalog harness
+  contamination. No `accept` alternate can fix one; leave it.
+
 ## Common Mistakes
 
 | Mistake | Fix |
@@ -350,6 +388,8 @@ in this repo's marketplace.json).
 | `references/*.js` with no `references/package.json` | Add `{ "type": "commonjs" }` beside it |
 | Co-author trailer in commit | Use `-s` (`--signoff`) — no `Co-Authored-By:` |
 | Workflow summary in description | Description = triggering conditions only |
+| `expected_skill: null` on an implementation request | Doctrine routes it to `workflow`, so the model answers correctly and the corpus records a miss — use `accept: ["workflow"]` |
+| Widening a description to fix a reach gap, without re-running the eval | A description edit changes real routing; only a re-run shows what it stole from neighbouring skills |
 | Leaving `[FILL]` placeholders in SKILL.md | Run quality check before committing |
 | Missing `.codex-plugin/plugin.json` | `codex plugin add` will fail with "missing plugin.json" |
 | Missing `.claude-plugin/plugin.json` | Claude Code `/plugin install` won't find plugin metadata |
