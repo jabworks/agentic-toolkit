@@ -1,6 +1,6 @@
 # Docket — Tech Spec
 
-**Last updated:** 2026-08-05
+**Last updated:** 2026-08-21
 **Commit:** cd70976 (design stage — pre-implementation)
 **Status:** draft
 
@@ -19,8 +19,13 @@ BACKLOG.md conventions.
 - [quirks.md](quirks.md) — id-space rules, legacy BACKLOG.md detection, ghost-work lesson, edge cases
 - [implementation.md](implementation.md) — repo layout, sync/mirror surface, tests, phasing
 - [design.md](design.md) — the signed-off design this spec was written from (2026-08-05)
+- [board-direction-a.html](board-direction-a.html) — the signed-off board render (2026-08-21, docket #45)
 
 ## Changelog
+- 2026-08-21 (preflight): drift decisions — `.board` is a div inside `<main>`,
+  archive is one closed drawer, not per-year blocks (quirks)
+- 2026-08-21: board redesign (docket #45) — columns, read-only, title + lede
+  with fold, archive drawer (decisions, quirks, fields, implementation)
 - 2026-08-05 (0.1.1): trigger eval cases for record/groom landed
   (near-miss boundary prompts, quirks) — the preflight drift item is closed
 - 2026-08-05 (preflight): drift decisions — no automated next_id repair flag

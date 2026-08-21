@@ -223,46 +223,69 @@ test('migrate converts legacy byte-faithfully and leaves the originals in place'
   }
 });
 
-test('renderHtml produces a self-contained board with anchors, archive, and stats', () => {
+// The board is a column per DOCKET.md section (docket #45): lede-first cards,
+// a one-row header with a meta line, the archive as a drawer under the board.
+// Scope pills, the stats row and the section nav are gone — the columns are
+// the scopes, so the header only carries what no column says.
+test('renderHtml produces a self-contained column board with cards, a drawer, and a meta line', () => {
   const layoutA = scratchCopy('layout-a');
   try {
     const html = renderHtml(resolveDocket(layoutA), { openId: 4, date: '2026-08-05' });
 
     assert.match(html, /<title>ACME DOCKET<\/title>/);
-    assert.match(html, /id="item-1"/, 'open items get #N anchors');
-    assert.match(html, /id="item-3"/, 'archived items get anchors too');
     assert.match(html, /data-open="item-4"/, '--open must deep-link');
-    assert.match(html, /<details><summary>2025/, 'archive collapses per year');
-    // The scope pills absorbed the per-section counts the stats row used to
-    // duplicate; only non-section stats still live in that row.
-    assert.match(html, /data-scope="" data-total="3"[^>]*>All<span class="count">3<\/span>/, 'the All pill reports the open count');
-    assert.match(html, /data-scope="Committed" data-total="1"[^>]*>Committed<span class="count">1<\/span>/, 'section pills carry their own total');
-    assert.match(html, /<b>65d<\/b> oldest open/, 'non-section stats survive in the stats row');
-    assert.doesNotMatch(html, /<b>3<\/b> open/, 'the stats row no longer duplicates the pill counts');
-    assert.match(html, /id="filter"[^>]*hidden>/, 'the search box starts collapsed');
-    assert.match(html, /id="filter-toggle"[^>]*aria-expanded="false"/, 'the Filter button reports its state');
 
-    // Tags are discovered from `#tag` in item titles — a file convention, not a
-    // format change. The leading-letter rule is what keeps id cross-references
-    // like "split from #2" out of the tag set.
+    assert.match(html, /<div class="meta">[\s\S]*?<b>3<\/b> open/, 'the meta line reports the open count');
+    assert.match(html, /<div class="meta">[\s\S]*?<b>1<\/b> archived/, 'the meta line reports the archived count');
+    assert.match(html, /oldest <b>65d<\/b>/, 'the oldest-open age survives in the meta line');
+    assert.doesNotMatch(html, /data-scope=/, 'scope pills are gone — the columns are the scopes');
+
+    // One column per section, in file order, each head a kit g+N target.
+    assert.match(html, /<section class="col" data-section="Committed">/, 'each section is a column carrying its name');
+    assert.match(html, /<h2 id="sec-committed" data-kit-section>Committed<\/h2><span class="n">1<\/span>/, 'the column head carries the count');
+    assert.match(html, /<h2 id="sec-loose-threads" data-kit-section>Loose threads<\/h2><span class="n zero">0<\/span>/, 'a zero count is marked');
+    assert.match(html, /data-section="Loose threads">[\s\S]*?<div class="prose">/, 'section prose still renders inside its column');
+    assert.doesNotMatch(html, /data-section="Loose threads">[\s\S]*?class="empty"/, 'a column with prose is not an empty slot');
+    assert.ok(html.indexOf('data-section="Committed"') < html.indexOf('data-section="Someday"'), 'columns keep file order');
+
+    // Cards: id + added date + age, a cleaned title, the first block as the
+    // lede, the rest folded behind a count. Tags are discovered from `#tag` in
+    // the RAW title; the leading-letter rule keeps "split from #2" out.
+    assert.match(html, /<article class="card" id="item-1" data-kit-item data-tags="build ui"/, 'open cards walk with j/k and carry their tags');
+    assert.match(html, /id="item-4"[^>]*data-tags=""/, 'an untagged item carries an empty tag list');
+    assert.match(html, /<a class="id" href="#item-1" data-kit-copy="1">#1<\/a><span class="age">2026-06-01 · 65d<\/span>/, 'the card meta carries the added date and age');
+    assert.match(html, /<h3>Ship the widget pipeline #build #ui<\/h3>/, 'the date stamp leaves the displayed title');
+    assert.match(html, /<h3>Evaluate open-sourcing<\/h3>/, 'a stamp with a note in the title tail is stripped whole');
+    assert.match(html, /<div class="lede"><p>First body line with <code>code<\/code> and a — dash.<\/p><\/div>/, 'the first block is the lede');
+    assert.match(html, /<details class="more"><summary>Read on · 2 more<\/summary>\n<h4>Status 2026-07-01 — half landed<\/h4>/, 'the remaining blocks fold behind a count');
+    assert.doesNotMatch(html, /id="item-2"[\s\S]*?<details class="more">[\s\S]*?id="item-4"/, 'a single-block body has no fold');
+    // A filter that empties a populated column must say so, not leave a blank
+    // lane: every column with items ships a hidden no-match slot the client
+    // script reveals. Columns without items have their own slot already.
+    assert.match(html, /data-section="Someday">[\s\S]*?id="item-4"[\s\S]*?<div class="empty nohit" hidden>No match in someday<\/div>\n<\/section>/, 'populated columns carry a hidden no-match slot after their cards');
+    assert.doesNotMatch(html, /No match in loose threads/, 'a column with no items has no no-match slot');
+
+    // Archive: a drawer after the board, rows that expand to the body, never a
+    // peer column. Rows stay out of the j/k walk (closed <details> would let
+    // it focus an invisible row).
+    assert.match(html, /<\/main>\s*<details class="drawer" data-section="__archive">/, 'the archive is a drawer under the board');
+    assert.match(html, /<details class="row archived" id="item-3"/, 'archived rows keep #N anchors');
+    assert.doesNotMatch(html, /id="item-3"[^>]*data-kit-item/, 'archived rows stay out of the j/k walk');
+    assert.match(html, /<span class="y">2025<\/span>/, 'a row names its archive year');
+    assert.match(html, /<div class="body"><p>Archived body.<\/p>/, 'a row opens to the full body');
+
+    // Filter: hidden until toggled; the kit's / binding targets the button
+    // because a hidden input cannot take focus.
+    assert.match(html, /id="filter"[^>]*hidden>/, 'the search box starts collapsed');
+    assert.match(html, /data-kit-filter[^>]*aria-controls="filter"[^>]*aria-expanded="false"/, 'the Filter button reveals it and reports its state');
+
     assert.match(html, /<div class="tags"/, 'a docket that uses tags gets a tag row');
     assert.match(html, /data-tag="build" data-total="1"/, 'each tag pill carries its own total');
     assert.match(html, /data-tag="research"/, 'tags are discovered across sections');
     assert.doesNotMatch(html, /data-tag="2"/, 'a numeric #N cross-reference is an id, not a tag');
-    assert.match(html, /id="item-1"[^>]*data-tags="build ui"/, 'items carry their tags for filtering');
-    assert.match(html, /id="item-4"[^>]*data-tags=""/, 'an untagged item carries an empty tag list');
     // The board adopted the shared token core (docket #21), which is dark-base
     // with a light override — the reverse of the dialect this used to assert.
     assert.match(html, /@media \(prefers-color-scheme: light\)/, 'light derives from the shared dark base');
-
-    // Section scopes: All, one chip per DOCKET.md section, and the archive.
-    // Sections are the only grouping the format already carries, so scoping to
-    // them needs no data-model change.
-    assert.match(html, /<div class="scopes"/, 'the board offers section scopes');
-    assert.match(html, /data-scope=""[^>]*>All</, 'All is the default scope');
-    assert.match(html, /<section data-section="Committed">/, 'each section carries its scope name');
-    assert.match(html, /data-section="__archive"/, 'the archive gets a reserved scope name');
-    assert.doesNotMatch(html, /<section data-section="__archive">[\s\S]*?<section /, 'archive is the last section');
 
     // Self-contained: no external fetches of any kind.
     assert.doesNotMatch(html, /(?:src|href)="https?:/, 'renderer must not reference external resources');
@@ -279,6 +302,9 @@ test('renderHtml shows a usable empty state on a fresh scaffold', () => {
 
     assert.match(html, /Nothing on the docket yet/);
     assert.match(html, /docket add/, 'the empty state must say how to add the first item');
+    // A section with no items and no prose is a quiet slot, never hidden:
+    // "nothing committed" is information (docket #44, closed by decision).
+    assert.match(html, /<div class="empty">Nothing in committed<\/div>/, 'an empty section renders as a slot');
   } finally {
     cleanup(dir);
   }

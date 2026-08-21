@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AGENTIC-TOOLKIT DOCKET · A · Board</title>
+<style>
+/* tokens:core:start */
+/* Shared design core — do not hand-edit; edit scripts/tokens/core.css. */
+:root {
+  --background: #111110;
+  --card: #191918;
+  --card-foreground: #eeeeec;
+  --popover: #222221;
+  --foreground: #eeeeec;
+  --muted: #222221;
+  --muted-foreground: #b5b3ad;
+  --border: #3b3a37;
+  --input: #3b3a37;
+  --primary: #978365;
+  --primary-foreground: #ffffff;
+  --primary-hover: #a39073;
+  --primary-muted: #24231f;
+  --primary-text: #cbb99f;
+  --ring: #978365;
+  --accent: #2a2a28;
+  --success: #71d083;
+  --success-muted: #1b2a1e;
+  --success-border: #2d5736;
+  --warning: #ffca16;
+  --warning-muted: #302008;
+  --warning-border: #5c3d05;
+  --destructive: #ff977d;
+  --destructive-muted: #391714;
+  --destructive-border: #6e2920;
+  --info: #70b8ff;
+  --info-muted: #0d2847;
+  --info-border: #104d87;
+  --outline: rgba(237, 237, 236, 0.08);
+  --subtle: #686560;
+  --shadow-sm: 0 1px 2px rgba(6, 6, 5, 0.5);
+  --shadow-md: 0 4px 14px rgba(6, 6, 5, 0.55);
+  --shadow-lg: 0 20px 60px rgba(6, 6, 5, 0.62);
+  --mono: "Geist Mono", "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Monaco, "Cascadia Code", monospace;
+  --sans: "Geist", "Inter Tight", ui-sans-serif, system-ui, -apple-system, "Segoe UI Variable Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --text-2xs: 0.6875rem;
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.5rem;
+  --text-4xl: 3.5rem;
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading-normal: 1.55;
+  --leading-relaxed: 1.7;
+  --tracking-tight: -0.022em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.06em;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-8: 3rem;
+  --space-12: 4rem;
+  --radius-sm: 0.1875rem;
+  --radius: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-full: 9999px;
+  --dur-fast: 120ms;
+  --dur: 200ms;
+  --dur-slow: 320ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --background: #f6f5ef;
+    --card: #fcfbf6;
+    --card-foreground: #36302a;
+    --popover: #fcfbf6;
+    --foreground: #36302a;
+    --muted: #f0efe3;
+    --muted-foreground: #726c5e;
+    --border: #ddd6c6;
+    --input: #ddd6c6;
+    --primary: #967e60;
+    --primary-foreground: #ffffff;
+    --primary-hover: #897254;
+    --primary-muted: #efece0;
+    --primary-text: #6f5e44;
+    --ring: #967e60;
+    --accent: #eae7da;
+    --success: #3f7a34;
+    --success-muted: #e6f5e2;
+    --success-border: #c2e1b3;
+    --warning: #93761d;
+    --warning-muted: #fbf4c4;
+    --warning-border: #ebd87f;
+    --destructive: #bf4f3b;
+    --destructive-muted: #fbe8e2;
+    --destructive-border: #f0c9ba;
+    --info: #3f6fa6;
+    --info-muted: #e6f1fc;
+    --info-border: #bed7ef;
+    --outline: rgba(54, 48, 42, 0.08);
+    --subtle: #a8a294;
+    --shadow-sm: 0 1px 2px rgba(54, 48, 42, 0.1);
+    --shadow-md: 0 4px 14px rgba(54, 48, 42, 0.13);
+    --shadow-lg: 0 20px 60px rgba(54, 48, 42, 0.18);
+  }
+}
+:root[data-theme="light"] {
+  --background: #f6f5ef;
+  --card: #fcfbf6;
+  --card-foreground: #36302a;
+  --popover: #fcfbf6;
+  --foreground: #36302a;
+  --muted: #f0efe3;
+  --muted-foreground: #726c5e;
+  --border: #ddd6c6;
+  --input: #ddd6c6;
+  --primary: #967e60;
+  --primary-foreground: #ffffff;
+  --primary-hover: #897254;
+  --primary-muted: #efece0;
+  --primary-text: #6f5e44;
+  --ring: #967e60;
+  --accent: #eae7da;
+  --success: #3f7a34;
+  --success-muted: #e6f5e2;
+  --success-border: #c2e1b3;
+  --warning: #93761d;
+  --warning-muted: #fbf4c4;
+  --warning-border: #ebd87f;
+  --destructive: #bf4f3b;
+  --destructive-muted: #fbe8e2;
+  --destructive-border: #f0c9ba;
+  --info: #3f6fa6;
+  --info-muted: #e6f1fc;
+  --info-border: #bed7ef;
+  --outline: rgba(54, 48, 42, 0.08);
+  --subtle: #a8a294;
+  --shadow-sm: 0 1px 2px rgba(54, 48, 42, 0.1);
+  --shadow-md: 0 4px 14px rgba(54, 48, 42, 0.13);
+  --shadow-lg: 0 20px 60px rgba(54, 48, 42, 0.18);
+}
+/* tokens:core:end */
+/* kit:css:start */
+/* Shared state layer — do not hand-edit; edit scripts/tokens/kit.css. */
+
+/* :where() keeps these at zero specificity, so a surface overrides them by
+   writing a plain rule rather than escalating into an !important contest. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Mouse users should not see the ring; keyboard users must. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus:not(:focus-visible) {
+  outline: none;
+}
+
+.kit-skip {
+  position: absolute;
+  left: var(--space-2);
+  top: -4rem;
+  z-index: 999;
+  padding: var(--space-2) var(--space-3);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: top var(--dur) var(--ease-out);
+}
+
+.kit-skip:focus {
+  top: var(--space-2);
+}
+
+/* Empty, loading and error states. Namespaced kit- because three of the four
+   surfaces already own an .empty or .error class of their own. */
+.kit-empty {
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+  color: var(--muted-foreground);
+}
+
+.kit-empty__title {
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-md);
+  color: var(--foreground);
+}
+
+.kit-empty__body {
+  margin: 0 auto;
+  max-width: 44ch;
+  font-size: var(--text-sm);
+  text-wrap: pretty;
+}
+
+.kit-error {
+  display: flex;
+  gap: var(--space-2);
+  align-items: baseline;
+  padding: var(--space-2) var(--space-3);
+  background: var(--destructive-muted);
+  border: 1px solid var(--destructive-border);
+  border-radius: var(--radius);
+  color: var(--destructive);
+  font-size: var(--text-sm);
+}
+
+/* Shaped like the content it stands in for — never a spinner. Width is the
+   caller's job, so one rule serves a title, a row and a paragraph. */
+.kit-skel {
+  height: 0.75rem;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, var(--muted) 0%, var(--accent) 50%, var(--muted) 100%);
+  background-size: 200% 100%;
+  animation: kit-shimmer 1.4s var(--ease-out) infinite;
+}
+
+@keyframes kit-shimmer {
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Keyboard help overlay, populated by kit.js from the live binding registry. */
+.kit-help {
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+  background: color-mix(in oklch, var(--background) 78%, transparent);
+}
+
+.kit-help[hidden] {
+  display: none;
+}
+
+.kit-help__panel {
+  width: min(34rem, 100%);
+  max-height: 80dvh;
+  overflow-y: auto;
+  padding: var(--space-5);
+  background: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+}
+
+.kit-help__title {
+  margin: 0 0 var(--space-4);
+  font-family: var(--mono);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+
+.kit-help__row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-1) 0;
+  font-size: var(--text-sm);
+}
+
+.kit-help__keys {
+  flex: none;
+  display: flex;
+  gap: var(--space-1);
+}
+
+.kit-kbd {
+  min-width: 1.4rem;
+  padding: 0.1rem 0.4rem;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: var(--text-2xs);
+  color: var(--foreground);
+  background: var(--popover);
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.kit-theme {
+  display: inline-flex;
+  gap: 1px;
+}
+
+.kit-theme button {
+  font: inherit;
+  font-size: var(--text-2xs);
+  padding: var(--space-1) var(--space-2);
+  color: var(--muted-foreground);
+  background: var(--card);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+}
+
+.kit-theme button:first-child {
+  border-radius: var(--radius) 0 0 var(--radius);
+}
+
+.kit-theme button:last-child {
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.kit-theme button:hover {
+  color: var(--foreground);
+  border-color: var(--primary);
+}
+
+.kit-theme button[aria-pressed="true"] {
+  color: var(--primary-foreground);
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+/* A keyboard layer nobody can discover is a keyboard layer nobody uses. kit.js
+   places this next to every theme group, so the ? overlay has a visible way in
+   for anyone who was never told the shortcut exists. */
+/* kit.js wraps the theme group and the help button in this. The theme group
+   keeps growing where its host stretched it (the guide's rail), and stays
+   content-sized where the host did not (the board's action row). */
+.kit-controls {
+  display: flex;
+  align-items: center;
+}
+
+.kit-controls > .kit-theme {
+  flex: 1 1 auto;
+}
+
+.kit-helpbtn {
+  margin-left: var(--space-2);
+  width: 1.65rem;
+  height: 1.65rem;
+  flex: none;
+  font: inherit;
+  font-family: var(--mono);
+  font-size: var(--text-2xs);
+  line-height: 1;
+  color: var(--muted-foreground);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+}
+
+.kit-helpbtn:hover {
+  color: var(--foreground);
+  border-color: var(--primary);
+}
+
+.kit-copied {
+  color: var(--success);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Browsers do not print background colours by default, so a dark-themed page
+   prints light text onto white and reads as blank. Repointing the tokens is
+   what makes Ctrl-P work at all; hiding chrome is the surface's opt-in. */
+@media print {
+  :root {
+    --background: #ffffff;
+    --card: #ffffff;
+    --popover: #ffffff;
+    --muted: #f4f4f2;
+    --accent: #f4f4f2;
+    --foreground: #000000;
+    --card-foreground: #000000;
+    --muted-foreground: #444444;
+    --subtle: #666666;
+    --border: #999999;
+    --input: #999999;
+    --shadow-sm: none;
+    --shadow-md: none;
+    --shadow-lg: none;
+  }
+
+  body {
+    background: #ffffff;
+    color: #000000;
+  }
+
+  .kit-skip,
+  .kit-help,
+  .kit-helpbtn,
+  .kit-theme,
+  [data-kit-chrome] {
+    display: none !important;
+  }
+
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 90%;
+    color: #555555;
+  }
+
+  .kit-skel {
+    animation: none;
+  }
+}
+/* kit:css:end */
+
+*{box-sizing:border-box}
+body{margin:0;min-height:100dvh;background:var(--background);color:var(--foreground);font-family:var(--sans);font-size:var(--text-md);line-height:var(--leading-normal);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+h1,h2,h3,h4,p,ul{margin:0}
+.mono{font-family:var(--mono)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.id{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--primary);text-decoration:none}
+.id:hover{text-decoration:underline}
+.btn{font:inherit;font-size:var(--text-sm);padding:var(--space-1) var(--space-3);border:1px solid var(--border);border-radius:var(--radius-md);background:var(--card);color:var(--muted-foreground);cursor:pointer;display:inline-flex;gap:var(--space-2);align-items:center}
+.btn:hover{color:var(--foreground);border-color:var(--primary)}
+code{background:var(--muted);border-radius:var(--radius);padding:.05rem var(--space-1);font-family:var(--mono);font-size:.85em}
+pre{background:var(--muted);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);overflow-x:auto;font-family:var(--mono);font-size:var(--text-sm)}
+pre code{background:none;padding:0}
+ul{padding-left:1.2rem}
+.more summary{cursor:pointer;list-style:none;font-family:var(--mono);font-size:var(--text-xs);letter-spacing:var(--tracking-wide);text-transform:uppercase;color:var(--muted-foreground);display:inline-flex;align-items:center;gap:var(--space-2)}
+.more summary::-webkit-details-marker{display:none}
+.more summary::before{content:"+";font-family:var(--mono);font-size:var(--text-sm)}
+.more[open] summary::before{content:"–"}
+.more summary:hover{color:var(--primary-text)}
+.more>*:not(summary){margin-top:var(--space-3)}
+.more p,.more li{font-size:var(--text-md);line-height:var(--leading-relaxed);max-width:68ch}
+.more h4{margin-top:var(--space-3);font-size:var(--text-sm);color:var(--muted-foreground)}
+.kit-theme{flex:none}
+#filter{font:inherit;font-size:var(--text-sm);padding:var(--space-2) var(--space-3);border:1px solid var(--border);border-radius:var(--radius-md);background:var(--card);color:var(--foreground);width:100%;max-width:24rem}
+#filter[hidden]{display:none}
+
+.hidden{display:none!important}
+header{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:var(--space-5);padding:var(--space-3) var(--space-6);background:color-mix(in oklch, var(--background) 88%, transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+h1{font-family:var(--mono);font-size:var(--text-md);letter-spacing:var(--tracking-tight);white-space:nowrap}
+.meta{display:flex;gap:var(--space-4);font-family:var(--mono);font-size:var(--text-xs);color:var(--muted-foreground);letter-spacing:var(--tracking-wide)}
+.meta b{color:var(--foreground);font-weight:500}
+.actions{margin-left:auto;display:flex;align-items:center;gap:var(--space-2)}
+#filter{max-width:18rem}
+.board{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(21rem,28rem);gap:var(--space-5);padding:var(--space-6) var(--space-6) var(--space-8);overflow-x:auto;align-items:start;scroll-snap-type:x proximity}
+.col{display:flex;flex-direction:column;gap:var(--space-3);scroll-snap-align:start;min-width:0}
+.colhead{display:flex;align-items:baseline;justify-content:space-between;padding:0 var(--space-1) var(--space-2);border-bottom:1px solid var(--border);margin-bottom:var(--space-1)}
+.colhead h2{font-family:var(--mono);font-size:var(--text-xs);letter-spacing:var(--tracking-wide);text-transform:uppercase;color:var(--muted-foreground);font-weight:500}
+.colhead .n{font-family:var(--mono);font-size:var(--text-xl);font-variant-numeric:tabular-nums;color:var(--foreground);line-height:1}
+.colhead .n.zero{color:var(--muted-foreground);opacity:.5}
+.empty{border:1px dashed var(--border);border-radius:var(--radius-lg);padding:var(--space-5);color:var(--muted-foreground);font-size:var(--text-sm);text-align:center}
+.card{background:var(--card);border-radius:var(--radius-lg);padding:var(--space-4) var(--space-5) var(--space-4);box-shadow:var(--shadow-sm);transition:box-shadow var(--dur) var(--ease-out),transform var(--dur) var(--ease-out);scroll-margin-top:5rem}
+.card:hover,.card:focus-within{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.card:target{outline:2px solid var(--primary);outline-offset:2px}
+.card .top{display:flex;justify-content:space-between;align-items:baseline;gap:var(--space-3);font-size:var(--text-xs);font-family:var(--mono);color:var(--muted-foreground);margin-bottom:var(--space-2)}
+.card .age{font-variant-numeric:tabular-nums}
+.card h3{font-size:var(--text-md);font-weight:600;line-height:var(--leading-snug);letter-spacing:var(--tracking-tight);text-wrap:pretty;margin-bottom:var(--space-2)}
+.card .lede{color:var(--muted-foreground);font-size:var(--text-sm);line-height:var(--leading-normal);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.card .lede p{margin:0}
+.card .more{margin-top:var(--space-3)}
+.card .more[open]~.lede,.card:has(.more[open]) .lede{display:block;color:var(--foreground);font-size:var(--text-md);line-height:var(--leading-relaxed)}
+.drawer{margin:0 var(--space-6) var(--space-12);border-top:1px solid var(--border);padding-top:var(--space-4)}
+.drawer>summary{cursor:pointer;list-style:none;display:flex;gap:var(--space-3);align-items:baseline;font-family:var(--mono);font-size:var(--text-xs);text-transform:uppercase;letter-spacing:var(--tracking-wide);color:var(--muted-foreground)}
+.drawer>summary::-webkit-details-marker{display:none}
+.drawer>summary .n{font-size:var(--text-xl);color:var(--foreground);font-variant-numeric:tabular-nums;line-height:1}
+.drawer>summary::after{content:"show";margin-left:auto}
+.drawer[open]>summary::after{content:"hide"}
+.years{display:grid;grid-template-columns:repeat(auto-fill,minmax(26rem,1fr));gap:var(--space-2) var(--space-6);margin-top:var(--space-4)}
+.row{display:grid;grid-template-columns:3.25rem 1fr auto;gap:var(--space-3);align-items:baseline;padding:var(--space-2) 0;border-top:1px solid color-mix(in oklch, var(--border), transparent 40%);font-size:var(--text-sm);color:var(--muted-foreground)}
+.row .t{color:var(--foreground);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.row .y{font-family:var(--mono);font-size:var(--text-xs)}
+@media (max-width:48rem){.board{grid-auto-flow:row;grid-auto-columns:auto;grid-template-columns:1fr;padding:var(--space-4)}header{flex-wrap:wrap;gap:var(--space-3);padding:var(--space-3) var(--space-4)}.meta{order:3;width:100%}.drawer{margin:0 var(--space-4) var(--space-8)}}
+
+</style></head><body>
+
+<header>
+  <h1>AGENTIC-TOOLKIT DOCKET</h1>
+  <div class="meta"><span><b>9</b> open</span><span><b>35</b> archived</span><span>oldest <b>16d</b></span></div>
+  <div class="actions"><input id="filter" type="search" placeholder="Filter — title, lede, #id" hidden><button type="button" class="btn" data-kit-filter data-kit-chrome aria-controls="filter">Filter <span class="kit-kbd">/</span></button><div class="kit-theme" role="group" aria-label="Theme" data-kit-chrome>
+<button type="button" data-kit-theme="light">Light</button><button type="button" data-kit-theme="dark">Dark</button><button type="button" data-kit-theme="system">Auto</button></div></div>
+</header>
+<main class="board">
+<section class="col" data-section="Committed">
+<div class="colhead"><h2 id="sec-committed" data-kit-section>Committed</h2><span class="n zero">0</span></div>
+<div class="empty">Nothing in committed</div>
+</section>
+<section class="col" data-section="Someday">
+<div class="colhead"><h2 id="sec-someday" data-kit-section>Someday</h2><span class="n">9</span></div>
+<article class="card" id="item-7" data-kit-item data-search="7 spec mcp server — revisit when specs gain write-side invariants &lt;p&gt;declined for now (2026-08-05): specs are read-mostly markdown — router lookup is ls + fuzzy match, agents read files natively, and a server would duplicate the file path every skill must keep anyway. reconsider docket-style (thin mcp over a cli) only if specs grow mutations worth guarding: enforced changelog stamps on drift decisions, cross-spec link integrity, or a host-enforced spec-before-plan gate.&lt;/p&gt;">
+<div class="top"><a class="id" href="#item-7" data-kit-copy="7">#7</a><span class="age">2026-08-05 · 16d</span></div>
+<h3>Spec MCP server — revisit when specs gain write-side invariants</h3>
+<div class="lede"><p>Declined for now (2026-08-05): specs are read-mostly markdown — router lookup is ls + fuzzy match, agents read files natively, and a server would duplicate the file path every skill must keep anyway. Reconsider docket-style (thin MCP over a CLI) only if specs grow mutations worth guarding: enforced changelog stamps on drift decisions, cross-spec link integrity, or a host-enforced spec-before-plan gate.</p></div>
+<details class="more"><summary>Read on · 1 more</summary><p>2026-08-18: re-checked against all three trigger conditions — none have fired. The <code>specs/</code> tree grew to 10 dirs (composition-manifest, cursor-channel, concord, docket, etc.) since 2026-08-05, but every mention of &quot;changelog stamp&quot; or &quot;drift decision&quot; found in the repo is a per-spec bookkeeping note inside a plan file, not a host-enforced mechanism. No cross-spec link integrity check exists (<code>tests/spec-index.test.mjs</code> checks the catalog index, not inter-spec links). <code>draft-plan</code>'s &quot;signed-off design&quot; requirement remains a soft, agent-discipline gate, not host-enforced. Still declined; next re-check on the same trigger, not on a schedule.</p></details>
+</article>
+<article class="card" id="item-10" data-kit-item data-search="10 reopen a4 collision detection — the falsification was lexical-only &lt;p&gt;a4 (collision automation) is recorded as closed in &lt;code&gt;skills/toolkit-research-frontier/references/health-campaign.md&lt;/code&gt;: the preregistered criterion was &amp;quot;static n-gram overlap reproduces &amp;gt;=80% of observed collisions with &amp;lt;20% false alarms&amp;quot;, and &lt;code&gt;scripts/collision-scan.mjs --check&lt;/code&gt; returned &lt;strong&gt;max 5% recall at every threshold 0.08-0.18&lt;/strong&gt;.&lt;/p&gt;">
+<div class="top"><a class="id" href="#item-10" data-kit-copy="10">#10</a><span class="age">2026-08-09 · 12d</span></div>
+<h3>Reopen A4 collision detection — the falsification was lexical-only</h3>
+<div class="lede"><p>A4 (collision automation) is recorded as CLOSED in <code>skills/toolkit-research-frontier/references/health-campaign.md</code>: the preregistered criterion was &quot;static n-gram overlap reproduces &gt;=80% of observed collisions with &lt;20% false alarms&quot;, and <code>scripts/collision-scan.mjs --check</code> returned <strong>max 5% recall at every threshold 0.08-0.18</strong>.</p></div>
+<details class="more"><summary>Read on · 7 more</summary><p>The verified reason for that result is method-specific, and reads as a general closure today: our collisions are *semantic* adjacencies whose contracts share almost no vocabulary, because the 2026-07-08 disambiguation passes had already de-overlapped them lexically. That falsifies n-grams. It says nothing about a semantic detector.</p>
+<p>Upstream precedent: <code>github/awesome-copilot</code>, <code>.github/workflows/duplicate-resource-detector.md</code> (MIT) — a weekly scheduled agentic workflow with three ideas we never tried:</p>
+<p>| idea | what it does | |---|---| | semantic compare | name + description + first ~20 body lines, judged by meaning, with worked negatives in the prompt (two same-style code-review resources = duplicates; general-React vs React-testing = not) | | durable accept-list | searches *closed* issues labelled <code>duplicate-review</code> for &quot;intentionally separate&quot; / &quot;keep both&quot; / checked boxes, excludes those pairs, annotates re-flags with &quot;(previously reviewed — see #N)&quot; | | containment | <code>safe-outputs: create-issue: {max: 1, close-older-issues: true}</code> + <code>noop</code> when clean — the agent can never hold more than one open issue |</p>
+<p>Why it fits here specifically: A3's dominant error mode is one-hop adjacency pairs (discovery&lt;-&gt;session-handoff on &quot;resume&quot;, draft-plan&lt;-&gt;technical-spec on doc-creation) — exactly the signal a semantic detector reads and a lexical one cannot. And we already own the accept-list ingredient: the curated empirical-pair registry inside <code>scripts/collision-scan.mjs</code>, currently updated by hand per eval round.</p>
+<p>Decide before building: whether the accept-list lives in GitHub issues (their model, needs the workflow to have issue read access) or stays in the repo as the existing registry (our model, no egress, but needs a review ritual).</p>
+<p>Whatever the outcome, this needs an A4 addendum in <code>health-campaign.md</code> recording that the falsification was method-specific — the entry currently reads as though collision automation is a dead end in general.</p>
+<p>Found 2026-08-09 surveying awesome-copilot's maintenance machinery.</p></details>
+</article>
+<article class="card" id="item-14" data-kit-item data-search="14 price a trajectory-based routing eval against the judge-prompt harness &lt;p&gt;&lt;code&gt;scripts/eval-triggers.mjs&lt;/code&gt; renders the live skill catalog into a prompt and asks a judge model which skill it would route each query to. that is deliberate — the header says it presents &amp;quot;the catalog the host sees&amp;quot; — and it produced ten dated reports and a defensible ~89-92% operating band. its known cost is written into a3: &lt;strong&gt;judge variance is the dominant error mode&lt;/strong&gt; (44 flaky cases, mostly one-hop adjacencies).&lt;/p&gt;">
+<div class="top"><a class="id" href="#item-14" data-kit-copy="14">#14</a><span class="age">2026-08-09 · 12d</span></div>
+<h3>Price a trajectory-based routing eval against the judge-prompt harness</h3>
+<div class="lede"><p><code>scripts/eval-triggers.mjs</code> renders the live skill catalog into a prompt and asks a judge model which skill it would route each query to. That is deliberate — the header says it presents &quot;the catalog the host sees&quot; — and it produced ten dated reports and a defensible ~89-92% operating band. Its known cost is written into A3: <strong>judge variance is the dominant error mode</strong> (44 flaky cases, mostly one-hop adjacencies).</p></div>
+<details class="more"><summary>Read on · 6 more</summary><p>A different measurement exists. <code>@microsoft/vally</code> (MIT, 0.13.0) ships <code>dist/graders/static/skill-invocation-grader.js</code>: it takes <code>{required: string[], disallowed: string[]}</code>, walks <code>trajectory.events</code>, counts <code>event.type === &quot;skill_activation&quot;</code>, and passes only when every required skill activated and no disallowed one did. Grader metadata is <code>costProfile: &quot;free&quot;</code>, <code>determinism: &quot;static&quot;</code> — the grading is free and deterministic. The cost sits entirely in producing the trajectory: one real agent run per stimulus, against ~394 cases.</p>
+<p>What it would buy: no judge variance, and it measures the host's actual skill-loading behaviour rather than a model's opinion about a rendered catalog.</p>
+<p>The primitive worth stealing regardless of the verdict: <strong><code>disallowed</code></strong> — a first-class &quot;this skill must NOT fire here&quot; assertion. Our <code>should_trigger: false</code> cases approximate it as a routing decision, not as an observed non-activation, which is a weaker claim about exactly the collisions we care about most.</p>
+<p>This is a pricing exercise, not a rewrite. Concretely: run a ~30-case subset both ways, compare per-case agreement, and cost the full run in wall-clock and tokens. If the two agree closely, the cheap harness is vindicated and this closes; if they diverge on the flaky adjacency seams, that is a real finding about A3's numbers.</p>
+<p>Also in vally if this ever gets built out: <code>compare</code> (pairwise comparison of two eval runs — what we do by hand across dated reports), <code>max-repeat</code> and <code>loop-outcome</code> graders, JSONL/JUnit/markdown reporters.</p>
+<p>Found 2026-08-09 surveying awesome-copilot's maintenance machinery.</p></details>
+</article>
+<article class="card" id="item-40" data-kit-item data-search="40 retire the third-party taste-skill installs now that blueprint covers the clarity use case &lt;p&gt;&lt;code&gt;.agents/skills/&lt;/code&gt; and &lt;code&gt;skills-lock.json&lt;/code&gt; (both untracked, repo-local only) hold ten skills installed from &lt;code&gt;leonxlnx/taste-skill&lt;/code&gt; via &lt;code&gt;npx skills add&lt;/code&gt;: brandkit, design-taste-frontend, full-output-enforcement, high-end-visual-design, image-to-code, imagegen-frontend-mobile, imagegen-frontend-web, industrial-brutalist-ui, minimalist-ui, redesign-existing-projects.&lt;/p&gt;">
+<div class="top"><a class="id" href="#item-40" data-kit-copy="40">#40</a><span class="age">2026-08-20 · 1d</span></div>
+<h3>Retire the third-party taste-skill installs now that blueprint covers the clarity use case</h3>
+<div class="lede"><p><code>.agents/skills/</code> and <code>skills-lock.json</code> (both untracked, repo-local only) hold ten skills installed from <code>Leonxlnx/taste-skill</code> via <code>npx skills add</code>: brandkit, design-taste-frontend, full-output-enforcement, high-end-visual-design, image-to-code, imagegen-frontend-mobile, imagegen-frontend-web, industrial-brutalist-ui, minimalist-ui, redesign-existing-projects.</p></div>
+<details class="more"><summary>Read on · 4 more</summary><p><strong>Why they never fired:</strong> their descriptions are capability blurbs with zero trigger conditions — no &quot;Use when…&quot;, no <code>when_to_use</code>. That is the same trigger-contract defect this repo's own <code>skill-invariants.test.mjs</code> enforces against first-party skills.</p>
+<p><code>blueprint</code> (condux 2.18.0, PR #85) now covers the design-time clarity use case first-party and trigger-contracted. Decide per skill whether anything here is still wanted — the aesthetic/premium-direction ones (brandkit, high-end-visual-design, industrial-brutalist-ui, minimalist-ui) are deliberately *outside* blueprint's boundary, so retiring all ten is not automatic.</p>
+<p>If any are kept, they need trigger conditions written in, which means forking rather than tracking upstream.</p>
+<p>Related: [[project-blueprint-skill]] memory, and the split-out symlink item below.</p></details>
+</article>
+<article class="card" id="item-41" data-kit-item data-search="41 repair the dangling ~/.claude/skills symlinks (they point at a near-empty ~/.agents/skills) &lt;p&gt;the global &lt;code&gt;~/.claude/skills/*&lt;/code&gt; entries are symlinks into &lt;code&gt;~/.agents/skills/&lt;/code&gt;, but that directory only contains &lt;code&gt;i-have-adhd&lt;/code&gt;. every other symlink dangles, so those skills are unavailable in &lt;strong&gt;every project except this repo&lt;/strong&gt; — which is half of why the visual-mockup skills &amp;quot;almost never fired&amp;quot; (the other half is the missing trigger contracts, docket #40).&lt;/p&gt;">
+<div class="top"><a class="id" href="#item-41" data-kit-copy="41">#41</a><span class="age">2026-08-20 · 1d</span></div>
+<h3>Repair the dangling ~/.claude/skills symlinks (they point at a near-empty ~/.agents/skills)</h3>
+<div class="lede"><p>The global <code>~/.claude/skills/*</code> entries are symlinks into <code>~/.agents/skills/</code>, but that directory only contains <code>i-have-adhd</code>. Every other symlink dangles, so those skills are unavailable in <strong>every project except this repo</strong> — which is half of why the visual-mockup skills &quot;almost never fired&quot; (the other half is the missing trigger contracts, docket #40).</p></div>
+<details class="more"><summary>Read on · 2 more</summary><p>Scope: enumerate the symlinks, decide per target whether to repopulate <code>~/.agents/skills/</code> or remove the dead link, and settle whether the global layer should exist at all now that the toolkit ships four dist channels.</p>
+<p>Out of this repo's tree — touches <code>~/.claude</code> and <code>~/.agents</code> only, which are shared config and in bounds, but it is a workstation-hygiene task, not a toolkit change. No commit here.</p></details>
+</article>
+<article class="card" id="item-43" data-kit-item data-search="43 mdlite renders markdown tables as raw pipe text on the docket board &lt;p&gt;&lt;code&gt;mdlite()&lt;/code&gt; in &lt;code&gt;skills/record/server/docket-render.mjs&lt;/code&gt; has no table support, so a markdown table in a docket.md item body renders as literal pipe text on the board. visible today in item #10, which carries a three-row table:&lt;/p&gt;">
+<div class="top"><a class="id" href="#item-43" data-kit-copy="43">#43</a><span class="age">2026-08-20 · 1d</span></div>
+<h3>mdLite renders markdown tables as raw pipe text on the docket board</h3>
+<div class="lede"><p><code>mdLite()</code> in <code>skills/record/server/docket-render.mjs</code> has no table support, so a markdown table in a DOCKET.md item body renders as literal pipe text on the board. Visible today in item #10, which carries a three-row table:</p></div>
+<details class="more"><summary>Read on · 4 more</summary><p>    | idea | what it does | |---|---| | semantic compare | name + description …</p>
+<p>Pre-existing — <code>mdLite</code> was untouched by the Surface Kit work — but the redesign's cleaner spacing makes it conspicuous, and the docket is the one surface whose content is authored as markdown by hand.</p>
+<p>Scope if picked up: <code>mdLite</code> is deliberately a small subset renderer, not a markdown library (rung 1 of the dependency ladder — no deps). A pipe-table parser is maybe 25 lines and stays inside that constraint. Decide first whether tables belong in item bodies at all, or whether the convention should be to use a list instead — the format is a hand-edited file, so a convention is a legitimate alternative to a parser.</p>
+<p>Found 2026-08-20 while visually verifying the Surface Kit redesign.</p></details>
+</article>
+<article class="card" id="item-44" data-kit-item data-search="44 docket board renders a section header for a section with no items &lt;p&gt;a docket.md section with zero open items still emits its &lt;code&gt;&amp;lt;h2&amp;gt;&lt;/code&gt; and rule on the board — &amp;quot;committed&amp;quot; currently renders as a heading over nothing. the section nav also links to it, so the link is a jump to an empty region.&lt;/p&gt;">
+<div class="top"><a class="id" href="#item-44" data-kit-copy="44">#44</a><span class="age">2026-08-20 · 1d</span></div>
+<h3>Docket board renders a section header for a section with no items</h3>
+<div class="lede"><p>A DOCKET.md section with zero open items still emits its <code>&lt;h2&gt;</code> and rule on the board — &quot;COMMITTED&quot; currently renders as a heading over nothing. The section nav also links to it, so the link is a jump to an empty region.</p></div>
+<details class="more"><summary>Read on · 3 more</summary><p><code>renderHtml</code> maps every <code>open.sections</code> entry unconditionally (<code>skills/record/server/docket-render.mjs</code>), and <code>sectionProse</code> already returns <code>''</code> for a section with no loose prose — so the empty case is representable, just not suppressed.</p>
+<p>Not simply &quot;skip empty sections&quot;: a section heading with a zero count is arguably correct signal on a backlog board (it says the bucket exists and is clear), which is why the scope pills already render <code>data-total=&quot;0&quot;</code> at reduced opacity rather than disappearing. Decide which reading is wanted before changing it — and if sections are suppressed, <code>sectionNav()</code> must drop the matching link in the same change or the nav points at nothing.</p>
+<p>Found 2026-08-20 while visually verifying the Surface Kit redesign.</p></details>
+</article>
+<article class="card" id="item-45" data-kit-item data-search="45 redesign the docket board as a real board — columns, not a stacked list &lt;p&gt;the board renders sections as vertically stacked &lt;code&gt;&amp;lt;section&amp;gt;&lt;/code&gt; blocks with an &lt;code&gt;h2&lt;/code&gt; each, so &amp;quot;committed / someday / loose threads&amp;quot; read as a long scroll rather than as parallel buckets. scope pills filter to one section at a time, which is a workaround for not being able to see them side by side. wanted: something closer to trello or jira — a column per section, items as cards — without the weight of either.&lt;/p&gt;">
+<div class="top"><a class="id" href="#item-45" data-kit-copy="45">#45</a><span class="age">2026-08-21 · 0d</span></div>
+<h3>Redesign the docket board as a real board — columns, not a stacked list</h3>
+<div class="lede"><p>The board renders sections as vertically stacked <code>&lt;section&gt;</code> blocks with an <code>h2</code> each, so &quot;Committed / Someday / Loose threads&quot; read as a long scroll rather than as parallel buckets. Scope pills filter to one section at a time, which is a workaround for not being able to see them side by side. Wanted: something closer to Trello or Jira — a column per section, items as cards — without the weight of either.</p></div>
+<details class="more"><summary>Read on · 11 more</summary><p><strong>Decide before building — the write path is the whole question.</strong> Trello and Jira are *editing* UIs; docket's board is a *rendered view* of a markdown file. <code>docket browse</code> writes a standalone HTML file that is opened later with no server (quirks Q9), so a card dragged in that file has nowhere to persist to. Three options, and they are meaningfully different products:</p>
+<p>1. <strong>Read-only columns.</strong> Pure layout change, works in both the written file and    <code>--serve</code>. Cheapest, and probably most of the value — seeing the buckets side    by side is the actual ask. 2. <strong>Drag to move, <code>--serve</code> only.</strong> Needs a write-back endpoint that edits    <code>DOCKET.md</code>'s section headings, plus conflict handling if the file changed on    disk. The written-out file would then behave differently from the served one,    which is a real trap. 3. <strong>Drag in both, written file degrades.</strong> Worst of both — the same artifact    silently loses a capability depending on how it was opened.</p>
+<p>Recommendation is (1) unless moving items is specifically what is wanted.</p>
+<p>Other things a column layout forces a decision on:</p>
+<p>  Needs horizontal scroll, or a rule for collapsing empties (see #44 — a section   with no items currently still renders its heading).</p>
+<ul><li>Section count is user-defined in <code>DOCKET.md</code>, so column count is unbounded.</li></ul>
+<p>  and hides the body, which is a different reading model from today's, where the   full body is visible inline. That is a content decision, not a layout one.</p>
+<ul><li>The archive is 35 items against 7 open; it cannot be a peer column.</li><li>Long item bodies are the board's actual content — a Trello card shows a title</li></ul>
+<p>  stacked list, so both layouts have to exist regardless.</p>
+<ul><li>Narrow viewports have no columns to give; the mobile form is the current</li></ul>
+<p>Related: #44 (empty sections), and the Surface Kit scale is already in place, so this is layout work in <code>board-shell.html</code> plus markup from <code>docket-render.mjs</code>.</p></details>
+</article>
+<article class="card" id="item-46" data-kit-item data-search="46 session-report charts use one colour for every series &lt;p&gt;with several projects in view the bars are indistinguishable — you can only tell series apart by reading the row label.&lt;/p&gt;">
+<div class="top"><a class="id" href="#item-46" data-kit-copy="46">#46</a><span class="age">2026-08-21 · 0d</span></div>
+<h3>session-report charts use one colour for every series</h3>
+<div class="lede"><p>With several projects in view the bars are indistinguishable — you can only tell series apart by reading the row label.</p></div>
+<details class="more"><summary>Read on · 13 more</summary><p><strong>The cause is not duplicate colours; it is that there is no palette.</strong> There is no <code>PALETTE</code>, no colour array and no hue rotation anywhere in <code>skills/session-report/template.html</code>. Every bar in every chart is the same <code>█</code>/<code>░</code> glyph run in <code>var(--clay)</code> (template.html:2097 and :2339). One colour, reused for everything.</p>
+<p><strong>This is a design-system change, not a template tweak.</strong> The core (<code>scripts/tokens/core.css</code>) carries no categorical colours at all — only semantics (<code>--success</code>, <code>--warning</code>, <code>--destructive</code>, <code>--info</code>) plus the clay accent. Reaching for the semantic ones would be wrong: semantic colour means good / bad / attention, and a project is none of those. A categorical ramp has to be added to the core as its own group, distinct from both the accent and the semantics, and it then belongs to every surface, not just this one.</p>
+<p>Constraints that shape it:</p>
+<p>  glyph runs, or hand-authored inline SVG.</p>
+<ul><li><strong>No egress</strong>, so no charting library — whatever ships is CSS plus the existing</li></ul>
+<p>  and on <code>#f6f5ef</code>, which is the part that usually breaks — a ramp tuned on dark   goes muddy on cream.</p>
+<ul><li><strong>Both themes.</strong> Categorical hues need to stay distinguishable on <code>#111110</code></li></ul>
+<p>  runs could vary pattern as well as colour, which is cheap here because they are   text.</p>
+<ul><li><strong>Accessibility.</strong> Categorical series should not rely on hue alone; the glyph</li></ul>
+<p>  so the ramp needs a defined cycle-and-degrade rule rather than assuming it   never runs out.</p>
+<ul><li><strong>Unbounded series count.</strong> Project count is whatever the transcripts contain,</li></ul>
+<p>The <code>dataviz</code> skill covers exactly this (categorical palette construction, the separation of semantic from categorical colour, and a runnable validator) and should be read before picking values.</p>
+<p>Found 2026-08-21 looking at a real report with three projects; the problem gets worse the more projects are in range.</p></details>
+</article>
+</section>
+<section class="col" data-section="Loose threads">
+<div class="colhead"><h2 id="sec-loose-threads" data-kit-section>Loose threads</h2><span class="n zero">0</span></div>
+<div class="empty">Nothing in loose threads</div>
+</section>
+</main>
+<details class="drawer"><summary><span>Archive</span><span class="n">35</span></summary>
+<div class="years"><div class="row" data-search="19 install.md is buried for docket and concord, at the plugin root only for condux (2026-08-11) — ✅ done 2026-08-12 &lt;p&gt;&lt;strong&gt;wrap&lt;/strong&gt;, following #9's precedent for condux. the entry named a check to run before choosing, and running it decided the item: *does anything resolve paths relative to the install.md's own location?* both deep documents do, in their first step — &lt;code&gt;skills/remember/references/install.md:18&lt;/code&gt; defines &lt;code&gt;skill&lt;/code&gt; as &amp;quot;this file's parent's parent&amp;quot;, and &lt;code&gt;skills/record/server/install.md:19&lt;/code&gt; defines &lt;code&gt;server&lt;/code&gt; as an absolute path to &lt;code&gt;mcp-server.mjs&lt;/code&gt; &amp;quot;in this directory&amp;quot;. so &lt;strong&gt;move&lt;/strong&gt; is out: relocating either silently breaks its own step 0, on top of #9's standing argument that &lt;code&gt;plugins/&lt;/code&gt; never reaches the &lt;code&gt;npx skills add&lt;/code&gt; tree. contrast condux's plugin-level document, which is stable precisely because it anchors on &lt;code&gt;$plugin_root&lt;/code&gt; and sits at that root.&lt;/p&gt;"><a class="id" href="#item-19" data-kit-copy="19">#19</a><span class="t">INSTALL.md is buried for docket and concord, at the plugin root only for condux (2026-08-11) — ✅ DONE 2026-08-12</span><span class="y">2026</span></div><div class="row" data-search="16 supply-chain lint does not cover plugin-level files (2026-08-11) — ✅ done 2026-08-12 &lt;p&gt;&lt;code&gt;scripts/check-supply-chain.mjs&lt;/code&gt; walked &lt;code&gt;skills/&lt;/code&gt; only, so the repo's first plugin-level executable (&lt;code&gt;plugins/condux/install.mjs&lt;/code&gt;, shipped by #9) and the &lt;code&gt;install.md&lt;/code&gt; instructing an agent to run it were scanned by nothing — all four of the rules that exist for exactly that shape were reachable in a tree the checker never opened.&lt;/p&gt;"><a class="id" href="#item-16" data-kit-copy="16">#16</a><span class="t">Supply-chain lint does not cover plugin-level files (2026-08-11) — ✅ DONE 2026-08-12</span><span class="y">2026</span></div><div class="row" data-search="18 warn about conflicting skill libraries at install and doctor time (2026-08-11) — ✅ done 2026-08-11 &lt;p&gt;condux is a rework of obra/superpowers and said so in one line of readme acknowledgment, which is credit, not a warning. installing both is not additive: verified against superpowers 6.2.0, the two register a sessionstart hook on the same matcher (startup|clear|compact), each injecting a router that claims every dev task, so the agent follows whichever it read last — and 11 of superpowers 14 skills answer the same question as 8 of condux 14. nothing errors, which is why it needs saying out loud.&lt;/p&gt;"><a class="id" href="#item-18" data-kit-copy="18">#18</a><span class="t">Warn about conflicting skill libraries at install and doctor time (2026-08-11) — ✅ DONE 2026-08-11</span><span class="y">2026</span></div><div class="row" data-search="3 trigger eval cases for record/groom (2026-08-05) — ✅ done 2026-08-05 &lt;p&gt;accepted drift at preflight 2026-08-05 (specs/docket/quirks.md): near-miss trigger eval prompts for record vs groom on both sides of the item-level vs whole-backlog boundary, wired into scripts/eval-triggers.mjs.&lt;/p&gt;"><a class="id" href="#item-3" data-kit-copy="3">#3</a><span class="t">Trigger eval cases for record/groom (2026-08-05) — ✅ DONE 2026-08-05</span><span class="y">2026</span></div><div class="row" data-search="6 graduate the no-plugin-deps rule to a degrade-gracefully ladder (2026-08-05) — ✅ done 2026-08-06 &lt;p&gt;amend toolkit-skill-standards (and the no-plugin-deps memory rule): skills prefer the highest detected rung — (1) skill files, always present on every channel; (2) bundled cli travelling with the skill (record's server/ precedent); (3) registered mcp, host-dependent — but must function on rung 1 alone, because npx skills add ships bare skills with no manifest. cross-plugin dependencies stay a hard ban. install.md makes rung 3 reliable to reach; plugin doctor (#1) reports which rung each plugin actually runs on per host. decided 2026-08-05 in session.&lt;/p&gt;"><a class="id" href="#item-6" data-kit-copy="6">#6</a><span class="t">Graduate the no-plugin-deps rule to a degrade-gracefully ladder (2026-08-05) — ✅ DONE 2026-08-06</span><span class="y">2026</span></div><div class="row" data-search="1 plugin doctor — verify condux/concord/docket work on the installed harness (2026-08-05) — ✅ done 2026-08-06 &lt;p&gt;per-harness health check for the shipped plugins (condux, concord, docket): does the condux sessionstart hook actually fire on this host, are concord rollout-sync hooks wired, does the docket mcp server answer an initialize round-trip, do the manifests the installed host reads parse, do installed versions match the marketplace. shape: detect host, probe each registration, report done/broken/absent per plugin — the standing version of the install.md verify step. precedents: ctx doctor, remember:doctor. origin: idea recalled 2026-08-05 after shipping docket.&lt;/p&gt;"><a class="id" href="#item-1" data-kit-copy="1">#1</a><span class="t">Plugin doctor — verify condux/concord/docket work on the installed harness (2026-08-05) — ✅ DONE 2026-08-06</span><span class="y">2026</span></div><div class="row" data-search="5 install.md adoption for condux and concord (2026-08-05) — ✅ done 2026-08-06 &lt;p&gt;adopt the install.md ease-of-install convention (detect, register, verify, report) for the other complex plugins: condux (opencode npm story) and concord (codex hooks). docket server/install.md is the reference implementation.&lt;/p&gt;"><a class="id" href="#item-5" data-kit-copy="5">#5</a><span class="t">INSTALL.md adoption for condux and concord (2026-08-05) — ✅ DONE 2026-08-06</span><span class="y">2026</span></div><div class="row" data-search="8 install.md + verify for concord (split from #5, 2026-08-06) (2026-08-06) — ✅ done 2026-08-06 &lt;p&gt;concord is the small half of #5 and is mostly done already.&lt;/p&gt;"><a class="id" href="#item-8" data-kit-copy="8">#8</a><span class="t">INSTALL.md + verify for concord (split from #5, 2026-08-06) (2026-08-06) — ✅ DONE 2026-08-06</span><span class="y">2026</span></div><div class="row" data-search="13 generalize supply-chain lint across all skills, not one template (2026-08-09) — ✅ done 2026-08-09 &lt;p&gt;we already do one of these checks — for exactly one file. &lt;code&gt;skill-invariants.test.mjs:105&lt;/code&gt; (&amp;quot;plan-review html template makes no external network references&amp;quot;) greps that single template for &lt;code&gt;//&lt;/code&gt; urls. that is the &lt;code&gt;external-domain&lt;/code&gt; rule, hand-scoped to one artifact because that artifact was a known risk. nothing generalizes it, and no other rule in the family exists at all.&lt;/p&gt;"><a class="id" href="#item-13" data-kit-copy="13">#13</a><span class="t">Generalize supply-chain lint across all skills, not one template (2026-08-09) — ✅ DONE 2026-08-09</span><span class="y">2026</span></div><div class="row" data-search="15 three cheap skill-validation checks we do not have (2026-08-09) — ✅ done 2026-08-10 &lt;p&gt;small additions to &lt;code&gt;tests/skill-invariants.test.mjs&lt;/code&gt;, each a few lines, all lifted from &lt;code&gt;eng/validate-skills.mjs&lt;/code&gt; + &lt;code&gt;eng/constants.mjs&lt;/code&gt; in &lt;code&gt;github/awesome-copilot&lt;/code&gt; (mit). batch them into one pass.&lt;/p&gt;"><a class="id" href="#item-15" data-kit-copy="15">#15</a><span class="t">Three cheap skill-validation checks we do not have (2026-08-09) — ✅ DONE 2026-08-10</span><span class="y">2026</span></div><div class="row" data-search="9 install.md front door for condux — consolidate three scattered installers (split from #5, 2026-08-06) (2026-08-06) — ✅ done 2026-08-10 &lt;p&gt;condux is the larger half of #5, and the reason is not obvious from the parent item: condux has no plugin-level installer, but it already ships two, buried inside skills where no user would find them.&lt;/p&gt;"><a class="id" href="#item-9" data-kit-copy="9">#9</a><span class="t">INSTALL.md front door for condux — consolidate three scattered installers (split from #5, 2026-08-06) (2026-08-06) — ✅ DONE 2026-08-10</span><span class="y">2026</span></div><div class="row" data-search="20 review and redesign the shipped html templates, navigation first (2026-08-12) — ✅ done 2026-08-12 &lt;p&gt;every plugin that renders html built its own from scratch. there is no shared stylesheet, no shared shell, and no shared navigation pattern — four templates, four answers, and the answers disagree about the basics.&lt;/p&gt;"><a class="id" href="#item-20" data-kit-copy="20">#20</a><span class="t">Review and redesign the shipped HTML templates, navigation first (2026-08-12) — ✅ DONE 2026-08-12</span><span class="y">2026</span></div><div class="row" data-search="21 token core, checker with --fix, and docket palette conversion (split from #20, 2026-08-12) (2026-08-12) — ✅ done 2026-08-12 &lt;p&gt;the shared visual layer for the four html surfaces, plus the #4 chip fix in the same file. design signed off 2026-08-12, now committed at &lt;code&gt;specs/dir-mode-navigation/design.md&lt;/code&gt;.&lt;/p&gt;"><a class="id" href="#item-21" data-kit-copy="21">#21</a><span class="t">Token core, checker with --fix, and docket palette conversion (split from #20, 2026-08-12) (2026-08-12) — ✅ DONE 2026-08-12</span><span class="y">2026</span></div><div class="row" data-search="4 board cosmetic: hide the count chip on zero-count sections (2026-08-05) — ✅ done 2026-08-12 &lt;p&gt;zero-count sections render an empty chip pill after the heading (&lt;code&gt;count || empty-string&lt;/code&gt; still emits the span). one-line fix in docket-render.mjs. seen at live verification 2026-08-05.&lt;/p&gt;"><a class="id" href="#item-4" data-kit-copy="4">#4</a><span class="t">Board cosmetic: hide the count chip on zero-count sections (2026-08-05) — ✅ DONE 2026-08-12</span><span class="y">2026</span></div><div class="row" data-search="25 tag-based filtering on the board — the other half of category filtering (2026-08-12) (2026-08-12) — ✅ done 2026-08-12 &lt;p&gt;section scoping shipped with #21: chips for all / committed / someday / loose threads / archive, plus free-text search over id, title and body. what is still missing is filtering by *topic* rather than by workflow state.&lt;/p&gt;"><a class="id" href="#item-25" data-kit-copy="25">#25</a><span class="t">Tag-based filtering on the board — the other half of category filtering (2026-08-12) (2026-08-12) — ✅ DONE 2026-08-12</span><span class="y">2026</span></div><div class="row" data-search="24 plan-review docs say directory mode lists top-level *.md; the code walks recursively (2026-08-12) (2026-08-12) — ✅ done 2026-08-13 &lt;p&gt;&lt;code&gt;plan-review/skill.md:49&lt;/code&gt; and &lt;code&gt;:101&lt;/code&gt; both describe directory mode as listing &amp;quot;every top-level &lt;code&gt;*.md&lt;/code&gt;&amp;quot;. &lt;code&gt;annotate-server.js:96&lt;/code&gt; (&lt;code&gt;listdocs()&lt;/code&gt;) walks the whole tree — its own comment says &amp;quot;every *.md in the tree&amp;quot; — and the client groups sub-folder docs and resolves subdirectory links.&lt;/p&gt;"><a class="id" href="#item-24" data-kit-copy="24">#24</a><span class="t">plan-review docs say directory mode lists top-level *.md; the code walks recursively (2026-08-12) (2026-08-12) — ✅ DONE 2026-08-13</span><span class="y">2026</span></div><div class="row" data-search="22 spec-site navigation in plan-review's dir_mode (split from #20, 2026-08-12) (2026-08-12) — ✅ done 2026-08-13 &lt;p&gt;the pain that raised #20: navigation is hard in practice when browsing a specs tree. design signed off 2026-08-12 settled *who owns the surface*; what the navigation should become is still undesigned.&lt;/p&gt;"><a class="id" href="#item-22" data-kit-copy="22">#22</a><span class="t">Spec-site navigation in plan-review's DIR_MODE (split from #20, 2026-08-12) (2026-08-12) — ✅ DONE 2026-08-13</span><span class="y">2026</span></div><div class="row" data-search="23 long-document navigation for session-report and session-handoff (split from #20, 2026-08-12) (2026-08-12) — ✅ done 2026-08-13 &lt;p&gt;the two long single documents have the weakest navigation relative to their size. design signed off 2026-08-12; the pattern is agreed, the work is not scoped.&lt;/p&gt;"><a class="id" href="#item-23" data-kit-copy="23">#23</a><span class="t">Long-document navigation for session-report and session-handoff (split from #20, 2026-08-12) (2026-08-12) — ✅ DONE 2026-08-13</span><span class="y">2026</span></div><div class="row" data-search="11 declare bundle composition as data instead of if-arms in sync.sh (2026-08-09) — ✅ done 2026-08-14 &lt;p&gt;&lt;code&gt;scripts/sync.sh:55-114&lt;/code&gt; decides what goes where using two mechanisms that both fail quietly:&lt;/p&gt;"><a class="id" href="#item-11" data-kit-copy="11">#11</a><span class="t">Declare bundle composition as data instead of if-arms in sync.sh (2026-08-09) — ✅ DONE 2026-08-14</span><span class="y">2026</span></div><div class="row" data-search="12 generate marketplace.json and the readme catalogs instead of testing them (2026-08-09) — ✅ done 2026-08-14 &lt;p&gt;we hand-maintain &lt;code&gt;.claude-plugin/marketplace.json&lt;/code&gt; and the plugin catalogs in &lt;code&gt;readme.md&lt;/code&gt; / &lt;code&gt;claude.md&lt;/code&gt;, then assert completeness after the fact — &lt;code&gt;docs-catalog.test.mjs&lt;/code&gt; fails when a marketplace plugin is missing from a catalog, and &lt;code&gt;skill-invariants.test.mjs&lt;/code&gt; checks the marketplace paths resolve on disk.&lt;/p&gt;"><a class="id" href="#item-12" data-kit-copy="12">#12</a><span class="t">Generate marketplace.json and the README catalogs instead of testing them (2026-08-09) — ✅ DONE 2026-08-14</span><span class="y">2026</span></div><div class="row" data-search="27 cursor compatibility — verify the skills channel, decide on a trigger-variant build (2026-08-14) — ✅ done 2026-08-14 &lt;p&gt;readme claims cursor support via &lt;code&gt;npx skills add&lt;/code&gt; (the vercel-labs cli auto-detects the host), but no cursor install has ever been verified end-to-end. two open questions:&lt;/p&gt;"><a class="id" href="#item-27" data-kit-copy="27">#27</a><span class="t">Cursor compatibility — verify the skills channel, decide on a trigger-variant build (2026-08-14) — ✅ DONE 2026-08-14</span><span class="y">2026</span></div><div class="row" data-search="29 agent plugins spec conformance — root plugin.json for every dist plugin (2026-08-14) — ✅ done 2026-08-14 &lt;p&gt;cursor supports the open agent-plugins.org standard: &amp;quot;spec-conformant plugins with a plugin.json manifest at the plugin root, packaging skills and mcp servers... loads in cursor without changes&amp;quot; (cursor.com/docs/plugins). our dist plugins carry only .claude-plugin/ and .codex-plugin/ manifests — not conformant. adding a root plugin.json (schema https://agent-plugins.org/schemas/1.0.0/plugin.schema.json) makes every plugin loadable in cursor directly (~/.cursor/plugins/local, team marketplaces, cursor.com/marketplace submission) and portable to other spec hosts.&lt;/p&gt;"><a class="id" href="#item-29" data-kit-copy="29">#29</a><span class="t">Agent Plugins spec conformance — root plugin.json for every dist plugin (2026-08-14) — ✅ DONE 2026-08-14</span><span class="y">2026</span></div><div class="row" data-search="28 cursor follow-ups — toolkit-ops channel docs, docket-doctor cursor probe (2026-08-14) — ✅ done 2026-08-14 &lt;p&gt;the cursor channel shipped (docket #27): dist/cursor/skills via scripts/build-cursor.mjs, cursor-dist.test.mjs, docket installer cursor target (0.6.0), readme/claude.md channel docs. deliberately scoped out, same precedent as the opencode channel:&lt;/p&gt;"><a class="id" href="#item-28" data-kit-copy="28">#28</a><span class="t">Cursor follow-ups — toolkit-ops channel docs, docket-doctor cursor probe (2026-08-14) — ✅ DONE 2026-08-14</span><span class="y">2026</span></div><div class="row" data-search="30 agent plugins follow-up — toolkit-ops docs never gained the root plugin.json (docket #29) (2026-08-14) — ✅ done 2026-08-14 &lt;p&gt;sibling debt to #28, found while closing it. the agent plugins conformance work (#29, pr #68) added a third manifest per plugin — the generated root &lt;code&gt;plugin.json&lt;/code&gt; (agent-plugins.org 1.0.0, from &lt;code&gt;scripts/generate-agent-manifests.mjs&lt;/code&gt;) plus docket's spec-dialect &lt;code&gt;mcp.json&lt;/code&gt; — and the toolkit-ops docs never absorbed it.&lt;/p&gt;"><a class="id" href="#item-30" data-kit-copy="30">#30</a><span class="t">Agent Plugins follow-up — toolkit-ops docs never gained the root plugin.json (docket #29) (2026-08-14) — ✅ DONE 2026-08-14</span><span class="y">2026</span></div><div class="row" data-search="26 worktree operations skill — safe git worktree workflows (create, switch, prune, agent isolation) (2026-08-13) — ✅ done 2026-08-15 &lt;p&gt;sibling to &lt;code&gt;git-commit&lt;/code&gt; / &lt;code&gt;git-operations&lt;/code&gt;: a decision router for &lt;code&gt;git worktree&lt;/code&gt; — create/list/switch, prune stale trees, move work between trees, and the undo paths. motivation: agent hosts now lean on worktrees for isolation (claude code's &lt;code&gt;enterworktree&lt;/code&gt; / &lt;code&gt;isolation: &amp;quot;worktree&amp;quot;&lt;/code&gt; agents), and the existing &lt;code&gt;git-operations&lt;/code&gt; skill doesn't cover them. scope question to settle at design time: standalone skill vs a section grown inside &lt;code&gt;git-operations&lt;/code&gt; (the router-with-undo-paths shape is identical; what differs is trigger vocabulary — &amp;quot;worktree&amp;quot;, &amp;quot;parallel checkout&amp;quot;, &amp;quot;agent sandbox tree&amp;quot;).&lt;/p&gt;"><a class="id" href="#item-26" data-kit-copy="26">#26</a><span class="t">Worktree operations skill — safe git worktree workflows (create, switch, prune, agent isolation) (2026-08-13) — ✅ DONE 2026-08-15</span><span class="y">2026</span></div><div class="row" data-search="31 sync.sh reports &quot;0 failed&quot; when rsync actually fails (2026-08-15) — ✅ done 2026-08-15 &lt;p&gt;found 2026-08-15 building git-worktree (#26).&lt;/p&gt;"><a class="id" href="#item-31" data-kit-copy="31">#31</a><span class="t">sync.sh reports &quot;0 failed&quot; when rsync actually fails (2026-08-15) — ✅ DONE 2026-08-15</span><span class="y">2026</span></div><div class="row" data-search="34 specs and the docket archive cite .condux/ paths that are gitignored — two already dangle (2026-08-16) — ✅ done 2026-08-16 &lt;p&gt;found while auditing &lt;code&gt;.condux/&lt;/code&gt; for prunable working state (2026-08-16).&lt;/p&gt;"><a class="id" href="#item-34" data-kit-copy="34">#34</a><span class="t">Specs and the docket archive cite .condux/ paths that are gitignored — two already dangle (2026-08-16) — ✅ DONE 2026-08-16</span><span class="y">2026</span></div><div class="row" data-search="33 technical-spec's scaffold writes no purpose line, so every new spec starts at &quot;—&quot; in the catalog (2026-08-16) — ✅ done 2026-08-16 &lt;p&gt;follow-up from #77 (spec-browser 1.1.1), which fixed the reading half of this.&lt;/p&gt;"><a class="id" href="#item-33" data-kit-copy="33">#33</a><span class="t">technical-spec's scaffold writes no purpose line, so every new spec starts at &quot;—&quot; in the catalog (2026-08-16) — ✅ DONE 2026-08-16</span><span class="y">2026</span></div><div class="row" data-search="35 technical-spec writes the .condux/ citation the policy now bans, so promote-on-cite is enforced only after the fact (2026-08-16) — ✅ done 2026-08-16 &lt;p&gt;filed 2026-08-16 when #34 closed. &lt;code&gt;tests/durable-citations.test.mjs&lt;/code&gt; catches a banned citation at commit time; nothing stops one being written.&lt;/p&gt;"><a class="id" href="#item-35" data-kit-copy="35">#35</a><span class="t">technical-spec writes the .condux/ citation the policy now bans, so promote-on-cite is enforced only after the fact (2026-08-16) — ✅ DONE 2026-08-16</span><span class="y">2026</span></div><div class="row" data-search="32 subagent-deployment routes at 62.5% — four of six misses bleed to workflow (2026-08-15) — ✅ done 2026-08-16 &lt;p&gt;measured 2026-08-15 during the git-worktree eval run (#26), full corpus, claude-haiku-4-5-20251001, 582 cases. overall was 90.0% — in the established ~89-92% band. &lt;strong&gt;subagent-deployment scored 10/16 = 62.5%&lt;/strong&gt;, the weakest skill in the corpus by a wide margin and roughly 27pp below band.&lt;/p&gt;"><a class="id" href="#item-32" data-kit-copy="32">#32</a><span class="t">subagent-deployment routes at 62.5% — four of six misses bleed to workflow (2026-08-15) — ✅ DONE 2026-08-16</span><span class="y">2026</span></div><div class="row" data-search="36 re-measure the generic-subagent contract fix, and decide what to do about a corpus where 8% of cases are flaky (2026-08-16) — ✅ done 2026-08-17 &lt;p&gt;filed 2026-08-16 when #32 closed. two things that entry produced but could not finish.&lt;/p&gt;"><a class="id" href="#item-36" data-kit-copy="36">#36</a><span class="t">Re-measure the generic-subagent contract fix, and decide what to do about a corpus where 8% of cases are flaky (2026-08-16) — ✅ DONE 2026-08-17</span><span class="y">2026</span></div><div class="row" data-search="37 triage the 27 case-intrinsic flaky routing cases into accept alternates and one real seam (2026-08-17) — ✅ done 2026-08-17 &lt;p&gt;split from #36, 2026-08-17, once the bucket question it asked was answered.&lt;/p&gt;"><a class="id" href="#item-37" data-kit-copy="37">#37</a><span class="t">Triage the 27 case-intrinsic flaky routing cases into accept alternates and one real seam (2026-08-17) — ✅ DONE 2026-08-17</span><span class="y">2026</span></div><div class="row" data-search="39 contract gaps surfaced by the #37 triage — cases left as misses deliberately, each naming a weak seam (2026-08-17) — ✅ done 2026-08-18 &lt;p&gt;fixed four of the five clusters this entry named; the fifth (git-operations' enumerated list) was a decide-once question, decided as &amp;quot;leave alone.&amp;quot;&lt;/p&gt;"><a class="id" href="#item-39" data-kit-copy="39">#39</a><span class="t">Contract gaps surfaced by the #37 triage — cases left as misses deliberately, each naming a weak seam (2026-08-17) — ✅ DONE 2026-08-18</span><span class="y">2026</span></div><div class="row" data-search="38 opencode has no routing enforcement — condux ships the sessionstart hook to claude and codex only (2026-08-17) — ✅ done 2026-08-18 &lt;p&gt;shipped the candidate mechanism this entry drafted, after clearing both items it flagged as needing verification before being treated as a fix.&lt;/p&gt;"><a class="id" href="#item-38" data-kit-copy="38">#38</a><span class="t">OpenCode has no routing enforcement — condux ships the SessionStart hook to Claude and Codex only (2026-08-17) — ✅ DONE 2026-08-18</span><span class="y">2026</span></div><div class="row" data-search="42 routing hook out-competes test-first-development on its own trigger phrases (7 cases at 2/3 flaky) (2026-08-20) — ✅ done 2026-08-20 &lt;p&gt;surfaced by the 3-run trigger eval on 2026-08-20 (&lt;code&gt;skills/toolkit-research-frontier/references/eval-blueprint-2026-08-20.md&lt;/code&gt;). pre-existing, unrelated to blueprint.&lt;/p&gt;"><a class="id" href="#item-42" data-kit-copy="42">#42</a><span class="t">Routing hook out-competes test-first-development on its own trigger phrases (7 cases at 2/3 flaky) (2026-08-20) — ✅ DONE 2026-08-20</span><span class="y">2026</span></div></div>
+</details>
+<script>
+/* kit:js:start */
+/* Shared behaviour layer — do not hand-edit; edit scripts/tokens/kit.js. */
+
+/* Deliberately free of backticks and interpolation openers. No target is a JS
+   template literal since the board-shell extraction, so this is insurance
+   rather than a requirement — but it is the difference between this file being
+   safe to inline anywhere and being safe only where someone remembered to
+   check. Regexes and escapes are avoided for the same reason. */
+
+(function () {
+  'use strict';
+
+  var THEME_KEY = 'jabworks-theme';
+  var THEME_MODES = ['light', 'dark', 'system'];
+  var root = document.documentElement;
+
+  /* localStorage throws on an opaque origin, which is what a file:// artifact
+     often gets. Degrade to session-only theming; never break the page. */
+  function readStored(key) {
+    try {
+      return window.localStorage.getItem(key);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function writeStored(key, value) {
+    try {
+      window.localStorage.setItem(key, value);
+    } catch (e) {
+      /* no-op */
+    }
+  }
+
+  function applyTheme(mode) {
+    if (mode === 'light' || mode === 'dark') root.setAttribute('data-theme', mode);
+    else root.removeAttribute('data-theme');
+
+    writeStored(THEME_KEY, mode);
+
+    var buttons = document.querySelectorAll('[data-kit-theme]');
+
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].setAttribute('aria-pressed', String(buttons[i].getAttribute('data-kit-theme') === mode));
+    }
+  }
+
+  function currentTheme() {
+    return root.getAttribute('data-theme') || 'system';
+  }
+
+  function cycleTheme() {
+    applyTheme(THEME_MODES[(THEME_MODES.indexOf(currentTheme()) + 1) % THEME_MODES.length]);
+  }
+
+  function items() {
+    return Array.prototype.slice.call(document.querySelectorAll('[data-kit-item]'));
+  }
+
+  /* document.activeElement is null in a detached or not-yet-painted document,
+     and Element.closest is absent on the document node itself. */
+  function activeWithin(selector) {
+    var el = document.activeElement;
+
+    return el && el.closest ? el.closest(selector) : null;
+  }
+
+  function moveItem(step) {
+    var all = items();
+
+    if (all.length === 0) return;
+
+    var index = all.indexOf(activeWithin('[data-kit-item]'));
+    var next = all[Math.min(Math.max(index + step, 0), all.length - 1)] || all[0];
+
+    next.setAttribute('tabindex', '-1');
+    next.focus();
+    next.scrollIntoView({ block: 'nearest' });
+
+    /* Reflect the focused item in the URL so a board or a review can be linked
+       to a specific row. replaceState, not a hash assignment: assigning to
+       location.hash pushes a history entry per keypress. */
+    if (next.id && window.history && window.history.replaceState) {
+      window.history.replaceState(null, '', '#' + next.id);
+    }
+  }
+
+  function reveal(el) {
+    if (el && el.focus) {
+      el.focus();
+      if (el.select) el.select();
+
+      return true;
+    }
+
+    return false;
+  }
+
+  /* A surface whose filter field ships hidden cannot hang the hook on the field
+     itself — a hidden element does not take focus, so the binding would be a
+     silent no-op. Those surfaces put the hook on the control that REVEALS the
+     field instead; activate it, then focus what it revealed via aria-controls.
+     Without this the ? overlay would advertise "Focus filter" for a key that
+     only moves focus to a button, and a generated overlay that misdescribes its
+     own bindings is worse than no overlay. */
+  function focusFilter() {
+    var hook = document.querySelector('[data-kit-filter]');
+
+    if (!hook) return false;
+
+    if (hook.tagName === 'BUTTON') {
+      if (hook.getAttribute('aria-expanded') === 'false' && hook.click) hook.click();
+
+      if (reveal(document.getElementById(hook.getAttribute('aria-controls') || ''))) return true;
+    }
+
+    return reveal(hook);
+  }
+
+  function flashCopied(el) {
+    el.classList.add('kit-copied');
+    window.setTimeout(function () {
+      el.classList.remove('kit-copied');
+    }, 900);
+  }
+
+  function copyFrom(el) {
+    if (!el) return;
+
+    var text = el.getAttribute('data-kit-copy') || el.textContent || '';
+
+    if (!text || !navigator.clipboard || !navigator.clipboard.writeText) return;
+
+    navigator.clipboard.writeText(text.trim()).then(
+      function () {
+        flashCopied(el);
+      },
+      function () {
+        /* Clipboard is permission-gated; a refusal is not an error worth
+           interrupting the page for. */
+      },
+    );
+  }
+
+  function sections() {
+    return Array.prototype.slice.call(document.querySelectorAll('[data-kit-section]'));
+  }
+
+  function jumpToSection(n) {
+    var target = sections()[n - 1];
+
+    if (target) target.scrollIntoView({ block: 'start' });
+  }
+
+  /* One registry drives both the key handler and the help overlay, so the
+     documented shortcuts cannot drift from the implemented ones. */
+  var BINDINGS = [
+    { keys: ['j'], label: 'Next item', when: function () { return items().length > 0; }, run: function () { moveItem(1); } },
+    { keys: ['k'], label: 'Previous item', when: function () { return items().length > 0; }, run: function () { moveItem(-1); } },
+    {
+      keys: ['/'],
+      label: 'Focus filter',
+      when: function () { return Boolean(document.querySelector('[data-kit-filter]')); },
+      run: focusFilter,
+    },
+    {
+      keys: ['y'],
+      label: 'Copy id or path',
+      when: function () { return Boolean(document.querySelector('[data-kit-copy]')); },
+      run: function () {
+        copyFrom(activeWithin('[data-kit-copy]'));
+      },
+    },
+    { keys: ['t'], label: 'Cycle theme', when: function () { return true; }, run: cycleTheme },
+    {
+      keys: ['g', '1-9'],
+      label: 'Jump to section',
+      when: function () { return sections().length > 0; },
+      run: null,
+    },
+    { keys: ['?'], label: 'Show shortcuts', when: function () { return true; }, run: null },
+    { keys: ['Esc'], label: 'Dismiss', when: function () { return true; }, run: null },
+  ];
+
+  var overlay = null;
+
+  function buildOverlay() {
+    var host = document.createElement('div');
+
+    host.className = 'kit-help';
+    host.hidden = true;
+    host.setAttribute('role', 'dialog');
+    host.setAttribute('aria-modal', 'true');
+    host.setAttribute('aria-label', 'Keyboard shortcuts');
+
+    var panel = document.createElement('div');
+
+    panel.className = 'kit-help__panel';
+
+    var title = document.createElement('p');
+
+    title.className = 'kit-help__title';
+    title.textContent = 'Keyboard shortcuts';
+    panel.appendChild(title);
+
+    for (var i = 0; i < BINDINGS.length; i++) {
+      if (!BINDINGS[i].when()) continue;
+
+      var row = document.createElement('div');
+
+      row.className = 'kit-help__row';
+
+      var label = document.createElement('span');
+
+      label.textContent = BINDINGS[i].label;
+      row.appendChild(label);
+
+      var keys = document.createElement('span');
+
+      keys.className = 'kit-help__keys';
+
+      for (var k = 0; k < BINDINGS[i].keys.length; k++) {
+        var kbd = document.createElement('kbd');
+
+        kbd.className = 'kit-kbd';
+        kbd.textContent = BINDINGS[i].keys[k];
+        keys.appendChild(kbd);
+      }
+
+      row.appendChild(keys);
+      panel.appendChild(row);
+    }
+
+    host.appendChild(panel);
+    host.addEventListener('click', function (event) {
+      if (event.target === host) toggleOverlay(false);
+    });
+    document.body.appendChild(host);
+
+    return host;
+  }
+
+  function toggleOverlay(show) {
+    if (!overlay) overlay = buildOverlay();
+
+    overlay.hidden = !show;
+  }
+
+  function isTypingTarget(el) {
+    if (!el) return false;
+
+    var tag = el.tagName;
+
+    return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || el.isContentEditable === true;
+  }
+
+  var pendingJump = false;
+
+  function onKeydown(event) {
+    if (event.metaKey || event.ctrlKey || event.altKey) return;
+
+    if (event.key === 'Escape') {
+      toggleOverlay(false);
+      if (isTypingTarget(event.target) && event.target.blur) event.target.blur();
+
+      return;
+    }
+
+    /* A filter box must be typeable: every other binding is inert while the
+       caret is in a field. Escape above is the deliberate exception. */
+    if (isTypingTarget(event.target)) return;
+
+    if (pendingJump) {
+      pendingJump = false;
+
+      if (event.key >= '1' && event.key <= '9') {
+        jumpToSection(Number(event.key));
+        event.preventDefault();
+
+        return;
+      }
+    }
+
+    if (event.key === 'g' && sections().length > 0) {
+      pendingJump = true;
+      window.setTimeout(function () {
+        pendingJump = false;
+      }, 1200);
+
+      return;
+    }
+
+    if (event.key === '?') {
+      toggleOverlay(overlay ? overlay.hidden : true);
+      event.preventDefault();
+
+      return;
+    }
+
+    for (var i = 0; i < BINDINGS.length; i++) {
+      if (BINDINGS[i].run && BINDINGS[i].keys.indexOf(event.key) !== -1 && BINDINGS[i].when()) {
+        BINDINGS[i].run();
+        event.preventDefault();
+
+        return;
+      }
+    }
+  }
+
+  function init() {
+    applyTheme(readStored(THEME_KEY) || 'system');
+
+    var buttons = document.querySelectorAll('[data-kit-theme]');
+
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].addEventListener('click', function (event) {
+        applyTheme(event.currentTarget.getAttribute('data-kit-theme'));
+      });
+    }
+
+    /* Give the ? overlay a visible way in. It rides alongside the theme group
+       because every surface already has one, and because a floating badge is
+       chrome each surface would then have to design around. */
+    var groups = document.querySelectorAll('.kit-theme');
+
+    for (var g = 0; g < groups.length; g++) {
+      if (!groups[g].parentNode) continue;
+
+      var help = document.createElement('button');
+
+      help.type = 'button';
+      help.className = 'kit-helpbtn';
+      help.textContent = '?';
+      help.title = 'Keyboard shortcuts (?)';
+      help.setAttribute('aria-label', 'Keyboard shortcuts');
+      help.addEventListener('click', function () {
+        toggleOverlay(true);
+      });
+
+      /* Wrap rather than insert as a sibling: a surface may host the theme group
+         in a flex row (the board) or in block flow (the guide's rail), and in
+         block flow a bare sibling drops onto its own line. The wrapper makes the
+         pairing hold in either. */
+      var controls = document.createElement('div');
+
+      controls.className = 'kit-controls';
+      groups[g].parentNode.insertBefore(controls, groups[g]);
+      controls.appendChild(groups[g]);
+      controls.appendChild(help);
+    }
+
+    document.addEventListener('click', function (event) {
+      var target = event.target.closest ? event.target.closest('[data-kit-copy]') : null;
+
+      if (target) copyFrom(target);
+    });
+
+    document.addEventListener('keydown', onKeydown);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+/* kit:js:end */
+</script><script>
+(function(){var f=document.getElementById('filter'),b=document.querySelector('[data-kit-filter]');if(!f||!b)return;
+b.addEventListener('click',function(){var o=f.hasAttribute('hidden');f.toggleAttribute('hidden',!o);if(o)f.focus();else{f.value='';apply();}});
+function apply(){var q=f.value.trim().toLowerCase();document.querySelectorAll('[data-search]').forEach(function(el){el.classList.toggle('hidden',q!==''&&!el.getAttribute('data-search').includes(q));});}
+f.addEventListener('input',apply);})();</script></body></html>

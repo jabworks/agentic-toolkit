@@ -59,3 +59,17 @@ invariant is: one source, one sync.sh case, one mirror test.)
 4. Browser (`browse`, then `--serve`)
 5. Installer (INSTALL.md + install.sh) — convention doc included
 6. Registration, sync, catalogs, changeset
+
+## Board columns (2026-08-21)
+
+- `skills/record/server/board-shell.html` — per-surface CSS, shell markup and
+  client JS outside the kit markers; `docket-render.mjs` — `renderHtml` emits
+  a `.col` per section, card markup with lede + `<details>`, the archive
+  drawer, and drops `scopePills` plus the facet-count client JS.
+- Signed-off render: [board-direction-a.html](board-direction-a.html) —
+  rendered from this repo's live `DOCKET.md` with the kit regions inlined.
+- Tests: rewrite the render contract in `tests/docket-cli.test.mjs`; the
+  mirror/region suites (`dist-mirror`, `composition`, `token-core`) catch
+  drift as before. `bash scripts/sync.sh record` after editing.
+- Release: docket minor (new layout) + `CHANGELOG.md` entry via
+  `node scripts/release-plugins.mjs --write-changelog`.

@@ -93,8 +93,9 @@ without a docket (offer scaffold instead, at most once).
 
 - Empty docket (fresh scaffold) renders a usable empty state, not a blank page.
 - `--serve` binds localhost only; port conflict → next free port, print it.
-- Large archives render lazily per year; the open board never blocks on
-  archive size.
+- The archive is one closed drawer under the board (2026-08-21; it used to
+  be per-year blocks): every row is rendered, bodies open on demand, so the
+  open board never waits on archive size and a filter can reach into it.
 - Light theme is checked first, then dark (toolkit lesson, 3d3a0d9).
 
 ## Frontmatter / repo invariants that bit before
@@ -106,3 +107,23 @@ without a docket (offer scaffold instead, at most once).
   lesson).
 - Description/when_to_use budgets: description ≤ 500 chars, frontmatter
   total ≤ 1024 chars, OpenCode merged description ≤ 1024.
+
+## Board columns (2026-08-21)
+
+- `--open <id>` must open the targeted card's fold: a `#item-N` that lands on
+  a collapsed `<details>` shows the lede only. The deep-link handler sets
+  `open` on the card's details before scrolling, as it already does for the
+  archive's year `<details>`.
+- `.hidden` filtering must keep `data-kit-item` in sync (the kit's j/k walk)
+  — carried over from the list layout; the filter now spans columns.
+- Horizontal scroll lives on the board grid, not the page: `.board` (a div
+  inside `<main>`, so the fresh-scaffold empty state can sit above it)
+  scrolls; the sticky header does not move with it.
+- Date stamps are stripped from the displayed title and shown in the card's
+  meta line; the file is untouched. A title carrying two stamps
+  (`(2026-08-21) (2026-08-21)`, as `add` produces when the title already has
+  one) shows the first.
+- The render-contract test (`tests/docket-cli.test.mjs`, "renderHtml
+  produces a self-contained board…") pins the scope pills, stats row and
+  `#filter-toggle`; it is rewritten to the column contract as a named plan
+  task, never edited silently.

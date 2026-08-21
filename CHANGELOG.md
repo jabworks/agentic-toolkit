@@ -14,7 +14,7 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## session-report 1.9.1 — 2026-08-21
 
-- chore(session-report): version 1.9.1
+- fix(surface-kit): board density, readable items, and a discoverable ? overlay
 
 ## session-report 1.9.0 — 2026-08-21
 
@@ -22,15 +22,19 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## session-handoff 1.8.1 — 2026-08-21
 
-- chore(session-handoff): version 1.8.1
+- fix(surface-kit): board density, readable items, and a discoverable ? overlay
 
 ## session-handoff 1.8.0 — 2026-08-21
 
 - feat(surface-kit): one design system across all four HTML surfaces (#89)
 
+## docket 0.10.0 — 2026-08-21
+
+- chore(docket): version 0.10.0
+
 ## docket 0.9.1 — 2026-08-21
 
-- chore(docket): version 0.9.1
+- fix(surface-kit): board density, readable items, and a discoverable ? overlay
 
 ## docket 0.9.0 — 2026-08-21
 
@@ -38,7 +42,7 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## condux 2.20.1 — 2026-08-21
 
-- chore(condux): version 2.20.1
+- fix(surface-kit): board density, readable items, and a discoverable ? overlay
 
 ## condux 2.20.0 — 2026-08-21
 
