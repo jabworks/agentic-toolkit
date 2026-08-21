@@ -75,6 +75,39 @@ Remaining work is to keep it truthful — when step 1 lands, the guide's token
 block and the shipped `core.css` must agree. It carries the proposed values
 today, so it becomes documentation the moment they ship.
 
+### Step 4 — Categorical ramp (docket #46, D7)
+
+Atomic for the same reason step 1 is: the ramp is a `core.css` group, so every
+surface must be re-inlined in the same commit or `token-core.test.mjs` fails.
+
+Order is forced — `check-tokens.mjs` **gates** sync rather than feeding it, so a
+stale region fails sync instead of being fixed by it:
+
+1. add `--cat-1` … `--cat-8` and `--cat-other` to `scripts/tokens/core.css` —
+   dark row in bare `:root`, light row restated in **both** light blocks (Q10)
+2. `node scripts/check-tokens.mjs --fix`
+3. `bash scripts/sync.sh <each touched skill>`
+4. `node --test`
+
+Then session-report's consumption, which is the only visual change:
+
+- one global slot map from `DATA.by_project` ranked by total tokens, computed
+  once and shared by both charts — replacing `projects.indexOf(p)` in the
+  timeline IIFE, which is scoped to the selected day range
+- `PCOL` and the private `colorOf()` are deleted, not re-pointed
+- bars: slots 9–16 render `▓` instead of `█` (Q12)
+- gantt: slots 9–16 add the stripe, hue passed as `--hue` (Q11)
+- the prompt histogram is a single distribution and keeps `--clay`
+- `style-guide.html`'s swatch section is **hand-authored outside the markers**,
+  so `--fix` will not add the new group — it is manual work no test demands
+
+| File | Change |
+|---|---|
+| `scripts/tokens/core.css` | the nine tokens, three blocks |
+| `skills/session-report/template.html` | slot map, bar tier, gantt tier, legend |
+| `specs/surface-kit/style-guide.html` | categorical swatch group (manual) |
+| `specs/surface-kit/ramp-direction-c.html` | the specimen — the visual contract |
+
 ## Tests
 
 | Test | Covers |
@@ -105,14 +138,29 @@ New coverage to add:
 - Every token referenced by a surface has a bare `:root` definition — the
   theme-only-definition bug (Q5).
 
+For step 4 specifically — the tiers past slot 8 are the part that ships
+unexercised otherwise, which is exactly the "unbounded series count" concern
+docket #46 raised:
+
+- slot 9 emits `▓`, not `█`, and carries the same hue as slot 1
+- slot 17 emits `--cat-other`, and nothing past 16 emits a `--cat-N`
+- the slot map is derived from the global ranking, so a project's slot does not
+  change when the timeline's day selection changes
+- the histogram's buckets are untouched by the ramp
+
 ## Release surface
 
 | Plugin | Touched by |
 |---|---|
-| `docket` | steps 0, 1, 2 |
-| `condux` | steps 1, 2 — **plus npm changeset** |
-| `session-report` | steps 1, 2 |
-| `session-handoff` | steps 1, 2 |
+| `docket` | steps 0, 1, 2, 4 |
+| `condux` | steps 1, 2, 4 — **plus npm changeset** |
+| `session-report` | steps 1, 2, 4 |
+| `session-handoff` | steps 1, 2, 4 |
+
+Step 4 releases like step 1: one commit across all four, session-report taking
+the minor (it is the only one whose output changes) and the rest a patch, plus a
+changeset because plan-review's template is bundled into
+`packages/condux-opencode/skills/plan-review/references/`.
 
 Step 1 is one commit across all four plus a changeset. Steps 0 and 2 are
 per-plugin and release independently through the existing automation

@@ -76,6 +76,45 @@ test('theme-invariant tokens stay in the base block; theme-varying ones are rest
   assert.deepEqual(missingOverride, [], 'theme-varying token has no light override');
 });
 
+// The categorical ramp (D7) is the one group whose VALUES carry the whole
+// point: the base block is dark-first, so writing the light row into `:root`
+// ships cream hues on the #111110 ground. Nothing else in this suite would
+// notice — the checks above compare token *names*, and check-tokens.mjs is
+// byte-exact against core.css, so neither validates a value.
+test('the categorical ramp is complete and per-theme distinct', () => {
+  const CAT = ['--cat-1', '--cat-2', '--cat-3', '--cat-4', '--cat-5', '--cat-6', '--cat-7', '--cat-8', '--cat-other'];
+
+  const blocks = {
+    base: CORE.slice(0, CORE.indexOf('@media')),
+    media: CORE.match(/:root:not\(\[data-theme="dark"\]\) \{([\s\S]*?)\n {2}\}/)[1],
+    stamped: CORE.match(/:root\[data-theme="light"\] \{([\s\S]*?)\n\}/)[1],
+  };
+
+  const valueOf = (chunk, name) => (chunk.match(new RegExp(`${name}:\\s*(#[0-9a-f]{6})`)) || [])[1];
+
+  for (const name of CAT) {
+    for (const [label, chunk] of Object.entries(blocks)) {
+      assert.ok(valueOf(chunk, name), `${name} missing from the ${label} block`);
+    }
+
+    assert.notEqual(
+      valueOf(blocks.base, name),
+      valueOf(blocks.media, name),
+      `${name} is identical in the dark and light blocks — one row was copied over the other`,
+    );
+    assert.equal(
+      valueOf(blocks.media, name),
+      valueOf(blocks.stamped, name),
+      `${name} disagrees between the two light blocks`,
+    );
+  }
+
+  // Polarity: the dark row is the one that sits beside --background: #111110.
+  assert.match(blocks.base, /--background: #111110/);
+  assert.equal(valueOf(blocks.base, '--cat-1'), '#cf686e', 'the base block must carry the DARK ramp (see quirks Q10)');
+  assert.equal(valueOf(blocks.media, '--cat-1'), '#b04d54', 'the light blocks must carry the LIGHT ramp');
+});
+
 test('both light blocks define the same token set', () => {
   // The OS-default block and the explicitly-stamped block must agree, or the
   // toggle and the system preference disagree about what "light" means.
