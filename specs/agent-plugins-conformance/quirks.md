@@ -20,12 +20,41 @@ Claude's `.mcp.json` (no `type`, `${CLAUDE_PLUGIN_ROOT}`) and the spec's
 host reads the other's file. Keep them in lockstep by hand when the server
 path changes — both live in `plugins/docket/`.
 
-## Stray root plugin.json on Claude/Codex
+## Stray root plugin.json is inert on Claude — NOT on Codex
 
-Claude Code reads `.claude-plugin/plugin.json`, Codex `.codex-plugin/` —
-the generated root manifest is inert on both. `claude plugin validate
---strict` passed with it present (checked during implementation; re-check
-on Claude CLI updates).
+Claude Code reads `.claude-plugin/plugin.json` and ignores the root
+manifest: `claude plugin validate --strict` passed with it present
+(checked during implementation; re-check on Claude CLI updates).
+
+**Codex is the opposite, and this shipped broken for a week.** Codex picks
+its plugin loader by root-manifest *presence*. With the file on disk the
+Agent Plugins loader takes the plugin, and that loader has no hooks support
+at all — `.codex-plugin/plugin.json`'s `hooks` field is never read. So a
+plugin that ships both loses every Codex hook, silently: the session still
+prints `hook: SessionStart Completed` lines for *other* plugins, and
+`~/.codex/config.toml`'s `[hooks.state]` keeps the stale trusted-hash
+entries, so nothing looks wrong.
+
+Every workaround is closed (Codex 0.149.0):
+
+| Attempt | Result |
+|---|---|
+| `hooks` on the root manifest | *"ignoring unknown Agent Plugins manifest field"* |
+| `extensions` | reads namespace `com.openai` only — keys `default_tools_approval_mode`, `enabled_tools`, `disabled_tools`, `tools`. No hooks slot |
+| conventional `hooks/hooks.json` | also suppressed — condux ships one and it stayed dark |
+| move manifest to `.cursor-plugin/plugin.json` | hooks return (Codex prefers `.codex-plugin/`), but it is a Cursor Plugin manifest, a different format |
+
+Hence the invariant: a plugin ships a root `plugin.json` **or** declares
+`hooks`, never both. `scripts/generate-agent-manifests.mjs` derives the
+exclusion from the Codex manifest; `tests/agent-plugins.test.mjs` asserts
+the coupling so a fourteenth plugin gaining hooks fails the build instead
+of the field.
+
+Debugging note: `[hooks.state]` entries prove only what was last
+*approved*. Editing a hook's command string invalidates the hash and makes
+Codex prompt — under `codex exec` that prompt hangs the run. Instrument the
+hook's **script body** instead; that preserves the trusted command
+identity.
 
 ## Cursor detects format by manifest
 

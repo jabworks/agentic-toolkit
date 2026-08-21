@@ -27,6 +27,31 @@ both `C:\Users\hieu1\.cursor\plugins\local\` and WSL `~/.cursor/plugins/local/`
    trigger-quality caveat for the plugin path vs `dist/cursor/skills/`.
    **VERIFIED** (screenshot).
 
+## Follow-up — Codex hook suppression (2026-08-21)
+
+Claim 4 above verified inertness on **Claude Code only**; quirks.md
+generalised it to "inert on both". Codex 0.149.0 on WSL, tracer written
+into each hook's script body (preserves the trusted command identity, so no
+re-approval prompt), root manifest moved out of the installed plugin cache:
+
+| Plugin | root `plugin.json` | SessionStart | Other | Tracer |
+|---|---|---|---|---|
+| condux | present | 2 | Stop 1 | silent |
+| condux | removed | **3** | Stop **2** | `FIRED` |
+| concord | present | 2 | no UserPromptSubmit | silent |
+| concord | removed | **3** | UserPromptSubmit **fires** | `CONCORD FIRED` |
+
+The 2 / Stop 1 baseline is another plugin's hooks entirely; condux and
+concord contributed nothing. Payload probe: asked whether its context holds
+a phrase unique to `routing.md`, Codex answers NO with the manifest
+present, YES without it. **REFUTES** the "inert on both" generalisation;
+the exclusion in decisions.md follows.
+
+Also refuted along the way, so nobody re-fights them: `${PLUGIN_ROOT}` works
+fine in Codex hook commands (the winning run used it unchanged), raw stdout
+is a valid SessionStart payload under `additionalContextLimit` (no JSON
+envelope required), and bare `node` resolves in the hook environment.
+
 ## Environment notes
 
 - A window reload did not pick up new local plugins; a full Cursor restart
