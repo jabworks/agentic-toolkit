@@ -670,10 +670,14 @@
       .kv:last-of-type {
         border-bottom: 1px solid var(--outline);
       }
+      /* No nowrap: the column is a fixed 20ch, so a longer label ("DB migrations
+         in flight" is 23) overflowed straight into its own value with no gap.
+         Wrapping the label keeps the fixed column — which is the only thing
+         aligning values across rows, since every .kv is its own grid — and a
+         label on two lines beats a label touching its value. */
       .kv .key {
         color: var(--subtle);
         font-family: var(--mono);
-        white-space: nowrap;
       }
       .kv .val {
         color: var(--term-fg);
