@@ -10,7 +10,7 @@
          this renders the same on any machine that has a dev font. -->
     <style>
 /* tokens:core:start */
-/* Shared colour core — do not hand-edit; edit scripts/tokens/core.css. */
+/* Shared design core — do not hand-edit; edit scripts/tokens/core.css. */
 :root {
   --background: #111110;
   --card: #191918;
@@ -42,11 +42,49 @@
   --info-border: #104d87;
   --outline: rgba(237, 237, 236, 0.08);
   --subtle: #686560;
-  --radius: 0.25rem;
+  --shadow-sm: 0 1px 2px rgba(6, 6, 5, 0.5);
+  --shadow-md: 0 4px 14px rgba(6, 6, 5, 0.55);
+  --shadow-lg: 0 20px 60px rgba(6, 6, 5, 0.62);
   --mono: "Geist Mono", "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Monaco, "Cascadia Code", monospace;
+  --sans: "Geist", "Inter Tight", ui-sans-serif, system-ui, -apple-system, "Segoe UI Variable Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --text-2xs: 0.6875rem;
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.5rem;
+  --text-4xl: 3.5rem;
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading-normal: 1.55;
+  --leading-relaxed: 1.7;
+  --tracking-tight: -0.022em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.06em;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-8: 3rem;
+  --space-12: 4rem;
+  --radius-sm: 0.1875rem;
+  --radius: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-full: 9999px;
+  --dur-fast: 120ms;
+  --dur: 200ms;
+  --dur-slow: 320ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 @media (prefers-color-scheme: light) {
-  :root {
+  :root:not([data-theme="dark"]) {
     --background: #f6f5ef;
     --card: #fcfbf6;
     --card-foreground: #36302a;
@@ -77,9 +115,292 @@
     --info-border: #bed7ef;
     --outline: rgba(54, 48, 42, 0.08);
     --subtle: #a8a294;
+    --shadow-sm: 0 1px 2px rgba(54, 48, 42, 0.1);
+    --shadow-md: 0 4px 14px rgba(54, 48, 42, 0.13);
+    --shadow-lg: 0 20px 60px rgba(54, 48, 42, 0.18);
   }
 }
+:root[data-theme="light"] {
+  --background: #f6f5ef;
+  --card: #fcfbf6;
+  --card-foreground: #36302a;
+  --popover: #fcfbf6;
+  --foreground: #36302a;
+  --muted: #f0efe3;
+  --muted-foreground: #726c5e;
+  --border: #ddd6c6;
+  --input: #ddd6c6;
+  --primary: #967e60;
+  --primary-foreground: #ffffff;
+  --primary-hover: #897254;
+  --primary-muted: #efece0;
+  --primary-text: #6f5e44;
+  --ring: #967e60;
+  --accent: #eae7da;
+  --success: #3f7a34;
+  --success-muted: #e6f5e2;
+  --success-border: #c2e1b3;
+  --warning: #93761d;
+  --warning-muted: #fbf4c4;
+  --warning-border: #ebd87f;
+  --destructive: #bf4f3b;
+  --destructive-muted: #fbe8e2;
+  --destructive-border: #f0c9ba;
+  --info: #3f6fa6;
+  --info-muted: #e6f1fc;
+  --info-border: #bed7ef;
+  --outline: rgba(54, 48, 42, 0.08);
+  --subtle: #a8a294;
+  --shadow-sm: 0 1px 2px rgba(54, 48, 42, 0.1);
+  --shadow-md: 0 4px 14px rgba(54, 48, 42, 0.13);
+  --shadow-lg: 0 20px 60px rgba(54, 48, 42, 0.18);
+}
 /* tokens:core:end */
+
+/* kit:css:start */
+/* Shared state layer — do not hand-edit; edit scripts/tokens/kit.css. */
+
+/* :where() keeps these at zero specificity, so a surface overrides them by
+   writing a plain rule rather than escalating into an !important contest. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Mouse users should not see the ring; keyboard users must. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus:not(:focus-visible) {
+  outline: none;
+}
+
+.kit-skip {
+  position: absolute;
+  left: var(--space-2);
+  top: -4rem;
+  z-index: 999;
+  padding: var(--space-2) var(--space-3);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: top var(--dur) var(--ease-out);
+}
+
+.kit-skip:focus {
+  top: var(--space-2);
+}
+
+/* Empty, loading and error states. Namespaced kit- because three of the four
+   surfaces already own an .empty or .error class of their own. */
+.kit-empty {
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+  color: var(--muted-foreground);
+}
+
+.kit-empty__title {
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-md);
+  color: var(--foreground);
+}
+
+.kit-empty__body {
+  margin: 0 auto;
+  max-width: 44ch;
+  font-size: var(--text-sm);
+  text-wrap: pretty;
+}
+
+.kit-error {
+  display: flex;
+  gap: var(--space-2);
+  align-items: baseline;
+  padding: var(--space-2) var(--space-3);
+  background: var(--destructive-muted);
+  border: 1px solid var(--destructive-border);
+  border-radius: var(--radius);
+  color: var(--destructive);
+  font-size: var(--text-sm);
+}
+
+/* Shaped like the content it stands in for — never a spinner. Width is the
+   caller's job, so one rule serves a title, a row and a paragraph. */
+.kit-skel {
+  height: 0.75rem;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, var(--muted) 0%, var(--accent) 50%, var(--muted) 100%);
+  background-size: 200% 100%;
+  animation: kit-shimmer 1.4s var(--ease-out) infinite;
+}
+
+@keyframes kit-shimmer {
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Keyboard help overlay, populated by kit.js from the live binding registry. */
+.kit-help {
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+  background: color-mix(in oklch, var(--background) 78%, transparent);
+}
+
+.kit-help[hidden] {
+  display: none;
+}
+
+.kit-help__panel {
+  width: min(34rem, 100%);
+  max-height: 80dvh;
+  overflow-y: auto;
+  padding: var(--space-5);
+  background: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+}
+
+.kit-help__title {
+  margin: 0 0 var(--space-4);
+  font-family: var(--mono);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+
+.kit-help__row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-1) 0;
+  font-size: var(--text-sm);
+}
+
+.kit-help__keys {
+  flex: none;
+  display: flex;
+  gap: var(--space-1);
+}
+
+.kit-kbd {
+  min-width: 1.4rem;
+  padding: 0.1rem 0.4rem;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: var(--text-2xs);
+  color: var(--foreground);
+  background: var(--popover);
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.kit-theme {
+  display: inline-flex;
+  gap: 1px;
+}
+
+.kit-theme button {
+  font: inherit;
+  font-size: var(--text-2xs);
+  padding: var(--space-1) var(--space-2);
+  color: var(--muted-foreground);
+  background: var(--card);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+}
+
+.kit-theme button:first-child {
+  border-radius: var(--radius) 0 0 var(--radius);
+}
+
+.kit-theme button:last-child {
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.kit-theme button:hover {
+  color: var(--foreground);
+  border-color: var(--primary);
+}
+
+.kit-theme button[aria-pressed="true"] {
+  color: var(--primary-foreground);
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.kit-copied {
+  color: var(--success);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Browsers do not print background colours by default, so a dark-themed page
+   prints light text onto white and reads as blank. Repointing the tokens is
+   what makes Ctrl-P work at all; hiding chrome is the surface's opt-in. */
+@media print {
+  :root {
+    --background: #ffffff;
+    --card: #ffffff;
+    --popover: #ffffff;
+    --muted: #f4f4f2;
+    --accent: #f4f4f2;
+    --foreground: #000000;
+    --card-foreground: #000000;
+    --muted-foreground: #444444;
+    --subtle: #666666;
+    --border: #999999;
+    --input: #999999;
+    --shadow-sm: none;
+    --shadow-md: none;
+    --shadow-lg: none;
+  }
+
+  body {
+    background: #ffffff;
+    color: #000000;
+  }
+
+  .kit-skip,
+  .kit-help,
+  .kit-theme,
+  [data-kit-chrome] {
+    display: none !important;
+  }
+
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 90%;
+    color: #555555;
+  }
+
+  .kit-skel {
+    animation: none;
+  }
+}
+/* kit:css:end */
 
       /* session-report extensions — semantic variants, named palette entries,
          and terminal colours. Outside the markers on purpose: anything
@@ -140,12 +461,61 @@
       }
       body {
         margin: 0;
-        padding: 48px 24px 80px;
-        font: 13px/1.55 var(--mono);
-        font-variant-numeric: tabular-nums;
+        padding: var(--space-8) var(--space-5) 80px;
+        font: var(--text-sm)/var(--leading-normal) var(--sans);
         color: var(--term-fg);
         position: relative;
-        min-height: 100vh;
+        min-height: 100dvh;
+      }
+
+      /* Visually hidden but announced — skip-link target labelling and table
+         captions. Not part of the kit region: it is a generic a11y utility
+         any surface can define for itself. */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      /* Data typography — mono + tabular-nums travel together so every
+         number, id, path, hash and timestamp gets both by default, never as
+         a one-off exception. Prose, headings and chrome stay on the body's
+         --sans default. th is the one exception: header text is a label,
+         not data, so it opts back into --sans. */
+      #title-path,
+      #meta-line,
+      #hero-total,
+      #hero-split b,
+      #hero-cost b,
+      .stat .val,
+      .stat .detail,
+      .take .fig,
+      .gantt-hd .day,
+      .gantt-hd .stats b,
+      .gantt-axis,
+      .bar .blocks,
+      .bar .pct,
+      .hr,
+      .ctx-msg,
+      .drill .amt,
+      .drill .meta,
+      .ctx-break b,
+      code,
+      table,
+      #foot-gen,
+      #foot-stats {
+        font-family: var(--mono);
+        font-variant-numeric: tabular-nums;
+      }
+      th {
+        font-family: var(--sans);
+        font-variant-numeric: normal;
       }
 
       body::before {
@@ -191,7 +561,7 @@
       }
       ::-webkit-scrollbar-thumb {
         background-color: var(--primary);
-        border-radius: 9999px;
+        border-radius: var(--radius-full);
         border: 2px solid transparent;
         background-clip: padding-box;
       }
@@ -203,34 +573,37 @@
         max-width: 1180px;
         margin: 0 auto;
         background: var(--term-bg);
-        border-radius: 12px;
+        border-radius: var(--radius-lg);
         outline: 1px solid var(--outline);
-        box-shadow: 0 20px 60px rgba(20, 20, 19, 0.22);
+        box-shadow: var(--shadow-lg);
         position: relative;
         z-index: 1;
       }
       .titlebar {
         background: var(--titlebar);
-        border-radius: 12px 12px 0 0;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
         border-bottom: 1px solid var(--outline);
-        padding: 10px 16px;
+        padding: 10px var(--space-4);
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: var(--space-3);
       }
       .titlebar .tag {
-        font-size: 10px;
+        font-size: var(--text-2xs);
         font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.1em;
+        letter-spacing: var(--tracking-wide);
         color: var(--clay);
         padding: 1px 6px;
         background: color-mix(in oklch, var(--clay) 12%, transparent);
-        border-radius: 9999px;
+        border-radius: var(--radius-full);
       }
       .titlebar .path {
         color: var(--dim);
-        font-size: 11px;
+        font-size: var(--text-2xs);
+      }
+      .kit-theme[data-kit-chrome] {
+        margin-left: auto;
       }
       /* Sticky section nav — one chip per h2, built at load, scroll-spy active.
          Same pill vocabulary as the docket board; z-index above the sticky th. */
@@ -240,9 +613,10 @@
         z-index: 3;
         display: flex;
         gap: 6px;
-        padding: 8px 16px;
+        padding: var(--space-2) var(--space-4);
         background: var(--term-bg);
         border-bottom: 1px solid var(--outline);
+        box-shadow: var(--shadow-sm);
         overflow-x: auto;
         scrollbar-width: none;
       }
@@ -250,11 +624,11 @@
       .secnav .chip {
         flex: none;
         font: inherit;
-        font-size: 11px;
+        font-size: var(--text-2xs);
         color: var(--subtle);
         background: transparent;
         border: 1px solid var(--outline);
-        border-radius: 9999px;
+        border-radius: var(--radius-full);
         padding: 2px 10px;
         cursor: pointer;
         white-space: nowrap;
@@ -265,7 +639,9 @@
         border-color: color-mix(in oklch, var(--clay) 45%, transparent);
         background: color-mix(in oklch, var(--clay) 10%, transparent);
       }
-      .term-body section { scroll-margin-top: 46px; }
+      /* rem so it tracks the sticky nav's own rem-based height rather than
+         falling out of sync at a non-default root font size. */
+      .term-body section { scroll-margin-top: 3.25rem; }
       .term-body {
         padding: 22px 30px 30px;
       }
@@ -282,14 +658,14 @@
       }
       #meta-line {
         color: var(--subtle);
-        font-size: 11px;
+        font-size: var(--text-2xs);
       }
 
       #hero {
         margin: 14px 0 6px;
       }
       #hero-total {
-        font-size: 56px;
+        font-size: var(--text-4xl);
         font-weight: 700;
         line-height: 1;
       }
@@ -297,14 +673,16 @@
         color: var(--clay);
       }
       #hero-total .label {
-        font-size: 18px;
+        font-size: var(--text-lg);
         font-weight: 400;
         color: var(--dim);
-        margin-left: 8px;
+        margin-left: var(--space-2);
+        font-family: var(--sans);
+        font-variant-numeric: normal;
       }
       #hero-split {
         color: var(--dim);
-        margin-top: 8px;
+        margin-top: var(--space-2);
       }
       #hero-split b {
         color: var(--term-fg);
@@ -318,7 +696,7 @@
       }
       #hero-cost {
         color: var(--dim);
-        margin-top: 4px;
+        margin-top: var(--space-1);
       }
       #hero-cost b {
         color: var(--term-fg);
@@ -329,10 +707,10 @@
       }
       .cost-note {
         color: var(--subtle);
-        font-size: 11px;
+        font-size: var(--text-2xs);
       }
       .stat .val.cost {
-        font-size: 15px;
+        font-size: var(--text-md);
         color: var(--yellow);
       }
 
@@ -344,7 +722,7 @@
         overflow: hidden;
         white-space: nowrap;
         user-select: none;
-        margin-bottom: 8px;
+        margin-bottom: var(--space-2);
       }
       .hr::after {
         content: "────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────";
@@ -360,7 +738,7 @@
       }
       h2 .hint {
         color: var(--subtle);
-        font-size: 11px;
+        font-size: var(--text-2xs);
         font-weight: 400;
         margin-left: 10px;
       }
@@ -370,22 +748,24 @@
 
       #overall-grid {
         display: grid;
-        gap: 4px 28px;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: var(--space-1) 28px;
+        /* rem, not px: the floor must grow with the reader's root font size
+           or .stat .val clips inside it (see Q7 / D5). */
+        grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
       }
       .stat {
-        padding: 4px 0;
+        padding: var(--space-1) 0;
       }
       .stat .label {
-        font-size: 11px;
+        font-size: var(--text-2xs);
         color: var(--dim);
       }
       .stat .val {
-        font-size: 20px;
+        font-size: var(--text-xl);
         font-weight: 500;
       }
       .stat .detail {
-        font-size: 11px;
+        font-size: var(--text-2xs);
         color: var(--subtle);
       }
 
@@ -399,7 +779,7 @@
       .take .fig {
         text-align: right;
         font-weight: 700;
-        font-size: 15px;
+        font-size: var(--text-md);
       }
       .take .txt {
         color: var(--dim);
@@ -431,19 +811,23 @@
 
       .days {
         display: flex;
-        gap: 8px;
+        gap: var(--space-2);
         flex-wrap: wrap;
         margin-bottom: 14px;
       }
       .dpill {
         flex: 1;
-        min-width: 84px;
-        max-width: 140px;
+        /* rem, not px: at a larger root font size four stacked lines of text
+           need the card to grow with them or they clip (see Q7 / D5). */
+        min-width: 5.25rem;
+        max-width: 8.75rem;
         background: none;
         border: 1px solid var(--subtle);
-        border-radius: 8px;
+        border-radius: var(--radius-md);
         padding: 9px 6px;
         font: inherit;
+        font-family: var(--mono);
+        font-variant-numeric: tabular-nums;
         color: var(--dim);
         cursor: pointer;
         text-align: center;
@@ -453,25 +837,25 @@
         background: var(--hover);
       }
       .dpill .dow {
-        font-size: 10px;
+        font-size: var(--text-2xs);
         color: var(--subtle);
         display: block;
       }
       .dpill .date {
-        font-size: 11px;
+        font-size: var(--text-2xs);
         color: var(--term-fg);
         font-weight: 500;
         display: block;
         margin: 2px 0 4px;
       }
       .dpill .pct {
-        font-size: 16px;
+        font-size: var(--text-md);
         font-weight: 700;
         color: var(--term-fg);
         display: block;
       }
       .dpill .ns {
-        font-size: 10px;
+        font-size: var(--text-2xs);
         color: var(--subtle);
         display: block;
         margin-top: 2px;
@@ -494,7 +878,7 @@
         font-weight: 500;
       }
       .gantt-hd .stats {
-        font-size: 11px;
+        font-size: var(--text-2xs);
         color: var(--dim);
       }
       .gantt-hd .stats b {
@@ -516,7 +900,7 @@
         position: absolute;
         top: 2px;
         height: 12px;
-        border-radius: 4px;
+        border-radius: var(--radius);
         opacity: 0.85;
         cursor: crosshair;
       }
@@ -537,14 +921,14 @@
       .gantt-axis {
         display: flex;
         justify-content: space-between;
-        font-size: 10px;
+        font-size: var(--text-2xs);
         color: var(--subtle);
-        padding: 4px 0;
+        padding: var(--space-1) 0;
       }
       .gantt-leg {
-        font-size: 10px;
+        font-size: var(--text-2xs);
         color: var(--subtle);
-        margin-top: 8px;
+        margin-top: var(--space-2);
         display: flex;
         gap: 14px;
         flex-wrap: wrap;
@@ -553,9 +937,9 @@
         display: inline-block;
         width: 14px;
         height: 10px;
-        border-radius: 4px;
+        border-radius: var(--radius);
         vertical-align: middle;
-        margin-right: 4px;
+        margin-right: var(--space-1);
       }
 
       .bar {
@@ -597,8 +981,8 @@
         cursor: pointer;
         display: grid;
         grid-template-columns: 8ch 1fr;
-        gap: 16px;
-        padding: 9px 4px;
+        gap: var(--space-4);
+        padding: 9px var(--space-1);
         align-items: baseline;
       }
       .drill summary::-webkit-details-marker {
@@ -619,38 +1003,38 @@
       }
       .drill .meta {
         grid-column: 2;
-        font-size: 11px;
+        font-size: var(--text-2xs);
         color: var(--subtle);
       }
       .drill details[open] summary .desc {
         white-space: normal;
       }
       .drill .body {
-        padding: 4px 4px 14px calc(8ch + 20px);
-        font-size: 12px;
+        padding: var(--space-1) var(--space-1) 14px calc(8ch + 20px);
+        font-size: var(--text-xs);
         color: var(--dim);
       }
 
       .ctx {
-        margin: 8px 0 12px;
+        margin: var(--space-2) 0 var(--space-3);
         padding: 10px 14px;
         background: var(--muted);
         color: var(--foreground);
-        border-radius: 8px;
-        font-size: 12px;
+        border-radius: var(--radius-md);
+        font-size: var(--text-xs);
       }
       .ctx-msg {
-        padding: 4px 0;
+        padding: var(--space-1) 0;
         white-space: pre-wrap;
       }
       .ctx-msg .who {
         color: var(--dim);
-        font-size: 11px;
+        font-size: var(--text-2xs);
       }
       .ctx-msg .ts {
         color: var(--dim);
-        font-size: 10px;
-        margin-left: 8px;
+        font-size: var(--text-2xs);
+        margin-left: var(--space-2);
       }
       .ctx-msg.here {
         margin: 2px -14px;
@@ -664,7 +1048,7 @@
       }
       .ctx-gap {
         color: var(--dim);
-        font-size: 11px;
+        font-size: var(--text-2xs);
         padding: 3px 0 3px 7ch;
       }
       .ctx-gap::before {
@@ -675,7 +1059,7 @@
       }
       .ctx-break {
         margin: 2px -14px;
-        padding: 8px 11px 8px 14px;
+        padding: var(--space-2) 11px var(--space-2) 14px;
         border-left: 3px solid var(--destructive);
         background: var(--destructive-muted);
         color: var(--destructive);
@@ -693,8 +1077,8 @@
         background: none;
         border: 1px dashed var(--subtle);
         cursor: pointer;
-        font: 500 11px/1 var(--mono);
-        letter-spacing: 0.06em;
+        font: 500 var(--text-2xs)/1 var(--mono);
+        letter-spacing: var(--tracking-wide);
         color: var(--dim);
       }
       .more-btn:hover {
@@ -704,14 +1088,15 @@
 
       .scroll {
         max-height: 440px;
-        overflow: auto;
+        overflow-x: auto;
+        overflow-y: auto;
         border-top: 1px solid var(--outline);
         border-bottom: 1px solid var(--outline);
       }
       table {
         width: 100%;
         border-collapse: collapse;
-        font-size: 12px;
+        font-size: var(--text-xs);
       }
       th,
       td {
@@ -728,12 +1113,22 @@
         background: var(--term-bg);
         z-index: 1;
         font-weight: 500;
-        font-size: 11px;
+        font-size: var(--text-2xs);
         color: var(--subtle);
-        cursor: pointer;
-        user-select: none;
         border-bottom: 1px solid var(--outline);
         white-space: nowrap;
+      }
+      /* The sortable control is a real <button> inside th so it keeps
+         header semantics (scope, aria-sort) separate from the interactive
+         element, and gets a native, keyboard-operable focus target instead
+         of a hand-rolled role + keydown handler. */
+      th button {
+        all: unset;
+        display: inline;
+        font: inherit;
+        color: inherit;
+        cursor: pointer;
+        user-select: none;
       }
       th:hover {
         color: var(--dim);
@@ -758,15 +1153,19 @@
       footer {
         margin-top: 28px;
         color: var(--subtle);
-        font-size: 11px;
+        font-size: var(--text-2xs);
         display: flex;
         justify-content: space-between;
-        gap: 16px;
+        gap: var(--space-4);
         flex-wrap: wrap;
       }
 
       code {
         color: var(--blue);
+      }
+      code[data-kit-copy] {
+        cursor: pointer;
+        border-bottom: 1px dashed color-mix(in oklch, var(--blue) 50%, transparent);
       }
       a {
         color: var(--clay);
@@ -778,39 +1177,69 @@
 
       @media (max-width: 760px) {
         body {
-          padding: 20px 12px 48px;
+          padding: 20px var(--space-3) var(--space-8);
         }
         .term-body {
-          padding: 16px 16px 24px;
+          padding: var(--space-4) var(--space-4) var(--space-5);
         }
         #hero-total {
-          font-size: 40px;
+          font-size: var(--text-3xl);
         }
         .bar {
           grid-template-columns: 14ch 1fr 7ch;
-          gap: 8px;
+          gap: var(--space-2);
         }
         .drill summary {
           grid-template-columns: 6ch 1fr;
         }
         .drill .body {
-          padding-left: 12px;
+          padding-left: var(--space-3);
         }
         .take {
           grid-template-columns: 7ch 1fr;
-          gap: 12px;
+          gap: var(--space-3);
+        }
+      }
+
+      @media (max-width: 480px) {
+        .titlebar {
+          flex-wrap: wrap;
+        }
+        .kit-theme[data-kit-chrome] {
+          margin-left: 0;
+        }
+        .secnav {
+          gap: 4px;
+          padding: var(--space-2) var(--space-3);
+        }
+        #hero-total {
+          font-size: var(--text-2xl);
+        }
+        .gantt-hd {
+          flex-wrap: wrap;
+          gap: var(--space-1);
+        }
+        #overall-grid {
+          grid-template-columns: 1fr;
         }
       }
     </style>
   </head>
   <body>
+    <a href="#main" class="kit-skip">Skip to report</a>
     <div class="term">
-      <div class="titlebar">
+      <header class="titlebar">
         <span class="tag">session-report</span>
         <span class="path" id="title-path">~/.claude — session-report</span>
-      </div>
-      <nav class="secnav" id="secnav" aria-label="Report sections"></nav>
-      <div class="term-body">
+        <div class="kit-theme" data-kit-chrome role="group" aria-label="Theme">
+          <button type="button" data-kit-theme="light">Light</button>
+          <button type="button" data-kit-theme="dark">Dark</button>
+          <button type="button" data-kit-theme="system">Auto</button>
+        </div>
+      </header>
+      <nav class="secnav" id="secnav" aria-label="Report sections" data-kit-chrome></nav>
+      <main class="term-body" id="main" tabindex="-1">
+        <h1 class="sr-only">Session usage report</h1>
         <div class="cmd">
           <span class="prompt">&gt;</span>
           <span id="cmd-text">claude usage</span> <span id="cmd-flags"></span>
@@ -827,7 +1256,7 @@
          FINDINGS — agent fills this. 3–5 one-line takeaways. Use .bad for
          waste/anomalies, .good for healthy signals, .info for neutral.
          ==================================================================== -->
-        <section>
+        <section data-kit-section>
           <div class="hr"></div>
           <h2>findings</h2>
           <div class="section-body" id="takeaways">
@@ -841,19 +1270,19 @@
         </section>
 
         <!-- Everything below renders automatically from #report-data. -->
-        <section>
+        <section data-kit-section>
           <div class="hr"></div>
           <h2>summary</h2>
           <div class="section-body" id="overall-grid"></div>
         </section>
 
-        <section>
+        <section data-kit-section>
           <div class="hr"></div>
           <h2>tokens by project<span class="hint">share of total</span></h2>
           <div class="section-body" id="project-bars"></div>
         </section>
 
-        <section id="timeline-section">
+        <section id="timeline-section" data-kit-section>
           <div class="hr"></div>
           <h2>
             session timeline by day<span class="hint"
@@ -861,7 +1290,7 @@
             >
           </h2>
           <div class="section-body">
-            <div class="days" id="day-pills"></div>
+            <div class="days" id="day-pills" role="group" aria-label="Days"></div>
             <div class="gantt-hd">
               <span class="day" id="g-day">—</span>
               <span class="stats" id="g-stats"></span>
@@ -875,7 +1304,7 @@
           </div>
         </section>
 
-        <section>
+        <section data-kit-section>
           <div class="hr"></div>
           <h2>
             most expensive prompts<span class="hint"
@@ -885,7 +1314,7 @@
           <div class="section-body drill" id="top-prompts"></div>
         </section>
 
-        <section>
+        <section data-kit-section>
           <div class="hr"></div>
           <h2>
             cache breaks<span class="hint"
@@ -895,47 +1324,47 @@
           <div class="section-body drill" id="cache-breaks"></div>
         </section>
 
-        <section>
+        <section data-kit-section>
           <div class="hr"></div>
           <h2>projects</h2>
           <div class="section-body scroll">
-            <table id="tbl-projects"></table>
+            <table id="tbl-projects" aria-label="Projects usage breakdown"></table>
           </div>
         </section>
 
-        <section>
+        <section data-kit-section>
           <div class="hr"></div>
           <h2>subagent types</h2>
           <div class="section-body scroll">
-            <table id="tbl-subagents"></table>
+            <table id="tbl-subagents" aria-label="Subagent types usage breakdown"></table>
           </div>
         </section>
 
-        <section>
+        <section data-kit-section>
           <div class="hr"></div>
           <h2 id="skill-heading">skills</h2>
-          <div class="section-body scroll"><table id="tbl-skills"></table></div>
+          <div class="section-body scroll"><table id="tbl-skills" aria-label="Skills usage breakdown"></table></div>
         </section>
 
-        <section>
+        <section data-kit-section>
           <div class="hr"></div>
           <h2>model usage</h2>
-          <div class="section-body scroll"><table id="tbl-models"></table></div>
+          <div class="section-body scroll"><table id="tbl-models" aria-label="Model usage breakdown"></table></div>
         </section>
 
-        <section>
+        <section data-kit-section>
           <div class="hr"></div>
           <h2>tool calls</h2>
-          <div class="section-body scroll"><table id="tbl-tools"></table></div>
+          <div class="section-body scroll"><table id="tbl-tools" aria-label="Tool calls breakdown"></table></div>
         </section>
 
-        <section>
+        <section data-kit-section>
           <div class="hr"></div>
           <h2>prompt size distribution</h2>
           <div class="section-body" id="prompt-histogram"></div>
         </section>
 
-        <section>
+        <section data-kit-section>
           <div class="hr"></div>
           <h2>recommendations</h2>
           <div class="section-body">
@@ -949,7 +1378,7 @@
           <span id="foot-gen"></span>
           <span id="foot-stats"></span>
         </footer>
-      </div>
+      </main>
     </div>
 
     <script id="report-data" type="application/json">
@@ -957,11 +1386,355 @@
     </script>
 
     <script>
+/* kit:js:start */
+/* Shared behaviour layer — do not hand-edit; edit scripts/tokens/kit.js. */
+
+/* Deliberately free of backticks and interpolation openers. No target is a JS
+   template literal since the board-shell extraction, so this is insurance
+   rather than a requirement — but it is the difference between this file being
+   safe to inline anywhere and being safe only where someone remembered to
+   check. Regexes and escapes are avoided for the same reason. */
+
+(function () {
+  'use strict';
+
+  var THEME_KEY = 'jabworks-theme';
+  var THEME_MODES = ['light', 'dark', 'system'];
+  var root = document.documentElement;
+
+  /* localStorage throws on an opaque origin, which is what a file:// artifact
+     often gets. Degrade to session-only theming; never break the page. */
+  function readStored(key) {
+    try {
+      return window.localStorage.getItem(key);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function writeStored(key, value) {
+    try {
+      window.localStorage.setItem(key, value);
+    } catch (e) {
+      /* no-op */
+    }
+  }
+
+  function applyTheme(mode) {
+    if (mode === 'light' || mode === 'dark') root.setAttribute('data-theme', mode);
+    else root.removeAttribute('data-theme');
+
+    writeStored(THEME_KEY, mode);
+
+    var buttons = document.querySelectorAll('[data-kit-theme]');
+
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].setAttribute('aria-pressed', String(buttons[i].getAttribute('data-kit-theme') === mode));
+    }
+  }
+
+  function currentTheme() {
+    return root.getAttribute('data-theme') || 'system';
+  }
+
+  function cycleTheme() {
+    applyTheme(THEME_MODES[(THEME_MODES.indexOf(currentTheme()) + 1) % THEME_MODES.length]);
+  }
+
+  function items() {
+    return Array.prototype.slice.call(document.querySelectorAll('[data-kit-item]'));
+  }
+
+  /* document.activeElement is null in a detached or not-yet-painted document,
+     and Element.closest is absent on the document node itself. */
+  function activeWithin(selector) {
+    var el = document.activeElement;
+
+    return el && el.closest ? el.closest(selector) : null;
+  }
+
+  function moveItem(step) {
+    var all = items();
+
+    if (all.length === 0) return;
+
+    var index = all.indexOf(activeWithin('[data-kit-item]'));
+    var next = all[Math.min(Math.max(index + step, 0), all.length - 1)] || all[0];
+
+    next.setAttribute('tabindex', '-1');
+    next.focus();
+    next.scrollIntoView({ block: 'nearest' });
+
+    /* Reflect the focused item in the URL so a board or a review can be linked
+       to a specific row. replaceState, not a hash assignment: assigning to
+       location.hash pushes a history entry per keypress. */
+    if (next.id && window.history && window.history.replaceState) {
+      window.history.replaceState(null, '', '#' + next.id);
+    }
+  }
+
+  function reveal(el) {
+    if (el && el.focus) {
+      el.focus();
+      if (el.select) el.select();
+
+      return true;
+    }
+
+    return false;
+  }
+
+  /* A surface whose filter field ships hidden cannot hang the hook on the field
+     itself — a hidden element does not take focus, so the binding would be a
+     silent no-op. Those surfaces put the hook on the control that REVEALS the
+     field instead; activate it, then focus what it revealed via aria-controls.
+     Without this the ? overlay would advertise "Focus filter" for a key that
+     only moves focus to a button, and a generated overlay that misdescribes its
+     own bindings is worse than no overlay. */
+  function focusFilter() {
+    var hook = document.querySelector('[data-kit-filter]');
+
+    if (!hook) return false;
+
+    if (hook.tagName === 'BUTTON') {
+      if (hook.getAttribute('aria-expanded') === 'false' && hook.click) hook.click();
+
+      if (reveal(document.getElementById(hook.getAttribute('aria-controls') || ''))) return true;
+    }
+
+    return reveal(hook);
+  }
+
+  function flashCopied(el) {
+    el.classList.add('kit-copied');
+    window.setTimeout(function () {
+      el.classList.remove('kit-copied');
+    }, 900);
+  }
+
+  function copyFrom(el) {
+    if (!el) return;
+
+    var text = el.getAttribute('data-kit-copy') || el.textContent || '';
+
+    if (!text || !navigator.clipboard || !navigator.clipboard.writeText) return;
+
+    navigator.clipboard.writeText(text.trim()).then(
+      function () {
+        flashCopied(el);
+      },
+      function () {
+        /* Clipboard is permission-gated; a refusal is not an error worth
+           interrupting the page for. */
+      },
+    );
+  }
+
+  function sections() {
+    return Array.prototype.slice.call(document.querySelectorAll('[data-kit-section]'));
+  }
+
+  function jumpToSection(n) {
+    var target = sections()[n - 1];
+
+    if (target) target.scrollIntoView({ block: 'start' });
+  }
+
+  /* One registry drives both the key handler and the help overlay, so the
+     documented shortcuts cannot drift from the implemented ones. */
+  var BINDINGS = [
+    { keys: ['j'], label: 'Next item', when: function () { return items().length > 0; }, run: function () { moveItem(1); } },
+    { keys: ['k'], label: 'Previous item', when: function () { return items().length > 0; }, run: function () { moveItem(-1); } },
+    {
+      keys: ['/'],
+      label: 'Focus filter',
+      when: function () { return Boolean(document.querySelector('[data-kit-filter]')); },
+      run: focusFilter,
+    },
+    {
+      keys: ['y'],
+      label: 'Copy id or path',
+      when: function () { return Boolean(document.querySelector('[data-kit-copy]')); },
+      run: function () {
+        copyFrom(activeWithin('[data-kit-copy]'));
+      },
+    },
+    { keys: ['t'], label: 'Cycle theme', when: function () { return true; }, run: cycleTheme },
+    {
+      keys: ['g', '1-9'],
+      label: 'Jump to section',
+      when: function () { return sections().length > 0; },
+      run: null,
+    },
+    { keys: ['?'], label: 'Show shortcuts', when: function () { return true; }, run: null },
+    { keys: ['Esc'], label: 'Dismiss', when: function () { return true; }, run: null },
+  ];
+
+  var overlay = null;
+
+  function buildOverlay() {
+    var host = document.createElement('div');
+
+    host.className = 'kit-help';
+    host.hidden = true;
+    host.setAttribute('role', 'dialog');
+    host.setAttribute('aria-modal', 'true');
+    host.setAttribute('aria-label', 'Keyboard shortcuts');
+
+    var panel = document.createElement('div');
+
+    panel.className = 'kit-help__panel';
+
+    var title = document.createElement('p');
+
+    title.className = 'kit-help__title';
+    title.textContent = 'Keyboard shortcuts';
+    panel.appendChild(title);
+
+    for (var i = 0; i < BINDINGS.length; i++) {
+      if (!BINDINGS[i].when()) continue;
+
+      var row = document.createElement('div');
+
+      row.className = 'kit-help__row';
+
+      var label = document.createElement('span');
+
+      label.textContent = BINDINGS[i].label;
+      row.appendChild(label);
+
+      var keys = document.createElement('span');
+
+      keys.className = 'kit-help__keys';
+
+      for (var k = 0; k < BINDINGS[i].keys.length; k++) {
+        var kbd = document.createElement('kbd');
+
+        kbd.className = 'kit-kbd';
+        kbd.textContent = BINDINGS[i].keys[k];
+        keys.appendChild(kbd);
+      }
+
+      row.appendChild(keys);
+      panel.appendChild(row);
+    }
+
+    host.appendChild(panel);
+    host.addEventListener('click', function (event) {
+      if (event.target === host) toggleOverlay(false);
+    });
+    document.body.appendChild(host);
+
+    return host;
+  }
+
+  function toggleOverlay(show) {
+    if (!overlay) overlay = buildOverlay();
+
+    overlay.hidden = !show;
+  }
+
+  function isTypingTarget(el) {
+    if (!el) return false;
+
+    var tag = el.tagName;
+
+    return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || el.isContentEditable === true;
+  }
+
+  var pendingJump = false;
+
+  function onKeydown(event) {
+    if (event.metaKey || event.ctrlKey || event.altKey) return;
+
+    if (event.key === 'Escape') {
+      toggleOverlay(false);
+      if (isTypingTarget(event.target) && event.target.blur) event.target.blur();
+
+      return;
+    }
+
+    /* A filter box must be typeable: every other binding is inert while the
+       caret is in a field. Escape above is the deliberate exception. */
+    if (isTypingTarget(event.target)) return;
+
+    if (pendingJump) {
+      pendingJump = false;
+
+      if (event.key >= '1' && event.key <= '9') {
+        jumpToSection(Number(event.key));
+        event.preventDefault();
+
+        return;
+      }
+    }
+
+    if (event.key === 'g' && sections().length > 0) {
+      pendingJump = true;
+      window.setTimeout(function () {
+        pendingJump = false;
+      }, 1200);
+
+      return;
+    }
+
+    if (event.key === '?') {
+      toggleOverlay(overlay ? overlay.hidden : true);
+      event.preventDefault();
+
+      return;
+    }
+
+    for (var i = 0; i < BINDINGS.length; i++) {
+      if (BINDINGS[i].run && BINDINGS[i].keys.indexOf(event.key) !== -1 && BINDINGS[i].when()) {
+        BINDINGS[i].run();
+        event.preventDefault();
+
+        return;
+      }
+    }
+  }
+
+  function init() {
+    applyTheme(readStored(THEME_KEY) || 'system');
+
+    var buttons = document.querySelectorAll('[data-kit-theme]');
+
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].addEventListener('click', function (event) {
+        applyTheme(event.currentTarget.getAttribute('data-kit-theme'));
+      });
+    }
+
+    document.addEventListener('click', function (event) {
+      var target = event.target.closest ? event.target.closest('[data-kit-copy]') : null;
+
+      if (target) copyFrom(target);
+    });
+
+    document.addEventListener('keydown', onKeydown);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+/* kit:js:end */
+    </script>
+
+    <script>
       (function () {
-        const DATA = JSON.parse(
-          document.getElementById("report-data").textContent || "{}",
-        );
         const $ = (id) => document.getElementById(id);
+        let DATA;
+        try {
+          DATA = JSON.parse(
+            document.getElementById("report-data").textContent || "{}",
+          );
+        } catch (e) {
+          $("main").innerHTML =
+            '<div class="kit-error" role="alert"><strong>Could not parse report data.</strong>' +
+            " The #report-data island is malformed JSON — regenerate the report.</div>";
+          return;
+        }
         const fmt = (n) =>
           n >= 1e9
             ? (n / 1e9).toFixed(2) + "B"
@@ -1005,7 +1778,14 @@
         };
 
         if (!DATA.overall) {
-          $("meta-line").textContent = "no data — embed JSON in #report-data.";
+          $("meta-line").textContent = "";
+          $("hero").hidden = true;
+          document.querySelectorAll(".term-body section, .term-body footer").forEach((n) => n.remove());
+          $("main").insertAdjacentHTML(
+            "beforeend",
+            '<div class="kit-empty"><p class="kit-empty__title">No report data</p>' +
+              '<p class="kit-empty__body">This file was opened without an embedded #report-data JSON island. Generate a report with analyze-claude.mjs or analyze-codex.mjs.</p></div>',
+          );
           return;
         }
 
@@ -1023,6 +1803,21 @@
         // header + hero
         const o = DATA.overall,
           it = o.input_tokens;
+
+        if (o.sessions === 0) {
+          // Hide rather than remove: meta-line and the footer below still
+          // populate from DATA, and the section elements the render calls
+          // further down target (#overall-grid etc.) must stay in the DOM
+          // so those calls have somewhere harmless to write zeroes into.
+          $("hero").hidden = true;
+          document.querySelectorAll(".term-body section").forEach((n) => (n.hidden = true));
+          $("hero").insertAdjacentHTML(
+            "afterend",
+            '<div class="kit-empty"><p class="kit-empty__title">No sessions in range</p>' +
+              '<p class="kit-empty__body">Nothing was recorded for this period. Widen the date range or check the source path below.</p></div>',
+          );
+        }
+
         const GRAND = it.total + o.output_tokens;
         const share = (n) =>
           GRAND > 0 ? ((100 * n) / GRAND).toFixed(1) + "%" : "—";
@@ -1128,7 +1923,7 @@
             $("day-pills").innerHTML = days
               .map(
                 (d, i) =>
-                  `<button class="dpill${d.tokens === tokMax ? " heaviest" : ""}${i === sel ? " sel" : ""}" data-i="${i}">` +
+                  `<button class="dpill${d.tokens === tokMax ? " heaviest" : ""}${i === sel ? " sel" : ""}" data-i="${i}" aria-current="${i === sel}">` +
                   `<span class="dow">${esc(d.dow)}</span>` +
                   `<span class="date">${esc(md(d.date))}</span>` +
                   `<span class="pct">${((100 * d.tokens) / dayTotal).toFixed(1)}%</span>` +
@@ -1284,7 +2079,7 @@
             const inTot =
               p.input.uncached + p.input.cache_create + p.input.cache_read;
             return (
-              `<details><summary>` +
+              `<details><summary data-kit-item>` +
               `<span class="amt">${share(p.total_tokens)}</span>` +
               `<span class="desc">${esc(p.text)}</span>` +
               `<span class="meta">${niceDate(p.ts)} · ${esc(short(p.project))} · ${p.api_calls} calls` +
@@ -1292,7 +2087,7 @@
               ` · ${pct(p.input.cache_read, inTot)} cached</span>` +
               `</summary><div class="body">` +
               renderContext(p.context) +
-              `<div>session <code>${esc(p.session)}</code></div>` +
+              `<div>session <code data-kit-copy="${esc(p.session)}">${esc(p.session)}</code></div>` +
               `<div>in: uncached ${fmt(p.input.uncached)} · cache-create ${fmt(p.input.cache_create)} · ` +
               `cache-read ${fmt(p.input.cache_read)} · out ${fmt(p.output)}</div>` +
               `</div></details>`
@@ -1305,7 +2100,7 @@
           "cache-breaks",
           (DATA.cache_breaks || []).slice(0, 100),
           (b) =>
-            `<details><summary>` +
+            `<details><summary data-kit-item>` +
             `<span class="amt">${fmt(b.uncached)}</span>` +
             `<span class="desc">${esc(short(b.project))} · ` +
             `${b.kind === "subagent" ? esc(b.agentType || "subagent") : "main"}</span>` +
@@ -1316,7 +2111,7 @@
               `<div class="ctx-break"><b>${fmt(b.uncached)}</b> uncached ` +
                 `(${pct(b.uncached, b.total)} of ${fmt(b.total)}) — cache break here</div>`,
             ) +
-            `<div>session <code>${esc(b.session)}</code></div>` +
+            `<div>session <code data-kit-copy="${esc(b.session)}">${esc(b.session)}</code></div>` +
             `</div></details>`,
           "No cache breaks over threshold.",
         );
@@ -1338,7 +2133,7 @@
             el.innerHTML = `<thead><tr>${cols
               .map(
                 (c, i) =>
-                  `<th class="${c.num ? "num" : ""} ${i === sortIdx ? "sorted" + (asc ? " asc" : "") : ""}" data-i="${i}">${c.h}</th>`,
+                  `<th class="${c.num ? "num" : ""} ${i === sortIdx ? "sorted" + (asc ? " asc" : "") : ""}" aria-sort="${i === sortIdx ? (asc ? "ascending" : "descending") : "none"}"><button type="button" data-i="${i}">${c.h}</button></th>`,
               )
               .join("")}</tr></thead><tbody>${sorted
               .map(
@@ -1353,10 +2148,10 @@
                     .join("")}</tr>`,
               )
               .join("")}</tbody>`;
-            el.querySelectorAll("th").forEach(
-              (th) =>
-                (th.onclick = () => {
-                  const i = +th.dataset.i;
+            el.querySelectorAll("th button").forEach(
+              (btn) =>
+                (btn.onclick = () => {
+                  const i = +btn.dataset.i;
                   if (i === sortIdx) asc = !asc;
                   else {
                     sortIdx = i;

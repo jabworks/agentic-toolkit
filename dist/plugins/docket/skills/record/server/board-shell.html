@@ -1,0 +1,956 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<style>
+/* tokens:core:start */
+/* Shared design core — do not hand-edit; edit scripts/tokens/core.css. */
+:root {
+  --background: #111110;
+  --card: #191918;
+  --card-foreground: #eeeeec;
+  --popover: #222221;
+  --foreground: #eeeeec;
+  --muted: #222221;
+  --muted-foreground: #b5b3ad;
+  --border: #3b3a37;
+  --input: #3b3a37;
+  --primary: #978365;
+  --primary-foreground: #ffffff;
+  --primary-hover: #a39073;
+  --primary-muted: #24231f;
+  --primary-text: #cbb99f;
+  --ring: #978365;
+  --accent: #2a2a28;
+  --success: #71d083;
+  --success-muted: #1b2a1e;
+  --success-border: #2d5736;
+  --warning: #ffca16;
+  --warning-muted: #302008;
+  --warning-border: #5c3d05;
+  --destructive: #ff977d;
+  --destructive-muted: #391714;
+  --destructive-border: #6e2920;
+  --info: #70b8ff;
+  --info-muted: #0d2847;
+  --info-border: #104d87;
+  --outline: rgba(237, 237, 236, 0.08);
+  --subtle: #686560;
+  --shadow-sm: 0 1px 2px rgba(6, 6, 5, 0.5);
+  --shadow-md: 0 4px 14px rgba(6, 6, 5, 0.55);
+  --shadow-lg: 0 20px 60px rgba(6, 6, 5, 0.62);
+  --mono: "Geist Mono", "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Monaco, "Cascadia Code", monospace;
+  --sans: "Geist", "Inter Tight", ui-sans-serif, system-ui, -apple-system, "Segoe UI Variable Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --text-2xs: 0.6875rem;
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.5rem;
+  --text-4xl: 3.5rem;
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading-normal: 1.55;
+  --leading-relaxed: 1.7;
+  --tracking-tight: -0.022em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.06em;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-8: 3rem;
+  --space-12: 4rem;
+  --radius-sm: 0.1875rem;
+  --radius: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-full: 9999px;
+  --dur-fast: 120ms;
+  --dur: 200ms;
+  --dur-slow: 320ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --background: #f6f5ef;
+    --card: #fcfbf6;
+    --card-foreground: #36302a;
+    --popover: #fcfbf6;
+    --foreground: #36302a;
+    --muted: #f0efe3;
+    --muted-foreground: #726c5e;
+    --border: #ddd6c6;
+    --input: #ddd6c6;
+    --primary: #967e60;
+    --primary-foreground: #ffffff;
+    --primary-hover: #897254;
+    --primary-muted: #efece0;
+    --primary-text: #6f5e44;
+    --ring: #967e60;
+    --accent: #eae7da;
+    --success: #3f7a34;
+    --success-muted: #e6f5e2;
+    --success-border: #c2e1b3;
+    --warning: #93761d;
+    --warning-muted: #fbf4c4;
+    --warning-border: #ebd87f;
+    --destructive: #bf4f3b;
+    --destructive-muted: #fbe8e2;
+    --destructive-border: #f0c9ba;
+    --info: #3f6fa6;
+    --info-muted: #e6f1fc;
+    --info-border: #bed7ef;
+    --outline: rgba(54, 48, 42, 0.08);
+    --subtle: #a8a294;
+    --shadow-sm: 0 1px 2px rgba(54, 48, 42, 0.1);
+    --shadow-md: 0 4px 14px rgba(54, 48, 42, 0.13);
+    --shadow-lg: 0 20px 60px rgba(54, 48, 42, 0.18);
+  }
+}
+:root[data-theme="light"] {
+  --background: #f6f5ef;
+  --card: #fcfbf6;
+  --card-foreground: #36302a;
+  --popover: #fcfbf6;
+  --foreground: #36302a;
+  --muted: #f0efe3;
+  --muted-foreground: #726c5e;
+  --border: #ddd6c6;
+  --input: #ddd6c6;
+  --primary: #967e60;
+  --primary-foreground: #ffffff;
+  --primary-hover: #897254;
+  --primary-muted: #efece0;
+  --primary-text: #6f5e44;
+  --ring: #967e60;
+  --accent: #eae7da;
+  --success: #3f7a34;
+  --success-muted: #e6f5e2;
+  --success-border: #c2e1b3;
+  --warning: #93761d;
+  --warning-muted: #fbf4c4;
+  --warning-border: #ebd87f;
+  --destructive: #bf4f3b;
+  --destructive-muted: #fbe8e2;
+  --destructive-border: #f0c9ba;
+  --info: #3f6fa6;
+  --info-muted: #e6f1fc;
+  --info-border: #bed7ef;
+  --outline: rgba(54, 48, 42, 0.08);
+  --subtle: #a8a294;
+  --shadow-sm: 0 1px 2px rgba(54, 48, 42, 0.1);
+  --shadow-md: 0 4px 14px rgba(54, 48, 42, 0.13);
+  --shadow-lg: 0 20px 60px rgba(54, 48, 42, 0.18);
+}
+/* tokens:core:end */
+
+/* kit:css:start */
+/* Shared state layer — do not hand-edit; edit scripts/tokens/kit.css. */
+
+/* :where() keeps these at zero specificity, so a surface overrides them by
+   writing a plain rule rather than escalating into an !important contest. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Mouse users should not see the ring; keyboard users must. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus:not(:focus-visible) {
+  outline: none;
+}
+
+.kit-skip {
+  position: absolute;
+  left: var(--space-2);
+  top: -4rem;
+  z-index: 999;
+  padding: var(--space-2) var(--space-3);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: top var(--dur) var(--ease-out);
+}
+
+.kit-skip:focus {
+  top: var(--space-2);
+}
+
+/* Empty, loading and error states. Namespaced kit- because three of the four
+   surfaces already own an .empty or .error class of their own. */
+.kit-empty {
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+  color: var(--muted-foreground);
+}
+
+.kit-empty__title {
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-md);
+  color: var(--foreground);
+}
+
+.kit-empty__body {
+  margin: 0 auto;
+  max-width: 44ch;
+  font-size: var(--text-sm);
+  text-wrap: pretty;
+}
+
+.kit-error {
+  display: flex;
+  gap: var(--space-2);
+  align-items: baseline;
+  padding: var(--space-2) var(--space-3);
+  background: var(--destructive-muted);
+  border: 1px solid var(--destructive-border);
+  border-radius: var(--radius);
+  color: var(--destructive);
+  font-size: var(--text-sm);
+}
+
+/* Shaped like the content it stands in for — never a spinner. Width is the
+   caller's job, so one rule serves a title, a row and a paragraph. */
+.kit-skel {
+  height: 0.75rem;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, var(--muted) 0%, var(--accent) 50%, var(--muted) 100%);
+  background-size: 200% 100%;
+  animation: kit-shimmer 1.4s var(--ease-out) infinite;
+}
+
+@keyframes kit-shimmer {
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Keyboard help overlay, populated by kit.js from the live binding registry. */
+.kit-help {
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+  background: color-mix(in oklch, var(--background) 78%, transparent);
+}
+
+.kit-help[hidden] {
+  display: none;
+}
+
+.kit-help__panel {
+  width: min(34rem, 100%);
+  max-height: 80dvh;
+  overflow-y: auto;
+  padding: var(--space-5);
+  background: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+}
+
+.kit-help__title {
+  margin: 0 0 var(--space-4);
+  font-family: var(--mono);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+
+.kit-help__row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-1) 0;
+  font-size: var(--text-sm);
+}
+
+.kit-help__keys {
+  flex: none;
+  display: flex;
+  gap: var(--space-1);
+}
+
+.kit-kbd {
+  min-width: 1.4rem;
+  padding: 0.1rem 0.4rem;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: var(--text-2xs);
+  color: var(--foreground);
+  background: var(--popover);
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.kit-theme {
+  display: inline-flex;
+  gap: 1px;
+}
+
+.kit-theme button {
+  font: inherit;
+  font-size: var(--text-2xs);
+  padding: var(--space-1) var(--space-2);
+  color: var(--muted-foreground);
+  background: var(--card);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+}
+
+.kit-theme button:first-child {
+  border-radius: var(--radius) 0 0 var(--radius);
+}
+
+.kit-theme button:last-child {
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.kit-theme button:hover {
+  color: var(--foreground);
+  border-color: var(--primary);
+}
+
+.kit-theme button[aria-pressed="true"] {
+  color: var(--primary-foreground);
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.kit-copied {
+  color: var(--success);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Browsers do not print background colours by default, so a dark-themed page
+   prints light text onto white and reads as blank. Repointing the tokens is
+   what makes Ctrl-P work at all; hiding chrome is the surface's opt-in. */
+@media print {
+  :root {
+    --background: #ffffff;
+    --card: #ffffff;
+    --popover: #ffffff;
+    --muted: #f4f4f2;
+    --accent: #f4f4f2;
+    --foreground: #000000;
+    --card-foreground: #000000;
+    --muted-foreground: #444444;
+    --subtle: #666666;
+    --border: #999999;
+    --input: #999999;
+    --shadow-sm: none;
+    --shadow-md: none;
+    --shadow-lg: none;
+  }
+
+  body {
+    background: #ffffff;
+    color: #000000;
+  }
+
+  .kit-skip,
+  .kit-help,
+  .kit-theme,
+  [data-kit-chrome] {
+    display: none !important;
+  }
+
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 90%;
+    color: #555555;
+  }
+
+  .kit-skel {
+    animation: none;
+  }
+}
+/* kit:css:end */
+
+/* docket board extension — the count chip rides the muted surface. Outside the
+   markers on purpose: anything inside them is replaced by --fix. */
+:root{--chip:var(--muted)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-height:100dvh;background:var(--background);color:var(--foreground);font-family:var(--sans);font-size:var(--text-base);line-height:var(--leading-normal);-webkit-font-smoothing:antialiased}
+header{position:sticky;top:0;background:var(--background);border-bottom:1px solid var(--border);box-shadow:var(--shadow-sm);padding:var(--space-4) var(--space-5) var(--space-3);z-index:2}
+h1{margin:0 0 var(--space-1);font-family:var(--mono);font-size:var(--text-lg);letter-spacing:var(--tracking-tight)}
+header .kit-error{margin-bottom:var(--space-3)}
+.board-nav{display:flex;gap:var(--space-4);flex-wrap:nowrap;overflow-x:auto;margin:0 0 var(--space-3);font-family:var(--mono);font-size:var(--text-xs);letter-spacing:var(--tracking-wide)}
+.board-nav a{color:var(--muted-foreground);text-decoration:none;white-space:nowrap;padding:var(--space-1) 0;border-bottom:2px solid transparent;transition:color var(--dur-fast) var(--ease-out),border-color var(--dur-fast) var(--ease-out)}
+.board-nav a:hover{color:var(--foreground);border-color:color-mix(in oklch, var(--primary) 60%, transparent)}
+.stats{display:flex;gap:var(--space-3);flex-wrap:wrap;color:var(--muted-foreground);font-size:var(--text-sm);margin-bottom:var(--space-2)}
+.stat b{color:var(--foreground);font-family:var(--mono);font-variant-numeric:tabular-nums}
+#filter{width:100%;max-width:28rem;padding:var(--space-2) var(--space-3);border:1px solid var(--border);border-radius:var(--radius-md);background:var(--card);color:var(--foreground);font:inherit}
+.bar{display:flex;gap:var(--space-2);align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+.scopes{display:flex;gap:var(--space-2);flex-wrap:wrap}
+.scope{display:inline-flex;align-items:center;gap:var(--space-1);font:inherit;font-size:var(--text-xs);padding:var(--space-1) var(--space-3);border:1px solid var(--border);border-radius:var(--radius-full);background:var(--card);color:var(--muted-foreground);cursor:pointer;transition:color var(--dur-fast) var(--ease-out),background-color var(--dur-fast) var(--ease-out),border-color var(--dur-fast) var(--ease-out)}
+.scope:hover{color:var(--foreground);border-color:var(--primary);background:color-mix(in oklch, var(--card), var(--primary) 8%)}
+.scope.active{background:var(--primary-muted);color:var(--primary-text);border-color:var(--primary)}
+.scope:focus-visible{outline:2px solid var(--primary);outline-offset:1px}
+.scope .count{margin-left:0;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.scope.active .count{background:var(--card)}
+.scope[data-total="0"]{opacity:.55}
+.tags{display:flex;gap:var(--space-2);flex-wrap:wrap;margin-top:var(--space-2)}
+.tag{font-variant-numeric:tabular-nums}
+.filter-btn[aria-expanded="true"]{background:var(--primary-muted);color:var(--primary-text);border-color:var(--primary)}
+#filter[hidden]{display:none}
+main{max-width:52rem;margin:0 auto;padding:var(--space-4) var(--space-5) var(--space-12)}
+h2{font-family:var(--mono);font-size:var(--text-base);text-transform:uppercase;letter-spacing:var(--tracking-wide);color:var(--muted-foreground);margin:var(--space-6) 0 var(--space-2);border-bottom:1px solid var(--border);padding-bottom:var(--space-1);scroll-margin-top:11rem}
+.count{margin-left:var(--space-2);background:var(--chip);border-radius:var(--radius-full);padding:.05rem var(--space-2);font-family:var(--mono);font-size:var(--text-xs);font-variant-numeric:tabular-nums}
+.item{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-3) var(--space-4);margin:var(--space-2) 0;scroll-margin-top:11rem;transition:border-color var(--dur-fast) var(--ease-out),background-color var(--dur-fast) var(--ease-out),box-shadow var(--dur) var(--ease-out)}
+.item:hover,.item:focus-within{border-color:var(--primary);box-shadow:var(--shadow-md);background:color-mix(in oklch, var(--card), var(--primary) 4%)}
+.item h3{margin:0 0 var(--space-1);font-size:var(--text-md)}
+.item h4{margin:var(--space-2) 0 var(--space-1);font-size:var(--text-sm);color:var(--muted-foreground)}
+.item p{margin:var(--space-1) 0}
+.item.archived{opacity:.85}
+.idlink{color:var(--primary);text-decoration:none;font-family:var(--mono);font-variant-numeric:tabular-nums;transition:color var(--dur-fast) var(--ease-out)}
+.idlink:hover{color:color-mix(in oklch, var(--primary), var(--foreground) 25%);text-decoration:underline}
+.item:target{outline:2px solid var(--primary);outline-offset:2px;box-shadow:var(--shadow-md)}
+pre{background:var(--chip);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);overflow-x:auto;font-family:var(--mono);font-size:var(--text-sm)}
+code{background:var(--chip);border-radius:var(--radius);padding:.05rem var(--space-1);font-family:var(--mono);font-size:var(--text-xs)}
+pre code{background:none;padding:0}
+ul{margin:var(--space-1) 0;padding-left:1.3rem}
+details{margin:var(--space-2) 0}
+summary{cursor:pointer;color:var(--muted-foreground);font-family:var(--mono);font-size:var(--text-sm);font-variant-numeric:tabular-nums}
+.prose{color:var(--muted-foreground);font-size:var(--text-sm)}
+.hidden{display:none}
+
+/* scroll-margin-top per breakpoint is a static approximation of the sticky
+   header's actual height (measured: ~10rem desktop, up to ~14rem once the
+   scope row wraps twice around 500-540px, up to ~19rem once the theme group
+   drops to its own full-width row below 30rem) — there is no CSS-only way to
+   read it exactly, and adding JS to measure it would be more machinery than a
+   static buffer with headroom justifies. */
+@media (max-width: 48rem) {
+  header{padding:var(--space-3) var(--space-4) var(--space-2)}
+  main{padding:var(--space-3) var(--space-4) var(--space-12)}
+  .board-nav{gap:var(--space-3)}
+  h2,.item{scroll-margin-top:15rem}
+}
+@media (max-width: 30rem) {
+  header{padding:var(--space-2) var(--space-3) var(--space-2)}
+  h1{font-size:var(--text-md)}
+  .bar{gap:var(--space-2)}
+  .kit-theme{order:3;width:100%}
+  .kit-theme button{flex:1}
+  main{padding:var(--space-2) var(--space-3) var(--space-12)}
+  .item{padding:var(--space-2) var(--space-3)}
+  h2,.item{scroll-margin-top:21rem}
+}
+</style>
+</head>
+<body{{BODY_ATTRS}}>
+<header>
+  <h1>{{TITLE}}</h1>
+  {{NAV}}
+  <div class="bar">
+    <div class="scopes" role="group" aria-label="Filter by section">{{SCOPES}}</div>
+    <div class="kit-theme" role="group" aria-label="Theme" data-kit-chrome>
+      <button type="button" data-kit-theme="light">Light</button>
+      <button type="button" data-kit-theme="dark">Dark</button>
+      <button type="button" data-kit-theme="system">Auto</button>
+    </div>
+    <button type="button" id="filter-toggle" class="scope filter-btn" data-kit-filter data-kit-chrome aria-expanded="false" aria-controls="filter">Filter</button>
+  </div>
+  <input id="filter" type="search" placeholder="Filter items — title, body, #id" autocomplete="off" hidden>
+  {{TAGS}}
+  {{STATS}}
+</header>
+<main>
+{{EMPTY}}
+{{SECTIONS}}
+{{ARCHIVE}}
+</main>
+<script>
+/* kit:js:start */
+/* Shared behaviour layer — do not hand-edit; edit scripts/tokens/kit.js. */
+
+/* Deliberately free of backticks and interpolation openers. No target is a JS
+   template literal since the board-shell extraction, so this is insurance
+   rather than a requirement — but it is the difference between this file being
+   safe to inline anywhere and being safe only where someone remembered to
+   check. Regexes and escapes are avoided for the same reason. */
+
+(function () {
+  'use strict';
+
+  var THEME_KEY = 'jabworks-theme';
+  var THEME_MODES = ['light', 'dark', 'system'];
+  var root = document.documentElement;
+
+  /* localStorage throws on an opaque origin, which is what a file:// artifact
+     often gets. Degrade to session-only theming; never break the page. */
+  function readStored(key) {
+    try {
+      return window.localStorage.getItem(key);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function writeStored(key, value) {
+    try {
+      window.localStorage.setItem(key, value);
+    } catch (e) {
+      /* no-op */
+    }
+  }
+
+  function applyTheme(mode) {
+    if (mode === 'light' || mode === 'dark') root.setAttribute('data-theme', mode);
+    else root.removeAttribute('data-theme');
+
+    writeStored(THEME_KEY, mode);
+
+    var buttons = document.querySelectorAll('[data-kit-theme]');
+
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].setAttribute('aria-pressed', String(buttons[i].getAttribute('data-kit-theme') === mode));
+    }
+  }
+
+  function currentTheme() {
+    return root.getAttribute('data-theme') || 'system';
+  }
+
+  function cycleTheme() {
+    applyTheme(THEME_MODES[(THEME_MODES.indexOf(currentTheme()) + 1) % THEME_MODES.length]);
+  }
+
+  function items() {
+    return Array.prototype.slice.call(document.querySelectorAll('[data-kit-item]'));
+  }
+
+  /* document.activeElement is null in a detached or not-yet-painted document,
+     and Element.closest is absent on the document node itself. */
+  function activeWithin(selector) {
+    var el = document.activeElement;
+
+    return el && el.closest ? el.closest(selector) : null;
+  }
+
+  function moveItem(step) {
+    var all = items();
+
+    if (all.length === 0) return;
+
+    var index = all.indexOf(activeWithin('[data-kit-item]'));
+    var next = all[Math.min(Math.max(index + step, 0), all.length - 1)] || all[0];
+
+    next.setAttribute('tabindex', '-1');
+    next.focus();
+    next.scrollIntoView({ block: 'nearest' });
+
+    /* Reflect the focused item in the URL so a board or a review can be linked
+       to a specific row. replaceState, not a hash assignment: assigning to
+       location.hash pushes a history entry per keypress. */
+    if (next.id && window.history && window.history.replaceState) {
+      window.history.replaceState(null, '', '#' + next.id);
+    }
+  }
+
+  function reveal(el) {
+    if (el && el.focus) {
+      el.focus();
+      if (el.select) el.select();
+
+      return true;
+    }
+
+    return false;
+  }
+
+  /* A surface whose filter field ships hidden cannot hang the hook on the field
+     itself — a hidden element does not take focus, so the binding would be a
+     silent no-op. Those surfaces put the hook on the control that REVEALS the
+     field instead; activate it, then focus what it revealed via aria-controls.
+     Without this the ? overlay would advertise "Focus filter" for a key that
+     only moves focus to a button, and a generated overlay that misdescribes its
+     own bindings is worse than no overlay. */
+  function focusFilter() {
+    var hook = document.querySelector('[data-kit-filter]');
+
+    if (!hook) return false;
+
+    if (hook.tagName === 'BUTTON') {
+      if (hook.getAttribute('aria-expanded') === 'false' && hook.click) hook.click();
+
+      if (reveal(document.getElementById(hook.getAttribute('aria-controls') || ''))) return true;
+    }
+
+    return reveal(hook);
+  }
+
+  function flashCopied(el) {
+    el.classList.add('kit-copied');
+    window.setTimeout(function () {
+      el.classList.remove('kit-copied');
+    }, 900);
+  }
+
+  function copyFrom(el) {
+    if (!el) return;
+
+    var text = el.getAttribute('data-kit-copy') || el.textContent || '';
+
+    if (!text || !navigator.clipboard || !navigator.clipboard.writeText) return;
+
+    navigator.clipboard.writeText(text.trim()).then(
+      function () {
+        flashCopied(el);
+      },
+      function () {
+        /* Clipboard is permission-gated; a refusal is not an error worth
+           interrupting the page for. */
+      },
+    );
+  }
+
+  function sections() {
+    return Array.prototype.slice.call(document.querySelectorAll('[data-kit-section]'));
+  }
+
+  function jumpToSection(n) {
+    var target = sections()[n - 1];
+
+    if (target) target.scrollIntoView({ block: 'start' });
+  }
+
+  /* One registry drives both the key handler and the help overlay, so the
+     documented shortcuts cannot drift from the implemented ones. */
+  var BINDINGS = [
+    { keys: ['j'], label: 'Next item', when: function () { return items().length > 0; }, run: function () { moveItem(1); } },
+    { keys: ['k'], label: 'Previous item', when: function () { return items().length > 0; }, run: function () { moveItem(-1); } },
+    {
+      keys: ['/'],
+      label: 'Focus filter',
+      when: function () { return Boolean(document.querySelector('[data-kit-filter]')); },
+      run: focusFilter,
+    },
+    {
+      keys: ['y'],
+      label: 'Copy id or path',
+      when: function () { return Boolean(document.querySelector('[data-kit-copy]')); },
+      run: function () {
+        copyFrom(activeWithin('[data-kit-copy]'));
+      },
+    },
+    { keys: ['t'], label: 'Cycle theme', when: function () { return true; }, run: cycleTheme },
+    {
+      keys: ['g', '1-9'],
+      label: 'Jump to section',
+      when: function () { return sections().length > 0; },
+      run: null,
+    },
+    { keys: ['?'], label: 'Show shortcuts', when: function () { return true; }, run: null },
+    { keys: ['Esc'], label: 'Dismiss', when: function () { return true; }, run: null },
+  ];
+
+  var overlay = null;
+
+  function buildOverlay() {
+    var host = document.createElement('div');
+
+    host.className = 'kit-help';
+    host.hidden = true;
+    host.setAttribute('role', 'dialog');
+    host.setAttribute('aria-modal', 'true');
+    host.setAttribute('aria-label', 'Keyboard shortcuts');
+
+    var panel = document.createElement('div');
+
+    panel.className = 'kit-help__panel';
+
+    var title = document.createElement('p');
+
+    title.className = 'kit-help__title';
+    title.textContent = 'Keyboard shortcuts';
+    panel.appendChild(title);
+
+    for (var i = 0; i < BINDINGS.length; i++) {
+      if (!BINDINGS[i].when()) continue;
+
+      var row = document.createElement('div');
+
+      row.className = 'kit-help__row';
+
+      var label = document.createElement('span');
+
+      label.textContent = BINDINGS[i].label;
+      row.appendChild(label);
+
+      var keys = document.createElement('span');
+
+      keys.className = 'kit-help__keys';
+
+      for (var k = 0; k < BINDINGS[i].keys.length; k++) {
+        var kbd = document.createElement('kbd');
+
+        kbd.className = 'kit-kbd';
+        kbd.textContent = BINDINGS[i].keys[k];
+        keys.appendChild(kbd);
+      }
+
+      row.appendChild(keys);
+      panel.appendChild(row);
+    }
+
+    host.appendChild(panel);
+    host.addEventListener('click', function (event) {
+      if (event.target === host) toggleOverlay(false);
+    });
+    document.body.appendChild(host);
+
+    return host;
+  }
+
+  function toggleOverlay(show) {
+    if (!overlay) overlay = buildOverlay();
+
+    overlay.hidden = !show;
+  }
+
+  function isTypingTarget(el) {
+    if (!el) return false;
+
+    var tag = el.tagName;
+
+    return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || el.isContentEditable === true;
+  }
+
+  var pendingJump = false;
+
+  function onKeydown(event) {
+    if (event.metaKey || event.ctrlKey || event.altKey) return;
+
+    if (event.key === 'Escape') {
+      toggleOverlay(false);
+      if (isTypingTarget(event.target) && event.target.blur) event.target.blur();
+
+      return;
+    }
+
+    /* A filter box must be typeable: every other binding is inert while the
+       caret is in a field. Escape above is the deliberate exception. */
+    if (isTypingTarget(event.target)) return;
+
+    if (pendingJump) {
+      pendingJump = false;
+
+      if (event.key >= '1' && event.key <= '9') {
+        jumpToSection(Number(event.key));
+        event.preventDefault();
+
+        return;
+      }
+    }
+
+    if (event.key === 'g' && sections().length > 0) {
+      pendingJump = true;
+      window.setTimeout(function () {
+        pendingJump = false;
+      }, 1200);
+
+      return;
+    }
+
+    if (event.key === '?') {
+      toggleOverlay(overlay ? overlay.hidden : true);
+      event.preventDefault();
+
+      return;
+    }
+
+    for (var i = 0; i < BINDINGS.length; i++) {
+      if (BINDINGS[i].run && BINDINGS[i].keys.indexOf(event.key) !== -1 && BINDINGS[i].when()) {
+        BINDINGS[i].run();
+        event.preventDefault();
+
+        return;
+      }
+    }
+  }
+
+  function init() {
+    applyTheme(readStored(THEME_KEY) || 'system');
+
+    var buttons = document.querySelectorAll('[data-kit-theme]');
+
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].addEventListener('click', function (event) {
+        applyTheme(event.currentTarget.getAttribute('data-kit-theme'));
+      });
+    }
+
+    document.addEventListener('click', function (event) {
+      var target = event.target.closest ? event.target.closest('[data-kit-copy]') : null;
+
+      if (target) copyFrom(target);
+    });
+
+    document.addEventListener('keydown', onKeydown);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+/* kit:js:end */
+</script>
+<script>
+const filter = document.getElementById('filter');
+const filterToggle = document.getElementById('filter-toggle');
+const pills = [...document.querySelectorAll('.scopes .scope')];
+const tagButtons = [...document.querySelectorAll('.tags .tag')];
+let scope = '';
+let tag = '';
+
+function applyFilters() {
+  const q = filter.value.trim().toLowerCase();
+  const filtering = q !== '' || tag !== '';
+  // Facet counts: each row reports what picking one of its OWN options would
+  // yield, so a row never discounts itself. Scope counts ignore the active
+  // scope, tag counts ignore the active tag; both respect everything else.
+  const scopeCounts = new Map();
+  const tagCounts = new Map();
+
+  for (const section of document.querySelectorAll('main > section')) {
+    const inScope = scope === '' || section.dataset.section === scope;
+    let visible = 0;
+
+    for (const item of section.querySelectorAll('.item')) {
+      const tags = item.dataset.tags === '' ? [] : item.dataset.tags.split(' ');
+      const hitQuery = q === '' || item.dataset.search.includes(q);
+      const hitTag = tag === '' || tags.includes(tag);
+
+      const shown = inScope && hitQuery && hitTag;
+
+      item.classList.toggle('hidden', !shown);
+      // Keep the kit's j/k walk in sync with what filtering actually hides —
+      // display:none cards would otherwise still match [data-kit-item] and
+      // silently no-op moveItem's .focus() call. Archived cards never carry
+      // this attribute at all (see docket-render.mjs), so they stay excluded
+      // here too rather than being toggled back on by a filter match.
+      if (!item.classList.contains('archived')) item.toggleAttribute('data-kit-item', shown);
+      if (hitQuery && hitTag) visible++;
+      if (inScope && hitQuery) {
+        for (const each of tags) tagCounts.set(each, (tagCounts.get(each) ?? 0) + 1);
+      }
+    }
+
+    scopeCounts.set(section.dataset.section, visible);
+
+    // Collapse a section only when a filter emptied it — a heading with no hits
+    // under it is noise. Unfiltered, an empty section still shows: "Loose
+    // threads, nothing in it" is information, and it is what the page renders
+    // on load, so touching a chip must not make it disappear.
+    section.classList.toggle('hidden', !inScope || (filtering && visible === 0));
+  }
+
+  for (const pill of pills) {
+    const key = pill.dataset.scope;
+    const shown = !filtering
+      ? pill.dataset.total
+      : key === ''
+        ? [...scopeCounts].reduce((sum, [k, n]) => sum + (k === '{{ARCHIVE_SCOPE}}' ? 0 : n), 0)
+        : (scopeCounts.get(key) ?? 0);
+    pill.querySelector('.count').textContent = shown;
+  }
+
+  for (const pill of tagButtons) {
+    const unfiltered = q === '' && scope === '';
+    pill.querySelector('.count').textContent = unfiltered
+      ? pill.dataset.total
+      : (tagCounts.get(pill.dataset.tag) ?? 0);
+  }
+
+  if (q !== '') {
+    for (const details of document.querySelectorAll('details')) details.open = true;
+  }
+}
+
+filter.addEventListener('input', applyFilters);
+
+filterToggle.addEventListener('click', () => {
+  const open = filter.hasAttribute('hidden');
+  filter.toggleAttribute('hidden', !open);
+  filterToggle.setAttribute('aria-expanded', String(open));
+
+  if (open) {
+    filter.focus();
+  } else if (filter.value !== '') {
+    // Collapsing the box must not leave an invisible query filtering the board.
+    filter.value = '';
+    applyFilters();
+  }
+});
+
+// Tags toggle rather than switch: clicking the active one clears it, so there
+// is no "All tags" pill to keep in sync with the scope row's "All".
+for (const button of tagButtons) {
+  button.addEventListener('click', () => {
+    tag = tag === button.dataset.tag ? '' : button.dataset.tag;
+    for (const other of tagButtons) {
+      const on = other.dataset.tag === tag;
+      other.classList.toggle('active', on);
+      other.setAttribute('aria-pressed', String(on));
+    }
+    applyFilters();
+  });
+}
+
+for (const button of pills) {
+  button.addEventListener('click', () => {
+    scope = button.dataset.scope;
+    for (const other of pills) {
+      const on = other === button;
+      other.classList.toggle('active', on);
+      other.setAttribute('aria-pressed', String(on));
+    }
+    applyFilters();
+  });
+}
+const target = document.body.dataset.open;
+if (target) {
+  const el = document.getElementById(target);
+  if (el) {
+    const details = el.closest('details');
+    if (details) details.open = true;
+    el.scrollIntoView();
+    el.style.outline = '2px solid var(--primary)';
+  }
+}
+{{SSE_JS}}</script>
+</body>
+</html>

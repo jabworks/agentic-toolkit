@@ -30,7 +30,7 @@ Preserve and restore session context across agentic coding sessions.
    ls -lt .session-handoff/ 2>/dev/null | head -10
    ```
 2. **Ask the user:** "Save handoff as **markdown** (.md), **HTML** (.html), or **both**? Default: markdown."
-3. **Scaffold** using the chosen template — `references/handoff-template.md` or `references/handoff-template.html`. For **both**, fill the markdown template once, then mirror the same content into the HTML template — identical sections, no divergence. Fill every section — no `[FILL]` placeholders left.
+3. **Scaffold** using the chosen template — `references/handoff-template.md` or `references/handoff-template.html`. For **both**, fill the markdown template once, then mirror the same content into the HTML template — identical sections, no divergence. Fill every section — no `[FILL]` placeholders left. In the HTML template, "decisions made", "blockers", and "deferred / out of scope" are legitimately optional — if a session has nothing to report there, replace that section's placeholder content with the `.kit-empty` block shown in the HTML comment directly above it (a `.kit-empty__title` line plus a `.kit-empty__body` sentence) instead of leaving stray placeholder rows. Delete that HTML comment once you have decided either way — it is scaffolding for you, and a saved handoff should not carry the instructions used to write it.
 4. **Validate** before saving:
    - No `[FILL]` markers remain
    - No credentials, tokens, API key values, or env var values

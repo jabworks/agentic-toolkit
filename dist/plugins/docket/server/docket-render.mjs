@@ -1,7 +1,14 @@
-// Pure renderer: docket handle in, one self-contained HTML string out.
+// Renderer: docket handle in, one self-contained HTML string out.
 // No egress, no CDN, inline CSS/JS only — the plan-review renderer contract.
-// Serving and file-watching live in the CLI; keeping this pure keeps the
-// render smoke test trivial.
+// Serving and file-watching live in the CLI, which is what keeps the render
+// smoke test trivial — this file still has no server and no watcher.
+//
+// The document shell, the stylesheet and the client script live beside this
+// file in board-shell.html. They were moved there so the shared design-system
+// regions sit in an .html file rather than inside a JS template literal, where
+// a backslash is silently eaten — `/\s/` becomes `/s/` with no error, in one
+// surface only (specs/surface-kit/quirks.md, Q1). annotate-server.js reads its
+// template the same way.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -23,6 +30,52 @@ function itemTags(title) {
   return [...title.matchAll(TAG_RE)].map((m) => m[1]);
 }
 
+// Colour comes from the shared core (scripts/tokens/core.css), inlined into
+// board-shell.html's <style> block: dark-base with a light override, the
+// reverse of the dialect this board carried before. Both honour the OS, so only
+// the no-preference fallback changed; light is still what gets verified first
+// (toolkit rule). This note lives in source rather than in the shell because
+// repo-tooling prose has no business shipping inside every rendered board.
+
+// Read once at module scope. --serve renders per request, and re-reading the
+// shell each time would let a served board disagree with a written one.
+const SHELL = fs.readFileSync(new URL('./board-shell.html', import.meta.url), 'utf8');
+
+// Single pass with a replacer, never chained .replace() calls: the replacer's
+// return value is not re-scanned, so a docket item literally titled
+// "{{ARCHIVE}}" cannot be substituted a second time.
+// ARCHIVE_SCOPE is listed before ARCHIVE so the alternation matches the longer
+// key first — regex alternation is ordered, and `ARCHIVE` would otherwise match
+// the prefix of `{{ARCHIVE_SCOPE}}` and leave `_SCOPE}}` stranded in the output.
+function fillShell(values) {
+  return SHELL.replace(
+    /\{\{(TITLE|BODY_ATTRS|SCOPES|TAGS|NAV|STATS|EMPTY|SECTIONS|ARCHIVE_SCOPE|ARCHIVE|SSE_JS)\}\}/g,
+    (_, key) => values[key],
+  );
+}
+
+// Anchor ids for the section nav / g+N jump targets. Sections are user-authored
+// DOCKET.md names, so they are slugged rather than trusted as id-safe; the
+// archive gets a fixed id since ARCHIVE_SCOPE is not a display name.
+function slugSection(name) {
+  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  return 'sec-' + (slug || 'section');
+}
+
+// Additive: the board had no navigation at all. Order matches the document
+// order of the h2 elements it points at, so the kit's g+N jump lands on the
+// same target this list names as "N".
+function sectionNav(sections, hasArchive) {
+  if (sections.length === 0 && !hasArchive) return '';
+
+  const links = [
+    ...sections.map((section) => `<a href="#${slugSection(section.name)}">${esc(section.name)}</a>`),
+    ...(hasArchive ? ['<a href="#sec-archive">Archive</a>'] : []),
+  ];
+
+  return `<nav class="board-nav" aria-label="Jump to section" data-kit-chrome>${links.join('')}</nav>`;
+}
+
 export function renderHtml(d, { openId = null, date, live = false } = {}) {
   const open = parseOpen(fs.readFileSync(d.paths.open, 'utf8'));
   const title = (open.lines[0] ?? '').replace(/^#\s*/, '') || 'DOCKET';
@@ -39,42 +92,31 @@ export function renderHtml(d, { openId = null, date, live = false } = {}) {
   // survive here.
   const stats = [oldestStat(open.items, date)].filter(Boolean);
 
-  return `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${esc(title)}</title>
-<style>${CSS}</style>
-</head>
-<body${openId !== null ? ' data-open="item-' + Number(openId) + '"' : ''}>
-<header>
-  <h1>${esc(title)}</h1>
-  <div class="bar">
-    <div class="scopes" role="group" aria-label="Filter by section">${scopePills(sections, open.items.length, archivedCount, years.length > 0)}</div>
-    <button type="button" id="filter-toggle" class="scope filter-btn" aria-expanded="false" aria-controls="filter">Filter</button>
-  </div>
-  <input id="filter" type="search" placeholder="Filter items — title, body, #id" autocomplete="off" hidden>
-  ${tagPills(open.items, years)}
-  ${stats.length > 0 ? `<div class="stats">${stats.join('')}</div>` : ''}
-</header>
-<main>
-${open.items.length === 0 ? EMPTY_STATE : ''}
-${sections
-  .map(
-    (section) => `<section data-section="${esc(section.name)}">
-<h2>${esc(section.name)}${section.items.length > 0 ? `<span class="count">${section.items.length}</span>` : ''}</h2>
+  return fillShell({
+    TITLE: esc(title),
+    ARCHIVE_SCOPE,
+    BODY_ATTRS: openId !== null ? ' data-open="item-' + Number(openId) + '"' : '',
+    SCOPES: scopePills(sections, open.items.length, archivedCount, years.length > 0),
+    TAGS: tagPills(open.items, years),
+    NAV: sectionNav(sections, years.length > 0),
+    STATS: stats.length > 0 ? `<div class="stats">${stats.join('')}</div>` : '',
+    EMPTY: open.items.length === 0 ? EMPTY_STATE : '',
+    SECTIONS: sections
+      .map(
+        (section) => `<section data-section="${esc(section.name)}">
+<h2 id="${slugSection(section.name)}" data-kit-section>${esc(section.name)}${section.items.length > 0 ? `<span class="count">${section.items.length}</span>` : ''}</h2>
 ${section.items.map((item) => itemCard(item, open.lines)).join('\n')}
 ${sectionProse(section, open)}
 </section>`,
-  )
-  .join('\n')}
-${years.length > 0 ? `<section class="archive" data-section="${ARCHIVE_SCOPE}"><h2>Archive<span class="count">${archivedCount}</span></h2>
-${years.map((year) => yearBlock(year)).join('\n')}</section>` : ''}
-</main>
-<script>${JS}${live ? SSE_JS : ''}</script>
-</body>
-</html>`;
+      )
+      .join('\n'),
+    ARCHIVE:
+      years.length > 0
+        ? `<section class="archive" data-section="${ARCHIVE_SCOPE}"><h2 id="sec-archive" data-kit-section>Archive<span class="count">${archivedCount}</span></h2>
+${years.map((year) => yearBlock(year)).join('\n')}</section>`
+        : '',
+    SSE_JS: live ? SSE_JS : '',
+  });
 }
 
 function stat(value, label) {
@@ -141,11 +183,18 @@ function oldestStat(items, date) {
   return stat(days + 'd', 'oldest open');
 }
 
+// data-kit-item only on OPEN cards. Archived entries (yearBlock, below) sit
+// inside a closed <details> by default; kit.js's j/k walk would happily focus
+// an invisible row (moveItem uses history.replaceState, which does not trigger
+// the browser's auto-expand-on-fragment-navigation behaviour), so they are
+// left out of the walk. Their idlink still carries data-kit-copy — that only
+// needs the anchor to receive focus, which a plain Tab into an open <details>
+// still does.
 function itemCard(item, lines) {
   const body = lines.slice(item.start + 1, item.end).join('\n').trim();
 
-  return `<article class="item" id="item-${item.id}" data-tags="${esc(itemTags(item.title).join(' '))}" data-search="${esc((item.idPart + ' ' + item.title + ' ' + body).toLowerCase())}">
-<h3><a class="idlink" href="#item-${item.id}">#${esc(item.idPart)}</a> ${esc(item.title)}</h3>
+  return `<article class="item" id="item-${item.id}" data-kit-item data-tags="${esc(itemTags(item.title).join(' '))}" data-search="${esc((item.idPart + ' ' + item.title + ' ' + body).toLowerCase())}">
+<h3><a class="idlink" href="#item-${item.id}" data-kit-copy="${esc(item.idPart)}">#${esc(item.idPart)}</a> ${esc(item.title)}</h3>
 ${mdLite(body)}
 </article>`;
 }
@@ -185,7 +234,7 @@ function yearBlock(year) {
 ${year.entries
   .map(
     (entry) => `<article class="item archived" id="item-${entry.id}" data-tags="${esc(itemTags(entry.title).join(' '))}" data-search="${esc((entry.idPart + ' ' + entry.title + ' ' + entry.body).toLowerCase())}">
-<h3><a class="idlink" href="#item-${entry.id}">#${esc(entry.idPart)}</a> ${esc(entry.title)}</h3>
+<h3><a class="idlink" href="#item-${entry.id}" data-kit-copy="${esc(entry.idPart)}">#${esc(entry.idPart)}</a> ${esc(entry.title)}</h3>
 ${mdLite(entry.body)}
 </article>`,
   )
@@ -266,250 +315,38 @@ function inline(text) {
     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
 }
 
-const EMPTY_STATE = `<div class="empty">
-<p><strong>Nothing on the docket yet.</strong></p>
-<p>Add the first item: <code>docket add "Title" --section someday</code> — it gets #1.</p>
+const EMPTY_STATE = `<div class="kit-empty">
+<p class="kit-empty__title"><strong>Nothing on the docket yet.</strong></p>
+<p class="kit-empty__body">Add the first item: <code>docket add "Title" --section someday</code> — it gets #1.</p>
 </div>`;
 
-// Colour comes from the shared core (scripts/tokens/core.css), which is
-// dark-base with a light override — the reverse of the dialect this board
-// carried before. Both honour the OS, so only the no-preference fallback
-// changed; light is still what gets verified first (toolkit rule).
-const CSS = `
-/* tokens:core:start */
-/* Shared colour core — do not hand-edit; edit scripts/tokens/core.css. */
-:root {
-  --background: #111110;
-  --card: #191918;
-  --card-foreground: #eeeeec;
-  --popover: #222221;
-  --foreground: #eeeeec;
-  --muted: #222221;
-  --muted-foreground: #b5b3ad;
-  --border: #3b3a37;
-  --input: #3b3a37;
-  --primary: #978365;
-  --primary-foreground: #ffffff;
-  --primary-hover: #a39073;
-  --primary-muted: #24231f;
-  --primary-text: #cbb99f;
-  --ring: #978365;
-  --accent: #2a2a28;
-  --success: #71d083;
-  --success-muted: #1b2a1e;
-  --success-border: #2d5736;
-  --warning: #ffca16;
-  --warning-muted: #302008;
-  --warning-border: #5c3d05;
-  --destructive: #ff977d;
-  --destructive-muted: #391714;
-  --destructive-border: #6e2920;
-  --info: #70b8ff;
-  --info-muted: #0d2847;
-  --info-border: #104d87;
-  --outline: rgba(237, 237, 236, 0.08);
-  --subtle: #686560;
-  --radius: 0.25rem;
-  --mono: "Geist Mono", "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Monaco, "Cascadia Code", monospace;
-}
-@media (prefers-color-scheme: light) {
-  :root {
-    --background: #f6f5ef;
-    --card: #fcfbf6;
-    --card-foreground: #36302a;
-    --popover: #fcfbf6;
-    --foreground: #36302a;
-    --muted: #f0efe3;
-    --muted-foreground: #726c5e;
-    --border: #ddd6c6;
-    --input: #ddd6c6;
-    --primary: #967e60;
-    --primary-foreground: #ffffff;
-    --primary-hover: #897254;
-    --primary-muted: #efece0;
-    --primary-text: #6f5e44;
-    --ring: #967e60;
-    --accent: #eae7da;
-    --success: #3f7a34;
-    --success-muted: #e6f5e2;
-    --success-border: #c2e1b3;
-    --warning: #93761d;
-    --warning-muted: #fbf4c4;
-    --warning-border: #ebd87f;
-    --destructive: #bf4f3b;
-    --destructive-muted: #fbe8e2;
-    --destructive-border: #f0c9ba;
-    --info: #3f6fa6;
-    --info-muted: #e6f1fc;
-    --info-border: #bed7ef;
-    --outline: rgba(54, 48, 42, 0.08);
-    --subtle: #a8a294;
-  }
-}
-/* tokens:core:end */
-
-/* docket board extension — the count chip rides the muted surface. Outside the
-   markers on purpose: anything inside them is replaced by --fix. */
-:root{--chip:var(--muted)}
-*{box-sizing:border-box}
-body{margin:0;background:var(--background);color:var(--foreground);font:15px/1.55 ui-sans-serif,system-ui,sans-serif}
-header{position:sticky;top:0;background:var(--background);border-bottom:1px solid var(--border);padding:1rem 1.25rem .75rem;z-index:2}
-h1{margin:0 0 .35rem;font-size:1.15rem;letter-spacing:.04em}
-.stats{display:flex;gap:.75rem;flex-wrap:wrap;color:var(--muted-foreground);font-size:.8rem;margin-bottom:.6rem}
-.stat b{color:var(--foreground)}
-#filter{width:100%;max-width:28rem;padding:.45rem .6rem;border:1px solid var(--border);border-radius:.4rem;background:var(--card);color:var(--foreground)}
-.bar{display:flex;gap:.5rem;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
-.scopes{display:flex;gap:.35rem;flex-wrap:wrap}
-.scope{display:inline-flex;align-items:center;gap:.4rem;font:inherit;font-size:.75rem;padding:.2rem .6rem;border:1px solid var(--border);border-radius:.6rem;background:var(--card);color:var(--muted-foreground);cursor:pointer}
-.scope:hover{color:var(--foreground);border-color:var(--primary)}
-.scope.active{background:var(--primary-muted);color:var(--primary-text);border-color:var(--primary)}
-.scope:focus-visible{outline:2px solid var(--primary);outline-offset:1px}
-.scope .count{margin-left:0;font-variant-numeric:tabular-nums}
-.scope.active .count{background:var(--card)}
-.scope[data-total="0"]{opacity:.55}
-.tags{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.45rem}
-.tag{font-variant-numeric:tabular-nums}
-.filter-btn[aria-expanded="true"]{background:var(--primary-muted);color:var(--primary-text);border-color:var(--primary)}
-#filter[hidden]{display:none}
-main{max-width:52rem;margin:0 auto;padding:1rem 1.25rem 4rem}
-h2{font-size:.85rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted-foreground);margin:1.6rem 0 .6rem;border-bottom:1px solid var(--border);padding-bottom:.3rem}
-.count{margin-left:.5rem;background:var(--chip);border-radius:.6rem;padding:.05rem .5rem;font-size:.75rem}
-.item{background:var(--card);border:1px solid var(--border);border-radius:.5rem;padding:.75rem .9rem;margin:.6rem 0}
-.item h3{margin:0 0 .35rem;font-size:.95rem}
-.item h4{margin:.6rem 0 .2rem;font-size:.8rem;color:var(--muted-foreground)}
-.item p{margin:.35rem 0}
-.item.archived{opacity:.85}
-.idlink{color:var(--primary);text-decoration:none;font-variant-numeric:tabular-nums}
-.idlink:hover{text-decoration:underline}
-.item:target{outline:2px solid var(--primary);outline-offset:2px}
-pre{background:var(--chip);border-radius:.4rem;padding:.5rem .7rem;overflow-x:auto;font-size:.85rem}
-code{background:var(--chip);border-radius:.25rem;padding:.05rem .3rem;font-size:.88em}
-pre code{background:none;padding:0}
-ul{margin:.3rem 0;padding-left:1.3rem}
-details{margin:.5rem 0}
-summary{cursor:pointer;color:var(--muted-foreground)}
-.prose{color:var(--muted-foreground);font-size:.9rem}
-.empty{border:1px dashed var(--border);border-radius:.5rem;padding:1.5rem;text-align:center;color:var(--muted-foreground)}
-.hidden{display:none}
-`;
-
-const JS = `
-const filter = document.getElementById('filter');
-const filterToggle = document.getElementById('filter-toggle');
-const pills = [...document.querySelectorAll('.scopes .scope')];
-const tagButtons = [...document.querySelectorAll('.tags .tag')];
-let scope = '';
-let tag = '';
-
-function applyFilters() {
-  const q = filter.value.trim().toLowerCase();
-  const filtering = q !== '' || tag !== '';
-  // Facet counts: each row reports what picking one of its OWN options would
-  // yield, so a row never discounts itself. Scope counts ignore the active
-  // scope, tag counts ignore the active tag; both respect everything else.
-  const scopeCounts = new Map();
-  const tagCounts = new Map();
-
-  for (const section of document.querySelectorAll('main > section')) {
-    const inScope = scope === '' || section.dataset.section === scope;
-    let visible = 0;
-
-    for (const item of section.querySelectorAll('.item')) {
-      const tags = item.dataset.tags === '' ? [] : item.dataset.tags.split(' ');
-      const hitQuery = q === '' || item.dataset.search.includes(q);
-      const hitTag = tag === '' || tags.includes(tag);
-
-      item.classList.toggle('hidden', !(inScope && hitQuery && hitTag));
-      if (hitQuery && hitTag) visible++;
-      if (inScope && hitQuery) {
-        for (const each of tags) tagCounts.set(each, (tagCounts.get(each) ?? 0) + 1);
-      }
-    }
-
-    scopeCounts.set(section.dataset.section, visible);
-
-    // Collapse a section only when a filter emptied it — a heading with no hits
-    // under it is noise. Unfiltered, an empty section still shows: "Loose
-    // threads, nothing in it" is information, and it is what the page renders
-    // on load, so touching a chip must not make it disappear.
-    section.classList.toggle('hidden', !inScope || (filtering && visible === 0));
-  }
-
-  for (const pill of pills) {
-    const key = pill.dataset.scope;
-    const shown = !filtering
-      ? pill.dataset.total
-      : key === ''
-        ? [...scopeCounts].reduce((sum, [k, n]) => sum + (k === '${ARCHIVE_SCOPE}' ? 0 : n), 0)
-        : (scopeCounts.get(key) ?? 0);
-    pill.querySelector('.count').textContent = shown;
-  }
-
-  for (const pill of tagButtons) {
-    const unfiltered = q === '' && scope === '';
-    pill.querySelector('.count').textContent = unfiltered
-      ? pill.dataset.total
-      : (tagCounts.get(pill.dataset.tag) ?? 0);
-  }
-
-  if (q !== '') {
-    for (const details of document.querySelectorAll('details')) details.open = true;
-  }
-}
-
-filter.addEventListener('input', applyFilters);
-
-filterToggle.addEventListener('click', () => {
-  const open = filter.hasAttribute('hidden');
-  filter.toggleAttribute('hidden', !open);
-  filterToggle.setAttribute('aria-expanded', String(open));
-
-  if (open) {
-    filter.focus();
-  } else if (filter.value !== '') {
-    // Collapsing the box must not leave an invisible query filtering the board.
-    filter.value = '';
-    applyFilters();
-  }
-});
-
-// Tags toggle rather than switch: clicking the active one clears it, so there
-// is no "All tags" pill to keep in sync with the scope row's "All".
-for (const button of tagButtons) {
-  button.addEventListener('click', () => {
-    tag = tag === button.dataset.tag ? '' : button.dataset.tag;
-    for (const other of tagButtons) {
-      const on = other.dataset.tag === tag;
-      other.classList.toggle('active', on);
-      other.setAttribute('aria-pressed', String(on));
-    }
-    applyFilters();
-  });
-}
-
-for (const button of pills) {
-  button.addEventListener('click', () => {
-    scope = button.dataset.scope;
-    for (const other of pills) {
-      const on = other === button;
-      other.classList.toggle('active', on);
-      other.setAttribute('aria-pressed', String(on));
-    }
-    applyFilters();
-  });
-}
-const target = document.body.dataset.open;
-if (target) {
-  const el = document.getElementById(target);
-  if (el) {
-    const details = el.closest('details');
-    if (details) details.open = true;
-    el.scrollIntoView();
-    el.style.outline = '2px solid var(--primary)';
-  }
-}
-`;
-
+// A banner rather than a new placeholder: SSE_JS is already conditional on
+// --serve, so building the .kit-error element here (instead of shipping it,
+// hidden, in every offline board too) keeps the static-file case untouched.
+// 'error' fires on every failed retry, so the id guard stops it from stacking
+// banners; 'open' fires on a successful reconnect, so the banner clears itself
+// rather than lying once the board is live again. Inserted as the header's
+// first child, not the body's: header is position:sticky, so a banner placed
+// in normal body flow scrolls out of view on the first scroll — exactly the
+// "silently freezing" failure this exists to announce.
 const SSE_JS = `
-new EventSource('/events').addEventListener('reload', () => location.reload());
+(function () {
+  var es = new EventSource('/events');
+  es.addEventListener('reload', function () { location.reload(); });
+  es.addEventListener('error', function () {
+    if (document.getElementById('sse-lost')) return;
+    var banner = document.createElement('div');
+    banner.id = 'sse-lost';
+    banner.className = 'kit-error';
+    banner.setAttribute('role', 'status');
+    banner.textContent = 'Live reload lost connection — this board may be stale.';
+    var header = document.querySelector('header');
+    if (header) header.insertBefore(banner, header.firstChild);
+    else document.body.insertBefore(banner, document.body.firstChild);
+  });
+  es.addEventListener('open', function () {
+    var banner = document.getElementById('sse-lost');
+    if (banner) banner.remove();
+  });
+})();
 `;
