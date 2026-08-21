@@ -44,36 +44,37 @@ const SHELL = fs.readFileSync(new URL('./board-shell.html', import.meta.url), 'u
 // Single pass with a replacer, never chained .replace() calls: the replacer's
 // return value is not re-scanned, so a docket item literally titled
 // "{{ARCHIVE}}" cannot be substituted a second time.
-// ARCHIVE_SCOPE is listed before ARCHIVE so the alternation matches the longer
-// key first — regex alternation is ordered, and `ARCHIVE` would otherwise match
-// the prefix of `{{ARCHIVE_SCOPE}}` and leave `_SCOPE}}` stranded in the output.
 function fillShell(values) {
   return SHELL.replace(
-    /\{\{(TITLE|BODY_ATTRS|SCOPES|TAGS|NAV|STATS|EMPTY|SECTIONS|ARCHIVE_SCOPE|ARCHIVE|SSE_JS)\}\}/g,
+    /\{\{(TITLE|BODY_ATTRS|META|TAGS|EMPTY|BOARD|ARCHIVE|SSE_JS)\}\}/g,
     (_, key) => values[key],
   );
 }
 
-// Anchor ids for the section nav / g+N jump targets. Sections are user-authored
-// DOCKET.md names, so they are slugged rather than trusted as id-safe; the
-// archive gets a fixed id since ARCHIVE_SCOPE is not a display name.
+// Anchor ids for the column heads — the kit's g+N jump targets. Sections are
+// user-authored DOCKET.md names, so they are slugged rather than trusted as
+// id-safe.
 function slugSection(name) {
   const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
   return 'sec-' + (slug || 'section');
 }
 
-// Additive: the board had no navigation at all. Order matches the document
-// order of the h2 elements it points at, so the kit's g+N jump lands on the
-// same target this list names as "N".
-function sectionNav(sections, hasArchive) {
-  if (sections.length === 0 && !hasArchive) return '';
+// The title tail carries the added stamp — "(2026-06-01)", or "(2026-07-02,
+// split from #2)" — and `add` can leave two when the title already had one.
+// Every trailing stamp leaves the DISPLAYED title; the first date found is the
+// added date. The file is never rewritten, and tags still read the raw title.
+const STAMP_TAIL_RE = /\s*\(\d{4}-\d{2}-\d{2}[^)]*\)\s*$/;
 
-  const links = [
-    ...sections.map((section) => `<a href="#${slugSection(section.name)}">${esc(section.name)}</a>`),
-    ...(hasArchive ? ['<a href="#sec-archive">Archive</a>'] : []),
-  ];
+function displayTitle(raw) {
+  const dates = [...raw.matchAll(/\((\d{4}-\d{2}-\d{2})[^)]*\)/g)].map((m) => m[1]);
+  let text = raw;
+  while (STAMP_TAIL_RE.test(text)) text = text.replace(STAMP_TAIL_RE, '');
 
-  return `<nav class="board-nav" aria-label="Jump to section" data-kit-chrome>${links.join('')}</nav>`;
+  return { text: text.trim(), date: dates[0] ?? null };
+}
+
+function ageDays(from, to) {
+  return Math.round((Date.parse(to) - Date.parse(from)) / 86400000);
 }
 
 export function renderHtml(d, { openId = null, date, live = false } = {}) {
@@ -87,65 +88,45 @@ export function renderHtml(d, { openId = null, date, live = false } = {}) {
     items: open.items.filter((item) => item.section === section.name),
   }));
 
-  // The scope pills carry every count that used to live in the stats row —
-  // open, per-section, archived — so only the stats that are not a section
-  // survive here.
-  const stats = [oldestStat(open.items, date)].filter(Boolean);
-
   return fillShell({
     TITLE: esc(title),
-    ARCHIVE_SCOPE,
     BODY_ATTRS: openId !== null ? ' data-open="item-' + Number(openId) + '"' : '',
-    SCOPES: scopePills(sections, open.items.length, archivedCount, years.length > 0),
+    META: metaLine(open.items, archivedCount, years.length > 0, date),
     TAGS: tagPills(open.items, years),
-    NAV: sectionNav(sections, years.length > 0),
-    STATS: stats.length > 0 ? `<div class="stats">${stats.join('')}</div>` : '',
     EMPTY: open.items.length === 0 ? EMPTY_STATE : '',
-    SECTIONS: sections
-      .map(
-        (section) => `<section data-section="${esc(section.name)}">
-<h2 id="${slugSection(section.name)}" data-kit-section>${esc(section.name)}${section.items.length > 0 ? `<span class="count">${section.items.length}</span>` : ''}</h2>
-${section.items.map((item) => itemCard(item, open.lines)).join('\n')}
-${sectionProse(section, open)}
-</section>`,
-      )
-      .join('\n'),
-    ARCHIVE:
-      years.length > 0
-        ? `<section class="archive" data-section="${ARCHIVE_SCOPE}"><h2 id="sec-archive" data-kit-section>Archive<span class="count">${archivedCount}</span></h2>
-${years.map((year) => yearBlock(year)).join('\n')}</section>`
-        : '',
+    BOARD: sections.map((section) => column(section, open, date)).join('\n'),
+    ARCHIVE: years.length > 0 ? archiveDrawer(years, archivedCount) : '',
     SSE_JS: live ? SSE_JS : '',
   });
 }
 
-function stat(value, label) {
-  return `<span class="stat"><b>${value}</b> ${esc(label)}</span>`;
+// The header's one row of figures: what no column says. Per-section counts sit
+// on the column heads, so only the totals and the oldest age live here.
+function metaLine(items, archivedCount, hasArchive, date) {
+  const parts = [`<span><b>${items.length}</b> open</span>`];
+
+  if (hasArchive) parts.push(`<span><b>${archivedCount}</b> archived</span>`);
+  const oldest = oldestAge(items, date);
+  if (oldest !== null) parts.push(`<span>oldest <b>${oldest}d</b></span>`);
+
+  return `<div class="meta">${parts.join('')}</div>`;
 }
 
-// Sections are the board's categories — the one grouping the format already
-// carries, so scoping to them costs no data-model change. Archive gets a
-// reserved scope name because it is not a DOCKET.md section.
-//
-// Each pill carries its own count, which is why there is no separate stats row
-// for section totals: one row that both reports and filters beats two rows that
-// say the same numbers. data-total holds the unfiltered figure so a search can
-// swap in the match count and restore it afterwards.
-function scopePills(sections, openCount, archivedCount, hasArchive) {
-  const scopes = [
-    { value: '', label: 'All', count: openCount },
-    ...sections.map((section) => ({ value: section.name, label: section.name, count: section.items.length })),
-    ...(hasArchive ? [{ value: ARCHIVE_SCOPE, label: 'Archive', count: archivedCount }] : []),
-  ];
+// One column per section (docket #45). The head is the kit's g+N target and
+// carries the count as a numeral rather than a chip. A section with neither
+// items nor prose renders a quiet slot, never nothing: "nothing committed" is
+// information (docket #44, closed by decision).
+function column(section, open, date) {
+  const prose = sectionProse(section, open);
+  const body =
+    section.items.length > 0 || prose !== ''
+      ? [...section.items.map((item) => itemCard(item, open.lines, date)), ...(prose === '' ? [] : [prose])].join('\n')
+      : `<div class="empty">Nothing in ${esc(section.name.toLowerCase())}</div>`;
 
-  return scopes
-    .map(
-      (scope, i) =>
-        `<button type="button" class="scope${i === 0 ? ' active' : ''}" data-scope="${esc(scope.value)}"`
-        + ` data-total="${scope.count}" aria-pressed="${i === 0}">${esc(scope.label)}`
-        + `<span class="count">${scope.count}</span></button>`,
-    )
-    .join('');
+  return `<section class="col" data-section="${esc(section.name)}">
+<div class="colhead"><h2 id="${slugSection(section.name)}" data-kit-section>${esc(section.name)}</h2><span class="n${section.items.length === 0 ? ' zero' : ''}">${section.items.length}</span></div>
+${body}
+</section>`;
 }
 
 // Tags are discovered, never declared: the set is whatever the open items
@@ -173,29 +154,43 @@ function tagPills(items, years) {
   return `<div class="tags" role="group" aria-label="Filter by tag">${pills}</div>`;
 }
 
-function oldestStat(items, date) {
-  if (!date || items.length === 0) return '';
-  const dates = items.map((item) => (item.title.match(/\((\d{4}-\d{2}-\d{2})/) ?? [])[1]).filter(Boolean).sort();
-  if (dates.length === 0) return '';
+function oldestAge(items, date) {
+  if (!date || items.length === 0) return null;
+  const dates = items.map((item) => displayTitle(item.title).date).filter(Boolean).sort();
 
-  const days = Math.round((Date.parse(date) - Date.parse(dates[0])) / 86400000);
-
-  return stat(days + 'd', 'oldest open');
+  return dates.length === 0 ? null : ageDays(dates[0], date);
 }
 
-// data-kit-item only on OPEN cards. Archived entries (yearBlock, below) sit
+function idLink(entry) {
+  return `<a class="id" href="#item-${entry.id}" data-kit-copy="${esc(entry.idPart)}">#${esc(entry.idPart)}</a>`;
+}
+
+// A card: id + added date + age, the cleaned title, the first block as the
+// lede, and — only when there is more — the rest folded behind "Read on · N
+// more". The fold is a <details>, so the written board reads offline without
+// JS. Bodies run 100–200 words; a column cannot hold them open.
+//
+// data-kit-item only on OPEN cards. Archived rows (archiveRow, below) sit
 // inside a closed <details> by default; kit.js's j/k walk would happily focus
 // an invisible row (moveItem uses history.replaceState, which does not trigger
 // the browser's auto-expand-on-fragment-navigation behaviour), so they are
-// left out of the walk. Their idlink still carries data-kit-copy — that only
+// left out of the walk. Their id link still carries data-kit-copy — that only
 // needs the anchor to receive focus, which a plain Tab into an open <details>
 // still does.
-function itemCard(item, lines) {
+function itemCard(item, lines, date) {
   const body = lines.slice(item.start + 1, item.end).join('\n').trim();
+  const blocks = mdBlocks(body);
+  const { text, date: added } = displayTitle(item.title);
+  const age = added && date ? ' · ' + ageDays(added, date) + 'd' : '';
+  const more =
+    blocks.length > 1
+      ? `\n<details class="more"><summary>Read on · ${blocks.length - 1} more</summary>\n${blocks.slice(1).join('\n')}\n</details>`
+      : '';
 
-  return `<article class="item" id="item-${item.id}" data-kit-item data-tags="${esc(itemTags(item.title).join(' '))}" data-search="${esc((item.idPart + ' ' + item.title + ' ' + body).toLowerCase())}">
-<h3><a class="idlink" href="#item-${item.id}" data-kit-copy="${esc(item.idPart)}">#${esc(item.idPart)}</a> ${esc(item.title)}</h3>
-${mdLite(body)}
+  return `<article class="card" id="item-${item.id}" data-kit-item data-tags="${esc(itemTags(item.title).join(' '))}" data-search="${esc((item.idPart + ' ' + item.title + ' ' + body).toLowerCase())}">
+<div class="top">${idLink(item)}<span class="age">${added ? esc(added) + age : ''}</span></div>
+<h3>${esc(text)}</h3>
+<div class="lede">${blocks[0] ?? ''}</div>${more}
 </article>`;
 }
 
@@ -229,17 +224,22 @@ function parseArchive(file) {
   return { label: path.basename(file, '.md'), entries };
 }
 
-function yearBlock(year) {
-  return `<details><summary>${esc(year.label)} <span class="count">${year.entries.length}</span></summary>
-${year.entries
-  .map(
-    (entry) => `<article class="item archived" id="item-${entry.id}" data-tags="${esc(itemTags(entry.title).join(' '))}" data-search="${esc((entry.idPart + ' ' + entry.title + ' ' + entry.body).toLowerCase())}">
-<h3><a class="idlink" href="#item-${entry.id}" data-kit-copy="${esc(entry.idPart)}">#${esc(entry.idPart)}</a> ${esc(entry.title)}</h3>
-${mdLite(entry.body)}
-</article>`,
-  )
-  .join('\n')}
+// The archive is a drawer under the board, never a peer column — 35 closed
+// against 9 open would dominate. Rows carry id, title and year and open to the
+// full body, so nothing the old per-year blocks showed is lost. The reserved
+// scope name keeps it addressable without colliding with a DOCKET.md section.
+function archiveDrawer(years, archivedCount) {
+  const rows = years.flatMap((year) => year.entries.map((entry) => archiveRow(entry, year.label)));
+
+  return `<details class="drawer" data-section="${ARCHIVE_SCOPE}"><summary><span>Archive</span><span class="n">${archivedCount}</span></summary>
+<div class="years">
+${rows.join('\n')}
+</div>
 </details>`;
+}
+
+function archiveRow(entry, year) {
+  return `<details class="row archived" id="item-${entry.id}" data-tags="${esc(itemTags(entry.title).join(' '))}" data-search="${esc((entry.idPart + ' ' + entry.title + ' ' + entry.body).toLowerCase())}"><summary>${idLink(entry)}<span class="t">${esc(displayTitle(entry.title).text)}</span><span class="y">${esc(year)}</span></summary><div class="body">${mdLite(entry.body)}</div></details>`;
 }
 
 function esc(text) {
@@ -250,11 +250,18 @@ function esc(text) {
 // inline code, bold. Anything fancier renders as plain escaped text — honest
 // beats wrong for a board view.
 function mdLite(text) {
-  if (text === '') return '';
+  return mdBlocks(text).join('\n');
+}
+
+// One entry per block — a paragraph, a whole list, a fence, a subhead — so the
+// card can split the first block off as its lede. A list is one block, not an
+// opening tag plus items; a lede that was "<ul>" alone would be nothing.
+function mdBlocks(text) {
+  if (text === '') return [];
   const out = [];
   const lines = text.split('\n');
   let fence = null;
-  let list = false;
+  let list = null;
   let paragraph = [];
 
   const flush = () => {
@@ -262,9 +269,9 @@ function mdLite(text) {
       out.push('<p>' + inline(paragraph.join(' ')) + '</p>');
       paragraph = [];
     }
-    if (list) {
-      out.push('</ul>');
-      list = false;
+    if (list !== null) {
+      out.push('<ul>\n' + list.join('\n') + '\n</ul>');
+      list = null;
     }
   };
 
@@ -290,11 +297,8 @@ function mdLite(text) {
     }
     if (/^[-*]\s/.test(line)) {
       if (paragraph.length > 0) flush();
-      if (!list) {
-        out.push('<ul>');
-        list = true;
-      }
-      out.push('<li>' + inline(line.replace(/^[-*]\s+/, '')) + '</li>');
+      if (list === null) list = [];
+      list.push('<li>' + inline(line.replace(/^[-*]\s+/, '')) + '</li>');
       continue;
     }
     if (line.trim() === '') {
@@ -306,7 +310,7 @@ function mdLite(text) {
   if (fence !== null) out.push('<pre><code>' + esc(fence.join('\n')) + '</code></pre>');
   flush();
 
-  return out.join('\n');
+  return out;
 }
 
 function inline(text) {

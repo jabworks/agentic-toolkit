@@ -62,3 +62,33 @@ independent (no-deps rule). Rejected: full cross-link, no git involvement.
 GitHub/tracker sync · hooks · priority/estimate fields beyond section
 semantics · editing other repos' backlogs · installers for condux/concord
 (convention + follow-up only).
+
+## Board as columns, read-only (2026-08-21, docket #45)
+
+The board renders one column per `DOCKET.md` section, side by side, instead of
+stacked `<section>` blocks. Chosen from three rendered directions — board /
+ledger / split — by picker; [board-direction-a.html](board-direction-a.html) is
+the signed-off render. Ledger was the most scan-first but is not a board, and
+split's rail is doc-site chrome the lanes make redundant.
+
+- **Read-only.** `docket browse` writes a standalone file opened with no server
+  (surface-kit Q9); a card dragged there has nowhere to persist. A
+  `--serve`-only write-back would make the same artifact behave differently by
+  how it was opened. Moving an item stays a `DOCKET.md` edit or a CLI op.
+  Rejected: drag-to-move served-only; drag-in-both with silent degradation.
+- **Title + lede, fold for the rest.** Bodies run 100–200 words; a column
+  cannot hold them open. The first block renders as a 3-line lede; the rest
+  sits in a `<details>` ("Read on · N more") so it works offline without JS.
+  Rejected: full body always (forces ≤2 wide columns); title-only (hides the
+  content the board exists to show).
+- **Scope pills retired; the columns are the scopes.** The facet-count client
+  JS goes with them. Tag pills stay, rendered only when a docket uses tags.
+- **Archive is a collapsed drawer** under the board: rows (id · title · year)
+  that expand to the full body. Not a peer column — 35 closed against 9 open
+  would dominate.
+- **Empty section = a quiet dashed slot, kept.** "Nothing committed" is
+  information (closes #44 by decision: zero-count sections render).
+- **Unbounded section count scrolls horizontally** with scroll-snap; columns
+  are `minmax(21rem, 28rem)`. Under 48rem the lanes stack.
+- **Layout PR only** (surface-kit D5/D6 step 2 for docket): per-surface CSS
+  and markup outside the three kit markers; no core-token change.

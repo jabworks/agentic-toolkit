@@ -438,87 +438,108 @@
 }
 /* kit:css:end */
 
-/* docket board extension — the count chip rides the muted surface. Outside the
-   markers on purpose: anything inside them is replaced by --fix. */
-:root{--chip:var(--muted)}
+/* docket board — per-surface layout, outside the markers on purpose: anything
+   inside them is replaced by --fix. The board is a column per DOCKET.md
+   section (docket #45); the tokens serve that layout rather than being adopted
+   in place. Signed-off render: specs/docket/board-direction-a.html. */
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;min-height:100dvh;background:var(--background);color:var(--foreground);font-family:var(--sans);font-size:var(--text-base);line-height:var(--leading-normal);-webkit-font-smoothing:antialiased}
-/* The header is sticky, so every row it takes is a row the board never gets
-   back — and it had five: title, nav, pills, stats, filter. Two now: identity
-   and controls on one, scope and counts on the other. */
-header{position:sticky;top:0;background:var(--background);border-bottom:1px solid var(--border);box-shadow:var(--shadow-sm);padding:var(--space-2) var(--space-5);z-index:2}
-.hrow{display:flex;align-items:center;gap:var(--space-4);flex-wrap:wrap}
-.hrow+.hrow{margin-top:var(--space-2)}
+body{margin:0;min-height:100dvh;background:var(--background);color:var(--foreground);font-family:var(--sans);font-size:var(--text-md);line-height:var(--leading-normal);-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4,p,ul{margin:0}
+/* One sticky row — identity, figures, controls. Every row the header takes is
+   a row the board never gets back; the columns carry the per-section counts
+   the old pill row used to. */
+header{position:sticky;top:0;z-index:2;padding:var(--space-3) var(--space-6);background:color-mix(in oklch, var(--background) 88%, transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.hrow{display:flex;align-items:center;gap:var(--space-5);flex-wrap:wrap}
+h1{font-family:var(--mono);font-size:var(--text-md);letter-spacing:var(--tracking-tight);white-space:nowrap}
+.meta{display:flex;gap:var(--space-4);font-family:var(--mono);font-size:var(--text-xs);color:var(--muted-foreground);letter-spacing:var(--tracking-wide);font-variant-numeric:tabular-nums}
+.meta b{color:var(--foreground);font-weight:500}
 .hactions{margin-left:auto;display:flex;align-items:center;gap:var(--space-2)}
-h1{margin:0;font-family:var(--mono);font-size:var(--text-md);letter-spacing:var(--tracking-tight);white-space:nowrap}
 header .kit-error{margin-bottom:var(--space-2)}
-.board-nav{display:flex;gap:var(--space-3);flex-wrap:nowrap;overflow-x:auto;margin:0;font-family:var(--mono);font-size:var(--text-xs);letter-spacing:var(--tracking-wide)}
-.board-nav a{color:var(--muted-foreground);text-decoration:none;white-space:nowrap;padding:var(--space-1) 0;border-bottom:2px solid transparent;transition:color var(--dur-fast) var(--ease-out),border-color var(--dur-fast) var(--ease-out)}
-.board-nav a:hover{color:var(--foreground);border-color:color-mix(in oklch, var(--primary) 60%, transparent)}
-.stats{display:flex;gap:var(--space-3);flex-wrap:wrap;color:var(--muted-foreground);font-size:var(--text-xs);margin:0}
-.stat b{color:var(--foreground);font-family:var(--mono);font-variant-numeric:tabular-nums}
-#filter{width:100%;max-width:28rem;padding:var(--space-2) var(--space-3);border:1px solid var(--border);border-radius:var(--radius-md);background:var(--card);color:var(--foreground);font:inherit}
-#filter{margin-top:var(--space-2)}
-.scopes{display:flex;gap:var(--space-2);flex-wrap:wrap}
-.scope{display:inline-flex;align-items:center;gap:var(--space-1);font:inherit;font-size:var(--text-xs);padding:var(--space-1) var(--space-3);border:1px solid var(--border);border-radius:var(--radius-full);background:var(--card);color:var(--muted-foreground);cursor:pointer;transition:color var(--dur-fast) var(--ease-out),background-color var(--dur-fast) var(--ease-out),border-color var(--dur-fast) var(--ease-out)}
-.scope:hover{color:var(--foreground);border-color:var(--primary);background:color-mix(in oklch, var(--card), var(--primary) 8%)}
-.scope.active{background:var(--primary-muted);color:var(--primary-text);border-color:var(--primary)}
-.scope:focus-visible{outline:2px solid var(--primary);outline-offset:1px}
-.scope .count{margin-left:0;font-family:var(--mono);font-variant-numeric:tabular-nums}
-.scope.active .count{background:var(--card)}
-.scope[data-total="0"]{opacity:.55}
-.tags{display:flex;gap:var(--space-2);flex-wrap:wrap;margin-top:var(--space-2)}
-.tag{font-variant-numeric:tabular-nums}
-.filter-btn[aria-expanded="true"]{background:var(--primary-muted);color:var(--primary-text);border-color:var(--primary)}
+.btn{font:inherit;font-size:var(--text-sm);padding:var(--space-1) var(--space-3);border:1px solid var(--border);border-radius:var(--radius-md);background:var(--card);color:var(--muted-foreground);cursor:pointer;display:inline-flex;gap:var(--space-2);align-items:center;transition:color var(--dur-fast) var(--ease-out),border-color var(--dur-fast) var(--ease-out)}
+.btn:hover{color:var(--foreground);border-color:var(--primary)}
+.btn[aria-expanded="true"]{background:var(--primary-muted);color:var(--primary-text);border-color:var(--primary)}
+#filter{font:inherit;font-size:var(--text-sm);padding:var(--space-2) var(--space-3);border:1px solid var(--border);border-radius:var(--radius-md);background:var(--card);color:var(--foreground);width:18rem;max-width:100%}
 #filter[hidden]{display:none}
-main{max-width:52rem;margin:0 auto;padding:var(--space-4) var(--space-5) var(--space-12)}
-h2{font-family:var(--mono);font-size:var(--text-base);text-transform:uppercase;letter-spacing:var(--tracking-wide);color:var(--muted-foreground);margin:var(--space-6) 0 var(--space-2);border-bottom:1px solid var(--border);padding-bottom:var(--space-1);scroll-margin-top:6rem}
-.count{margin-left:var(--space-2);background:var(--chip);border-radius:var(--radius-full);padding:.05rem var(--space-2);font-family:var(--mono);font-size:var(--text-xs);font-variant-numeric:tabular-nums}
-.item{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-3) var(--space-4);margin:var(--space-2) 0;scroll-margin-top:6rem;transition:border-color var(--dur-fast) var(--ease-out),background-color var(--dur-fast) var(--ease-out),box-shadow var(--dur) var(--ease-out)}
-.item:hover,.item:focus-within{border-color:var(--primary);box-shadow:var(--shadow-md);background:color-mix(in oklch, var(--card), var(--primary) 4%)}
-.item h3{margin:0 0 var(--space-1);font-size:var(--text-md)}
-.item h4{margin:var(--space-2) 0 var(--space-1);font-size:var(--text-sm);color:var(--muted-foreground)}
-/* Item bodies are the reason the board exists, and they were set at 14px running
-   the full 52rem — well past 100 characters a line. 16px, relaxed leading, and a
-   real measure. The cap is on the paragraph, not the card, so tables and code
-   blocks keep the full width they need. */
-.item p{margin:var(--space-2) 0;max-width:72ch;font-size:var(--text-md);line-height:var(--leading-relaxed)}
-.item li{max-width:72ch;font-size:var(--text-md);line-height:var(--leading-relaxed)}
-.item.archived{opacity:.85}
-.idlink{color:var(--primary);text-decoration:none;font-family:var(--mono);font-variant-numeric:tabular-nums;transition:color var(--dur-fast) var(--ease-out)}
-.idlink:hover{color:color-mix(in oklch, var(--primary), var(--foreground) 25%);text-decoration:underline}
-.item:target{outline:2px solid var(--primary);outline-offset:2px;box-shadow:var(--shadow-md)}
-pre{background:var(--chip);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);overflow-x:auto;font-family:var(--mono);font-size:var(--text-sm)}
-code{background:var(--chip);border-radius:var(--radius);padding:.05rem var(--space-1);font-family:var(--mono);font-size:var(--text-xs)}
-pre code{background:none;padding:0}
-ul{margin:var(--space-1) 0;padding-left:1.3rem}
-details{margin:var(--space-2) 0}
-summary{cursor:pointer;color:var(--muted-foreground);font-family:var(--mono);font-size:var(--text-sm);font-variant-numeric:tabular-nums}
+.tags{display:flex;gap:var(--space-2);flex-wrap:wrap;margin-top:var(--space-2)}
+.tag{display:inline-flex;align-items:center;gap:var(--space-1);font:inherit;font-size:var(--text-xs);padding:var(--space-1) var(--space-3);border:1px solid var(--border);border-radius:var(--radius-full);background:var(--card);color:var(--muted-foreground);cursor:pointer;font-variant-numeric:tabular-nums;transition:color var(--dur-fast) var(--ease-out),background-color var(--dur-fast) var(--ease-out),border-color var(--dur-fast) var(--ease-out)}
+.tag:hover{color:var(--foreground);border-color:var(--primary)}
+.tag.active{background:var(--primary-muted);color:var(--primary-text);border-color:var(--primary)}
+.count{margin-left:var(--space-1);background:var(--muted);border-radius:var(--radius-full);padding:.05rem var(--space-2);font-family:var(--mono);font-size:var(--text-xs);font-variant-numeric:tabular-nums}
+.tag.active .count{background:var(--card)}
+main>.kit-empty{margin:var(--space-6) var(--space-6) 0}
+/* The board scrolls sideways, not the page: the section count is user-defined
+   and unbounded, so lanes beyond the viewport are one horizontal scroll away.
+   Under 48rem the lanes stack. */
+.board{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(21rem,28rem);gap:var(--space-5);padding:var(--space-6) var(--space-6) var(--space-8);overflow-x:auto;align-items:start;scroll-snap-type:x proximity}
+.col{display:flex;flex-direction:column;gap:var(--space-3);scroll-snap-align:start;min-width:0}
+.colhead{display:flex;align-items:baseline;justify-content:space-between;padding:0 var(--space-1) var(--space-2);border-bottom:1px solid var(--border);margin-bottom:var(--space-1);scroll-margin-top:4rem}
+.colhead h2{font-family:var(--mono);font-size:var(--text-xs);letter-spacing:var(--tracking-wide);text-transform:uppercase;color:var(--muted-foreground);font-weight:500;scroll-margin-top:4rem}
+.n{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--foreground);line-height:1}
+.colhead .n{font-size:var(--text-xl)}
+.n.zero{color:var(--muted-foreground);opacity:.5}
+/* An empty section is a quiet slot, never nothing (docket #44). */
+.empty{border:1px dashed var(--border);border-radius:var(--radius-lg);padding:var(--space-5);color:var(--muted-foreground);font-size:var(--text-sm);text-align:center}
+/* Cards: a lifted surface, not a bordered box. */
+.card{background:var(--card);border-radius:var(--radius-lg);padding:var(--space-4) var(--space-5);box-shadow:var(--shadow-sm);scroll-margin-top:4rem;transition:box-shadow var(--dur) var(--ease-out),transform var(--dur) var(--ease-out)}
+.card:hover,.card:focus-within{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.card:target,.row:target{outline:2px solid var(--primary);outline-offset:2px}
+.top{display:flex;justify-content:space-between;align-items:baseline;gap:var(--space-3);font-family:var(--mono);font-size:var(--text-xs);color:var(--muted-foreground);margin-bottom:var(--space-2)}
+.id{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--primary);text-decoration:none;transition:color var(--dur-fast) var(--ease-out)}
+.id:hover{color:color-mix(in oklch, var(--primary), var(--foreground) 25%);text-decoration:underline}
+.age{font-variant-numeric:tabular-nums}
+.card h3{font-size:var(--text-md);font-weight:600;line-height:var(--leading-snug);letter-spacing:var(--tracking-tight);text-wrap:pretty;margin-bottom:var(--space-2)}
+/* The lede is the first block, clamped to three lines until the fold opens;
+   an open fold reads as one document, so the lede un-clamps and takes the
+   body's size and measure. */
+.lede{color:var(--muted-foreground);font-size:var(--text-sm);line-height:var(--leading-normal);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.card:has(.more[open]) .lede{display:block;color:var(--foreground);font-size:var(--text-md);line-height:var(--leading-relaxed)}
+.more{margin-top:var(--space-3)}
+.more>summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:var(--space-2);font-family:var(--mono);font-size:var(--text-xs);letter-spacing:var(--tracking-wide);text-transform:uppercase;color:var(--muted-foreground)}
+.more>summary::-webkit-details-marker{display:none}
+.more>summary::before{content:"+";font-size:var(--text-sm)}
+.more[open]>summary::before{content:"–"}
+.more>summary:hover{color:var(--primary-text)}
+.more>*:not(summary){margin-top:var(--space-3)}
+.lede p,.lede li,.more p,.more li,.body p,.body li{max-width:68ch}
+.more p,.more li,.body p,.body li{font-size:var(--text-md);line-height:var(--leading-relaxed)}
+.more h4,.body h4{margin-top:var(--space-3);font-size:var(--text-sm);color:var(--muted-foreground)}
+.body>*+*{margin-top:var(--space-2)}
 .prose{color:var(--muted-foreground);font-size:var(--text-sm)}
-.hidden{display:none}
-
-/* scroll-margin-top per breakpoint is a static approximation of the sticky
-   header's actual height (measured: ~10rem desktop, up to ~14rem once the
-   scope row wraps twice around 500-540px, up to ~19rem once the theme group
-   drops to its own full-width row below 30rem) — there is no CSS-only way to
-   read it exactly, and adding JS to measure it would be more machinery than a
-   static buffer with headroom justifies. */
+pre{background:var(--muted);border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);overflow-x:auto;font-family:var(--mono);font-size:var(--text-sm)}
+code{background:var(--muted);border-radius:var(--radius);padding:.05rem var(--space-1);font-family:var(--mono);font-size:.85em}
+pre code{background:none;padding:0}
+ul{padding-left:1.2rem}
+/* The archive: a drawer under the board, never a peer column. Rows open to
+   the full body. */
+.drawer{margin:0 var(--space-6) var(--space-12);border-top:1px solid var(--border);padding-top:var(--space-4)}
+.drawer>summary{cursor:pointer;list-style:none;display:flex;gap:var(--space-3);align-items:baseline;font-family:var(--mono);font-size:var(--text-xs);text-transform:uppercase;letter-spacing:var(--tracking-wide);color:var(--muted-foreground)}
+.drawer>summary::-webkit-details-marker{display:none}
+.drawer>summary .n{font-size:var(--text-xl)}
+.drawer>summary::after{content:"show";margin-left:auto}
+.drawer[open]>summary::after{content:"hide"}
+.years{display:grid;grid-template-columns:repeat(auto-fill,minmax(26rem,1fr));gap:0 var(--space-6);margin-top:var(--space-4);align-items:start}
+.row{border-top:1px solid color-mix(in oklch, var(--border), transparent 40%);opacity:.85}
+.row>summary{cursor:pointer;list-style:none;display:grid;grid-template-columns:3.25rem 1fr auto;gap:var(--space-3);align-items:baseline;padding:var(--space-2) 0;font-size:var(--text-sm);color:var(--muted-foreground)}
+.row>summary::-webkit-details-marker{display:none}
+.row>summary:hover .t{color:var(--primary-text)}
+.row .t{color:var(--foreground);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.row[open] .t{white-space:normal}
+.row .y{font-family:var(--mono);font-size:var(--text-xs)}
+.row .body{padding:0 0 var(--space-4) 3.25rem}
+.hidden{display:none!important}
 @media (max-width: 48rem) {
-  header{padding:var(--space-3) var(--space-4) var(--space-2)}
-  main{padding:var(--space-3) var(--space-4) var(--space-12)}
-  .board-nav{gap:var(--space-3)}
-  h2,.item{scroll-margin-top:11rem}
-}
-@media (max-width: 30rem) {
-  header{padding:var(--space-2) var(--space-3) var(--space-2)}
-  h1{font-size:var(--text-md)}
-  .bar{gap:var(--space-2)}
-  .kit-theme{order:3;width:100%}
-  .kit-theme button{flex:1}
-  main{padding:var(--space-2) var(--space-3) var(--space-12)}
-  .item{padding:var(--space-2) var(--space-3)}
-  h2,.item{scroll-margin-top:16rem}
+  header{padding:var(--space-3) var(--space-4)}
+  .hrow{gap:var(--space-3)}
+  .meta{order:3;width:100%}
+  /* The open filter box must wrap under the controls, not push the theme
+     group off the edge. */
+  .hactions{margin-left:0;width:100%;flex-wrap:wrap}
+  #filter{flex:1 1 12rem;width:auto}
+  main>.kit-empty{margin:var(--space-4) var(--space-4) 0}
+  .board{grid-auto-flow:row;grid-auto-columns:auto;grid-template-columns:1fr;padding:var(--space-4)}
+  .drawer{margin:0 var(--space-4) var(--space-8)}
+  .years{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -526,28 +547,26 @@ summary{cursor:pointer;color:var(--muted-foreground);font-family:var(--mono);fon
 <header>
   <div class="hrow">
     <h1>{{TITLE}}</h1>
-    {{NAV}}
+    {{META}}
     <div class="hactions">
+      <input id="filter" type="search" placeholder="Filter — title, body, #id" autocomplete="off" hidden>
+      <button type="button" class="btn" data-kit-filter data-kit-chrome aria-controls="filter" aria-expanded="false">Filter <span class="kit-kbd">/</span></button>
       <div class="kit-theme" role="group" aria-label="Theme" data-kit-chrome>
         <button type="button" data-kit-theme="light">Light</button>
         <button type="button" data-kit-theme="dark">Dark</button>
         <button type="button" data-kit-theme="system">Auto</button>
       </div>
-      <button type="button" id="filter-toggle" class="scope filter-btn" data-kit-filter data-kit-chrome aria-expanded="false" aria-controls="filter">Filter</button>
     </div>
   </div>
-  <div class="hrow">
-    <div class="scopes" role="group" aria-label="Filter by section">{{SCOPES}}</div>
-    {{STATS}}
-  </div>
   {{TAGS}}
-  <input id="filter" type="search" placeholder="Filter items — title, body, #id" autocomplete="off" hidden>
 </header>
 <main>
 {{EMPTY}}
-{{SECTIONS}}
-{{ARCHIVE}}
+<div class="board">
+{{BOARD}}
+</div>
 </main>
+{{ARCHIVE}}
 <script>
 /* kit:js:start */
 /* Shared behaviour layer — do not hand-edit; edit scripts/tokens/kit.js. */
@@ -916,74 +935,39 @@ summary{cursor:pointer;color:var(--muted-foreground);font-family:var(--mono);fon
 </script>
 <script>
 const filter = document.getElementById('filter');
-const filterToggle = document.getElementById('filter-toggle');
-const pills = [...document.querySelectorAll('.scopes .scope')];
+const filterToggle = document.querySelector('[data-kit-filter]');
 const tagButtons = [...document.querySelectorAll('.tags .tag')];
-let scope = '';
+const entries = [...document.querySelectorAll('.card, .drawer .row')];
+const drawer = document.querySelector('.drawer');
 let tag = '';
 
+// Filtering spans the board and the drawer. There are no scope pills to keep
+// in count any more — the columns are the scopes — so the tag totals stay
+// what the renderer wrote.
 function applyFilters() {
   const q = filter.value.trim().toLowerCase();
-  const filtering = q !== '' || tag !== '';
-  // Facet counts: each row reports what picking one of its OWN options would
-  // yield, so a row never discounts itself. Scope counts ignore the active
-  // scope, tag counts ignore the active tag; both respect everything else.
-  const scopeCounts = new Map();
-  const tagCounts = new Map();
+  let archiveHits = 0;
 
-  for (const section of document.querySelectorAll('main > section')) {
-    const inScope = scope === '' || section.dataset.section === scope;
-    let visible = 0;
+  for (const el of entries) {
+    const tags = el.dataset.tags === '' ? [] : el.dataset.tags.split(' ');
+    const shown = (q === '' || el.dataset.search.includes(q)) && (tag === '' || tags.includes(tag));
 
-    for (const item of section.querySelectorAll('.item')) {
-      const tags = item.dataset.tags === '' ? [] : item.dataset.tags.split(' ');
-      const hitQuery = q === '' || item.dataset.search.includes(q);
-      const hitTag = tag === '' || tags.includes(tag);
-
-      const shown = inScope && hitQuery && hitTag;
-
-      item.classList.toggle('hidden', !shown);
-      // Keep the kit's j/k walk in sync with what filtering actually hides —
-      // display:none cards would otherwise still match [data-kit-item] and
-      // silently no-op moveItem's .focus() call. Archived cards never carry
-      // this attribute at all (see docket-render.mjs), so they stay excluded
-      // here too rather than being toggled back on by a filter match.
-      if (!item.classList.contains('archived')) item.toggleAttribute('data-kit-item', shown);
-      if (hitQuery && hitTag) visible++;
-      if (inScope && hitQuery) {
-        for (const each of tags) tagCounts.set(each, (tagCounts.get(each) ?? 0) + 1);
-      }
+    el.classList.toggle('hidden', !shown);
+    // Keep the kit's j/k walk in sync with what filtering actually hides —
+    // display:none cards would otherwise still match [data-kit-item] and
+    // silently no-op moveItem's .focus() call. Archived rows never carry the
+    // attribute at all (see docket-render.mjs), so they stay excluded here too
+    // rather than being toggled back on by a filter match.
+    if (el.classList.contains('archived')) {
+      if (shown) archiveHits++;
+    } else {
+      el.toggleAttribute('data-kit-item', shown);
     }
-
-    scopeCounts.set(section.dataset.section, visible);
-
-    // Collapse a section only when a filter emptied it — a heading with no hits
-    // under it is noise. Unfiltered, an empty section still shows: "Loose
-    // threads, nothing in it" is information, and it is what the page renders
-    // on load, so touching a chip must not make it disappear.
-    section.classList.toggle('hidden', !inScope || (filtering && visible === 0));
   }
 
-  for (const pill of pills) {
-    const key = pill.dataset.scope;
-    const shown = !filtering
-      ? pill.dataset.total
-      : key === ''
-        ? [...scopeCounts].reduce((sum, [k, n]) => sum + (k === '{{ARCHIVE_SCOPE}}' ? 0 : n), 0)
-        : (scopeCounts.get(key) ?? 0);
-    pill.querySelector('.count').textContent = shown;
-  }
-
-  for (const pill of tagButtons) {
-    const unfiltered = q === '' && scope === '';
-    pill.querySelector('.count').textContent = unfiltered
-      ? pill.dataset.total
-      : (tagCounts.get(pill.dataset.tag) ?? 0);
-  }
-
-  if (q !== '') {
-    for (const details of document.querySelectorAll('details')) details.open = true;
-  }
+  // A filter that reaches into the archive opens the drawer so the hits are
+  // visible; clearing it leaves the drawer wherever the reader put it.
+  if (drawer && (q !== '' || tag !== '') && archiveHits > 0) drawer.open = true;
 }
 
 filter.addEventListener('input', applyFilters);
@@ -1002,8 +986,7 @@ filterToggle.addEventListener('click', () => {
   }
 });
 
-// Tags toggle rather than switch: clicking the active one clears it, so there
-// is no "All tags" pill to keep in sync with the scope row's "All".
+// Tags toggle rather than switch: clicking the active one clears it.
 for (const button of tagButtons) {
   button.addEventListener('click', () => {
     tag = tag === button.dataset.tag ? '' : button.dataset.tag;
@@ -1016,27 +999,28 @@ for (const button of tagButtons) {
   });
 }
 
-for (const button of pills) {
-  button.addEventListener('click', () => {
-    scope = button.dataset.scope;
-    for (const other of pills) {
-      const on = other === button;
-      other.classList.toggle('active', on);
-      other.setAttribute('aria-pressed', String(on));
-    }
-    applyFilters();
-  });
+// A deep link must not land on a fold: open the card's own fold, then every
+// <details> above it (an archived row, the drawer), then scroll. Runs for
+// --open on load and for every in-page #item-N jump after that.
+function reveal(id) {
+  const el = id ? document.getElementById(id) : null;
+  if (!el) return;
+
+  const fold = el.querySelector('details.more');
+  if (fold) fold.open = true;
+  for (let d = el.closest('details'); d; d = d.parentElement ? d.parentElement.closest('details') : null) d.open = true;
+  el.scrollIntoView();
 }
+
 const target = document.body.dataset.open;
 if (target) {
+  reveal(target);
   const el = document.getElementById(target);
-  if (el) {
-    const details = el.closest('details');
-    if (details) details.open = true;
-    el.scrollIntoView();
-    el.style.outline = '2px solid var(--primary)';
-  }
+  if (el) el.style.outline = '2px solid var(--primary)';
+} else if (location.hash) {
+  reveal(location.hash.slice(1));
 }
+window.addEventListener('hashchange', () => reveal(location.hash.slice(1)));
 {{SSE_JS}}</script>
 </body>
 </html>
