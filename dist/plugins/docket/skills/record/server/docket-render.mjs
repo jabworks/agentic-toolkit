@@ -115,13 +115,21 @@ function metaLine(items, archivedCount, hasArchive, date) {
 // One column per section (docket #45). The head is the kit's g+N target and
 // carries the count as a numeral rather than a chip. A section with neither
 // items nor prose renders a quiet slot, never nothing: "nothing committed" is
-// information (docket #44, closed by decision).
+// information (docket #44, closed by decision). A populated column also ships
+// a hidden no-match slot: when a filter empties it, the client script reveals
+// that instead of leaving a blank lane — inert in the written file, where
+// nothing ever filters.
 function column(section, open, date) {
   const prose = sectionProse(section, open);
+  const lower = esc(section.name.toLowerCase());
   const body =
     section.items.length > 0 || prose !== ''
-      ? [...section.items.map((item) => itemCard(item, open.lines, date)), ...(prose === '' ? [] : [prose])].join('\n')
-      : `<div class="empty">Nothing in ${esc(section.name.toLowerCase())}</div>`;
+      ? [
+          ...section.items.map((item) => itemCard(item, open.lines, date)),
+          ...(prose === '' ? [] : [prose]),
+          ...(section.items.length > 0 ? [`<div class="empty nohit" hidden>No match in ${lower}</div>`] : []),
+        ].join('\n')
+      : `<div class="empty">Nothing in ${lower}</div>`;
 
   return `<section class="col" data-section="${esc(section.name)}">
 <div class="colhead"><h2 id="${slugSection(section.name)}" data-kit-section>${esc(section.name)}</h2><span class="n${section.items.length === 0 ? ' zero' : ''}">${section.items.length}</span></div>

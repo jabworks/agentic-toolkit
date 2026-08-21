@@ -259,6 +259,11 @@ test('renderHtml produces a self-contained column board with cards, a drawer, an
     assert.match(html, /<div class="lede"><p>First body line with <code>code<\/code> and a — dash.<\/p><\/div>/, 'the first block is the lede');
     assert.match(html, /<details class="more"><summary>Read on · 2 more<\/summary>\n<h4>Status 2026-07-01 — half landed<\/h4>/, 'the remaining blocks fold behind a count');
     assert.doesNotMatch(html, /id="item-2"[\s\S]*?<details class="more">[\s\S]*?id="item-4"/, 'a single-block body has no fold');
+    // A filter that empties a populated column must say so, not leave a blank
+    // lane: every column with items ships a hidden no-match slot the client
+    // script reveals. Columns without items have their own slot already.
+    assert.match(html, /data-section="Someday">[\s\S]*?id="item-4"[\s\S]*?<div class="empty nohit" hidden>No match in someday<\/div>\n<\/section>/, 'populated columns carry a hidden no-match slot after their cards');
+    assert.doesNotMatch(html, /No match in loose threads/, 'a column with no items has no no-match slot');
 
     // Archive: a drawer after the board, rows that expand to the body, never a
     // peer column. Rows stay out of the j/k walk (closed <details> would let

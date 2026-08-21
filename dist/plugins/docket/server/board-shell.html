@@ -456,10 +456,14 @@ h1{font-family:var(--mono);font-size:var(--text-md);letter-spacing:var(--trackin
 .meta b{color:var(--foreground);font-weight:500}
 .hactions{margin-left:auto;display:flex;align-items:center;gap:var(--space-2)}
 header .kit-error{margin-bottom:var(--space-2)}
-.btn{font:inherit;font-size:var(--text-sm);padding:var(--space-1) var(--space-3);border:1px solid var(--border);border-radius:var(--radius-md);background:var(--card);color:var(--muted-foreground);cursor:pointer;display:inline-flex;gap:var(--space-2);align-items:center;transition:color var(--dur-fast) var(--ease-out),border-color var(--dur-fast) var(--ease-out)}
+/* The filter box and button sit in one row with the kit's theme group and ?
+   button, which are 1.65rem tall (text-2xs, space-1 padding) — so these take
+   the same height rather than the kit restating itself to match them. */
+.btn{font:inherit;font-size:var(--text-xs);height:1.65rem;padding:0 var(--space-3);border:1px solid var(--border);border-radius:var(--radius);background:var(--card);color:var(--muted-foreground);cursor:pointer;display:inline-flex;gap:var(--space-2);align-items:center;transition:color var(--dur-fast) var(--ease-out),border-color var(--dur-fast) var(--ease-out)}
+.btn .kit-kbd{padding-top:0;padding-bottom:0}
 .btn:hover{color:var(--foreground);border-color:var(--primary)}
 .btn[aria-expanded="true"]{background:var(--primary-muted);color:var(--primary-text);border-color:var(--primary)}
-#filter{font:inherit;font-size:var(--text-sm);padding:var(--space-2) var(--space-3);border:1px solid var(--border);border-radius:var(--radius-md);background:var(--card);color:var(--foreground);width:18rem;max-width:100%}
+#filter{font:inherit;font-size:var(--text-xs);height:1.65rem;padding:0 var(--space-3);border:1px solid var(--border);border-radius:var(--radius);background:var(--card);color:var(--foreground);width:18rem;max-width:100%}
 #filter[hidden]{display:none}
 .tags{display:flex;gap:var(--space-2);flex-wrap:wrap;margin-top:var(--space-2)}
 .tag{display:inline-flex;align-items:center;gap:var(--space-1);font:inherit;font-size:var(--text-xs);padding:var(--space-1) var(--space-3);border:1px solid var(--border);border-radius:var(--radius-full);background:var(--card);color:var(--muted-foreground);cursor:pointer;font-variant-numeric:tabular-nums;transition:color var(--dur-fast) var(--ease-out),background-color var(--dur-fast) var(--ease-out),border-color var(--dur-fast) var(--ease-out)}
@@ -965,9 +969,21 @@ function applyFilters() {
     }
   }
 
+  // A filter that empties a populated column must say so: reveal the column's
+  // no-match slot rather than leave a blank lane. Unfiltered, the slot stays
+  // hidden — the renderer's "Nothing in …" slot already covers a section that
+  // has no items at all.
+  const filtering = q !== '' || tag !== '';
+  for (const col of document.querySelectorAll('.col')) {
+    const slot = col.querySelector('.nohit');
+    if (!slot) continue;
+    const visible = [...col.querySelectorAll('.card')].some((card) => !card.classList.contains('hidden'));
+    slot.hidden = !filtering || visible;
+  }
+
   // A filter that reaches into the archive opens the drawer so the hits are
   // visible; clearing it leaves the drawer wherever the reader put it.
-  if (drawer && (q !== '' || tag !== '') && archiveHits > 0) drawer.open = true;
+  if (drawer && filtering && archiveHits > 0) drawer.open = true;
 }
 
 filter.addEventListener('input', applyFilters);
