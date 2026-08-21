@@ -71,3 +71,10 @@ docket/
   archive (+ legacy files when unmigrated).
 - `#N` in commit subjects refers to docket ids — the docket is the tracker.
 - Splits allocate fresh ids and name the parent in the heading tail.
+
+## Board display of the title tail (2026-08-21)
+
+The board strips trailing `(<YYYY-MM-DD>…)` groups from the displayed title
+and shows the first date as the card's added date, with an age in days. This
+is a rendering rule only: `DOCKET.md` keeps the stamp in the title, and the id
+slot vs title tail distinction above is unchanged.
