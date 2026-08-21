@@ -162,44 +162,4 @@ alternative to a parser.
 
 Found 2026-08-20 while visually verifying the Surface Kit redesign.
 
-### 46. session-report charts use one colour for every series (2026-08-21) (2026-08-21)
-
-With several projects in view the bars are indistinguishable — you can only tell
-series apart by reading the row label.
-
-**The cause is not duplicate colours; it is that there is no palette.** There is
-no `PALETTE`, no colour array and no hue rotation anywhere in
-`skills/session-report/template.html`. Every bar in every chart is the same
-`█`/`░` glyph run in `var(--clay)` (template.html:2097 and :2339). One colour,
-reused for everything.
-
-**This is a design-system change, not a template tweak.** The core
-(`scripts/tokens/core.css`) carries no categorical colours at all — only
-semantics (`--success`, `--warning`, `--destructive`, `--info`) plus the clay
-accent. Reaching for the semantic ones would be wrong: semantic colour means
-good / bad / attention, and a project is none of those. A categorical ramp has to
-be added to the core as its own group, distinct from both the accent and the
-semantics, and it then belongs to every surface, not just this one.
-
-Constraints that shape it:
-
-- **No egress**, so no charting library — whatever ships is CSS plus the existing
-  glyph runs, or hand-authored inline SVG.
-- **Both themes.** Categorical hues need to stay distinguishable on `#111110`
-  and on `#f6f5ef`, which is the part that usually breaks — a ramp tuned on dark
-  goes muddy on cream.
-- **Accessibility.** Categorical series should not rely on hue alone; the glyph
-  runs could vary pattern as well as colour, which is cheap here because they are
-  text.
-- **Unbounded series count.** Project count is whatever the transcripts contain,
-  so the ramp needs a defined cycle-and-degrade rule rather than assuming it
-  never runs out.
-
-The `dataviz` skill covers exactly this (categorical palette construction, the
-separation of semantic from categorical colour, and a runnable validator) and
-should be read before picking values.
-
-Found 2026-08-21 looking at a real report with three projects; the problem gets
-worse the more projects are in range.
-
 ## Loose threads
