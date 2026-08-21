@@ -162,4 +162,30 @@ alternative to a parser.
 
 Found 2026-08-20 while visually verifying the Surface Kit redesign.
 
+### 47. displayTitle strips only trailing date stamps, so archive rows keep a mid-title one (2026-08-21)
+
+Closing an item stamps its heading, but items are often *filed* with a date in
+the title too. `displayTitle()` in `skills/record/server/docket-render.mjs`
+strips only a **trailing** stamp, so once the close stamp is appended the filed
+one is no longer trailing and survives — the board shows
+
+    46. session-report charts use one colour for every series (2026-08-21) — ✅ DONE 2026-08-21
+
+Seen for real closing #46 on 2026-08-21: the heading read
+`… (2026-08-21) (2026-08-21) — ✅ DONE 2026-08-21` and the duplicate was
+removed by hand in the same PR (#99). Hand-editing an archive heading to fix
+rendering is the smell — the renderer should be the thing that knows.
+
+Noted during the board redesign's live verification (#45) and left unfiled
+then; filed now that it has cost a manual edit.
+
+**The fix is not "strip every parenthesised date".** A title may legitimately
+carry one — "Reopen A4 collision detection (the 2026-07-14 falsification)" — so
+the rule has to be positional, not lexical: strip a date stamp that sits
+immediately before the close stamp, not one anywhere in the string.
+
+Worth deciding at the same time: whether `add` should refuse to write a title
+that already ends in a date, since the stamp is the file's job and a
+hand-typed one is what creates the pair.
+
 ## Loose threads
