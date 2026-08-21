@@ -169,7 +169,7 @@ writes global skills to `~/.agents/skills/` against its own docs
 and on a WSL setup that's the WSL home while Windows-side Cursor reads
 `C:\Users\<you>\.agents\skills\` — the install silently vanishes.
 
-Every plugin is also a spec-conformant [Agent Plugin](https://agent-plugins.org)
+Most plugins are also spec-conformant [Agent Plugins](https://agent-plugins.org)
 (root `plugin.json`, flat `skills/`, docket MCP via spec `mcp.json`) — Cursor
 loads them directly. To try one without a marketplace: copy
 `dist/plugins/<name>` into `~/.cursor/plugins/local/<name>` and fully restart
@@ -177,12 +177,18 @@ Cursor. Plugin installs ship raw skill frontmatter, so the trigger-quality
 caveat below applies; the `dist/cursor/skills/` install remains the best path
 for auto-triggering.
 
+**`condux` and `concord` are not Agent Plugins** and won't load by that path.
+Codex picks its plugin loader by root-manifest presence, and the Agent Plugins
+loader has no hooks — shipping the manifest silently disabled every Codex hook
+those two have. Hooks are the point of both, so they ship without it. On Cursor
+use `dist/cursor/skills/` for them, which is the better channel there anyway.
+
 Verified end-to-end 2026-08-14 (Cursor on Windows, WSL remote):
 
 | | Status |
 | --- | --- |
 | Skills install, list, and invoke (`/workflow` etc.) | ✅ works — project scope, from `dist/cursor/skills/` |
-| Plugins load as Agent Plugins (root `plugin.json`, flat `skills/`) | ✅ works — verified via `~/.cursor/plugins/local` |
+| Plugins load as Agent Plugins (root `plugin.json`, flat `skills/`) | ✅ works — verified via `~/.cursor/plugins/local`; **excludes `condux` and `concord`** since 2026-08-21, which ship no root manifest so their Codex hooks survive |
 | Docket MCP server | ✅ works — auto-imported from an existing Claude Code plugin install, or manually via `.cursor/mcp.json` (see [docket INSTALL.md](dist/plugins/docket/server/INSTALL.md)) |
 | Docket CLI fallback | ✅ works as-is (dependency-free) |
 | Condux `/workflow` routing | ⚠️ degrades — no SessionStart hook on Cursor, so routing relies on the skill descriptions instead of the injected routing rule |

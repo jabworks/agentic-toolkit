@@ -22,7 +22,8 @@ plugins/<name>/         # Plugin-level source — README.md (the plugin's homepa
 dist/plugins/<name>/    # Install mirror — never edit directly; sync from skills/
   plugin.json           # GENERATED Agent Plugins manifest (agent-plugins.org 1.0.0)
                         # — scripts/generate-agent-manifests.mjs, from the Claude
-                        # manifest; never hand-edit
+                        # manifest; never hand-edit. ABSENT for a plugin that
+                        # ships hooks (condux, concord) — see key invariants
   skills/<skill>/       # Mirrors skills/<skill>/ — bundles ship FLAT (one dir per
                         # member skill): Agent Plugins clients discover skills only
                         # as immediate children of skills/, never recursively
@@ -119,6 +120,17 @@ The `condux` and `toolkit-ops` bundles live at `dist/plugins/<bundle>/` and thei
   `skills/workflow/hooks/routing.md` (~390 tokens), so `/workflow` is the entry
   point rather than a catalog inference. Edit the payload as prose in
   `routing.md`; never inline it into the script
+- A plugin ships a root `plugin.json` **or** declares `hooks` in
+  `.codex-plugin/plugin.json` — **never both**. Codex picks its loader by
+  root-manifest presence, and the Agent Plugins loader has no hooks support, so
+  shipping both silently kills every Codex hook the plugin has. `8688e5b`
+  (2026-08-14) added the manifest to all 13 plugins and disabled condux's
+  routing injection and the whole of concord until 2026-08-21 — nothing looked
+  wrong, because other plugins' hooks still printed and the stale
+  `[hooks.state]` entries in `~/.codex/config.toml` survived. Every workaround
+  is closed; `specs/agent-plugins-conformance/quirks.md` has the table.
+  `generate-agent-manifests.mjs` derives the exclusion from the Codex manifest
+  (one home for the fact) and `agent-plugins.test.mjs` asserts the coupling
 - SKILL.md trigger contract: either `description` starts with "Use when..." (triggering conditions only), or a `when_to_use` field carries the trigger conditions (condux-style). `description` ≤ 500 chars, frontmatter total ≤ 1024 chars
 - SKILL.md frontmatter is a **narrow canonical grammar**, not free-form YAML:
   every line is `key: value`; values are plain when safe, double-quoted (JSON
@@ -175,7 +187,8 @@ committing — it fails the build otherwise. The suite now needs
   registers its bundled skills path, and never clobbers user-defined agents
 - `agent-plugins.test.mjs` — every plugin's root `plugin.json` matches
   `scripts/generate-agent-manifests.mjs` output byte-for-byte and stays inside
-  the spec's closed schema, every plugin's full skill set sits at `skills/`
+  the spec's closed schema, **no plugin ships both a root `plugin.json` and
+  `hooks`**, every plugin's full skill set sits at `skills/`
   depth one (spec discovery never recurses), and docket's spec `mcp.json`
   keeps the spec dialect (`type` required, `${PLUGIN_ROOT}`) beside Claude's
   `.mcp.json` (`${CLAUDE_PLUGIN_ROOT}`)

@@ -4,16 +4,23 @@
 // immediate children of skills/ (spec clients never recurse — a nested skill
 // fails silently, which is exactly why this is a test); docket's spec
 // mcp.json keeps the dialect the spec defines, not Claude's.
+//
+// And the exclusion that pays for all of it: a plugin shipping Codex hooks
+// gets NO root manifest, because its presence is what makes Codex load the
+// plugin through a loader that has no hooks (see carriesCodexHooks).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadComposition } from '../scripts/composition.mjs';
-import { SPEC_SCHEMA, renderManifest } from '../scripts/generate-agent-manifests.mjs';
+import { SPEC_SCHEMA, renderManifest, carriesCodexHooks } from '../scripts/generate-agent-manifests.mjs';
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const { plugins } = loadComposition(REPO_ROOT);
+const PLUGIN_NAMES = Object.keys(plugins);
+const hooksPlugins = PLUGIN_NAMES.filter((name) => carriesCodexHooks(REPO_ROOT, name));
+const specPlugins = PLUGIN_NAMES.filter((name) => !carriesCodexHooks(REPO_ROOT, name));
 
 // Spec name rule: 1–64 chars of [a-z0-9.-], alnum at both ends, no -- or ..
 const NAME_PATTERN = /^(?!.*(?:--|\.\.))[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$/;
@@ -23,9 +30,26 @@ const ALLOWED_FIELDS = new Set([
 ]);
 const AUTHOR_KEYS = new Set(['name', 'email', 'url']);
 
-test('every plugin root plugin.json matches the generator output byte-for-byte', () => {
+test('no plugin ships both a root plugin.json and Codex hooks', () => {
+  // The coupling, asserted rather than a name list: adding hooks to a
+  // fourteenth plugin must fail here, not silently kill its hooks in the
+  // field the way 8688e5b did to condux and concord for a week.
   const problems = [];
-  for (const name of Object.keys(plugins)) {
+  for (const name of hooksPlugins) {
+    if (fs.existsSync(path.join(REPO_ROOT, 'dist', 'plugins', name, 'plugin.json'))) {
+      problems.push(
+        `${name}: declares hooks in .codex-plugin/plugin.json AND ships a root plugin.json — ` +
+          'Codex loads a plugin with a root manifest through the Agent Plugins loader, ' +
+          'which never reads hooks. Re-run scripts/generate-agent-manifests.mjs (via sync).',
+      );
+    }
+  }
+  assert.deepEqual(problems, [], problems.join('\n'));
+});
+
+test('every spec plugin root plugin.json matches the generator output byte-for-byte', () => {
+  const problems = [];
+  for (const name of specPlugins) {
     const root = path.join(REPO_ROOT, 'dist', 'plugins', name);
     const manifestFile = path.join(root, 'plugin.json');
     if (!fs.existsSync(manifestFile)) {
@@ -42,7 +66,7 @@ test('every plugin root plugin.json matches the generator output byte-for-byte',
 
 test('every root manifest stays inside the spec closed schema', () => {
   const problems = [];
-  for (const name of Object.keys(plugins)) {
+  for (const name of specPlugins) {
     const manifest = JSON.parse(
       fs.readFileSync(path.join(REPO_ROOT, 'dist', 'plugins', name, 'plugin.json'), 'utf8'),
     );
