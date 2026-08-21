@@ -182,6 +182,45 @@
   border-color: var(--primary);
 }
 
+/* A keyboard layer nobody can discover is a keyboard layer nobody uses. kit.js
+   places this next to every theme group, so the ? overlay has a visible way in
+   for anyone who was never told the shortcut exists. */
+/* kit.js wraps the theme group and the help button in this. The theme group
+   keeps growing where its host stretched it (the guide's rail), and stays
+   content-sized where the host did not (the board's action row). */
+.kit-controls {
+  display: flex;
+  align-items: center;
+}
+
+.kit-controls > .kit-theme {
+  flex: 1 1 auto;
+}
+
+.kit-helpbtn {
+  margin-left: var(--space-2);
+  width: 1.65rem;
+  height: 1.65rem;
+  flex: none;
+  font: inherit;
+  font-family: var(--mono);
+  font-size: var(--text-2xs);
+  line-height: 1;
+  color: var(--muted-foreground);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+}
+
+.kit-helpbtn:hover {
+  color: var(--foreground);
+  border-color: var(--primary);
+}
+
 .kit-copied {
   color: var(--success);
 }
@@ -225,6 +264,7 @@
 
   .kit-skip,
   .kit-help,
+  .kit-helpbtn,
   .kit-theme,
   [data-kit-chrome] {
     display: none !important;

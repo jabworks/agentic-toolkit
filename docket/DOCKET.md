@@ -182,4 +182,86 @@ change or the nav points at nothing.
 
 Found 2026-08-20 while visually verifying the Surface Kit redesign.
 
+### 45. Redesign the docket board as a real board — columns, not a stacked list (2026-08-21) (2026-08-21)
+
+The board renders sections as vertically stacked `<section>` blocks with an `h2`
+each, so "Committed / Someday / Loose threads" read as a long scroll rather than
+as parallel buckets. Scope pills filter to one section at a time, which is a
+workaround for not being able to see them side by side. Wanted: something closer
+to Trello or Jira — a column per section, items as cards — without the weight of
+either.
+
+**Decide before building — the write path is the whole question.** Trello and
+Jira are *editing* UIs; docket's board is a *rendered view* of a markdown file.
+`docket browse` writes a standalone HTML file that is opened later with no server
+(quirks Q9), so a card dragged in that file has nowhere to persist to. Three
+options, and they are meaningfully different products:
+
+1. **Read-only columns.** Pure layout change, works in both the written file and
+   `--serve`. Cheapest, and probably most of the value — seeing the buckets side
+   by side is the actual ask.
+2. **Drag to move, `--serve` only.** Needs a write-back endpoint that edits
+   `DOCKET.md`'s section headings, plus conflict handling if the file changed on
+   disk. The written-out file would then behave differently from the served one,
+   which is a real trap.
+3. **Drag in both, written file degrades.** Worst of both — the same artifact
+   silently loses a capability depending on how it was opened.
+
+Recommendation is (1) unless moving items is specifically what is wanted.
+
+Other things a column layout forces a decision on:
+
+- Section count is user-defined in `DOCKET.md`, so column count is unbounded.
+  Needs horizontal scroll, or a rule for collapsing empties (see #44 — a section
+  with no items currently still renders its heading).
+- The archive is 35 items against 7 open; it cannot be a peer column.
+- Long item bodies are the board's actual content — a Trello card shows a title
+  and hides the body, which is a different reading model from today's, where the
+  full body is visible inline. That is a content decision, not a layout one.
+- Narrow viewports have no columns to give; the mobile form is the current
+  stacked list, so both layouts have to exist regardless.
+
+Related: #44 (empty sections), and the Surface Kit scale is already in place, so
+this is layout work in `board-shell.html` plus markup from `docket-render.mjs`.
+
+### 46. session-report charts use one colour for every series (2026-08-21) (2026-08-21)
+
+With several projects in view the bars are indistinguishable — you can only tell
+series apart by reading the row label.
+
+**The cause is not duplicate colours; it is that there is no palette.** There is
+no `PALETTE`, no colour array and no hue rotation anywhere in
+`skills/session-report/template.html`. Every bar in every chart is the same
+`█`/`░` glyph run in `var(--clay)` (template.html:2097 and :2339). One colour,
+reused for everything.
+
+**This is a design-system change, not a template tweak.** The core
+(`scripts/tokens/core.css`) carries no categorical colours at all — only
+semantics (`--success`, `--warning`, `--destructive`, `--info`) plus the clay
+accent. Reaching for the semantic ones would be wrong: semantic colour means
+good / bad / attention, and a project is none of those. A categorical ramp has to
+be added to the core as its own group, distinct from both the accent and the
+semantics, and it then belongs to every surface, not just this one.
+
+Constraints that shape it:
+
+- **No egress**, so no charting library — whatever ships is CSS plus the existing
+  glyph runs, or hand-authored inline SVG.
+- **Both themes.** Categorical hues need to stay distinguishable on `#111110`
+  and on `#f6f5ef`, which is the part that usually breaks — a ramp tuned on dark
+  goes muddy on cream.
+- **Accessibility.** Categorical series should not rely on hue alone; the glyph
+  runs could vary pattern as well as colour, which is cheap here because they are
+  text.
+- **Unbounded series count.** Project count is whatever the transcripts contain,
+  so the ramp needs a defined cycle-and-degrade rule rather than assuming it
+  never runs out.
+
+The `dataviz` skill covers exactly this (categorical palette construction, the
+separation of semantic from categorical colour, and a runnable validator) and
+should be read before picking values.
+
+Found 2026-08-21 looking at a real report with three projects; the problem gets
+worse the more projects are in range.
+
 ## Loose threads
