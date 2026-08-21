@@ -53,13 +53,17 @@ docket's own styles: docket's legacy `--muted: #6a6f76` was a muted
 with `--muted-foreground` for text. A mechanical rename inverts the role
 silently.
 
-## Q5 — Elevation is the only theme-variant new token group
+## Q5 — Elevation and categorical colour are the theme-variant new groups
 
 Type, space, radius and motion go in the bare `:root` block only. Shadows must
 be redefined in every theme block — a shadow tuned for `#111110` reads as dirt
 on `#f6f5ef`. Getting this wrong produces the classic artifact bug: a value
 whose only definition sits behind a media query, absent in the un-stamped
-state.
+state. `--cat-*` (D7) joined elevation here on 2026-08-21: its two rows differ
+per theme, so it is restated in every theme block for the same reason.
+
+`token-core.test.mjs:61` is what enforces this — a token name that does not
+match `THEME_INVARIANT` is *required* to have a light override.
 
 ## Q6 — Three theme states, not two
 
@@ -105,3 +109,35 @@ That file is opened later, offline, with no server. D4 keeps server-side
 rendering precisely to preserve this; converting the board to a
 shell-plus-hydration model would make the written file inert without JS and was
 rejected for that reason.
+
+## Q10 — The core is dark-first, so the ramp's rows invert silently
+
+Bare `:root` carries `--background: #111110`. The **base block is the dark
+palette**; both light blocks are the overrides. Writing D7's rows the intuitive
+way round — light in `:root` — ships the cream ramp on the dark ground, and
+**nothing in the suite catches it**: `token-core.test.mjs` compares token *name*
+sets between the two light blocks, and `check-tokens.mjs` is byte-exact against
+`core.css`. Neither validates a value. The only gate is reading which block
+`--background: #111110` sits in before writing hex.
+
+## Q11 — An inline `background` shorthand erases the stripe with no error
+
+D7's gantt tier composes a hue with a `background-image` stripe. The hue must
+arrive as a custom property (`style="--hue:#b04d54"`), never as
+`style="background:#b04d54"`: the shorthand sets `background-image: none`
+*inline*, which outranks the stylesheet rule, so the striped tier renders
+identical to the solid one. Found in the specimen — slots 1 and 9 were
+pixel-identical at 3× zoom while the class was present and the CSS was correct.
+
+Once composed correctly, the stripe is legible at the real `0.85rem` segment
+height in both themes, which is what makes the tier viable at all.
+
+## Q12 — `░` reserves the low end of the ink range
+
+The empty track in a glyph bar is `░`, measured at **8.0%** ink in the mono
+stack at 32px against `█`'s 44.7%. A texture chosen for the second channel must
+sit near the *full* end or it reads as partially-filled track and corrupts
+perceived bar length: `▓` is 35.1% and works; `▒` (21.4%) and `▚` (22.4%) do
+not. A private-use tofu box measures 9.0%, so ink coverage also distinguishes a
+missing glyph from a real one — width does not, since the fallback font gives
+every codepoint the same advance.

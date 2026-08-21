@@ -40,6 +40,16 @@
   --info: #70b8ff;
   --info-muted: #0d2847;
   --info-border: #104d87;
+  /* categorical — series identity; neither the accent nor the semantics */
+  --cat-1: #cf686e;
+  --cat-2: #897ed6;
+  --cat-3: #41a265;
+  --cat-4: #3694d4;
+  --cat-5: #94911b;
+  --cat-6: #ba6cae;
+  --cat-7: #c37827;
+  --cat-8: #00a0a4;
+  --cat-other: #686560;
   --outline: rgba(237, 237, 236, 0.08);
   --subtle: #686560;
   --shadow-sm: 0 1px 2px rgba(6, 6, 5, 0.5);
@@ -113,6 +123,15 @@
     --info: #3f6fa6;
     --info-muted: #e6f1fc;
     --info-border: #bed7ef;
+    --cat-1: #b04d54;
+    --cat-2: #6f63b8;
+    --cat-3: #1e874b;
+    --cat-4: #0a78b7;
+    --cat-5: #797600;
+    --cat-6: #9d5192;
+    --cat-7: #a45e00;
+    --cat-8: #008f93;
+    --cat-other: #a8a294;
     --outline: rgba(54, 48, 42, 0.08);
     --subtle: #a8a294;
     --shadow-sm: 0 1px 2px rgba(54, 48, 42, 0.1);
@@ -149,6 +168,15 @@
   --info: #3f6fa6;
   --info-muted: #e6f1fc;
   --info-border: #bed7ef;
+  --cat-1: #b04d54;
+  --cat-2: #6f63b8;
+  --cat-3: #1e874b;
+  --cat-4: #0a78b7;
+  --cat-5: #797600;
+  --cat-6: #9d5192;
+  --cat-7: #a45e00;
+  --cat-8: #008f93;
+  --cat-other: #a8a294;
   --outline: rgba(54, 48, 42, 0.08);
   --subtle: #a8a294;
   --shadow-sm: 0 1px 2px rgba(54, 48, 42, 0.1);
@@ -943,6 +971,17 @@
         border-radius: var(--radius);
         opacity: 0.85;
         cursor: crosshair;
+        background-color: var(--hue);
+      }
+      /* Slots 9-16: same hue, second channel. The stripe is drawn in the
+         surface colour so it reads as a gap and is correct in both themes
+         without a token of its own. */
+      .seg-striped {
+        background-image: repeating-linear-gradient(
+          45deg,
+          transparent 0 4px,
+          var(--card) 4px 7px
+        );
       }
       .seg:hover {
         opacity: 1;
@@ -980,6 +1019,7 @@
         border-radius: var(--radius);
         vertical-align: middle;
         margin-right: var(--space-1);
+        background-color: var(--hue);
       }
 
       .bar {
@@ -1958,6 +1998,33 @@
           )
           .join("");
 
+        // Categorical identity. One global ranking of projects by total tokens,
+        // computed once and shared by every chart, so a project's hue follows
+        // the project and never its position in the current view. Slots 9-16
+        // repeat the eight hues with a second channel (a textured glyph in the
+        // bars, a stripe in the timeline); past 16 everything folds to
+        // --cat-other. See specs/surface-kit/decisions.md D7.
+        /* cat:slots:start — extracted by tests/session-report-charts.test.mjs */
+        function catSlot(rank) {
+          if (rank >= 16) return { token: "--cat-other", glyph: "█", striped: false };
+          return {
+            token: "--cat-" + ((rank % 8) + 1),
+            glyph: rank < 8 ? "█" : "▓",
+            striped: rank >= 8,
+          };
+        }
+        /* cat:slots:end */
+        const catTotal = (v) => v.input_tokens.total + v.output_tokens;
+        const SLOT_OF = new Map(
+          Object.entries(DATA.by_project || {})
+            .sort((a, b) => catTotal(b[1]) - catTotal(a[1]))
+            .map(([k], i) => [k, i]),
+        );
+        // A project seen in the timeline but absent from by_project folds rather
+        // than throwing — 16 is the first rank past the composite tier.
+        const catRank = (p) => (SLOT_OF.has(p) ? SLOT_OF.get(p) : 16);
+        const catSlotOf = (p) => catSlot(catRank(p));
+
         // session timeline by day
         (function () {
           const days = (DATA.by_day || []);
@@ -1965,22 +2032,11 @@
             $("timeline-section").style.display = "none";
             return;
           }
-          const PCOL = [
-            "#52a9ff",
-            "#51a55d",
-            "#978365",
-            "#f1a10d",
-            "#f16a6a",
-            "#9b8cff",
-            "#6ec1d6",
-            "#c792ea",
-          ];
           const dayTotal = days.reduce((a, d) => a + d.tokens, 0) || 1;
           const tokMax = Math.max(...days.map((d) => d.tokens));
           const projects = [
             ...new Set(days.flatMap((d) => d.sessions.map((s) => s.project))),
-          ];
-          const colorOf = (p) => PCOL[projects.indexOf(p) % PCOL.length];
+          ].sort((a, b) => catRank(a) - catRank(b));
           const hhmm = (m) =>
             (m >= 1440 ? `+${Math.floor(m / 1440)}d ` : "") +
             `${String(Math.floor(m / 60) % 24).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
@@ -2046,9 +2102,15 @@
                       `${hhmm(s.start_min)}–${hhmm(s.end_min)} · ${fmt(s.tokens)} tokens` +
                       (s.cost > 0 ? ` · ${fc2(s.cost)} est.` : "") + "\n" +
                       `session ${s.id}`;
+                    const slot = catSlotOf(s.project);
+
+                    // The hue rides in --hue, never a background shorthand: the
+                    // shorthand sets background-image:none inline and outranks
+                    // the stylesheet, silently erasing the stripe.
                     return (
-                      `<span class="seg" style="left:${(100 * s.start_min) / DAY}%;width:${w}%;` +
-                      `background:${colorOf(s.project)}" title="${esc(tip)}"></span>`
+                      `<span class="seg${slot.striped ? " seg-striped" : ""}" ` +
+                      `style="left:${(100 * s.start_min) / DAY}%;width:${w}%;` +
+                      `--hue:var(${slot.token})" title="${esc(tip)}"></span>`
                     );
                   }).join("")}</div>`,
               )
@@ -2072,10 +2134,14 @@
           });
           $("gantt-leg").innerHTML = projects
             .slice(0, 12)
-            .map(
-              (p) =>
-                `<span><span class="sw" style="background:${colorOf(p)}"></span>${esc(short(p))}</span>`,
-            )
+            .map((p) => {
+              const slot = catSlotOf(p);
+
+              return (
+                `<span><span class="sw${slot.striped ? " seg-striped" : ""}" ` +
+                `style="--hue:var(${slot.token})"></span>${esc(short(p))}</span>`
+              );
+            })
             .join("");
           pills();
           gantt();
@@ -2092,9 +2158,13 @@
           $("project-bars").innerHTML = rows
             .map(([k, v]) => {
               const n = Math.max(1, Math.round((W * v) / max));
+              // Slot comes from the global map, never from this sliced array's
+              // index — the top-15 cut must not renumber anyone.
+              const slot = catSlotOf(k);
               return (
                 `<div class="bar"><span class="name" title="${esc(k)} — ${fmt(v)}">${esc(short(k))}</span>` +
-                `<span class="blocks">${"█".repeat(n)}<span class="empty">${"░".repeat(W - n)}</span></span>` +
+                `<span class="blocks" style="color:var(${slot.token})">${slot.glyph.repeat(n)}` +
+                `<span class="empty">${"░".repeat(W - n)}</span></span>` +
                 `<span class="pct">${share(v)}</span></div>`
               );
             })

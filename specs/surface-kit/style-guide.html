@@ -45,6 +45,16 @@
   --info: #70b8ff;
   --info-muted: #0d2847;
   --info-border: #104d87;
+  /* categorical — series identity; neither the accent nor the semantics */
+  --cat-1: #cf686e;
+  --cat-2: #897ed6;
+  --cat-3: #41a265;
+  --cat-4: #3694d4;
+  --cat-5: #94911b;
+  --cat-6: #ba6cae;
+  --cat-7: #c37827;
+  --cat-8: #00a0a4;
+  --cat-other: #686560;
   --outline: rgba(237, 237, 236, 0.08);
   --subtle: #686560;
   --shadow-sm: 0 1px 2px rgba(6, 6, 5, 0.5);
@@ -118,6 +128,15 @@
     --info: #3f6fa6;
     --info-muted: #e6f1fc;
     --info-border: #bed7ef;
+    --cat-1: #b04d54;
+    --cat-2: #6f63b8;
+    --cat-3: #1e874b;
+    --cat-4: #0a78b7;
+    --cat-5: #797600;
+    --cat-6: #9d5192;
+    --cat-7: #a45e00;
+    --cat-8: #008f93;
+    --cat-other: #a8a294;
     --outline: rgba(54, 48, 42, 0.08);
     --subtle: #a8a294;
     --shadow-sm: 0 1px 2px rgba(54, 48, 42, 0.1);
@@ -154,6 +173,15 @@
   --info: #3f6fa6;
   --info-muted: #e6f1fc;
   --info-border: #bed7ef;
+  --cat-1: #b04d54;
+  --cat-2: #6f63b8;
+  --cat-3: #1e874b;
+  --cat-4: #0a78b7;
+  --cat-5: #797600;
+  --cat-6: #9d5192;
+  --cat-7: #a45e00;
+  --cat-8: #008f93;
+  --cat-other: #a8a294;
   --outline: rgba(54, 48, 42, 0.08);
   --subtle: #a8a294;
   --shadow-sm: 0 1px 2px rgba(54, 48, 42, 0.1);
@@ -849,6 +877,27 @@ kbd {
           <div class="sw"><div class="chip" style="background:var(--subtle)"></div><div class="lab"><span>subtle</span></div></div>
         </div>
         <p class="caption">Switch the theme in the rail — every swatch re-resolves through the same token names.</p>
+      </div>
+      <div class="spec">
+        <div class="swatches">
+          <div class="sw"><div class="chip" style="background:var(--cat-1)"></div><div class="lab"><span>cat-1</span></div></div>
+          <div class="sw"><div class="chip" style="background:var(--cat-2)"></div><div class="lab"><span>cat-2</span></div></div>
+          <div class="sw"><div class="chip" style="background:var(--cat-3)"></div><div class="lab"><span>cat-3</span></div></div>
+          <div class="sw"><div class="chip" style="background:var(--cat-4)"></div><div class="lab"><span>cat-4</span></div></div>
+          <div class="sw"><div class="chip" style="background:var(--cat-5)"></div><div class="lab"><span>cat-5</span></div></div>
+          <div class="sw"><div class="chip" style="background:var(--cat-6)"></div><div class="lab"><span>cat-6</span></div></div>
+          <div class="sw"><div class="chip" style="background:var(--cat-7)"></div><div class="lab"><span>cat-7</span></div></div>
+          <div class="sw"><div class="chip" style="background:var(--cat-8)"></div><div class="lab"><span>cat-8</span></div></div>
+          <div class="sw"><div class="chip" style="background:var(--cat-other)"></div><div class="lab"><span>cat-other</span></div></div>
+        </div>
+        <p class="caption">
+          Categorical colour — series identity, in fixed order. Distinct from the accent (a
+          surface's voice, not a series) and from the semantics (a project is neither good nor
+          bad). Computed for both surfaces, not picked: worst adjacent CVD ΔE 15.8 dark / 15.7
+          light, and all eight clear 3:1 on both grounds. Past slot 8 the hues repeat with a
+          second channel; past 16 they fold to <code>cat-other</code>. See
+          <a href="ramp-direction-c.html">the specimen</a> and decisions D7.
+        </p>
       </div>
       <div class="note">
         <b>New:</b> a third theme state. Today all four surfaces follow the OS and offer no

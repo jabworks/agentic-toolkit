@@ -109,10 +109,48 @@ byte-exactly, so a core change skipping `--fix` on any surface fails
 split docket #20 to avoid; it is unavoidable for the core itself, which is why
 steps 0 and 2 are deliberately kept out of it.
 
+## D7 — Categorical colour is a core group, distinct from accent and semantics
+
+*(docket #46, 2026-08-21. Specimen: [ramp-direction-c.html](ramp-direction-c.html))*
+
+The core carries `--cat-1` … `--cat-8` plus `--cat-other`, as their own group.
+Not the accent (`--primary` is the surface's voice, not a series) and not the
+semantics (`--success`/`--warning`/`--destructive`/`--info` mean good, bad and
+attention; a project is none of those). This does not reopen "redesign the
+palette" below — the warm-neutral system and its single accent are untouched;
+categorical is an addition beside them.
+
+Values were computed against our two surfaces with the `dataviz` method rather
+than picked: chroma capped at 0.13 so the hues stay as muted as the rest of the
+skin, and the slot order chosen by enumerating all 40,320 orderings and
+maximizing the worst adjacent pair.
+
+| | slots 1–8 |
+|---|---|
+| dark (`:root`) | `#cf686e` `#897ed6` `#41a265` `#3694d4` `#94911b` `#ba6cae` `#c37827` `#00a0a4` |
+| light (both light blocks) | `#b04d54` `#6f63b8` `#1e874b` `#0a78b7` `#797600` `#9d5192` `#a45e00` `#008f93` |
+
+Worst adjacent CVD ΔE **15.8 dark / 15.7 light** against a target of 8;
+normal-vision ΔE **18.2 / 18.1** against a floor of 15; all eight clear **3:1 on
+both surfaces**, so no relief rule is needed anywhere. Tritan separation is 3.4
+— the method gates protanopia and deuteranopia only, so this is a permitted
+trade, recorded so it is not rediscovered as a bug.
+
+**Identity is never colour alone, and the ramp is finite.** Slots 9–16 repeat
+the same eight hues with a second channel; past 16 everything folds to
+`--cat-other`. The second channel is per-medium: `▓` instead of `█` in text
+glyph runs, a diagonal stripe in CSS blocks. Hues are assigned from one global
+ranking of the entity, never from position within the current view — colour
+follows the entity, not its rank.
+
 ## Rejected
 
 | Rejected | Why |
 |---|---|
+| Promote the existing `PCOL` array as-is | Fails four of five checks in both modes: `#978365` below the chroma floor, adjacent CVD ΔE 3.3, normal-vision 12.9, and 7 of 8 below 3:1 on cream. The clay slot is the accent doing double duty as a series, and it is the pair that collapses |
+| Adopt the `dataviz` reference instance verbatim | Passes, but at CVD ΔE 8.4/9.1 against D7's 15.8/15.7, four light slots need the relief rule, and the hues are brighter and cooler than the skin. Provenance is the only axis it wins |
+| Max-chroma ramp that clears 3:1 on cream | Requiring 3:1 for all eight without a chroma cap admits exactly one hue set, and it is garish (`#bb0280`, `#0177fe`) — wrong for a warm-neutral system |
+| Cycle hues past slot 8 | The docket item assumed cycling; the method forbids it. Two projects sharing a hue in the gantt, where no row label disambiguates, is precisely the reported bug |
 | Escape-on-write in the checker | Breaks the byte-identical invariant that makes the checker trivially correct; unreadable region in source; contradicts the ratified assert-at-the-source doctrine |
 | Ban backslashes in the kit source | Zero machinery and doctrine-consistent, but a permanent surprising constraint on shared JS — one forgotten regex years later is the silent corruption being designed out |
 | docket gets the kit by module import | Two mechanisms that must not drift, plus a test to police them. D4 removes the hazard instead of managing it |

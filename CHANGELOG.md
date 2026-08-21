@@ -12,37 +12,53 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## session-report 1.10.0 — 2026-08-21
+
+- feat(session-report): categorical ramp in the core, one hue per project
+
 ## session-report 1.9.1 — 2026-08-21
 
-- fix(surface-kit): board density, readable items, and a discoverable ? overlay
+- fix(surface-kit): board density, readable items, and a discoverable ? overlay (#91)
 
 ## session-report 1.9.0 — 2026-08-21
 
 - feat(surface-kit): one design system across all four HTML surfaces (#89)
 
+## session-handoff 1.8.2 — 2026-08-21
+
+- feat(session-report): categorical ramp in the core, one hue per project
+
 ## session-handoff 1.8.1 — 2026-08-21
 
-- fix(surface-kit): board density, readable items, and a discoverable ? overlay
+- fix(surface-kit): board density, readable items, and a discoverable ? overlay (#91)
 
 ## session-handoff 1.8.0 — 2026-08-21
 
 - feat(surface-kit): one design system across all four HTML surfaces (#89)
 
+## docket 0.10.1 — 2026-08-21
+
+- feat(session-report): categorical ramp in the core, one hue per project
+
 ## docket 0.10.0 — 2026-08-21
 
-- chore(docket): version 0.10.0
+- feat(docket): board as columns, lede-first cards, archive drawer (#45) (#93) (#95)
 
 ## docket 0.9.1 — 2026-08-21
 
-- fix(surface-kit): board density, readable items, and a discoverable ? overlay
+- fix(surface-kit): board density, readable items, and a discoverable ? overlay (#91)
 
 ## docket 0.9.0 — 2026-08-21
 
 - feat(surface-kit): one design system across all four HTML surfaces (#89)
 
+## condux 2.20.2 — 2026-08-21
+
+- feat(session-report): categorical ramp in the core, one hue per project
+
 ## condux 2.20.1 — 2026-08-21
 
-- fix(surface-kit): board density, readable items, and a discoverable ? overlay
+- fix(surface-kit): board density, readable items, and a discoverable ? overlay (#91)
 
 ## condux 2.20.0 — 2026-08-21
 

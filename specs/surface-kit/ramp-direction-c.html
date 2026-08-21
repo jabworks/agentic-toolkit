@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>surface-kit — categorical ramp, Direction C</title>
+<style>
+  /* Standalone specimen: no egress, no shared machinery. The two panels carry
+     fixed surfaces on purpose — they are the thing being specified, so they do
+     not follow the reader's theme. */
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 2rem 1.25rem 4rem;
+    background: #0b0b0a;
+    color: #eeeeec;
+    font: 15px/1.55 "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+  h1 { font-size: 1.5rem; margin: 0 0 .4rem; letter-spacing: -0.022em; }
+  .lede { color: #b5b3ad; margin: 0 0 .6rem; max-width: 72ch; }
+  .meta { color: #686560; font-size: .8125rem; margin: 0 0 2rem;
+          font-family: "Geist Mono", ui-monospace, Menlo, monospace; }
+  .panels { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+  @media (min-width: 60rem) { .panels { grid-template-columns: 1fr 1fr; } }
+  .panel {
+    background: var(--bg); color: var(--fg);
+    border: 1px solid var(--border); border-radius: .5rem;
+    padding: 1rem; overflow-x: auto;
+  }
+  .panel h2 {
+    font-size: .6875rem; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--subtle); margin: 0 0 1rem; font-weight: 400;
+    font-family: "Geist Mono", ui-monospace, Menlo, monospace;
+  }
+  .panel h3 {
+    font-size: .75rem; color: var(--dim); margin: 1.1rem 0 .5rem; font-weight: 400;
+    font-family: "Geist Mono", ui-monospace, Menlo, monospace;
+  }
+  .panel h3:first-of-type { margin-top: 0; }
+  .swatches { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .4rem; }
+  .sw { display: flex; align-items: center; gap: .4rem; font-size: .6875rem;
+        font-family: "Geist Mono", ui-monospace, Menlo, monospace; color: var(--dim); }
+  .chip { width: .85rem; height: .85rem; border-radius: 3px; flex: none; }
+  .hex { color: var(--subtle); }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: .375rem; padding: .75rem; }
+  .bar {
+    display: grid; grid-template-columns: 15ch 1fr 11ch; gap: .55rem; align-items: center;
+    font-family: "Geist Mono", ui-monospace, Menlo, monospace; font-size: 11px;
+  }
+  .bname { color: var(--fg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .blocks { white-space: pre; overflow: hidden; }
+  .track { color: var(--subtle); }
+  .bslot { text-align: right; color: var(--subtle); }
+  .gantt { display: flex; flex-direction: column; gap: .25rem; }
+  .lane { position: relative; height: .85rem; }
+  .seg { position: absolute; top: 0; height: .85rem; border-radius: 2px; background-color: var(--hue); }
+  /* The stripe is drawn in the SURFACE colour, never a literal ink — it reads
+     as a gap rather than an overlay, and is correct in both themes by
+     construction. The hue must arrive as --hue, not as an inline background
+     shorthand: the shorthand sets background-image:none inline, which outranks
+     this rule and erases the stripe with no visible error. */
+  .seg-striped {
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent 0 4px,
+      var(--card) 4px 7px
+    );
+  }
+  footer { color: #686560; font-size: .8125rem; margin-top: 2rem;
+           font-family: "Geist Mono", ui-monospace, Menlo, monospace; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Categorical ramp — Direction C</h1>
+  <p class="lede">
+    The signed-off specimen for the <code>--cat-*</code> group: eight hues in fixed order, the same eight
+    repeated with <code>▓</code> (bars) or a diagonal stripe (gantt) for slots 9–16, and everything past
+    slot 16 folded to <code>--cat-other</code>. Both panels carry a real chart at real size.
+  </p>
+  <p class="meta">
+    worst adjacent CVD ΔE 15.8 dark / 15.7 light (target 8) · normal-vision ΔE 18.2 / 18.1 (floor 15) ·
+    all eight ≥ 3:1 on both surfaces · tritan 3.4, a permitted trade
+  </p>
+  <div class="panels">
+      <section class="panel" style="--bg:#111110;--card:#191918;--fg:#eeeeec;--dim:#b5b3ad;--subtle:#686560;--border:#3b3a37">
+        <h2>dark · :root</h2>
+
+        <h3>the ramp</h3>
+        <div class="swatches">
+            <div class="sw"><span class="chip" style="background:#cf686e"></span><code>--cat-1</code><code class="hex">#cf686e</code></div>
+            <div class="sw"><span class="chip" style="background:#897ed6"></span><code>--cat-2</code><code class="hex">#897ed6</code></div>
+            <div class="sw"><span class="chip" style="background:#41a265"></span><code>--cat-3</code><code class="hex">#41a265</code></div>
+            <div class="sw"><span class="chip" style="background:#3694d4"></span><code>--cat-4</code><code class="hex">#3694d4</code></div>
+            <div class="sw"><span class="chip" style="background:#94911b"></span><code>--cat-5</code><code class="hex">#94911b</code></div>
+            <div class="sw"><span class="chip" style="background:#ba6cae"></span><code>--cat-6</code><code class="hex">#ba6cae</code></div>
+            <div class="sw"><span class="chip" style="background:#c37827"></span><code>--cat-7</code><code class="hex">#c37827</code></div>
+            <div class="sw"><span class="chip" style="background:#00a0a4"></span><code>--cat-8</code><code class="hex">#00a0a4</code></div>
+            <div class="sw"><span class="chip" style="background:#686560"></span><code>--cat-other</code><code class="hex">#686560</code></div>
+        </div>
+
+        <h3>tokens by project — eighteen series</h3>
+        <div class="card">
+          <div class="bar"><span class="bname">agentic-toolkit</span><span class="blocks" style="color:#cf686e">██████████████████████████████████████████<span class="track"></span></span><span class="bslot">--cat-1</span></div>
+          <div class="bar"><span class="bname">vault-infra</span><span class="blocks" style="color:#897ed6">██████████████████████████████████<span class="track">░░░░░░░░</span></span><span class="bslot">--cat-2</span></div>
+          <div class="bar"><span class="bname">portfolio-site</span><span class="blocks" style="color:#41a265">██████████████████████████████<span class="track">░░░░░░░░░░░░</span></span><span class="bslot">--cat-3</span></div>
+          <div class="bar"><span class="bname">docs-site</span><span class="blocks" style="color:#3694d4">███████████████████████████<span class="track">░░░░░░░░░░░░░░░</span></span><span class="bslot">--cat-4</span></div>
+          <div class="bar"><span class="bname">edge-proxy</span><span class="blocks" style="color:#94911b">████████████████████████<span class="track">░░░░░░░░░░░░░░░░░░</span></span><span class="bslot">--cat-5</span></div>
+          <div class="bar"><span class="bname">schema-registry</span><span class="blocks" style="color:#ba6cae">█████████████████████<span class="track">░░░░░░░░░░░░░░░░░░░░░</span></span><span class="bslot">--cat-6</span></div>
+          <div class="bar"><span class="bname">cli-tools</span><span class="blocks" style="color:#c37827">███████████████████<span class="track">░░░░░░░░░░░░░░░░░░░░░░░</span></span><span class="bslot">--cat-7</span></div>
+          <div class="bar"><span class="bname">scratch</span><span class="blocks" style="color:#00a0a4">█████████████████<span class="track">░░░░░░░░░░░░░░░░░░░░░░░░░</span></span><span class="bslot">--cat-8</span></div>
+          <div class="bar"><span class="bname">infra-scripts</span><span class="blocks" style="color:#cf686e">▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓<span class="track">░░░░░░░░░░░░░░░░░░░░░░░░░░░</span></span><span class="bslot">--cat-1 ▓</span></div>
+          <div class="bar"><span class="bname">design-tokens</span><span class="blocks" style="color:#897ed6">▓▓▓▓▓▓▓▓▓▓▓▓▓▓<span class="track">░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span></span><span class="bslot">--cat-2 ▓</span></div>
+          <div class="bar"><span class="bname">api-contracts</span><span class="blocks" style="color:#41a265">▓▓▓▓▓▓▓▓▓▓▓▓<span class="track">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span></span><span class="bslot">--cat-3 ▓</span></div>
+          <div class="bar"><span class="bname">mail-relay</span><span class="blocks" style="color:#3694d4">▓▓▓▓▓▓▓▓▓▓▓<span class="track">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span></span><span class="bslot">--cat-4 ▓</span></div>
+          <div class="bar"><span class="bname">log-shipper</span><span class="blocks" style="color:#94911b">▓▓▓▓▓▓▓▓▓<span class="track">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span></span><span class="bslot">--cat-5 ▓</span></div>
+          <div class="bar"><span class="bname">cost-report</span><span class="blocks" style="color:#ba6cae">▓▓▓▓▓▓▓▓<span class="track">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span></span><span class="bslot">--cat-6 ▓</span></div>
+          <div class="bar"><span class="bname">dns-tool</span><span class="blocks" style="color:#c37827">▓▓▓▓▓▓▓<span class="track">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span></span><span class="bslot">--cat-7 ▓</span></div>
+          <div class="bar"><span class="bname">seed-data</span><span class="blocks" style="color:#00a0a4">▓▓▓▓▓▓<span class="track">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span></span><span class="bslot">--cat-8 ▓</span></div>
+          <div class="bar"><span class="bname">one-off-migration</span><span class="blocks" style="color:#686560">█████<span class="track">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span></span><span class="bslot">other</span></div>
+          <div class="bar"><span class="bname">spike-branch</span><span class="blocks" style="color:#686560">████<span class="track">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span></span><span class="bslot">other</span></div>
+        </div>
+
+        <h3>session timeline — slot 1 beside slot 9</h3>
+        <div class="card">
+          <div class="gantt">
+            <div class="lane"><span class="seg" style="left:2%;width:20%;--hue:#cf686e"></span><span class="seg seg-striped" style="left:24%;width:20%;--hue:#cf686e"></span><span class="seg" style="left:48%;width:18%;--hue:#897ed6"></span><span class="seg seg-striped" style="left:68%;width:18%;--hue:#897ed6"></span></div>
+            <div class="lane"><span class="seg" style="left:4%;width:16%;--hue:#41a265"></span><span class="seg seg-striped" style="left:22%;width:16%;--hue:#41a265"></span><span class="seg" style="left:42%;width:20%;--hue:#3694d4"></span><span class="seg seg-striped" style="left:64%;width:20%;--hue:#3694d4"></span></div>
+            <div class="lane"><span class="seg" style="left:6%;width:14%;--hue:#94911b"></span><span class="seg seg-striped" style="left:22%;width:14%;--hue:#94911b"></span><span class="seg" style="left:40%;width:24%;--hue:#686560"></span><span class="seg" style="left:66%;width:22%;--hue:#686560"></span></div>
+          </div>
+        </div>
+      </section>
+      <section class="panel" style="--bg:#f6f5ef;--card:#fcfbf6;--fg:#36302a;--dim:#726c5e;--subtle:#a8a294;--border:#ddd6c6">
+        <h2>light · both light blocks</h2>
+
+        <h3>the ramp</h3>
+        <div class="swatches">
+            <div class="sw"><span class="chip" style="background:#b04d54"></span><code>--cat-1</code><code class="hex">#b04d54</code></div>
+            <div class="sw"><span class="chip" style="background:#6f63b8"></span><code>--cat-2</code><code class="hex">#6f63b8</code></div>
+            <div class="sw"><span class="chip" style="background:#1e874b"></span><code>--cat-3</code><code class="hex">#1e874b</code></div>
+            <div class="sw"><span class="chip" style="background:#0a78b7"></span><code>--cat-4</code><code class="hex">#0a78b7</code></div>
+            <div class="sw"><span class="chip" style="background:#797600"></span><code>--cat-5</code><code class="hex">#797600</code></div>
+            <div class="sw"><span class="chip" style="background:#9d5192"></span><code>--cat-6</code><code class="hex">#9d5192</code></div>
+            <div class="sw"><span class="chip" style="background:#a45e00"></span><code>--cat-7</code><code class="hex">#a45e00</code></div>
+            <div class="sw"><span class="chip" style="background:#008f93"></span><code>--cat-8</code><code class="hex">#008f93</code></div>
+            <div class="sw"><span class="chip" style="background:#a8a294"></span><code>--cat-other</code><code class="hex">#a8a294</code></div>
+        </div>
+
+        <h3>tokens by project — eighteen series</h3>
+        <div class="card">
+          <div class="bar"><span class="bname">agentic-toolkit</span><span class="blocks" style="color:#b04d54">██████████████████████████████████████████<span class="track"></span></span><span class="bslot">--cat-1</span></div>
+          <div class="bar"><span class="bname">vault-infra</span><span class="blocks" style="color:#6f63b8">██████████████████████████████████<span class="track">░░░░░░░░</span></span><span class="bslot">--cat-2</span></div>
+          <div class="bar"><span class="bname">portfolio-site</span><span class="blocks" style="color:#1e874b">██████████████████████████████<span class="track">░░░░░░░░░░░░</span></span><span class="bslot">--cat-3</span></div>
+          <div class="bar"><span class="bname">docs-site</span><span class="blocks" style="color:#0a78b7">███████████████████████████<span class="track">░░░░░░░░░░░░░░░</span></span><span class="bslot">--cat-4</span></div>
+          <div class="bar"><span class="bname">edge-proxy</span><span class="blocks" style="color:#797600">████████████████████████<span class="track">░░░░░░░░░░░░░░░░░░</span></span><span class="bslot">--cat-5</span></div>
+          <div class="bar"><span class="bname">schema-registry</span><span class="blocks" style="color:#9d5192">█████████████████████<span class="track">░░░░░░░░░░░░░░░░░░░░░</span></span><span class="bslot">--cat-6</span></div>
+          <div class="bar"><span class="bname">cli-tools</span><span class="blocks" style="color:#a45e00">███████████████████<span class="track">░░░░░░░░░░░░░░░░░░░░░░░</span></span><span class="bslot">--cat-7</span></div>
+          <div class="bar"><span class="bname">scratch</span><span class="blocks" style="color:#008f93">█████████████████<span class="track">░░░░░░░░░░░░░░░░░░░░░░░░░</span></span><span class="bslot">--cat-8</span></div>
+          <div class="bar"><span class="bname">infra-scripts</span><span class="blocks" style="color:#b04d54">▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓<span class="track">░░░░░░░░░░░░░░░░░░░░░░░░░░░</span></span><span class="bslot">--cat-1 ▓</span></div>
+          <div class="bar"><span class="bname">design-tokens</span><span class="blocks" style="color:#6f63b8">▓▓▓▓▓▓▓▓▓▓▓▓▓▓<span class="track">░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span></span><span class="bslot">--cat-2 ▓</span></div>
+          <div class="bar"><span class="bname">api-contracts</span><span class="blocks" style="color:#1e874b">▓▓▓▓▓▓▓▓▓▓▓▓<span class="track">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span></span><span class="bslot">--cat-3 ▓</span></div>
+          <div class="bar"><span class="bname">mail-relay</span><span class="blocks" style="color:#0a78b7">▓▓▓▓▓▓▓▓▓▓▓<span class="track">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span></span><span class="bslot">--cat-4 ▓</span></div>
+          <div class="bar"><span class="bname">log-shipper</span><span class="blocks" style="color:#797600">▓▓▓▓▓▓▓▓▓<span class="track">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span></span><span class="bslot">--cat-5 ▓</span></div>
+          <div class="bar"><span class="bname">cost-report</span><span class="blocks" style="color:#9d5192">▓▓▓▓▓▓▓▓<span class="track">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span></span><span class="bslot">--cat-6 ▓</span></div>
+          <div class="bar"><span class="bname">dns-tool</span><span class="blocks" style="color:#a45e00">▓▓▓▓▓▓▓<span class="track">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span></span><span class="bslot">--cat-7 ▓</span></div>
+          <div class="bar"><span class="bname">seed-data</span><span class="blocks" style="color:#008f93">▓▓▓▓▓▓<span class="track">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span></span><span class="bslot">--cat-8 ▓</span></div>
+          <div class="bar"><span class="bname">one-off-migration</span><span class="blocks" style="color:#a8a294">█████<span class="track">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span></span><span class="bslot">other</span></div>
+          <div class="bar"><span class="bname">spike-branch</span><span class="blocks" style="color:#a8a294">████<span class="track">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span></span><span class="bslot">other</span></div>
+        </div>
+
+        <h3>session timeline — slot 1 beside slot 9</h3>
+        <div class="card">
+          <div class="gantt">
+            <div class="lane"><span class="seg" style="left:2%;width:20%;--hue:#b04d54"></span><span class="seg seg-striped" style="left:24%;width:20%;--hue:#b04d54"></span><span class="seg" style="left:48%;width:18%;--hue:#6f63b8"></span><span class="seg seg-striped" style="left:68%;width:18%;--hue:#6f63b8"></span></div>
+            <div class="lane"><span class="seg" style="left:4%;width:16%;--hue:#1e874b"></span><span class="seg seg-striped" style="left:22%;width:16%;--hue:#1e874b"></span><span class="seg" style="left:42%;width:20%;--hue:#0a78b7"></span><span class="seg seg-striped" style="left:64%;width:20%;--hue:#0a78b7"></span></div>
+            <div class="lane"><span class="seg" style="left:6%;width:14%;--hue:#797600"></span><span class="seg seg-striped" style="left:22%;width:14%;--hue:#797600"></span><span class="seg" style="left:40%;width:24%;--hue:#a8a294"></span><span class="seg" style="left:66%;width:22%;--hue:#a8a294"></span></div>
+          </div>
+        </div>
+      </section></div>
+  <footer>docket #46 · specs/surface-kit/decisions.md D7</footer>
+</div>
+</body>
+</html>
