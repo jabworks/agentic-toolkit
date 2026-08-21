@@ -162,68 +162,6 @@ alternative to a parser.
 
 Found 2026-08-20 while visually verifying the Surface Kit redesign.
 
-### 44. Docket board renders a section header for a section with no items (2026-08-20) (2026-08-20)
-
-A DOCKET.md section with zero open items still emits its `<h2>` and rule on the
-board — "COMMITTED" currently renders as a heading over nothing. The section nav
-also links to it, so the link is a jump to an empty region.
-
-`renderHtml` maps every `open.sections` entry unconditionally
-(`skills/record/server/docket-render.mjs`), and `sectionProse` already returns
-`''` for a section with no loose prose — so the empty case is representable, just
-not suppressed.
-
-Not simply "skip empty sections": a section heading with a zero count is arguably
-correct signal on a backlog board (it says the bucket exists and is clear), which
-is why the scope pills already render `data-total="0"` at reduced opacity rather
-than disappearing. Decide which reading is wanted before changing it — and if
-sections are suppressed, `sectionNav()` must drop the matching link in the same
-change or the nav points at nothing.
-
-Found 2026-08-20 while visually verifying the Surface Kit redesign.
-
-### 45. Redesign the docket board as a real board — columns, not a stacked list (2026-08-21) (2026-08-21)
-
-The board renders sections as vertically stacked `<section>` blocks with an `h2`
-each, so "Committed / Someday / Loose threads" read as a long scroll rather than
-as parallel buckets. Scope pills filter to one section at a time, which is a
-workaround for not being able to see them side by side. Wanted: something closer
-to Trello or Jira — a column per section, items as cards — without the weight of
-either.
-
-**Decide before building — the write path is the whole question.** Trello and
-Jira are *editing* UIs; docket's board is a *rendered view* of a markdown file.
-`docket browse` writes a standalone HTML file that is opened later with no server
-(quirks Q9), so a card dragged in that file has nowhere to persist to. Three
-options, and they are meaningfully different products:
-
-1. **Read-only columns.** Pure layout change, works in both the written file and
-   `--serve`. Cheapest, and probably most of the value — seeing the buckets side
-   by side is the actual ask.
-2. **Drag to move, `--serve` only.** Needs a write-back endpoint that edits
-   `DOCKET.md`'s section headings, plus conflict handling if the file changed on
-   disk. The written-out file would then behave differently from the served one,
-   which is a real trap.
-3. **Drag in both, written file degrades.** Worst of both — the same artifact
-   silently loses a capability depending on how it was opened.
-
-Recommendation is (1) unless moving items is specifically what is wanted.
-
-Other things a column layout forces a decision on:
-
-- Section count is user-defined in `DOCKET.md`, so column count is unbounded.
-  Needs horizontal scroll, or a rule for collapsing empties (see #44 — a section
-  with no items currently still renders its heading).
-- The archive is 35 items against 7 open; it cannot be a peer column.
-- Long item bodies are the board's actual content — a Trello card shows a title
-  and hides the body, which is a different reading model from today's, where the
-  full body is visible inline. That is a content decision, not a layout one.
-- Narrow viewports have no columns to give; the mobile form is the current
-  stacked list, so both layouts have to exist regardless.
-
-Related: #44 (empty sections), and the Surface Kit scale is already in place, so
-this is layout work in `board-shell.html` plus markup from `docket-render.mjs`.
-
 ### 46. session-report charts use one colour for every series (2026-08-21) (2026-08-21)
 
 With several projects in view the bars are indistinguishable — you can only tell
