@@ -12,21 +12,37 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## session-report 1.9.1 — 2026-08-21
+
+- chore(session-report): version 1.9.1
+
 ## session-report 1.9.0 — 2026-08-21
 
 - feat(surface-kit): one design system across all four HTML surfaces (#89)
+
+## session-handoff 1.8.1 — 2026-08-21
+
+- chore(session-handoff): version 1.8.1
 
 ## session-handoff 1.8.0 — 2026-08-21
 
 - feat(surface-kit): one design system across all four HTML surfaces (#89)
 
+## docket 0.9.1 — 2026-08-21
+
+- chore(docket): version 0.9.1
+
 ## docket 0.9.0 — 2026-08-21
 
 - feat(surface-kit): one design system across all four HTML surfaces (#89)
 
+## condux 2.20.1 — 2026-08-21
+
+- chore(condux): version 2.20.1
+
 ## condux 2.20.0 — 2026-08-21
 
-- fix(plugins): stop the root Agent Plugins manifest from killing Codex hooks
+- fix(plugins): stop the root Agent Plugins manifest from killing Codex hooks (#92)
 
 ## condux 2.19.0 — 2026-08-21
 
@@ -34,7 +50,7 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## concord 0.6.0 — 2026-08-21
 
-- fix(plugins): stop the root Agent Plugins manifest from killing Codex hooks
+- fix(plugins): stop the root Agent Plugins manifest from killing Codex hooks (#92)
 - fix(condux): OpenCode routing enforcement, close 4 of 5 contract gaps from #37's triage (#38, #39)
 
 ## toolkit-ops 1.7.6 — 2026-08-20

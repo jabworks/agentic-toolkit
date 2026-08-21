@@ -317,6 +317,37 @@
       });
     }
 
+    /* Give the ? overlay a visible way in. It rides alongside the theme group
+       because every surface already has one, and because a floating badge is
+       chrome each surface would then have to design around. */
+    var groups = document.querySelectorAll('.kit-theme');
+
+    for (var g = 0; g < groups.length; g++) {
+      if (!groups[g].parentNode) continue;
+
+      var help = document.createElement('button');
+
+      help.type = 'button';
+      help.className = 'kit-helpbtn';
+      help.textContent = '?';
+      help.title = 'Keyboard shortcuts (?)';
+      help.setAttribute('aria-label', 'Keyboard shortcuts');
+      help.addEventListener('click', function () {
+        toggleOverlay(true);
+      });
+
+      /* Wrap rather than insert as a sibling: a surface may host the theme group
+         in a flex row (the board) or in block flow (the guide's rail), and in
+         block flow a bare sibling drops onto its own line. The wrapper makes the
+         pairing hold in either. */
+      var controls = document.createElement('div');
+
+      controls.className = 'kit-controls';
+      groups[g].parentNode.insertBefore(controls, groups[g]);
+      controls.appendChild(groups[g]);
+      controls.appendChild(help);
+    }
+
     document.addEventListener('click', function (event) {
       var target = event.target.closest ? event.target.closest('[data-kit-copy]') : null;
 
