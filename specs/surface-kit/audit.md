@@ -29,6 +29,28 @@ files; nothing here is inferred from screenshots.
 
 ## Findings
 
+> **Re-measured 2026-08-22 — this section predates PR #89 and several findings
+> are closed.** Everything below is the *pre-redesign* state, kept because the
+> measurements are what the directions were argued against. Current state, for
+> the **three document surfaces only** (session-report, session-handoff,
+> plan-review — `board-shell.html` was **not** re-measured, so no row below is
+> closed for docket):
+>
+> | Finding | Status on the three document surfaces |
+> |---|---|
+> | F2 — ad-hoc `px` type scale | **Closed.** All font sizes are `var(--text-*)`, and those tokens are `rem` (`core.css:48-57`) |
+> | F3 — all text monospace | **Closed.** Prose is `--sans`; mono is reserved for paths, ids, code |
+> | F4 — motion absent | **Closed.** 4–6 transitions each, plus a `prefers-reduced-motion` block |
+> | F5 — focus states missing | **Closed.** `focus-visible` present on all three |
+> | F8 — `100vh`, no `dvh` | **Closed.** `dvh` on all three, zero `100vh` |
+> | F9 — data typography underused | **Closed on session-handoff and plan-review**, which set `font-variant-numeric: tabular-nums` on `body`. **Open on session-report**, where four scattered uses leave figures proportional by default |
+> | F6 — radius uncoordinated | **Partly open** — raw `px` remains: 43 session-handoff (was 56, reduced by D8), 139 session-report, 229 plan-review |
+> | F1, F7, F10, F11 | Unchanged by this pass |
+>
+> Q7's `px` → `rem` migration therefore landed for font sizes ahead of the
+> per-surface PRs; what step 2 still owns is layout, hierarchy and the remaining
+> raw `px` in spacing and radius. session-handoff's step-2 pass is **D8**.
+
 ### F1 — The core tokenizes colour and nothing else *(root cause)*
 
 `scripts/tokens/core.css` carries 30 colour tokens plus exactly two others:

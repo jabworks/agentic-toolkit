@@ -56,13 +56,24 @@ reduced-motion, print, theme override, keyboard. No surface restructures.
 
 Four independent PRs, one plugin each, in ascending risk order:
 
-1. **session-handoff** (608 lines, simplest, most prose — best proof of D2)
-2. **docket board** (markup now editable HTML after step 0)
-3. **plan-review** (911 lines; 17 flex rules to 1 grid — grid conversion here)
-4. **session-report** (1516 lines; owns the `px` → `rem` migration, Q7)
+1. **session-handoff** — **direction signed off 2026-08-22 (D8)**; specimen
+   [handoff-direction-b.html](handoff-direction-b.html)
+2. **docket board** — **shipped** out of order, PR #93/#95, docket 0.10.0
+   (`specs/docket/board-direction-a.html`)
+3. **plan-review** (911 lines; 17 flex rules to 1 grid — grid conversion here).
+   **Needs `pnpm changeset`** — its template is bundled in
+   `packages/condux-opencode/skills/` (Q8)
+4. **session-report** (1516 lines)
 
-Each adopts the type and space scale, converts to `rem`, and applies its own
-direction within the shared system.
+Each applies its own direction within the shared system. The `px` → `rem` step in
+the original ordering is **already done for font sizes** on all four surfaces —
+every size is `var(--text-*)` and those tokens are `rem`. What remains per surface
+is layout, hierarchy, and the raw `px` still in spacing and radius. See the
+re-measurement banner in [audit.md](audit.md).
+
+Per-surface work states the intended visual outcome first, renders it against real
+content, and promotes the signed-off render to a committed `specs/` path before
+anything durable cites it (`durable-citations.test.mjs`).
 
 ### Step 3 — Style guide
 

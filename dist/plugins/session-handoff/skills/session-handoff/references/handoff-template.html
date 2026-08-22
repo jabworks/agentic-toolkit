@@ -508,8 +508,15 @@
         --ivory:              var(--background);
       }
 
+      /* These extension tokens are dark-first like the core, so the light values
+         are an override — and the override has to be written the way the core
+         writes it. With only a media query here, clicking Dark on a light system
+         flipped every core token but left --secondary (and so --titlebar) cream,
+         because the media query still matched. Tokens that alias a core token
+         (--term-bg: var(--background)) followed the toggle; literal hexes did
+         not, which is why the card inverted and its header did not. */
       @media (prefers-color-scheme: light) {
-        :root {
+        :root:not([data-theme="dark"]) {
           --secondary:          #f0efe3;
           --card-hover:         #f0efe3;
           --card-active:        #eae7da;
@@ -525,6 +532,23 @@
           --destructive-foreground:#ffffff;
           --destructive-solid:  #e54d2e;
         }
+      }
+
+      :root[data-theme="light"] {
+        --secondary:          #f0efe3;
+        --card-hover:         #f0efe3;
+        --card-active:        #eae7da;
+        --popover-foreground: #36302a;
+        --border-hover:       #cfc8b6;
+        --gold-10:            #897254;
+        --success-foreground: #ffffff;
+        --success-solid:      #46a758;
+        --warning-foreground: #21180b;
+        --warning-solid:      #ffc53d;
+        --info-foreground:    #ffffff;
+        --info-solid:         #0090ff;
+        --destructive-foreground:#ffffff;
+        --destructive-solid:  #e54d2e;
       }
 
       * {
@@ -580,8 +604,11 @@
       }
       ::-webkit-scrollbar-track { background: transparent; }
 
+      /* Widened from 1000px to hold the rail beside the pane. The card, the grid
+         ground and the glow are the surface's identity and survive the D8
+         redesign; only what is inside the card changed. */
       .term {
-        max-width: 1000px;
+        max-width: 82rem;
         margin: 0 auto;
         background: var(--term-bg);
         border-radius: var(--radius-lg);
@@ -629,58 +656,138 @@
         text-overflow: ellipsis;
         white-space: nowrap;
       }
-      /* Sticky so a long, filled-in handoff stays navigable; data-kit-section
-         on each <section> below is what makes the kit's g+digit jump work. */
-      .section-nav {
-        position: sticky;
-        top: 0;
-        z-index: 2;
-        display: flex;
-        gap: var(--space-1);
-        padding: var(--space-2) var(--space-4);
-        background: var(--titlebar);
-        border-bottom: 1px solid var(--outline);
-        overflow-x: auto;
-      }
-      .section-nav a {
-        flex: none;
-        font-family: var(--sans);
-        font-size: var(--text-2xs);
-        color: var(--muted-foreground);
-        text-decoration: none;
-        padding: var(--space-1) var(--space-2);
-        border-radius: var(--radius-sm);
-        white-space: nowrap;
-        transition:
-          color var(--dur-fast) var(--ease-out),
-          background-color var(--dur-fast) var(--ease-out);
-      }
-      .section-nav a:hover {
-        color: var(--foreground);
-        background: var(--hover);
-      }
-      .term-body {
+      /* minmax(0, 1fr), never a bare 1fr: 1fr floors at min-content, so one long
+         path in a table widens the column past the viewport and the whole page
+         scrolls sideways. min-width: 0 on the children is the other half. */
+      .shell {
+        display: grid;
+        grid-template-columns: 19rem minmax(0, 1fr);
+        gap: var(--space-6);
+        align-items: start;
         padding: var(--space-5) var(--space-6) var(--space-6);
       }
-
-      .cmd {
-        color: var(--dim);
-        font-family: var(--mono);
-        font-size: var(--text-sm);
-        margin-bottom: var(--space-2);
+      .rail,
+      .pane {
+        min-width: 0;
       }
-      .cmd .prompt {
+
+      /* The rail is the only sticky element. The titlebar is the card's header —
+         pinning it would detach a rounded corner from the card it belongs to.
+         With identity, steps, chip and a nine-item nav the rail runs past a
+         laptop viewport, so it scrolls inside itself rather than stranding its
+         tail below the fold. */
+      .rail {
+        position: sticky;
+        top: var(--space-4);
+        display: grid;
+        gap: var(--space-5);
+        align-content: start;
+        max-height: calc(100dvh - var(--space-8));
+        overflow-y: auto;
+        scrollbar-width: thin;
+      }
+      .rail .task {
+        all: unset;
+        display: block;
+        font-family: var(--sans);
+        font-size: var(--text-md);
+        line-height: var(--leading-snug);
+        font-weight: 600;
         color: var(--clay);
       }
-      #meta-line {
+      .rail .meta {
+        display: grid;
+        gap: var(--space-2);
+        margin-top: var(--space-3);
+        font-size: var(--text-2xs);
+      }
+      .rail .meta div {
+        display: grid;
+        gap: 0.1rem;
+      }
+      .rail .meta .k {
+        font-family: var(--mono);
+        text-transform: uppercase;
+        letter-spacing: var(--tracking-wide);
         color: var(--subtle);
+      }
+      .rail .meta .v {
+        font-family: var(--mono);
+        color: var(--dim);
+        overflow-wrap: anywhere;
+      }
+      .railbox {
+        border-left: 2px solid var(--outline);
+        padding-left: var(--space-4);
+      }
+      .railbox.now {
+        border-left-color: var(--clay);
+      }
+      .rail .eyebrow {
+        display: block;
+        margin-bottom: var(--space-3);
         font-family: var(--mono);
         font-size: var(--text-2xs);
+        text-transform: uppercase;
+        letter-spacing: var(--tracking-wide);
+        color: var(--subtle);
+      }
+      /* The clamp box is block-level, so the shared inline ::before counter would
+         stack above its own text. Give the row an explicit number gutter. */
+      .rail ol li {
+        display: grid;
+        grid-template-columns: 1.6rem minmax(0, 1fr);
+        gap: var(--space-1);
+        align-items: baseline;
+      }
+      /* The rail indexes; the pane is authoritative. A clamped entry is a link to
+         its full text, never the only copy of it. */
+      .rail ol a {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        color: inherit;
+        text-decoration: none;
+        transition: color var(--dur-fast) var(--ease-out);
+      }
+      .rail ol a:hover,
+      .rail nav a:hover {
+        color: var(--clay);
+      }
+      .rail nav {
+        display: grid;
+        gap: var(--space-1);
+      }
+      .rail nav a {
+        font-size: var(--text-xs);
+        color: var(--muted-foreground);
+        text-decoration: none;
+        transition: color var(--dur-fast) var(--ease-out);
+      }
+      .chip {
+        display: inline-flex;
+        font-family: var(--mono);
+        font-size: var(--text-2xs);
+        padding: var(--space-1) var(--space-3);
+        border-radius: var(--radius-full);
+        text-decoration: none;
+        background: var(--success-muted);
+        color: var(--success);
+        border: 1px solid var(--success-border);
+      }
+      .chip.blocked {
+        background: var(--destructive-muted);
+        color: var(--destructive);
+        border-color: var(--destructive-border);
       }
 
       section {
         margin-top: var(--space-6);
-        scroll-margin-top: var(--space-8);
+        scroll-margin-top: var(--space-5);
+      }
+      .pane > .session-handoff > section:first-child {
+        margin-top: 0;
       }
       .hr {
         color: var(--subtle);
@@ -701,7 +808,9 @@
         color: var(--clay);
         font-weight: 600;
       }
-      h2::before {
+      /* Scoped to the pane: the marker is a section affordance, and the rail's
+         task heading is also an h2. */
+      .pane h2::before {
         content: "▸ ";
       }
       h3 {
@@ -720,15 +829,46 @@
         margin-top: var(--space-3);
       }
 
+      /* Measure is capped on every prose-bearing block, not only paragraphs: the
+         longest line in a filled handoff was a list item in "important context",
+         the one section marked MUST READ. Table cells keep their column.
+         The ch unit is the width of zero, wider than average prose — 68ch
+         measures about 74 real characters here. */
       p {
         margin: 0;
         color: var(--term-fg);
+        max-width: 68ch;
+        text-wrap: pretty;
+      }
+      li {
+        max-width: 68ch;
+        text-wrap: pretty;
+      }
+      td p,
+      td li {
+        max-width: none;
+      }
+
+      /* The current-state paragraph is the one block a returning reader always
+         reads, so it gets display-weight prose. */
+      .lede p {
+        font-size: var(--text-md);
+        line-height: var(--leading-relaxed);
+      }
+
+      /* Steps are linked from the rail, so each needs an anchor that lands
+         visibly rather than merely scrolling into view. */
+      ol.steps li {
+        scroll-margin-top: var(--space-5);
+      }
+      ol.steps li:target {
+        box-shadow: -0.75rem 0 0 -0.55rem var(--clay);
       }
 
       /* key-value rows (stack snapshot) */
       .kv {
         display: grid;
-        grid-template-columns: 20ch 1fr;
+        grid-template-columns: 20ch minmax(0, 1fr);
         gap: var(--space-4);
         padding: var(--space-2) 0;
         border-top: 1px solid var(--outline);
@@ -856,6 +996,43 @@
         color: var(--term-bg);
       }
 
+      /* An empty optional section states it in one line. The kit's dashed
+         .kit-empty panel suits an interactive surface with a waiting slot; on a
+         read-once document it rebuilds the band of nothing this layout removes. */
+      .pane .kit-empty {
+        display: block;
+        min-height: 0;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        background: none;
+        text-align: left;
+        font-size: var(--text-xs);
+        color: var(--dim);
+      }
+      .pane .kit-empty__title {
+        display: none;
+      }
+      /* The kit centres this block with margin: 0 auto inside a 44ch box, which
+         reads as a stray indent once the dashed panel around it is gone. */
+      .pane .kit-empty__body {
+        margin: 0;
+        max-width: 68ch;
+      }
+
+      /* Below the rail's own width plus a readable pane, the lanes stack. */
+      @media (max-width: 62rem) {
+        .shell {
+          grid-template-columns: minmax(0, 1fr);
+          gap: var(--space-5);
+        }
+        .rail {
+          position: static;
+          max-height: none;
+          overflow-y: visible;
+        }
+      }
+
       @media (max-width: 640px) {
         body {
           padding: var(--space-4) var(--space-3) var(--space-8);
@@ -867,23 +1044,48 @@
           border-radius: var(--radius-md) var(--radius-md) 0 0;
           padding: var(--space-2) var(--space-3);
         }
-        .section-nav {
-          padding: var(--space-2) var(--space-3);
-        }
-        .term-body {
+        .shell {
           padding: var(--space-4) var(--space-4) var(--space-5);
         }
         h2 {
           font-size: var(--text-md);
         }
         .kv {
-          grid-template-columns: 14ch 1fr;
+          grid-template-columns: 14ch minmax(0, 1fr);
           gap: var(--space-2);
         }
         table,
         th,
         td {
           font-size: var(--text-2xs);
+        }
+      }
+
+      /* The kit's print block hides [data-kit-chrome], which covers the rail's
+         nav. The rest of the rail is content and must print — but a sticky
+         two-column grid prints wrong, so the surface collapses it itself. The
+         kit's own print rules are inside kit:css and are not edited here. */
+      @media print {
+        .shell {
+          display: block;
+          padding: 0;
+        }
+        .rail {
+          position: static;
+          max-height: none;
+          overflow: visible;
+          margin-bottom: var(--space-5);
+        }
+        .term {
+          max-width: none;
+          box-shadow: none;
+          outline: 0;
+        }
+        /* The grid ground and the glow are position: fixed, so a printer that
+           honours backgrounds repeats them on every page. */
+        body::before,
+        body::after {
+          display: none;
         }
       }
     </style>
@@ -902,27 +1104,95 @@
           <button type="button" data-kit-theme="system">Auto</button>
         </div>
       </header>
-      <nav class="section-nav" aria-label="Sections" data-kit-chrome>
-        <a href="#current-state">current state</a>
-        <a href="#stack-snapshot">stack snapshot</a>
-        <a href="#architecture">architecture</a>
-        <a href="#completed-work">completed work</a>
-        <a href="#decisions">decisions</a>
-        <a href="#next-steps">next steps</a>
-        <a href="#blockers">blockers</a>
-        <a href="#important-context">important context</a>
-        <a href="#deferred">deferred</a>
-      </nav>
-      <div class="term-body">
-        <div class="cmd">
-          <span class="prompt">&gt;</span> /session-handoff
-        </div>
-        <div id="meta-line">[YYYY-MM-DD HH:MM] · [branch] · [repo]</div>
+      <div class="shell">
+        <!-- The rail indexes; the pane holds the authoritative text. Each step
+             below is a clamped link to its twin in #next-steps — write the same
+             text in both, and keep href="#step-N" aligned with the matching
+             id="step-N" when you add or remove a step. -->
+        <aside class="rail">
+          <div>
+            <h2 class="task">[task — what you were doing]</h2>
+            <div class="meta">
+              <div><span class="k">created</span><span class="v">[YYYY-MM-DD HH:MM]</span></div>
+              <div><span class="k">branch</span><span class="v">[branch]</span></div>
+              <div><span class="k">repo</span><span class="v">[repo]</span></div>
+              <div><span class="k">workstream</span><span class="v">[workstream slug]</span></div>
+              <div><span class="k">continues from</span><span class="v">[previous handoff filename | none]</span></div>
+            </div>
+          </div>
+          <div class="railbox now">
+            <span class="eyebrow">pick up here</span>
+            <ol>
+              <li><a href="#step-1">[Step 1 — include file:line where applicable]</a></li>
+              <li><a href="#step-2">[Step 2]</a></li>
+              <li><a href="#step-3">[Step 3]</a></li>
+            </ol>
+          </div>
+          <div class="railbox">
+            <span class="eyebrow">blockers</span>
+            <!-- Nothing stuck? Use: <a class="chip" href="#blockers">none</a> -->
+            <a class="chip blocked" href="#blockers">blocked</a>
+          </div>
+          <!-- data-kit-chrome sits on the whole box, not the <nav>: the kit's print
+               block hides the element it marks, and on the nav alone that left a
+               "sections" label heading nothing on every printout. -->
+          <div class="railbox" data-kit-chrome>
+            <span class="eyebrow">sections</span>
+            <nav aria-label="Sections">
+              <a href="#next-steps">immediate next steps</a>
+              <a href="#blockers">blockers</a>
+              <a href="#current-state">current state</a>
+              <a href="#stack-snapshot">stack snapshot</a>
+              <a href="#architecture">architecture</a>
+              <a href="#completed-work">completed work</a>
+              <a href="#decisions">decisions</a>
+              <a href="#important-context">important context</a>
+              <a href="#deferred">deferred</a>
+            </nav>
+          </div>
+        </aside>
 
-        <main id="main">
+        <main class="pane" id="main">
         <article class="session-handoff">
 
-          <section data-kit-section id="current-state" aria-labelledby="current-state-heading">
+          <section data-kit-section id="next-steps" aria-labelledby="next-steps-heading">
+            <h2 id="next-steps-heading">immediate next steps</h2>
+            <!-- Ordered and specific. "Fix auth" is not acceptable. "Add refreshToken to auth.schema.ts:12" is.
+                 Each <li> is the full text; the rail above carries a clamped link to its id. -->
+            <div class="section-body">
+              <ol class="steps">
+                <li id="step-1">[Step 1 — include file:line where applicable]</li>
+                <li id="step-2">[Step 2]</li>
+                <li id="step-3">[Step 3]</li>
+              </ol>
+            </div>
+          </section>
+
+          <section data-kit-section id="blockers" aria-labelledby="blockers-heading">
+            <div class="hr"></div>
+            <h2 id="blockers-heading">blockers</h2>
+            <!-- Nothing stuck? Drop the table and use one line instead, and set the rail chip to none:
+            <div class="kit-empty">
+              <p class="kit-empty__body">None — nothing is stuck on an external dependency or open question.</p>
+            </div>
+            -->
+            <div class="section-body scroll">
+              <table>
+                <thead>
+                  <tr><th scope="col">Blocker</th><th scope="col">Context</th><th scope="col">Workaround tried</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>[What's stuck]</td>
+                    <td>[Why]</td>
+                    <td>[What was attempted]</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="lede" data-kit-section id="current-state" aria-labelledby="current-state-heading">
             <div class="hr"></div>
             <h2 id="current-state-heading">current state</h2>
             <!-- One paragraph: where things stand right now. What just finished, what's in flight. -->
@@ -1042,44 +1312,6 @@
             </div>
           </section>
 
-          <section data-kit-section id="next-steps" aria-labelledby="next-steps-heading">
-            <div class="hr"></div>
-            <h2 id="next-steps-heading">immediate next steps</h2>
-            <!-- Ordered and specific. "Fix auth" is not acceptable. "Add refreshToken to auth.schema.ts:12" is. -->
-            <div class="section-body">
-              <ol>
-                <li>[Step 1 — include file:line where applicable]</li>
-                <li>[Step 2]</li>
-                <li>[Step 3]</li>
-              </ol>
-            </div>
-          </section>
-
-          <section data-kit-section id="blockers" aria-labelledby="blockers-heading">
-            <div class="hr"></div>
-            <h2 id="blockers-heading">blockers</h2>
-            <!-- Nothing stuck? Drop the table and use this instead:
-            <div class="kit-empty">
-              <p class="kit-empty__title">No blockers</p>
-              <p class="kit-empty__body">Nothing is currently stuck on an external dependency or open question.</p>
-            </div>
-            -->
-            <div class="section-body scroll">
-              <table>
-                <thead>
-                  <tr><th scope="col">Blocker</th><th scope="col">Context</th><th scope="col">Workaround tried</th></tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>[What's stuck]</td>
-                    <td>[Why]</td>
-                    <td>[What was attempted]</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
-
           <section data-kit-section id="important-context" aria-labelledby="important-context-heading">
             <div class="hr"></div>
             <h2 id="important-context-heading">important context</h2>
@@ -1112,9 +1344,9 @@
           </section>
 
         </article>
-        </main>
 
         <footer>Generated [YYYY-MM-DD HH:MM] · Read-only — do not modify after creation</footer>
+        </main>
       </div>
     </div>
 

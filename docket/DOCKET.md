@@ -9,6 +9,24 @@ Stale open markers cost real sessions — closing means moving.
 
 ## Committed
 
+### 48. Surface extension tokens ignore the theme toggle on the other three surfaces (2026-08-22)
+
+Each HTML surface defines its own extension tokens (`--secondary`, `--card-hover`, `--gold-10`, `--titlebar` and friends) outside the `tokens:core` markers. They are dark-first like the core, so the light values are an override — but they are written as a bare `@media (prefers-color-scheme: light) { :root { … } }` with **no `[data-theme]` blocks at all**.
+
+Consequence: on a light system, clicking **Dark** flips every core token but leaves those extension tokens at their light values, because the media query still matches. Tokens that alias a core token (`--term-bg: var(--background)`) follow the toggle; literal hexes do not. On session-handoff this rendered a cream titlebar on a `#111110` card — the card inverted and its own header did not.
+
+Fixed for session-handoff in the D8 redesign: the system-light block became `:root:not([data-theme="dark"])` and a matching `:root[data-theme="light"]` block was added, which is how `scripts/tokens/core.css:84-85,130` already writes it. `tests/session-handoff-surface.test.mjs` pins the pairing and asserts both blocks define the same token set.
+
+Still broken (measured 2026-08-22, zero `:root[data-theme=…]` blocks outside the kit regions in each):
+
+- `skills/session-report/template.html`
+- `skills/plan-review/references/plan-review-template.html`
+- `skills/record/server/board-shell.html`
+
+Each is a per-surface fix in that surface's own CSS — no core or kit change, so no atomic four-surface edit and no changeset. plan-review is the exception on release: its template is bundled in `packages/condux-opencode/skills/`, so that one needs `pnpm changeset` (surface-kit Q8).
+
+Worth folding into each surface's own D6 step-2 PR rather than doing a separate sweep, since those PRs already touch the same CSS block. Generalising the pinning test to all four surfaces would close the class.
+
 ## Someday
 
 ### 7. Spec MCP server — revisit when specs gain write-side invariants (2026-08-05)

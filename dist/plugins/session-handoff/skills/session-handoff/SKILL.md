@@ -31,7 +31,10 @@ Preserve and restore session context across agentic coding sessions.
    ls -lt .session-handoff/ 2>/dev/null | head -10
    ```
 2. **Ask the user:** "Save handoff as **markdown** (.md), **HTML** (.html), or **both**? Default: markdown."
-3. **Scaffold** using the chosen template — `references/handoff-template.md` or `references/handoff-template.html`. For **both**, fill the markdown template once, then mirror the same content into the HTML template — identical sections, no divergence. Fill every section — no `[FILL]` placeholders left. In the HTML template, "decisions made", "blockers", and "deferred / out of scope" are legitimately optional — if a session has nothing to report there, replace that section's placeholder content with the `.kit-empty` block shown in the HTML comment directly above it (a `.kit-empty__title` line plus a `.kit-empty__body` sentence) instead of leaving stray placeholder rows. Delete that HTML comment once you have decided either way — it is scaffolding for you, and a saved handoff should not carry the instructions used to write it.
+3. **Scaffold** using the chosen template — `references/handoff-template.md` or `references/handoff-template.html`. For **both**, fill the markdown template once, then mirror the same content into the HTML template — identical sections **in the same order**, no divergence. Both templates lead with "immediate next steps" and "blockers"; keep it that way, because a handoff is read to resume work. Fill every section — no `[FILL]` placeholders left.
+   - **The HTML rail and the pane are two copies of the same steps.** Each rail entry is a clamped link (`href="#step-N"`) to the full text in the pane's `<ol class="steps">` (`id="step-N"`). Write the same wording in both, and when you add or remove a step keep every `href`/`id` pair aligned — a rail link with no matching id scrolls nowhere. Fill the rail's identity block from the frontmatter: task, created, branch, repo, workstream, continues-from.
+   - **Set the rail's blockers chip to match the section.** Nothing stuck → `<a class="chip" href="#blockers">none</a>`; otherwise keep `class="chip blocked"`.
+   - **Optional sections.** "decisions made", "blockers" and "deferred / out of scope" are legitimately optional — if a session has nothing to report there, replace that section's placeholder content with the one-line `.kit-empty` block shown in the HTML comment directly above it (a single `.kit-empty__body` sentence — this surface renders it as a quiet line, not a panel) instead of leaving stray placeholder rows. Delete that HTML comment once you have decided either way — it is scaffolding for you, and a saved handoff should not carry the instructions used to write it.
 4. **Validate** before saving:
    - No `[FILL]` markers remain
    - No credentials, tokens, API key values, or env var values
@@ -39,6 +42,11 @@ Preserve and restore session context across agentic coding sessions.
      "Current State Summary", "Important Context", "Immediate Next Steps"
    - Referenced file paths exist on disk
    - Next steps are specific (file:line, not "fix the auth")
+   - **HTML only** — the rail agrees with the pane, because both are filled by hand:
+     every `href="#step-N"` has a matching `id="step-N"` and the two carry the same
+     text; the blockers chip says `none` exactly when the blockers section is empty;
+     no authoring comment survives (the rail's fill note and the empty-state notes
+     are scaffolding, not content)
 5. **Save** to `.session-handoff/YYYY-MM-DD-HHMMSS-[slug].[md|html]`. For **both**, save the two files under the *same* `YYYY-MM-DD-HHMMSS-[slug]` stem, differing only in extension.
 6. Confirm: "Handoff saved: `.session-handoff/<filename>`" (list both paths when **both** was chosen)
 7. **Retention check** — after saving, run the Prune workflow below on the remaining files: flag the new handoff's `continues-from` predecessor chain as superseded, plus anything very stale, and offer to delete them.
