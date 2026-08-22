@@ -27,6 +27,48 @@ Each is a per-surface fix in that surface's own CSS — no core or kit change, s
 
 Worth folding into each surface's own D6 step-2 PR rather than doing a separate sweep, since those PRs already touch the same CSS block. Generalising the pinning test to all four surfaces would close the class.
 
+### 49. annotate-server directory-mode test races the feedback file write (2026-08-22)
+
+`tests/annotate-server.test.mjs:54` — "annotate-server directory mode: doc manifest, per-doc content, grouped feedback" fails intermittently:
+
+```
+AssertionError: The input did not match /\*\*Decision:\*\* Request Revisions/. Input: ''
+```
+
+**Not flakiness — a real race, and the empty string is the tell.** The file existed and was empty, so this is not a missing write or a timeout.
+
+`annotate-server.js:265` writes with `fs.writeFileSync(feedbackFile, md)`, which is `open(O_WRONLY|O_CREAT|O_TRUNC)` followed by `write()` — two syscalls, in a different process. The test waits on **existence** and then reads once:
+
+```js
+const deadline = Date.now() + 2000;
+while (!fs.existsSync(feedbackFile) && Date.now() < deadline) {
+  await new Promise((r) => setTimeout(r, 50));
+}
+const feedback = fs.readFileSync(feedbackFile, 'utf8');
+```
+
+A read landing between the server's `open` and its `write` sees a created, truncated, still-empty file. `existsSync` is satisfied the instant `O_CREAT` lands, so the loop exits early and the single read returns `''`.
+
+**Reproduction conditions:** observed 3 failures in ~12 full-suite runs on 2026-08-22, every one while local preview servers (`python3 -m http.server`) and Chrome were competing for CPU; zero failures in nine runs on an otherwise idle machine, and 3/3 passes when run in isolation. CPU contention widens the open→write window, which is why it looks load-correlated.
+
+**Fix — wait for content, not for existence:**
+
+```js
+let feedback = '';
+const deadline = Date.now() + 2000;
+while (Date.now() < deadline) {
+  try { feedback = fs.readFileSync(feedbackFile, 'utf8'); } catch {}
+  if (feedback.includes('**Decision:**')) break;
+  await new Promise((r) => setTimeout(r, 50));
+}
+```
+
+The `try/catch` also removes the second latent bug in the current code: if the deadline expires before the file is created at all, `readFileSync` throws `ENOENT` and the test fails with a stack trace instead of a useful assertion message.
+
+Worth checking whether the single-file mode test (`annotate-server.js:279`, same `writeFileSync` shape) has the same wait pattern.
+
+An alternative worth weighing: have the server write to a temp file and `rename()` it into place, which is atomic on POSIX and fixes it for every consumer rather than just the test. That is the better fix if anything other than this test ever polls the feedback file — `/discovery` and `/draft-plan` both long-poll `/api/decision` rather than reading the file, so today the test is the only reader.
+
 ## Someday
 
 ### 7. Spec MCP server — revisit when specs gain write-side invariants (2026-08-05)
