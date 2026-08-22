@@ -1096,7 +1096,7 @@
       <header class="titlebar">
         <div class="id">
           <span class="tag">handoff</span>
-          <h1 class="path" id="title-path">~/project — session-handoff</h1>
+          <h1 class="path" id="title-path">jabworks/agentic-toolkit (root — repo tooling, not a package) — categorical ramp shipped</h1>
         </div>
         <div class="kit-theme" role="group" aria-label="Theme">
           <button type="button" data-kit-theme="light">Light</button>
@@ -1105,49 +1105,43 @@
         </div>
       </header>
       <div class="shell">
-        <!-- The rail indexes; the pane holds the authoritative text. Each step
-             below is a clamped link to its twin in #next-steps — write the same
-             text in both, and keep href="#step-N" aligned with the matching
-             id="step-N" when you add or remove a step. -->
         <aside class="rail">
           <div>
-            <h2 class="task">[task — what you were doing]</h2>
+            <h2 class="task">categorical ramp shipped</h2>
             <div class="meta">
-              <div><span class="k">created</span><span class="v">[YYYY-MM-DD HH:MM]</span></div>
-              <div><span class="k">branch</span><span class="v">[branch]</span></div>
-              <div><span class="k">repo</span><span class="v">[repo]</span></div>
-              <div><span class="k">workstream</span><span class="v">[workstream slug]</span></div>
-              <div><span class="k">continues from</span><span class="v">[previous handoff filename | none]</span></div>
+              <div><span class="k">created</span><span class="v">2026-08-21 18:26</span></div>
+              <div><span class="k">branch</span><span class="v">docs/docket-file-47</span></div>
+              <div><span class="k">repo</span><span class="v">jabworks/agentic-toolkit (root — repo tooling, not a package)</span></div>
+              <div><span class="k">workstream</span><span class="v">html-surface-redesign</span></div>
+              <div><span class="k">continues from</span><span class="v">2026-08-21-093200-docket-board-redesign.md</span></div>
             </div>
           </div>
           <div class="railbox now">
             <span class="eyebrow">pick up here</span>
             <ol>
-              <li><a href="#step-1">[Step 1 — include file:line where applicable]</a></li>
-              <li><a href="#step-2">[Step 2]</a></li>
-              <li><a href="#step-3">[Step 3]</a></li>
+              <li><a href="#step-1"><strong>Merge PR #100</strong> (<code>docs/docket-file-47</code>, files #47) — then <code>git branch -d docs/docket-file-47</code> and <code>git push origin --delete docs/docket-file-47</code>.</a></li>
+              <li><a href="#step-2"><strong>surface-kit D6 step 2</strong> — per-surface layout and typography for session-report, session-handoff and plan-review. <code>specs/surface-kit/audit.md</code> carries the pre-redesign measurements; the docket board redesign (<code>specs/docket/board-direction-a.html</code>) is the worked example of the standard: state the intended visual outcome per surface first, one PR per surface.</a></li>
+              <li><a href="#step-3"><strong>Docket #47</strong> — fix <code>displayTitle()</code> in <code>skills/record/server/docket-render.mjs</code>. The entry names the trap: the rule must be positional (a stamp immediately before the close stamp), not lexical, because a title may legitimately contain a date.</a></li>
+              <li><a href="#step-4"><strong>Dockets #40/#41</strong> — <code>.agents/</code> and <code>skills-lock.json</code> are still untracked at the repo root and show in every <code>git status</code>; plus the 33 dangling <code>~/.claude/skills</code> symlinks.</a></li>
+              <li><a href="#step-5"><strong>Docket #43</strong> — mdLite renders markdown tables as raw pipes inside board folds.</a></li>
             </ol>
           </div>
           <div class="railbox">
             <span class="eyebrow">blockers</span>
-            <!-- Nothing stuck? Use: <a class="chip" href="#blockers">none</a> -->
-            <a class="chip blocked" href="#blockers">blocked</a>
+            <a class="chip" href="#blockers">none</a>
           </div>
-          <!-- data-kit-chrome sits on the whole box, not the <nav>: the kit's print
-               block hides the element it marks, and on the nav alone that left a
-               "sections" label heading nothing on every printout. -->
           <div class="railbox" data-kit-chrome>
             <span class="eyebrow">sections</span>
             <nav aria-label="Sections">
               <a href="#next-steps">immediate next steps</a>
               <a href="#blockers">blockers</a>
-              <a href="#current-state">current state</a>
+              <a href="#current-state">current state summary</a>
               <a href="#stack-snapshot">stack snapshot</a>
-              <a href="#architecture">architecture</a>
+              <a href="#architecture">architecture context</a>
               <a href="#completed-work">completed work</a>
-              <a href="#decisions">decisions</a>
+              <a href="#decisions">decisions made</a>
               <a href="#important-context">important context</a>
-              <a href="#deferred">deferred</a>
+              <a href="#deferred">deferred / out of scope</a>
             </nav>
           </div>
         </aside>
@@ -1157,13 +1151,13 @@
 
           <section data-kit-section id="next-steps" aria-labelledby="next-steps-heading">
             <h2 id="next-steps-heading">immediate next steps</h2>
-            <!-- Ordered and specific. "Fix auth" is not acceptable. "Add refreshToken to auth.schema.ts:12" is.
-                 Each <li> is the full text; the rail above carries a clamped link to its id. -->
             <div class="section-body">
               <ol class="steps">
-                <li id="step-1">[Step 1 — include file:line where applicable]</li>
-                <li id="step-2">[Step 2]</li>
-                <li id="step-3">[Step 3]</li>
+                <li id="step-1"><strong>Merge PR #100</strong> (<code>docs/docket-file-47</code>, files #47) — then <code>git branch -d docs/docket-file-47</code> and <code>git push origin --delete docs/docket-file-47</code>.</li>
+                <li id="step-2"><strong>surface-kit D6 step 2</strong> — per-surface layout and typography for session-report, session-handoff and plan-review. <code>specs/surface-kit/audit.md</code> carries the pre-redesign measurements; the docket board redesign (<code>specs/docket/board-direction-a.html</code>) is the worked example of the standard: state the intended visual outcome per surface first, one PR per surface.</li>
+                <li id="step-3"><strong>Docket #47</strong> — fix <code>displayTitle()</code> in <code>skills/record/server/docket-render.mjs</code>. The entry names the trap: the rule must be positional (a stamp immediately before the close stamp), not lexical, because a title may legitimately contain a date.</li>
+                <li id="step-4"><strong>Dockets #40/#41</strong> — <code>.agents/</code> and <code>skills-lock.json</code> are still untracked at the repo root and show in every <code>git status</code>; plus the 33 dangling <code>~/.claude/skills</code> symlinks.</li>
+                <li id="step-5"><strong>Docket #43</strong> — mdLite renders markdown tables as raw pipes inside board folds.</li>
               </ol>
             </div>
           </section>
@@ -1171,33 +1165,19 @@
           <section data-kit-section id="blockers" aria-labelledby="blockers-heading">
             <div class="hr"></div>
             <h2 id="blockers-heading">blockers</h2>
-            <!-- Nothing stuck? Drop the table and use one line instead, and set the rail chip to none:
-            <div class="kit-empty">
-              <p class="kit-empty__body">None — nothing is stuck on an external dependency or open question.</p>
-            </div>
-            -->
-            <div class="section-body scroll">
-              <table>
-                <thead>
-                  <tr><th scope="col">Blocker</th><th scope="col">Context</th><th scope="col">Workaround tried</th></tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>[What's stuck]</td>
-                    <td>[Why]</td>
-                    <td>[What was attempted]</td>
-                  </tr>
-                </tbody>
-              </table>
+            <div class="section-body">
+              <div class="kit-empty">
+                <p class="kit-empty__body">None — <code>main</code> was green (303/303) with one PR open at wrap-up.</p>
+              </div>
             </div>
           </section>
 
           <section class="lede" data-kit-section id="current-state" aria-labelledby="current-state-heading">
             <div class="hr"></div>
-            <h2 id="current-state-heading">current state</h2>
-            <!-- One paragraph: where things stand right now. What just finished, what's in flight. -->
+            <h2 id="current-state-heading">current state summary</h2>
             <div class="section-body">
-              <p>[FILL]</p>
+                <p>Docket <strong>#46 is shipped and closed</strong>: the shared core now carries a validated categorical ramp (<code>--cat-1</code> … <code>--cat-8</code> + <code>--cat-other</code>), session-report's two categorical charts consume it from one global slot map, and <strong>session-report 1.10.0</strong> is released along with patch bumps for session-handoff (1.8.2), condux (2.20.2) and docket (0.10.1). The npm channel published too — the changeset was written this time, so <code>@jabworks/condux</code> versioned through PR #98 rather than silently doing nothing. <code>main</code> is at <code>514f40c</code>; four PRs merged today (#96 #97 #98 #99). The only thing still open is <strong>PR #100</strong> (files docket #47, two files, nothing releases). The backlog is down to <strong>6 open items</strong>.</p>
+                <p>The work ran the full condux LARGE flow — discovery with three real ramps in the browser picker (Harvey picked <strong>C</strong>), design + spec write-back, a 6-card plan, implementation, preflight, finalize, then verification by rendering real reports.</p>
             </div>
           </section>
 
@@ -1205,26 +1185,7 @@
             <div class="hr"></div>
             <h2 id="stack-snapshot-heading">stack snapshot</h2>
             <div class="section-body">
-              <div class="kv">
-                <span class="key">Package / app</span>
-                <span class="val">[path or package name]</span>
-              </div>
-              <div class="kv">
-                <span class="key">Layer</span>
-                <span class="val">[Frontend | Backend | API | Infra | Tooling | Other]</span>
-              </div>
-              <div class="kv">
-                <span class="key">Docker Compose</span>
-                <span class="val">[up / down / partial — list which services | N/A]</span>
-              </div>
-              <div class="kv">
-                <span class="key">Dev server</span>
-                <span class="val">[running on port X | not running | N/A]</span>
-              </div>
-              <div class="kv">
-                <span class="key">DB migrations in flight</span>
-                <span class="val">[describe | none]</span>
-              </div>
+                <ul><li><strong>Package / app:</strong> repo root; the ramp lives in <code>scripts/tokens/core.css</code>, its consumers in <code>skills/session-report/template.html</code></li><li><strong>Layer:</strong> Tooling</li><li><strong>Docker Compose:</strong> N/A</li><li><strong>Dev server:</strong> not running — the discovery picker (7788) was started and stopped by PID this session; no session ports open at wrap-up</li><li><strong>DB migrations in flight:</strong> none</li></ul>
             </div>
           </section>
 
@@ -1232,25 +1193,10 @@
             <div class="hr"></div>
             <h2 id="architecture-heading">architecture context</h2>
             <div class="section-body">
-              <h3>Critical Files</h3>
-              <div class="scroll">
-                <table>
-                  <thead>
-                    <tr><th scope="col">File</th><th scope="col">Why it matters</th></tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td><code>path/to/file.ts:42</code></td>
-                      <td>[what it does and why it's relevant now]</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <h3>Key Discoveries</h3>
-              <ul>
-                <li>[Non-obvious thing learned or confirmed this session]</li>
-              </ul>
+                <h3>Critical files</h3>
+                <div class="scroll"><table><thead><tr><th scope="col">File</th><th scope="col">Why it matters</th></tr></thead><tbody><tr><td><code>scripts/tokens/core.css:32</code></td><td>the dark ramp in bare <code>:root</code>; light rows restated at <code>:114</code> and <code>:159</code>. <strong>Dark-first</strong> — see Important context</td></tr><tr><td><code>skills/session-report/template.html</code></td><td><code>catSlot()</code> fenced in <code>/* cat:slots:start */</code> markers, then <code>catTotal</code>/<code>SLOT_OF</code>/<code>catRank</code>/<code>catSlotOf</code>; bars, gantt segments and legend all consume it</td></tr><tr><td><code>tests/session-report-charts.test.mjs</code></td><td>extracts the marker region and evaluates the real <code>catSlot</code> — the tier and fold coverage</td></tr><tr><td><code>tests/token-core.test.mjs</code></td><td>new &quot;categorical ramp is complete and per-theme distinct&quot; test pins the polarity by literal hex</td></tr><tr><td><code>specs/surface-kit/decisions.md</code></td><td><strong>D7</strong> — the ramp, its numbers, and four rejected directions</td></tr><tr><td><code>specs/surface-kit/quirks.md</code></td><td><strong>Q10</strong> dark-first inversion · <strong>Q11</strong> inline <code>background</code> erases the stripe · <strong>Q12</strong> <code>░</code> reserves the low ink end</td></tr><tr><td><code>specs/surface-kit/ramp-direction-c.html</code></td><td>the signed-off specimen — both themes, both tiers, the fold, at real chart size. The visual contract</td></tr><tr><td><code>specs/surface-kit/implementation.md</code></td><td>Step 4 carries the forced order and the test list</td></tr><tr><td><code>.condux/designs/2026-08-21-categorical-palette/</code></td><td>generators for the picker, the artifact and the specimen (<code>gen-*.mjs</code>) — regenerate rather than hand-edit</td></tr></tbody></table></div>
+                <h3>Key discoveries</h3>
+                <ul><li><strong>The docket item's premise was wrong, and usefully so.</strong> It said there was no palette; there was one — eight hex values private to the timeline IIFE, dark-only, cycled, and keyed on <code>projects.indexOf(p)</code> within the selected day range. That is why the bars were monochrome *and* why a project changed colour as you arrowed through days. The work was promotion + validation, not invention.</li><li><strong>The colour part is computable, so it was computed.</strong> <code>dataviz</code>'s <code>validate_palette.js</code> (bundled skill) scored every candidate against our two surfaces. Capping chroma at 0.13 is what makes the ramp both muted and strong: demanding 3:1 on cream for all eight *without* a cap admits exactly one hue set, and it is garish (<code>#bb0280</code>, <code>#0177fe</code>).</li><li><strong>Ink coverage, not width, tells you if a glyph exists.</strong> The fallback mono font gives every codepoint the same advance, so a private-use tofu box measures the same width as <code>█</code>. Rendering to canvas and counting alpha separates them (tofu 9.0%, <code>▚</code> 22.4%).</li><li><code>by_project</code> keys and <code>by_day[].sessions[].project</code> are the same transcript-directory string on <strong>both</strong> analyzers (<code>analyze-claude.mjs:244</code>, <code>analyze-codex.mjs:512</code>/<code>:795</code>) — which is what makes cross-chart linking work without a normalization layer.</li><li>The chrome-devtools MCP can lose its handle to a *live* Chrome (not a stranded lock). <code>pkill -f</code> kills the zsh wrapper (exit 144, the trap from last session); kill by PID via <code>ps -eo pid,args | awk '$2 ~ /^\/opt\/google\/chrome/'</code>.</li></ul>
             </div>
           </section>
 
@@ -1258,98 +1204,43 @@
             <div class="hr"></div>
             <h2 id="completed-work-heading">completed work</h2>
             <div class="section-body">
-              <h3>Tasks Finished</h3>
-              <ul>
-                <li>[Specific task — include file:line where applicable]</li>
-              </ul>
-
-              <h3>Files Modified</h3>
-              <div class="scroll">
-                <table>
-                  <thead>
-                    <tr><th scope="col">File</th><th scope="col">Change</th><th scope="col">Why</th></tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td><code>path/to/file.ts</code></td>
-                      <td>[what changed]</td>
-                      <td>[rationale]</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+                <h3>Tasks finished</h3>
+                <ul><li>Merged <strong>PR #96</strong> (closes for #45/#44) left open by the last session</li><li>Discovery for #46: PCOL measured and falsified, three directions rendered in the browser picker, Direction C picked, <code>▓</code> settled on measured ink</li><li>Spec write-back: D7, Q10–Q12, implementation Step 4, index changelog, and the specimen promoted to a committed path</li><li>All six plan tasks, 296 → <strong>303 tests</strong></li><li><strong>PR #97</strong> merged (<code>90a08dd</code>); four plugins tagged and released; <strong>PR #98</strong> (Version Packages) merged → <code>@jabworks/condux</code> published</li><li><strong>PR #99</strong> merged (<code>514f40c</code>) — docket #46 closed with a verification note that records the corrected premise</li><li><strong>PR #100</strong> opened — files docket #47 (mid-title date stamps)</li><li>Merged branches deleted locally and on origin</li></ul>
+                <h3>Files modified</h3>
+                <div class="scroll"><table><thead><tr><th scope="col">File</th><th scope="col">Change</th><th scope="col">Why</th></tr></thead><tbody><tr><td><code>scripts/tokens/core.css</code></td><td>nine tokens × three blocks</td><td>the ramp, owned by the core so every surface has it</td></tr><tr><td><code>skills/session-report/template.html</code></td><td><code>catSlot</code> + global slot map; <code>PCOL</code>/<code>colorOf</code> deleted; bar tier, gantt tier, legend, <code>.seg</code>/<code>.sw</code> CSS</td><td>the only visual change</td></tr><tr><td><code>specs/surface-kit/{decisions,quirks,implementation,index}.md</code></td><td>D7, Q10–Q12, Step 4</td><td>spec write-back</td></tr><tr><td><code>specs/surface-kit/{style-guide,ramp-direction-c}.html</code></td><td>swatch group; new specimen</td><td>the living record and the visual contract</td></tr><tr><td><code>tests/session-report-charts.test.mjs</code>, <code>tests/token-core.test.mjs</code></td><td>+7 tests</td><td>the tiers, the fold, and the polarity</td></tr><tr><td>four <code>plugin.json</code> pairs, <code>CHANGELOG.md</code>, <code>.changeset/categorical-ramp.md</code></td><td>bumps + release channel</td><td>session-report minor, three patches, npm changeset</td></tr><tr><td><code>docket/{DOCKET.md,archive/2026.md,docket.json}</code></td><td>#46 closed, #47 filed</td><td>backlog</td></tr></tbody></table></div>
             </div>
           </section>
 
           <section data-kit-section id="decisions" aria-labelledby="decisions-heading">
             <div class="hr"></div>
             <h2 id="decisions-heading">decisions made</h2>
-            <!-- Nothing decided this session? Drop the table and use this instead:
-            <div class="kit-empty">
-              <p class="kit-empty__title">No decisions recorded</p>
-              <p class="kit-empty__body">Nothing was chosen between alternatives this session.</p>
-            </div>
-            -->
-            <div class="section-body scroll">
-              <table>
-                <thead>
-                  <tr>
-                    <th scope="col">Decision</th>
-                    <th scope="col">Options considered</th>
-                    <th scope="col">Chosen</th>
-                    <th scope="col">Rationale</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>[What was decided]</td>
-                    <td>[A vs B vs C]</td>
-                    <td>[A]</td>
-                    <td>[The constraint, tradeoff, or intent]</td>
-                  </tr>
-                </tbody>
-              </table>
+            <div class="section-body">
+                <div class="scroll"><table><thead><tr><th scope="col">Decision</th><th scope="col">Options considered</th><th scope="col">Chosen</th><th scope="col">Rationale</th></tr></thead><tbody><tr><td>The ramp</td><td>A promote PCOL · B dataviz reference verbatim · C computed for our surfaces</td><td><strong>C</strong> (Harvey, picker)</td><td>A fails four of five checks; B needs the relief rule on four light slots and is brighter than the skin; C clears 3:1 on both grounds at ~2× the CVD target</td></tr><tr><td>Colour's job</td><td>within-chart separation · cross-chart linking · stable across reports</td><td><strong>cross-chart linking</strong></td><td>A project keeps its hue across bars, gantt and legend; hashing across reports risks unfixable adjacent collisions</td></tr><tr><td>Past slot 8</td><td>fold to grey · composite hue × pattern · cycle</td><td><strong>composite</strong>, then fold past 16</td><td>Cycling is what the item assumed and what the method forbids — in the gantt there is no row label to disambiguate</td></tr><tr><td>Bar texture</td><td><code>▓</code> · <code>▚</code> · <code>▒</code></td><td><strong><code>▓</code></strong></td><td>Measured ink: <code>█</code> 44.7%, <code>▓</code> 35.1%, <code>▚</code> 22.4%, <code>▒</code> 21.4%, <code>░</code> 8.0%. Only <code>▓</code> keeps perceived bar length honest</td></tr><tr><td>Gantt second channel</td><td>stripe · grey past 8 · nothing</td><td><strong>stripe in <code>var(--card)</code></strong></td><td>The surface colour reads as a gap and is correct in both themes with no token of its own</td></tr><tr><td>Spec home</td><td>extend <code>specs/surface-kit/</code> · new <code>specs/chart-palette/</code></td><td><strong>surface-kit</strong></td><td>It owns <code>core.css</code> and the region grammar; splitting ownership across two specs is worse</td></tr><tr><td>Tritan 3.4 vs B's 5.8</td><td>re-step · accept · switch to B</td><td><strong>accept, and record it</strong></td><td>The method gates protan/deutan only; recorded in D7 so it is not rediscovered as a bug</td></tr></tbody></table></div>
             </div>
           </section>
 
           <section data-kit-section id="important-context" aria-labelledby="important-context-heading">
             <div class="hr"></div>
             <h2 id="important-context-heading">important context</h2>
-            <!-- MUST READ. Things the next agent gets wrong without knowing this. -->
             <div class="section-body">
-              <div class="callout warn">
-                <b>Must read</b> — things the next session gets wrong without knowing this.
-              </div>
-              <ul>
-                <li>[Critical invariant, hidden constraint, or gotcha]</li>
-                <li>[Known pitfall to avoid]</li>
-              </ul>
+                <ul><li><strong><code>core.css</code> is dark-first.</strong> Bare <code>:root</code> carries <code>--background: #111110</code>; both light blocks are overrides. Writing a theme-varying group the intuitive way round ships cream values on the dark ground and <strong>nothing catches it</strong> — <code>token-core.test.mjs</code> compares token *names* and <code>check-tokens.mjs</code> is byte-exact against source, so neither validates a value. There is now one test that pins the ramp's polarity by literal hex; it is the only value check in the suite (Q10).</li><li>**An inline <code>background</code> shorthand silently erases a <code>background-image</code> from the stylesheet.** It sets <code>background-image: none</code> inline, which outranks the rule, so the striped tier rendered pixel-identical to the solid one with the class present and the CSS correct. Pass the hue as <code>--hue</code> and let the class compose (Q11). Found only by looking at a 3× zoom — not by any test.</li><li><strong>Order is forced:</strong> edit <code>core.css</code> → <code>node scripts/check-tokens.mjs --fix</code> → <code>bash scripts/sync.sh</code> → <code>node --test</code>. check-tokens <strong>gates</strong> sync rather than feeding it, so a stale region fails sync instead of being fixed by it.</li><li><strong>The npm channel needs a hand-written changeset.</strong> Any change reaching <code>packages/condux-opencode/{index.js,agents,skills}</code> — which includes any <code>core.css</code> edit, since plan-review's template is bundled there — needs <code>.changeset/*.md</code> or <code>changesets/action</code> publishes nothing, silently. <code>npm-channel.test.mjs</code> catches it.</li><li><strong>The <code>cat:slots</code> markers are for test extraction only.</strong> They are not <code>check-tokens.mjs</code> regions and <code>--fix</code> will not touch them; do not rename them into the <code>tokens:</code>/<code>kit:</code> namespace.</li><li>Test baseline is <strong>303</strong>. <code>bash scripts/sync.sh</code> after any <code>skills/</code> edit; the pre-commit hook stages all of <code>dist/</code> unconditionally, so a commit split touching <code>dist/</code> needs <code>--no-verify</code> after a manual sync.</li><li>Durable files may not cite <code>.condux/</code> paths (<code>durable-citations.test.mjs</code>) — promote on cite, as the specimen was.</li></ul>
             </div>
           </section>
 
           <section data-kit-section id="deferred" aria-labelledby="deferred-heading">
             <div class="hr"></div>
             <h2 id="deferred-heading">deferred / out of scope</h2>
-            <!-- Nothing deferred? Drop the list and use this instead:
-            <div class="kit-empty">
-              <p class="kit-empty__title">Nothing deferred</p>
-              <p class="kit-empty__body">Everything raised this session is either done or on the next-steps list.</p>
-            </div>
-            -->
             <div class="section-body">
-              <ul>
-                <li>[Thing that came up but was intentionally left for later]</li>
-              </ul>
+                <ul><li>Table row swatches in the report (projects / model usage / tool calls) — the ramp reaches the three charts only, by decision.</li><li>Stability of a project's hue *across* reports — slots are stable within a report, not between them. Would need hashing, which risks adjacent collisions with no way to nudge them apart.</li><li>Re-running the routing eval after the new skills/specs landed.</li><li>The two artifacts published this session (the ramp picker and the phone-readable direction page) are private Claude artifacts, not repo files — the durable record is <code>specs/surface-kit/ramp-direction-c.html</code>.</li></ul>
             </div>
           </section>
 
         </article>
 
-        <footer>Generated [YYYY-MM-DD HH:MM] · Read-only — do not modify after creation</footer>
+        <footer>Generated 2026-08-21 18:26 · Read-only — do not modify after creation</footer>
         </main>
       </div>
     </div>
-
     <script>
 /* kit:js:start */
 /* Shared behaviour layer — do not hand-edit; edit scripts/tokens/kit.js. */

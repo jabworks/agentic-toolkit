@@ -12,9 +12,25 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
-## session-report 1.10.0 — 2026-08-21
+## session-report 1.10.0 — 2026-08-22
 
-- feat(session-report): categorical ramp in the core, one hue per project
+- feat(session-report): categorical ramp in the core, one hue per project (#97)
+
+## session-handoff 1.9.0 — 2026-08-22
+
+- chore(session-handoff): version 1.9.0
+
+## session-handoff 1.8.2 — 2026-08-22
+
+- feat(session-report): categorical ramp in the core, one hue per project (#97)
+
+## docket 0.10.1 — 2026-08-22
+
+- feat(session-report): categorical ramp in the core, one hue per project (#97)
+
+## condux 2.20.2 — 2026-08-22
+
+- feat(session-report): categorical ramp in the core, one hue per project (#97)
 
 ## session-report 1.9.1 — 2026-08-21
 
@@ -24,10 +40,6 @@ The `@jabworks/condux` npm package has its own changelog at
 
 - feat(surface-kit): one design system across all four HTML surfaces (#89)
 
-## session-handoff 1.8.2 — 2026-08-21
-
-- feat(session-report): categorical ramp in the core, one hue per project
-
 ## session-handoff 1.8.1 — 2026-08-21
 
 - fix(surface-kit): board density, readable items, and a discoverable ? overlay (#91)
@@ -35,10 +47,6 @@ The `@jabworks/condux` npm package has its own changelog at
 ## session-handoff 1.8.0 — 2026-08-21
 
 - feat(surface-kit): one design system across all four HTML surfaces (#89)
-
-## docket 0.10.1 — 2026-08-21
-
-- feat(session-report): categorical ramp in the core, one hue per project
 
 ## docket 0.10.0 — 2026-08-21
 
@@ -51,10 +59,6 @@ The `@jabworks/condux` npm package has its own changelog at
 ## docket 0.9.0 — 2026-08-21
 
 - feat(surface-kit): one design system across all four HTML surfaces (#89)
-
-## condux 2.20.2 — 2026-08-21
-
-- feat(session-report): categorical ramp in the core, one hue per project
 
 ## condux 2.20.1 — 2026-08-21
 

@@ -141,3 +141,69 @@ perceived bar length: `▓` is 35.1% and works; `▒` (21.4%) and `▚` (22.4%) 
 not. A private-use tofu box measures 9.0%, so ink coverage also distinguishes a
 missing glyph from a real one — width does not, since the fallback font gives
 every codepoint the same advance.
+
+## Q13 — `data-kit-chrome` is print suppression; `g`+digit walks `[data-kit-section]`
+
+Two kit attributes that look like navigation machinery and are not:
+
+- **`data-kit-chrome`** appears once in `kit:css`, inside `@media print`, beside
+  `.kit-help`, `.kit-helpbtn` and `.kit-theme` — all `display: none !important`.
+  It marks *chrome that must not print*. Putting it on a nav is correct; putting
+  it on a container that also holds content silently removes that content from
+  every printout.
+- **`g` + digit** enumerates `querySelectorAll('[data-kit-section]')` in `kit:js`
+  and indexes into that list. It never reads the section-nav markup.
+
+The distinction decides a PR's blast radius. Retiring a surface's nav row is a
+one-plugin layout change; had the jump walked the nav, the same edit would have
+had to happen inside `kit:css`/`kit:js`, and D6 step 1 makes a kit change atomic
+across all four surfaces **plus** an npm changeset (plan-review's template is
+bundled in `packages/condux-opencode/`). Read the region before assuming which
+one you are in.
+
+## Q14 — a bare `1fr` column floors at min-content
+
+A stacked single-column grid written `grid-template-columns: 1fr` resolves to
+`minmax(auto, 1fr)`, and `auto` as a minimum is *min-content* — so one long
+unbreakable token (a file path in a table, a package name in `<code>`) widens the
+column past the viewport and the whole page scrolls horizontally. Measured on the
+handoff rail at 500px: `body.scrollWidth` 553 against a 500px viewport, with the
+table's own `overflow-x` wrapper working correctly and not at fault.
+
+Write `minmax(0, 1fr)` in every grid column that can receive prose or tables, and
+give flex/grid children that scroll internally an explicit `min-width: 0`.
+
+## Q15 — capping measure on `<p>` alone misses the worst line
+
+`p { max-width: 68ch }` reads as "prose is capped" and is not. The longest line in
+the session-handoff document was a **list item** at 90 characters — in *important
+context*, the one section the template marks MUST READ. Cap `li` too, and exempt
+`td p, td li` so table cells still use their column.
+
+Note the unit: `ch` is the width of `0`, which is wider than average prose, so
+`68ch` measured **~74** real characters here. Verify by dividing an element's
+rendered height by its computed `line-height` and its text length by the result —
+`Range.getClientRects()` counts inline fragments, not lines, and will tell you a
+9-line paragraph has 38.
+
+## Q16 — a surface's extension tokens need `[data-theme]` blocks, not just a media query
+
+Each surface defines its own extension tokens outside the `tokens:core` markers
+(`--secondary`, `--card-hover`, `--gold-10`, and the aliases built on them such as
+`--titlebar`). They are dark-first like the core, so their light values are an
+override — and all four surfaces wrote that override as a bare
+`@media (prefers-color-scheme: light) { :root { … } }` with **no `[data-theme]`
+blocks**.
+
+On a light system, clicking **Dark** then flips every core token and leaves the
+extension tokens cream, because the media query still matches. The tell is
+partial: tokens that alias a core token (`--term-bg: var(--background)`) follow
+the toggle, literal hexes do not — so on session-handoff the card inverted to
+`#111110` while its own header stayed `#f0efe3`. Nothing caught it; the toggle is
+not exercised by any test, and Q10's polarity test checks the *core*.
+
+Write extension overrides the way `core.css:84-85,130` writes them — the
+system-light block guarded as `:root:not([data-theme="dark"])`, plus a matching
+`:root[data-theme="light"]` block defining the same token set. Fixed for
+session-handoff in D8 and pinned by `tests/session-handoff-surface.test.mjs`;
+open for the other three surfaces (docket #48), each in its own step-2 PR.

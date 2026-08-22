@@ -159,3 +159,58 @@ follows the entity, not its rank.
 | Per-surface rebuild, no shared machinery | Discards machinery shipped 2026-08-12, re-opens the drift docket #21 closed, does the capability work 4× |
 | Wireframe with `blueprint` | Declined by its own contract — structure only; `when_to_use` excludes aesthetic direction |
 | Redesign the palette | Already a considered warm-neutral system with a single accent |
+
+## D8 — session-handoff is a rail, and the rail indexes rather than holds
+
+*(surface-kit D6 step 2, surface 1 of 4. Signed off 2026-08-22. Specimen:
+[handoff-direction-b.html](handoff-direction-b.html))*
+
+The handoff document is read once, at session start, to reload a mental model.
+Measured before the change: **4240px** of scroll in a 936px column, nine sections
+at identical weight, prose at ~115 characters per line, a full screen-band spent
+on "No blockers", and `▸` markers beside every heading that fold nothing.
+
+A sticky 19rem rail carries identity (now including `workstream` and
+`continues-from`, which the surface rendered nowhere), the numbered next steps,
+a blockers chip and the section nav. The pane runs `Immediate next steps` →
+`Blockers` → the current-state lede → the document as written.
+
+**The rail indexes; the pane is authoritative.** Each rail step is clamped to
+three lines and is a *link* to its full text in the pane. Nothing exists only in
+the rail — a clamped 350-character step in a 19rem column is unreadable, and the
+first draft of this direction had exactly that defect: the pane dropped the two
+hoisted sections entirely, so their full text was readable nowhere.
+
+The separate `.section-nav` row retires, because the rail's nav replaces it. This
+is safe only because `g` + digit indexes `[data-kit-section]` (Q13); had it
+walked the nav, the fix would have lived inside `kit:js` and D6 step 1 makes a
+kit change atomic across all four surfaces plus an npm changeset.
+
+**Measure is capped on every prose-bearing block, not only paragraphs** — `p`
+and `li` at `68ch`, `td` exempt, tables at full pane width because they are data.
+Worst line 90 → 79 characters; the 90 was a list item in *important context*,
+the section the template marks MUST READ. Raw `px` on the surface fell 56 → 43.
+
+Verification also turned up a theme defect older than this redesign: the
+surface's extension tokens had no `[data-theme]` blocks, so the manual Dark
+toggle left the titlebar cream on an inverted card. Fixed here and pinned;
+open on the other three surfaces (Q16, docket #48).
+
+Ordering changes in **both** templates. `SKILL.md` makes markdown the default
+save format and requires "identical sections, no divergence", so hoisting only in
+HTML would ship the hierarchy in the format nobody gets by default.
+
+**The page gets longer, not shorter: 4240px → 4679px** on the shipped surface at
+1440×1000. Larger prose, a narrower measure and next-steps-as-a-section all cost
+height; the card's tighter padding pays some of it back. This direction buys
+orientation from the rail, not brevity — the flat direction study measured 5394px
+before the card was kept, so treat that figure as superseded.
+
+| Rejected | Why not |
+|---|---|
+| **Briefing** — start-here panel, depth sections folded | Shortest by far (~1550px) and the strongest answer to the scroll itself, but drilling costs a click and every deep link must open a fold |
+| **Dossier** — vitals strip, numbered sections, no folds | Densest and most scannable, but leaves the long scroll intact |
+| Rail carries the full step text, no pane section | The rail becomes tall and the steps narrow; this was the first draft's defect |
+| Step 01 in the rail, the rest in the pane | The rail stops being a full index |
+| Rail absorbs the titlebar | Theme toggle and `?` become unconventional to find |
+| Empty optional section keeps the kit's dashed `.kit-empty` panel | Right for an interactive surface with a waiting slot; on a read-once document it rebuilds the screen-band of nothing this redesign removes (120px → 20px) |

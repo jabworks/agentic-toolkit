@@ -7,6 +7,20 @@ continues-from: [previous handoff filename | none]
 workstream: [slug describing the workstream]
 ---
 
+## Immediate next steps
+
+<!-- Ordered and specific. "Fix auth" is not acceptable. "Add `refreshToken` to `auth.schema.ts:12` and run `pnpm drizzle-kit generate`" is. -->
+
+1. [Step 1 — include file:line where applicable]
+2. [Step 2]
+3. [Step 3]
+
+## Blockers
+
+| Blocker | Context | Workaround tried |
+|---|---|---|
+| [What's stuck] | [Why] | [What was attempted] |
+
 ## Current State Summary
 
 <!-- One paragraph: where things stand right now. What just finished, what's in flight. -->
@@ -50,20 +64,6 @@ workstream: [slug describing the workstream]
 | Decision | Options considered | Chosen | Rationale |
 |---|---|---|---|
 | [What was decided] | [A vs B vs C] | [A] | [The constraint, tradeoff, or intent] |
-
-## Immediate next steps
-
-<!-- Ordered and specific. "Fix auth" is not acceptable. "Add `refreshToken` to `auth.schema.ts:12` and run `pnpm drizzle-kit generate`" is. -->
-
-1. [Step 1 — include file:line where applicable]
-2. [Step 2]
-3. [Step 3]
-
-## Blockers
-
-| Blocker | Context | Workaround tried |
-|---|---|---|
-| [What's stuck] | [Why] | [What was attempted] |
 
 ## Important context
 
