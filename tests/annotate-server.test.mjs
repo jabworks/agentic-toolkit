@@ -9,6 +9,22 @@ import { spawnServer, stopServer } from './helpers.mjs';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SERVER = path.resolve(__dirname, '../skills/plan-review/references/annotate-server.js');
 
+// Wait for CONTENT, not for existence. The server writes the feedback file from
+// another process; polling `existsSync` is satisfied the instant the file is
+// created, so a read can land before the bytes and come back ''. The try/catch
+// also keeps an expired deadline reporting as a failed match rather than an
+// ENOENT stack trace.
+async function readWhenReady(file, marker, timeoutMs = 2000) {
+  const deadline = Date.now() + timeoutMs;
+  let body = '';
+  while (Date.now() < deadline) {
+    try { body = fs.readFileSync(file, 'utf8'); } catch { /* not created yet */ }
+    if (body.includes(marker)) return body;
+    await new Promise((r) => setTimeout(r, 50));
+  }
+  return body;
+}
+
 test('annotate-server manual mode: serves plan, accepts feedback, writes feedback file', async () => {
   const fixture = path.join(os.tmpdir(), 'ci-plan-review-' + process.pid + '.md');
   const feedbackFile = fixture + '.feedback.md';
@@ -38,12 +54,8 @@ test('annotate-server manual mode: serves plan, accepts feedback, writes feedbac
     assert.equal(feedbackJson.status, 'received');
     assert.equal(feedbackJson.mode, 'manual');
 
-    const deadline = Date.now() + 2000;
-    while (!fs.existsSync(feedbackFile) && Date.now() < deadline) {
-      await new Promise((r) => setTimeout(r, 50));
-    }
-    assert.ok(fs.existsSync(feedbackFile), 'feedback file was not written');
-    assert.match(fs.readFileSync(feedbackFile, 'utf8'), /\*\*Decision:\*\* Approve/);
+    const feedback = await readWhenReady(feedbackFile, '**Decision:** Approve');
+    assert.match(feedback, /\*\*Decision:\*\* Approve/);
   } finally {
     await stopServer(proc);
     fs.rmSync(fixture, { force: true });
@@ -97,11 +109,7 @@ test('annotate-server directory mode: doc manifest, per-doc content, grouped fee
     });
     assert.equal((await feedbackRes.json()).status, 'received');
 
-    const deadline = Date.now() + 2000;
-    while (!fs.existsSync(feedbackFile) && Date.now() < deadline) {
-      await new Promise((r) => setTimeout(r, 50));
-    }
-    const feedback = fs.readFileSync(feedbackFile, 'utf8');
+    const feedback = await readWhenReady(feedbackFile, '**Decision:** Request Revisions');
     assert.match(feedback, /\*\*Decision:\*\* Request Revisions/);
     assert.match(feedback, /### `decisions\.md`/);
     assert.match(feedback, /fix this/);

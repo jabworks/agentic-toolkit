@@ -14,7 +14,11 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## session-report 1.11.0 — 2026-08-23
 
-- chore(session-report): version 1.11.0
+- feat(session-report): the cockpit surface (D9) (#103)
+
+## condux 2.20.3 — 2026-08-23
+
+- chore(condux): version 2.20.3
 
 ## session-report 1.10.0 — 2026-08-22
 
