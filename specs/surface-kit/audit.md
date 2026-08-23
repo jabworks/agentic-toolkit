@@ -7,12 +7,16 @@ files; nothing here is inferred from screenshots.
 
 ## Surfaces
 
+Line counts as at 2026-08-23 (the 2026-08-20 figures in brackets were measured
+before step 1 landed the kit regions; they outlived their accuracy and were
+still being cited to order step 2's PRs — see `implementation.md`):
+
 | Surface | Plugin | Lines | Consumption model |
 |---|---|---|---|
-| `skills/session-report/template.html` | session-report | 1516 | agent-`Edit`ed copy + JSON data island |
-| `skills/session-handoff/references/handoff-template.html` | session-handoff | 608 | hand-filled static document |
-| `skills/plan-review/references/plan-review-template.html` | condux | 911 | server-substituted SPA (`annotate-server.js`) |
-| `skills/record/server/docket-render.mjs` | docket | ~516 | JS string-builder + SSE live mode |
+| `skills/session-report/template.html` | session-report | 2962 (was 1516) | agent-`Edit`ed copy + JSON data island |
+| `skills/session-handoff/references/handoff-template.html` | session-handoff | 1720 (was 608) | hand-filled static document |
+| `skills/plan-review/references/plan-review-template.html` | condux | 1761 (was 911) | server-substituted SPA (`annotate-server.js`) |
+| `skills/record/server/docket-render.mjs` + `board-shell.html` | docket | 364 + 1070 (was ~516) | JS string-builder + SSE live mode |
 
 ## What is already good (do not "fix")
 
@@ -110,15 +114,20 @@ session-report and session-handoff have **zero** focus styling. plan-review is
 an interactive annotation SPA and has four. This is a keyboard-accessibility
 gap, and the audit treats visible focus as a requirement, not a nicety.
 
-### F6 — Radius is uncoordinated
+### F6 — Radius is uncoordinated — **closed by step 1**
+
+Originally measured as four vocabularies for one concept:
 
 - session-report: 4px, 8px, 12px, 9999px
 - session-handoff: 12px, 9999px
 - plan-review: 0, 2px, 4px, `var(--radius)`, `var(--radius-md)`, 9999px
 - docket: .25rem, .4rem, .5rem, .6rem
 
-Four vocabularies for one concept. `--radius` exists in the core but only
-plan-review consistently uses it.
+**Re-measured 2026-08-23 (D9): the step-1 token migration already closed this
+on session-report** — all nine of its `border-radius` declarations resolve to
+`var(--radius-*)`, with zero raw `px`. The finding survived in this document
+after the fix, which is why D9's plan budgeted work for it that did not exist.
+Re-measure the other three before scheduling any of it.
 
 ### F7 — Shadows: one untinted, most absent
 
@@ -136,12 +145,18 @@ plan-review consistently uses it.
   where grid is the reliable answer.
 - docket: **0 grid**, 4 flex — a board layout built entirely on flex.
 
-### F9 — Data typography underused
+### F9 — Data typography underused — **closed on the document surfaces**
 
 `tabular-nums` appears once each in session-report, session-handoff and
 plan-review, and three times in docket. These are data-heavy surfaces
 (token counts, costs, dates, ids); figures should be tabular by default, not
 by exception.
+
+**Closed on session-handoff (D8) and session-report (D9)**: both now set
+`font-variant-numeric: tabular-nums` on `body`, with `th` opting back out — a
+header is a label, not data. Note the ordering trap: the `font` shorthand resets
+`font-variant-numeric`, so the longhand has to follow it in the same rule or it
+is silently discarded. Open on plan-review and docket.
 
 ### F10 — docket is the consistent outlier
 

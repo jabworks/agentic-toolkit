@@ -56,20 +56,34 @@ reduced-motion, print, theme override, keyboard. No surface restructures.
 
 Four independent PRs, one plugin each, in ascending risk order:
 
-1. **session-handoff** — **direction signed off 2026-08-22 (D8)**; specimen
+1. **session-handoff** — **shipped 2026-08-22 (D8)**, PR #101; specimen
    [handoff-direction-b.html](handoff-direction-b.html)
 2. **docket board** — **shipped** out of order, PR #93/#95, docket 0.10.0
    (`specs/docket/board-direction-a.html`)
-3. **plan-review** (911 lines; 17 flex rules to 1 grid — grid conversion here).
+3. **session-report** (2452 lines; 11 flex rules, 3 dist trees, no changeset) —
+   **shipped 2026-08-23 (D9)**, session-report 1.11.0; specimen
+   [session-report-direction-c.html](session-report-direction-c.html)
+4. **plan-review** (1761 lines; 21 flex rules, 4 dist trees).
    **Needs `pnpm changeset`** — its template is bundled in
    `packages/condux-opencode/skills/` (Q8)
-4. **session-report** (1516 lines)
+
+**The original order put plan-review 3rd and session-report 4th on line counts
+that were both stale (911 and 1516), and ordered on the wrong axis anyway.
+Re-measured and flipped 2026-08-22:** session-report is the *larger* file, so
+"ascending size" would have kept the shipped order — but size is a weak proxy
+for risk. plan-review propagates to a fourth tree with the silent-npm-staleness
+trap, and it is the only **interactive** surface: its annotation popovers anchor
+to elements whose `offsetParent` chain 21 flex→grid conversions would disturb.
+session-report is a third *document/dashboard* surface, where the D8 conventions
+transfer directly. It goes 3rd; plan-review is last.
 
 Each applies its own direction within the shared system. The `px` → `rem` step in
 the original ordering is **already done for font sizes** on all four surfaces —
-every size is `var(--text-*)` and those tokens are `rem`. What remains per surface
-is layout, hierarchy, and the raw `px` still in spacing and radius. See the
-re-measurement banner in [audit.md](audit.md).
+every size is `var(--text-*)` and those tokens are `rem` — and **F6 (radius) was
+closed by step 1's token migration**: measured 2026-08-23, all nine of
+session-report's `border-radius` declarations already resolve to `var(--radius-*)`.
+What remains per surface is layout and hierarchy. See the re-measurement banner in
+[audit.md](audit.md).
 
 Per-surface work states the intended visual outcome first, renders it against real
 content, and promotes the signed-off render to a committed `specs/` path before

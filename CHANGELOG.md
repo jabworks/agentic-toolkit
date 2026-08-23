@@ -12,13 +12,17 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## session-report 1.11.0 — 2026-08-23
+
+- chore(session-report): version 1.11.0
+
 ## session-report 1.10.0 — 2026-08-22
 
 - feat(session-report): categorical ramp in the core, one hue per project (#97)
 
 ## session-handoff 1.9.0 — 2026-08-22
 
-- chore(session-handoff): version 1.9.0
+- feat(session-handoff): a rail, hoisted next steps, and a real measure (D8) (#101)
 
 ## session-handoff 1.8.2 — 2026-08-22
 
