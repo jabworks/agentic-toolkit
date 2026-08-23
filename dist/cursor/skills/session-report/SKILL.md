@@ -68,8 +68,22 @@ Produce a self-contained HTML report of session usage and save it to
 
      **Codex note:** `pct_cached` will be 0 for most OpenAI models — only flag this if the model supports prompt caching.
 
-   - Fill the `<!-- AGENT: optimizations -->` block with 1–4 `<div class="callout">` suggestions tied to specific rows in the data. HTML-escape every transcript-derived project, prompt, model, skill, and tool label inserted into either agent-authored block.
-   - Do not restructure existing sections.
+   - Fill the `<!-- AGENT: optimizations -->` block with `<div class="callout">` suggestions. Work the checklist below and write one callout per signal that actually fires — typically 3–6. Each callout must name the row it came from and the change it implies; a suggestion with no number attached to it is noise.
+
+     | Check | Data path | Fires when | Say |
+     |---|---|---|---|
+     | Cache breaks | `overall.cache_breaks_over_100k`, `cache_breaks[]` | > 0, especially clustered in one project or one day | Which project and when, and that a `/compact` before the repeated resume is the cheaper path |
+     | Subagent cost | `overall.subagent.avg_tokens_per_call` | > 500k per call | Which subagent type from `by_subagent_type` dominates, and that its brief is carrying the context rather than the work |
+     | Cache hit rate | `overall.input_tokens.pct_cached` | < 85% (Claude only — see the Codex note) | The rate, and which project in `by_project` drags it down |
+     | Project concentration | `by_project[].input_tokens.total` | one project > 50% of the total | Name it with its share and its `cost_usd.total` |
+     | Model mix | `by_project[].by_model`, the `top model` column | an expensive model dominates a low-`efficiency_score` project | The project, its dominant model, and its cost |
+     | Per-project efficiency | `by_project[].efficiency_score` | any project scores below the overall score | Which one, and which of cache / msgs / subagents its score is losing on |
+     | Single-prompt cost | `top_prompts[0]` | > 2% of total tokens | The prompt, truncated, with its share and session id |
+     | Session hygiene | `overall.hours.active` vs `.wall_clock` | active < 50% of wall clock | That sessions are being left open, and that every per-hour figure below is diluted by it |
+
+     Skip a row rather than inventing one: an empty checklist entry is a healthy report, not a gap to fill. If nothing fires, say so in a single callout.
+   - HTML-escape every transcript-derived project, prompt, model, skill, and tool label inserted into either agent-authored block.
+   - Do not restructure existing sections. Each section's body now sits inside a `<details class="fold" open>` with its `<h2>` in the `<summary>` — the two `<!-- AGENT: … -->` markers moved with it, so edit **by marker**, never by line number. Do not add, remove or reorder sections, and do not delete the hidden `#prompt-histogram` container: the render writes to it without a null guard, and removing it kills every render step that follows, including the section nav.
 
 7. **Report** the saved file path. Do not open it or render it.
 

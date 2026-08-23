@@ -5,3 +5,7 @@
 node_modules/
 .session-handoff/
 .session-report/
+
+# `npx skills add` local install state
+.agents/
+skills-lock.json

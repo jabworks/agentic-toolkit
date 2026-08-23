@@ -9,7 +9,7 @@ Stale open markers cost real sessions — closing means moving.
 
 ## Committed
 
-### 48. Surface extension tokens ignore the theme toggle on the other three surfaces (2026-08-22)
+### 48. Surface extension tokens ignore the theme toggle on plan-review (2026-08-22)
 
 Each HTML surface defines its own extension tokens (`--secondary`, `--card-hover`, `--gold-10`, `--titlebar` and friends) outside the `tokens:core` markers. They are dark-first like the core, so the light values are an override — but they are written as a bare `@media (prefers-color-scheme: light) { :root { … } }` with **no `[data-theme]` blocks at all**.
 
@@ -17,15 +17,18 @@ Consequence: on a light system, clicking **Dark** flips every core token but lea
 
 Fixed for session-handoff in the D8 redesign: the system-light block became `:root:not([data-theme="dark"])` and a matching `:root[data-theme="light"]` block was added, which is how `scripts/tokens/core.css:84-85,130` already writes it. `tests/session-handoff-surface.test.mjs` pins the pairing and asserts both blocks define the same token set.
 
-Still broken (measured 2026-08-22, zero `:root[data-theme=…]` blocks outside the kit regions in each):
+Originally listed as still broken on three surfaces. **Re-measured 2026-08-23 and only one is left** — the original sweep counted "zero `:root[data-theme=…]` blocks outside the kit regions", which flags a surface that defines *no extension tokens at all* exactly as loudly as one whose tokens are stranded in a media query:
 
-- `skills/session-report/template.html`
-- `skills/plan-review/references/plan-review-template.html`
-- `skills/record/server/board-shell.html`
+| Surface | Extension tokens outside the kit regions | Status |
+|---|---|---|
+| `skills/session-handoff/references/handoff-template.html` | 26 | ✅ fixed in D8 |
+| `skills/session-report/template.html` | 28 | ✅ fixed 2026-08-23 (D9, session-report 1.11.0) — verified in the browser: on a light system, forcing Dark now paints `--secondary` `#222221` and the titlebar `rgb(34,34,33)`, where it painted `rgb(240,239,227)` before |
+| `skills/plan-review/references/plan-review-template.html` | 2 (`--hl`, `--hl-active`) | ❌ **still broken** — the only one left |
+| `skills/record/server/board-shell.html` | **0** | N/A — never had the defect; its tokens all come from the kit region, which already writes the `[data-theme]` pair |
 
-Each is a per-surface fix in that surface's own CSS — no core or kit change, so no atomic four-surface edit and no changeset. plan-review is the exception on release: its template is bundled in `packages/condux-opencode/skills/`, so that one needs `pnpm changeset` (surface-kit Q8).
+plan-review is the exception on release: its template is bundled in `packages/condux-opencode/skills/`, so that one needs `pnpm changeset` (surface-kit Q8).
 
-Worth folding into each surface's own D6 step-2 PR rather than doing a separate sweep, since those PRs already touch the same CSS block. Generalising the pinning test to all four surfaces would close the class.
+Fold it into plan-review's own D6 step-2 PR (now surface 4 — the order was flipped, see `specs/surface-kit/implementation.md`), since that PR already touches the same CSS block. `tests/session-report-surface.test.mjs` now pins the pairing on a second surface; generalising that assertion to all four would close the class, and can only land once plan-review is fixed.
 
 ### 49. annotate-server directory-mode test races the feedback file write (2026-08-22)
 
