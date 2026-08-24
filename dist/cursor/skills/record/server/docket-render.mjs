@@ -60,17 +60,28 @@ function slugSection(name) {
 }
 
 // The title tail carries the added stamp — "(2026-06-01)", or "(2026-07-02,
-// split from #2)" — and `add` can leave two when the title already had one.
-// Every trailing stamp leaves the DISPLAYED title; the first date found is the
-// added date. The file is never rewritten, and tags still read the raw title.
+// split from #2)" — and `add` guards against leaving two now (docket #47),
+// but old archive entries still carry the pre-guard duplicate. Every trailing
+// stamp leaves the DISPLAYED title; the first date found is the added date.
+// The file is never rewritten, and tags still read the raw title.
 const STAMP_TAIL_RE = /\s*\(\d{4}-\d{2}-\d{2}[^)]*\)\s*$/;
+
+// close() appends this after the title, so on an archived entry the added
+// stamp is no longer trailing — it sits right before this suffix instead of
+// at the string end, and STAMP_TAIL_RE's `$` stops matching it (docket #47).
+// The close stamp itself is not a date-parenthetical (no wrapping parens), so
+// it survives display deliberately; only the added stamp ahead of it is noise.
+const CLOSE_STAMP_RE = /\s*—\s*✅\s*DONE\s+\d{4}-\d{2}-\d{2}\s*$/;
 
 function displayTitle(raw) {
   const dates = [...raw.matchAll(/\((\d{4}-\d{2}-\d{2})[^)]*\)/g)].map((m) => m[1]);
-  let text = raw;
+  const closeMatch = raw.match(CLOSE_STAMP_RE);
+  const closeStamp = closeMatch?.[0]?.trim() ?? '';
+  let text = closeMatch ? raw.slice(0, closeMatch.index) : raw;
   while (STAMP_TAIL_RE.test(text)) text = text.replace(STAMP_TAIL_RE, '');
+  text = text.trim();
 
-  return { text: text.trim(), date: dates[0] ?? null };
+  return { text: closeStamp ? text + ' ' + closeStamp : text, date: dates[0] ?? null };
 }
 
 function ageDays(from, to) {
