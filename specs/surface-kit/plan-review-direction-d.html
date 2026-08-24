@@ -655,6 +655,15 @@
       pre code { background: none; border: none; padding: 0; }
       blockquote { margin: 0.6em 0; padding: 2px 14px; color: var(--muted-foreground); border-left: 3px solid var(--primary); }
       hr { border: none; border-top: 1px solid var(--border); margin: 1.6em 0; }
+      /* D10 — h2 now opens a section against its own rule, which makes a
+         preceding `---` a second divider saying the same thing. draft-plan's
+         canonical template puts `---` immediately before every task card, so
+         this is the shape of nearly every plan this surface renders: measured
+         9 doubled rules in one 9-task plan. Each block is wrapped in its own
+         .blk, so `hr + h2` cannot match — the relative selector looks forward
+         to the next block instead. The h2's rule is the spine and stays; the
+         redundant separator goes. */
+      .blk:has(> hr):has(+ .blk h2) { display: none; }
       table { border-collapse: collapse; margin: 0.9em 0; width: 100%; display: block; overflow-x: auto; font-size: var(--text-sm); }
       th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
       th { background: var(--muted); font-weight: 600; }
@@ -722,6 +731,10 @@
       .msg:first-child { border-top: none; }
       .msg::before { counter-increment: note; content: counter(note); position: absolute; left: 8px; top: 15px;
         font: 600 var(--text-2xs) var(--mono); color: var(--subtle); }
+      /* A note on another document takes no ordinal — see paint(). The marker
+         says "annotated, elsewhere" without claiming a position in a sequence
+         the reader cannot see. */
+      .msg[data-other-doc]::before { counter-increment: none; content: '·'; }
       .msg.note { cursor: pointer; }
       .msg.note.active { background: var(--accent); }
       .msg .meta { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 4px; align-items: center; }
@@ -1624,6 +1637,14 @@
           // The category is otherwise written only as TEXT into .who, and CSS
           // cannot select on text content — this is what the colour rules key on.
           m.dataset.cat=(a.kind==='note'?(a.cat||'Note'):'message');
+          // DIRMODE: the thread lists notes from EVERY document, but the in-document
+          // ordinal counts only the visible pane — marks inside a display:none pane
+          // do not increment a CSS counter. Numbering every row would therefore
+          // label a note "3" in the gutter whose highlight reads "1" in the
+          // document, which is exactly the divergence the numbering exists to
+          // remove. Rows belonging to another document are flagged so they take no
+          // ordinal, leaving both sequences running 1..m over the same set.
+          if(a.kind==='note'&&a.doc&&a.doc!==activeDoc) m.dataset.otherDoc='1';
           const meta=document.createElement('div'); meta.className='meta';
           const who=document.createElement('span'); who.className='who'; who.textContent=a.kind==='note'?(a.cat||'Note'):'message';
           const del=document.createElement('button'); del.className='del'; del.textContent='×';

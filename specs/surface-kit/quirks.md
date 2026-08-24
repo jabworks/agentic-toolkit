@@ -300,3 +300,45 @@ initial `active` chip is **not** a default).
 The first draft styled `Praise`, which this surface has never offered, and left
 `Comment` — the most common category — unstyled. The seed data in a specimen is
 not the product's vocabulary; read the chips.
+
+## Q24 — a `display: none` pane does not increment a CSS counter
+
+D10 numbers highlights with `counter-reset: hl` on `.doc` and numbers the review
+column with `counter-reset: note` on `.thread`. In **directory mode** those two
+count different populations:
+
+- marks inside a hidden `.docpane` do not increment `hl`, so the in-document
+  ordinals number **only the active document**, 1..m
+- every `.msg` row is visible, so the gutter numbered **every note across every
+  document**, 1..n
+
+Measured in DIRMODE with notes on two documents: a note at gutter position 3
+whose highlight rendered **1**. That is exactly the divergence the numbering
+exists to remove, surviving in the case the single-document specimen cannot
+show — and DIRMODE is the spec-review path `/discovery` uses.
+
+Rows from another document are flagged in `paint()` (`data-other-doc`) and take
+no ordinal, so both sequences run 1..m over the same set. The third numbering
+agrees by construction: `feedbackMarkdown` groups DIRMODE notes per file and
+restarts at 1 in each group.
+
+**The general shape:** whenever a counter and a list are reset on different
+ancestors, check what each one can actually see. Visibility is part of a
+counter's scope.
+
+## Q25 — a section rule and a `---` are the same divider twice
+
+D10 gives `h2` a `border-top`, and `draft-plan`'s canonical plan template puts
+`---` immediately before every task card. Nearly every plan this surface renders
+therefore drew two horizontal rules 66px apart before each card — measured 9 in
+one 9-task plan.
+
+The renderer wraps each block in its own `.blk`, so `hr + h2` matches nothing.
+The relative selector has to look forward across the wrappers:
+
+```css
+.blk:has(> hr):has(+ .blk h2) { display: none; }
+```
+
+Suppress the separator, not the section rule: the rule is the typographic spine
+and applies to every `h2`, while the `---` is redundant only in this pairing.

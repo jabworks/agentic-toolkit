@@ -57,7 +57,12 @@
   docket #50, pre-existing), Q22 (an appended overlay does not model source
   order, so a specimen's responsive behaviour is an artifact of how it was
   built), Q23 (the category set is the popover's chips — "Praise" is not one of
-  them and "Comment" is). **Closes docket #48**: plan-review was the last surface
+  them and "Comment" is), Q24 (**a `display: none` pane does not increment a
+  CSS counter** — in directory mode the in-document ordinals counted only the
+  active document while the gutter counted every note, so a note at gutter 3
+  carried a highlight reading 1; found only because DIRMODE was driven against
+  the real server), Q25 (a section rule plus draft-plan's `---` is the same
+  divider twice, on nearly every plan this surface renders). **Closes docket #48**: plan-review was the last surface
   carrying it, and the pairing assertion now runs over all four in
   `tests/surface-theme-pairing.test.mjs`, treating "declares no extension tokens"
   as a pass so board-shell's original mis-scope cannot recur. D6 step 2 is

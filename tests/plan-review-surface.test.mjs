@@ -136,6 +136,45 @@ test('highlights are numbered and the numbering has a defined order', () => {
   assert.doesNotMatch(surface, /annotations\.forEach\(function\(a\)\{\s*const m=document\.createElement/, 'paint no longer renders insertion order');
 });
 
+test('the two numberings agree in directory mode', () => {
+  // `counter-reset: hl` lives on .doc — one counter for all of #plan — and marks
+  // inside a display:none .docpane do NOT increment it. So the in-document
+  // ordinals count only the ACTIVE document. `counter-reset: note` lives on
+  // .thread, whose rows are all visible, so the gutter would count notes across
+  // EVERY document. Measured in DIRMODE before the fix: a note at gutter
+  // position 3 whose highlight rendered "1" — precisely the divergence the
+  // numbering exists to remove, surviving in the multi-document case.
+  //
+  // Rows belonging to another document are flagged and take no ordinal, which
+  // leaves both sequences running 1..m over the same set. The written feedback
+  // file agrees too: feedbackMarkdown groups DIRMODE notes per file and
+  // restarts its enumeration at 1 in each group.
+  assert.match(
+    surface,
+    /if\(a\.kind==='note'&&a\.doc&&a\.doc!==activeDoc\) m\.dataset\.otherDoc='1';/,
+    'paint flags rows from other documents',
+  );
+  assert.match(
+    surface,
+    /\.msg\[data-other-doc\]::before \{ counter-increment: none;/,
+    'and those rows take no ordinal',
+  );
+});
+
+test('a plan does not get two dividers before every task card', () => {
+  // h2 opens a section against its own rule, and draft-plan's canonical template
+  // puts `---` immediately before every task card — so nearly every plan this
+  // surface renders doubled the divider. Measured 9 in one 9-task plan.
+  // Each block is wrapped in its own .blk, so `hr + h2` cannot match; the
+  // relative selector has to look forward to the next block.
+  assert.match(
+    surface,
+    /\.blk:has\(> hr\):has\(\+ \.blk h2\) \{ display: none; \}/,
+    'the redundant separator is suppressed, not the h2 rule',
+  );
+  assert.match(surface, /h2 \{[^}]*border-top: 1px solid var\(--border\)/, 'the h2 keeps the spine');
+});
+
 test('threadOrder sorts a copy and never the live store', () => {
   // annotations is the identity store: saveNote pushes to it and the delete
   // handler resolves rows with annotations.indexOf(a). Sorting it in place
