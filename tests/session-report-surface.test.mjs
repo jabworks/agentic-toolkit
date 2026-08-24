@@ -239,35 +239,10 @@ test('figures are tabular by default, not by exception', () => {
   assert.match(surface, /th \{[^}]*font-variant-numeric:\s*normal/, 'th opts back out — a header is a label');
 });
 
-test('the surface extension tokens follow the theme toggle, not only the system', () => {
-  // Docket #48 / Q16. The extension tokens are dark-first like the core, so
-  // their light values are an override. Written as a bare media query, clicking
-  // Dark on a light system flipped every core token but left --secondary (and
-  // so --titlebar) cream: the media query still matched. Tokens aliasing a core
-  // token followed the toggle and literal hexes did not, so the card inverted
-  // and its own header did not.
-  assert.match(
-    surface,
-    /@media \(prefers-color-scheme: light\) \{\s*:root:not\(\[data-theme="dark"\]\)/,
-    'the system-light block must exclude an explicit dark override',
-  );
-  assert.match(surface, /:root\[data-theme="light"\] \{/, 'an explicit light override exists');
-
-  const guarded = surface.match(/:root:not\(\[data-theme="dark"\]\) \{([^}]*)\}/);
-  const explicit = surface.match(/:root\[data-theme="light"\] \{([^}]*)\}/);
-
-  // Compare declarations, not just token names: the light palette is written
-  // twice, so a names-only check would pass while the two copies drifted to
-  // different values — the same toggle-vs-system disagreement this catches.
-  const declarations = (block) =>
-    [...block.matchAll(/(--[\w-]+):\s*([^;]+);/g)].map((m) => m[1] + ':' + m[2].trim()).sort();
-
-  assert.deepEqual(
-    declarations(guarded[1]),
-    declarations(explicit[1]),
-    'both light blocks must declare the same tokens with the same values',
-  );
-});
+// The extension-token theme-pairing assertion that used to live here now runs
+// over all four surfaces at once in tests/surface-theme-pairing.test.mjs.
+// It moved when plan-review — the last surface still carrying the defect —
+// was fixed (docket #48), which is what let one test close the class.
 
 test('per-row model attribution survives a report with no pricing', () => {
   // A Codex report without prices has costTotal 0 on every model, so ranking on

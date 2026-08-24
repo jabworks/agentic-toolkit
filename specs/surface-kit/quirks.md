@@ -204,6 +204,141 @@ not exercised by any test, and Q10's polarity test checks the *core*.
 
 Write extension overrides the way `core.css:84-85,130` writes them — the
 system-light block guarded as `:root:not([data-theme="dark"])`, plus a matching
-`:root[data-theme="light"]` block defining the same token set. Fixed for
-session-handoff in D8 and pinned by `tests/session-handoff-surface.test.mjs`;
-open for the other three surfaces (docket #48), each in its own step-2 PR.
+`:root[data-theme="light"]` block defining the same token set.
+
+**Closed 2026-08-24.** Fixed on session-handoff in D8, session-report in D9 and
+plan-review in D10. `board-shell` was never affected — it declares no extension
+tokens outside the kit regions, and the original sweep counted "zero
+`[data-theme]` blocks" as the signal, which flags a surface with nothing to fix
+exactly as loudly as a broken one. The assertion now runs over all four surfaces
+in `tests/surface-theme-pairing.test.mjs`, and treats "declares no extension
+tokens" as a pass rather than a failure, so that mis-scope cannot recur.
+
+## Q17–Q19 — recorded in index.md's D9 entry, never written here
+
+`index.md`'s 2026-08-23 changelog attributes three quirks to D9 —
+
+- **Q17** the session-report render is not null-guarded: trimming a section
+  throws on its container and kills every render step after it, the section nav
+  included, with nothing on the page to say so
+- **Q18** folds break navigation and print: a chip or deep link into a collapsed
+  section lands on a 48px bar, and a collapsed `<details>` prints nothing
+- **Q19** a sticky offset hardcoded in CSS is wrong the moment the thing it
+  measures wraps — measure it and re-measure on resize
+
+— and none of them was ever added to this file. Found on 2026-08-24 while
+numbering D10's quirks, which silently claimed Q17–Q19 until the collision was
+caught; D10's are numbered from Q20 for that reason.
+
+The summaries above are copied verbatim from the changelog, which is all that
+survives. Filed as docket #51 to write them out properly from the D9 work rather
+than expand them from a one-line summary here.
+
+## Q20 — the numbering in the UI and the numbering in the payload are two different lists
+
+D10 numbers each highlight with a CSS counter and repeats the ordinal in the
+review column's gutter, so a reviewer can say "note 3" and mean something. The
+counter numbers by **document position**; `annotations` is in **insertion**
+order; and the submitted payload was a third thing again — the raw array.
+
+Fixing only the render leaves the defect half-closed and invisible: the screen
+reads 1-2-3 top to bottom while the written feedback file lists the same notes
+in a different order under the same numbers, so the reviewer's "note 1" reaches
+the agent as note 2. Found end-to-end against the real server, not in the
+specimen — the specimen stubs `/api/feedback` and never writes the file.
+
+Order once, in one place (`threadOrder()`), and use it for **both** the render
+and the payload (`thread: threadOrder()`).
+
+## Q21 — hiding grid *children* leaves their *tracks* behind
+
+`[data-kit-chrome] { display: none }` in the kit's print block hides
+plan-review's `.nav` and `.chat`, but `.app`'s three column tracks
+(`248px minmax(0,1fr) 372px`) survive. `.main` then auto-places into the
+**first** track and the plan printed in a ~151px column — about a tenth of the
+page. Measured on the shipped surface before any D10 change, so this had been
+true for as long as the three-column shell existed.
+
+Compounding it: `.main` is the scroll container (`overflow-y: auto`), and a
+scroll container clips printed output to the one screenful scrolled into view.
+The rest of the plan did not print at all.
+
+A print block that hides chrome must also **collapse the shell that positioned
+it** and unset any overflow that clips:
+
+```css
+@media print {
+  .app { display: block; }
+  .main { overflow: visible; padding: 0; height: auto; }
+}
+```
+
+Docket #50. Keep the measure cap — prose set to full page width is no more
+readable on paper than on screen.
+
+## Q22 — an appended overlay does not model source order
+
+The D10 directions were compared as specimens built by appending the direction's
+CSS as a `<style>` block after the whole stylesheet. That is fine for judging a
+look and **wrong for judging responsive behaviour**: an appended unscoped rule
+outranks even the `max-width` queries it should lose to, so the three-column
+grid survived into a 640px viewport with `.main` at 88px and the popover off
+screen — a defect that exists only in the specimen.
+
+Integrated normally, the base rule precedes the media queries and they win, as
+the file's own convention intends. Measure responsive behaviour **after**
+integration; a specimen's breakpoints are an artifact of how it was built.
+
+## Q23 — the category set is the popover's chips, and "Praise" is not one of them
+
+D10 colours notes by category. The categories are exactly
+`Comment · Issue · Question · Suggestion · Nitpick`, declared as `data-cat` on
+the popover's chips — plus `Note`, which is what a note carries when no chip was
+clicked (`openToolbar` clears `pendingCat` on every open, so the markup's
+initial `active` chip is **not** a default).
+
+The first draft styled `Praise`, which this surface has never offered, and left
+`Comment` — the most common category — unstyled. The seed data in a specimen is
+not the product's vocabulary; read the chips.
+
+## Q24 — a `display: none` pane does not increment a CSS counter
+
+D10 numbers highlights with `counter-reset: hl` on `.doc` and numbers the review
+column with `counter-reset: note` on `.thread`. In **directory mode** those two
+count different populations:
+
+- marks inside a hidden `.docpane` do not increment `hl`, so the in-document
+  ordinals number **only the active document**, 1..m
+- every `.msg` row is visible, so the gutter numbered **every note across every
+  document**, 1..n
+
+Measured in DIRMODE with notes on two documents: a note at gutter position 3
+whose highlight rendered **1**. That is exactly the divergence the numbering
+exists to remove, surviving in the case the single-document specimen cannot
+show — and DIRMODE is the spec-review path `/discovery` uses.
+
+Rows from another document are flagged in `paint()` (`data-other-doc`) and take
+no ordinal, so both sequences run 1..m over the same set. The third numbering
+agrees by construction: `feedbackMarkdown` groups DIRMODE notes per file and
+restarts at 1 in each group.
+
+**The general shape:** whenever a counter and a list are reset on different
+ancestors, check what each one can actually see. Visibility is part of a
+counter's scope.
+
+## Q25 — a section rule and a `---` are the same divider twice
+
+D10 gives `h2` a `border-top`, and `draft-plan`'s canonical plan template puts
+`---` immediately before every task card. Nearly every plan this surface renders
+therefore drew two horizontal rules 66px apart before each card — measured 9 in
+one 9-task plan.
+
+The renderer wraps each block in its own `.blk`, so `hr + h2` matches nothing.
+The relative selector has to look forward across the wrappers:
+
+```css
+.blk:has(> hr):has(+ .blk h2) { display: none; }
+```
+
+Suppress the separator, not the section rule: the rule is the typographic spine
+and applies to every `h2`, while the `---` is redundant only in this pairing.

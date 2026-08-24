@@ -182,35 +182,10 @@ test('the surface prints as one column without touching the kit print block', ()
   assert.match(print[0], /\.rail \{[^}]*position:\s*static/, 'the sticky rail is released');
 });
 
-test('the surface extension tokens follow the theme toggle, not only the system', () => {
-  // The extension tokens are dark-first like the core, so their light values are
-  // an override. Written as a bare media query, clicking Dark on a light system
-  // flipped every core token but left --secondary (and so --titlebar) cream: the
-  // media query still matched. Tokens aliasing a core token followed the toggle
-  // and literal hexes did not, so the card inverted and its header did not.
-  assert.match(
-    surface,
-    /@media \(prefers-color-scheme: light\) \{\s*:root:not\(\[data-theme="dark"\]\)/,
-    'the system-light block must exclude an explicit dark override',
-  );
-  assert.match(surface, /:root\[data-theme="light"\] \{/, 'an explicit light override exists');
-
-  const guarded = surface.match(/:root:not\(\[data-theme="dark"\]\) \{([^}]*)\}/);
-  const explicit = surface.match(/:root\[data-theme="light"\] \{([^}]*)\}/);
-
-  // Compare declarations, not just token names. The light palette is written
-  // twice, so names-only would pass while the two copies drifted to different
-  // values — which is the same disagreement between toggle and system preference
-  // that this test exists to catch.
-  const declarations = (block) =>
-    [...block.matchAll(/(--[\w-]+):\s*([^;]+);/g)].map((m) => m[1] + ':' + m[2].trim()).sort();
-
-  assert.deepEqual(
-    declarations(guarded[1]),
-    declarations(explicit[1]),
-    'both light blocks must declare the same tokens with the same values',
-  );
-});
+// The extension-token theme-pairing assertion that used to live here now runs
+// over all four surfaces at once in tests/surface-theme-pairing.test.mjs.
+// It moved when plan-review — the last surface still carrying the defect —
+// was fixed (docket #48), which is what let one test close the class.
 
 test('the rail stays reachable and the layout stacks when narrow', () => {
   assert.match(surface, /\.rail \{[\s\S]*?max-height:\s*calc\(100dvh[^)]*\)/, 'rail is height-bounded');
