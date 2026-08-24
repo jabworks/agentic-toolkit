@@ -189,6 +189,12 @@ export function addItem(d, { title, section = 'someday', body = '', date }) {
   requireLayout(d);
   if (!title || !date) throw new Error('addItem needs a title and an injected date');
 
+  // This appends "(date)" itself below, so a title that already ends in one
+  // would double up — the write-time source of docket #47's duplicate stamp.
+  if (/\(\d{4}-\d{2}-\d{2}[^)]*\)\s*$/.test(title)) {
+    throw new Error('title already ends with a date stamp "(YYYY-MM-DD...)" — drop it, the date is added automatically');
+  }
+
   // A body line that looks like a section or item heading would reparse as
   // one on the next read — corrupting the model silently. Bodies use #### and
   // below (the Status-block level); reject anything higher.

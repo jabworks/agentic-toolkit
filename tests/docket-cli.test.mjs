@@ -116,6 +116,22 @@ test('addItem rejects body lines that would reparse as headings', () => {
   }
 });
 
+// docket #47: addItem appends "(date)" itself, so a hand-typed trailing date
+// used to double up once close() appended its own stamp on top.
+test('addItem rejects a title that already ends with a date stamp', () => {
+  const layoutA = scratchCopy('layout-a');
+  try {
+    assert.throws(
+      () => addItem(resolveDocket(layoutA), { title: 'Already dated (2026-08-21)', date: '2026-08-21' }),
+      /already ends with a date stamp/,
+    );
+    // A parenthetical that is not a bare date must stay legal.
+    addItem(resolveDocket(layoutA), { title: 'Reopen X (the 2026-07-14 falsification)', date: '2026-08-21' });
+  } finally {
+    cleanup(layoutA);
+  }
+});
+
 test('closeItem stamps, moves byte-identical bodies to the year archive, and reports the commit subject', () => {
   const layoutA = scratchCopy('layout-a');
   try {
@@ -305,6 +321,49 @@ test('renderHtml shows a usable empty state on a fresh scaffold', () => {
     // A section with no items and no prose is a quiet slot, never hidden:
     // "nothing committed" is information (docket #44, closed by decision).
     assert.match(html, /<div class="empty">Nothing in committed<\/div>/, 'an empty section renders as a slot');
+  } finally {
+    cleanup(dir);
+  }
+});
+
+// docket #47: the close stamp ("— ✅ DONE <date>") is not a date-parenthetical,
+// so it must never be treated as the trailing group STAMP_TAIL_RE strips — but
+// it also must not shield a filed date immediately ahead of it from being
+// stripped, which is exactly what let the old duplicate through.
+test('renderHtml strips a filed date immediately before the close stamp, keeps the stamp, and leaves other parens alone', () => {
+  const dir = scratchDir();
+  try {
+    scaffold(dir, { project: 'probe', date: '2026-08-01' });
+    fs.mkdirSync(path.join(dir, 'docket', 'archive'), { recursive: true });
+    fs.writeFileSync(
+      path.join(dir, 'docket', 'archive', '2026.md'),
+      [
+        '# DOCKET ARCHIVE 2026',
+        '',
+        'Closed items.',
+        '',
+        '## 1. Retire the legacy exporter (2026-08-05) — ✅ DONE 2026-08-21',
+        '',
+        'Verification: shipped',
+        '',
+        // Pre-guard data (written before docket #47's addItem check existed) —
+        // the render must still clean this up on read, not just refuse new ones.
+        '## 2. Legacy duplicate (2026-08-21) (2026-08-21) — ✅ DONE 2026-08-21',
+        '',
+        'Verification: shipped',
+        '',
+        '## 3. Reopen A4 collision detection (the 2026-07-14 falsification) — ✅ DONE 2026-08-21',
+        '',
+        'Verification: shipped',
+        '',
+      ].join('\n'),
+    );
+
+    const html = renderHtml(resolveDocket(dir), { date: '2026-08-21' });
+
+    assert.match(html, /<span class="t">Retire the legacy exporter — ✅ DONE 2026-08-21<\/span>/, 'the filed date ahead of the stamp is stripped, the stamp survives');
+    assert.match(html, /<span class="t">Legacy duplicate — ✅ DONE 2026-08-21<\/span>/, 'both stacked dates from pre-guard data are stripped, not just one');
+    assert.match(html, /<span class="t">Reopen A4 collision detection \(the 2026-07-14 falsification\) — ✅ DONE 2026-08-21<\/span>/, 'a non-date parenthetical elsewhere in the title survives untouched');
   } finally {
     cleanup(dir);
   }

@@ -120,10 +120,30 @@ without a docket (offer scaffold instead, at most once).
   inside `<main>`, so the fresh-scaffold empty state can sit above it)
   scrolls; the sticky header does not move with it.
 - Date stamps are stripped from the displayed title and shown in the card's
-  meta line; the file is untouched. A title carrying two stamps
-  (`(2026-08-21) (2026-08-21)`, as `add` produces when the title already has
-  one) shows the first.
+  meta line; the file is untouched. `add` now refuses a title that already
+  ends in a date stamp rather than doubling it up on write (docket #47) — see
+  "The close stamp defeats the trailing-date strip" below for the render side.
 - The render-contract test (`tests/docket-cli.test.mjs`, "renderHtml
   produces a self-contained board…") pins the scope pills, stats row and
   `#filter-toggle`; it is rewritten to the column contract as a named plan
   task, never edited silently.
+
+## The close stamp defeats the trailing-date strip (2026-08-24, docket #47)
+
+`displayTitle`'s strip regex is anchored to the literal end of the string —
+`\(\d{4}-\d{2}-\d{2}[^)]*\)\s*$`. `close()` appends `— ✅ DONE <date>` after
+the title, and that suffix is not itself a `(...)` group, so once an item is
+archived the filed-date parenthetical is never trailing anymore: the regex's
+`$` stops matching, and the filed date leaks into every archived card's
+displayed title (`Retire the legacy exporter (2026-08-05) — ✅ DONE
+2026-08-21`), not only the duplicate-stamp case that surfaced it (`(2026-08-21)
+(2026-08-21) — ✅ DONE 2026-08-21`, hand-fixed once in the archive file
+itself — the actual defect was always in the renderer, not the data).
+
+Fix is positional, not lexical: strip a `(...)` date group only when it sits
+immediately before the close stamp (or at the true string end, for open
+items), never a date-shaped parenthetical anywhere else in the title — a
+title may legitimately carry one, e.g. "Reopen A4 collision detection (the
+2026-07-14 falsification)". The close stamp itself is deliberately never
+stripped; it is the one thing this regex was never supposed to treat as
+noise.

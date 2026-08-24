@@ -78,3 +78,11 @@ The board strips trailing `(<YYYY-MM-DD>…)` groups from the displayed title
 and shows the first date as the card's added date, with an age in days. This
 is a rendering rule only: `DOCKET.md` keeps the stamp in the title, and the id
 slot vs title tail distinction above is unchanged.
+
+`close()` appends its own `— ✅ DONE <date>` after the title, so on an archived
+entry the added stamp is no longer the trailing text — it sits immediately
+before the close stamp instead. The strip rule follows it there: a date group
+positioned right before the close stamp is still stripped, the close stamp
+itself is not a date-parenthetical and always survives, and a date-shaped
+parenthetical anywhere else in the title (not immediately pre-stamp) is left
+alone, same as the open-item rule (docket #47; `specs/docket/quirks.md`).

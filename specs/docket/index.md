@@ -1,6 +1,6 @@
 # Docket — Tech Spec
 
-**Last updated:** 2026-08-21
+**Last updated:** 2026-08-24
 **Commit:** cd70976 (design stage — pre-implementation)
 **Status:** draft
 
@@ -22,6 +22,12 @@ BACKLOG.md conventions.
 - [board-direction-a.html](board-direction-a.html) — the signed-off board render (2026-08-21, docket #45)
 
 ## Changelog
+- 2026-08-24: fix docket #47 — `displayTitle`'s trailing-date strip is anchored
+  to the string end, so `close()`'s appended `— ✅ DONE <date>` stamp defeated
+  it on every archived item, not only the duplicate-stamp case that surfaced
+  it. Fix is positional (strip a date group only when it sits immediately
+  before the close stamp), and `add` now refuses a title that already ends in
+  a date stamp rather than doubling it up on write (fields, quirks)
 - 2026-08-21 (preflight): drift decisions — `.board` is a div inside `<main>`,
   archive is one closed drawer, not per-year blocks (quirks)
 - 2026-08-21: board redesign (docket #45) — columns, read-only, title + lede
