@@ -214,25 +214,132 @@ exactly as loudly as a broken one. The assertion now runs over all four surfaces
 in `tests/surface-theme-pairing.test.mjs`, and treats "declares no extension
 tokens" as a pass rather than a failure, so that mis-scope cannot recur.
 
-## Q17–Q19 — recorded in index.md's D9 entry, never written here
+## Q17 — a retired section's target must stay in the DOM, not get deleted
 
-`index.md`'s 2026-08-23 changelog attributes three quirks to D9 —
+`session-report`'s render (`skills/session-report/template.html`) carries no
+null guards anywhere — `const $ = (id) => document.getElementById(id)`, then
+every section writes straight into `$("some-id").innerHTML` with nothing
+checking the return. The one `try/catch` in the file wraps only the
+`#report-data` `JSON.parse` at the top; everything after it is a long run of
+synchronous IIFEs with no per-section recovery.
 
-- **Q17** the session-report render is not null-guarded: trimming a section
-  throws on its container and kills every render step after it, the section nav
-  included, with nothing on the page to say so
-- **Q18** folds break navigation and print: a chip or deep link into a collapsed
-  section lands on a 48px bar, and a collapsed `<details>` prints nothing
-- **Q19** a sticky offset hardcoded in CSS is wrong the moment the thing it
-  measures wraps — measure it and re-measure on resize
+D9 retired the "prompt size distribution" section (three of its eight buckets
+are empty on a real 30-day report and the shape is bimodal). Deleting its
+`<section>` markup outright — the obvious way to retire something — turns
+`$("prompt-histogram").innerHTML = hist...` into a write on `null`, which
+throws. Because nothing downstream is guarded, that throw kills every render
+step queued after it in the same script, **including the section-nav
+builder** two IIFEs later. The result isn't "one section missing" — it's a
+silently empty section index and no visible error, found only by breaking the
+page on purpose and reloading.
 
-— and none of them was ever added to this file. Found on 2026-08-24 while
-numbering D10's quirks, which silently claimed Q17–Q19 until the collision was
-caught; D10's are numbered from Q20 for that reason.
+The fix already had a precedent in the same file: the zero-sessions path
+hides `.term-body section`, `.strip` and `.rail` rather than removing them,
+specifically so the calls further down still have somewhere to write zeroes.
+`prompt-histogram` took the same shape — the container stays, just `hidden`:
 
-The summaries above are copied verbatim from the changelog, which is all that
-survives. Filed as docket #51 to write them out properly from the D9 work rather
-than expand them from a one-line summary here.
+```html
+<div id="prompt-histogram" hidden></div>
+```
+
+**The general shape:** in a render with no defensive checks by convention,
+retiring a section is a *hide*, not a *delete* — unless every call that
+targets it is edited in the same change.
+
+## Q18 — a closed `<details>` is invisible to three navigation routes and to print, each a different way
+
+D9 wraps every section in `<details class="fold" open>`. Collapsing that
+`<details>` breaks four things that all assumed sections were always visible,
+each independently and each silently (nothing throws):
+
+- **The nav chip.** Built from the DOM (one chip per `h2`, so a renamed
+  section can't drift the nav) and wired to `sec.scrollIntoView(...)` — which
+  scrolls to a closed 48px bar and shows nothing.
+- **A `#sec-...` deep link.** Needs its own open-before-scroll, and needs it
+  twice: once for a hash already in the URL at load, and once for
+  `hashchange`. A hash present at load never fires a `hashchange` event, so
+  the load case has to call the same jump function directly — `jump()` runs
+  once on its own right after the listener is registered.
+- **kit:js's `g` + digit.** Indexes `[data-kit-section]` directly and never
+  touches the section-nav markup at all, so it broke exactly the same way as
+  the chips, by a completely separate code path (see Q13 on why `g`+digit and
+  the nav are not the same mechanism).
+- **Printing.** A collapsed `<details>` prints nothing — the browser drops
+  its content from the print tree — so a printed report would silently lose
+  every section that happened to be closed.
+
+The fix is one `reveal()` used by both the chip and the deep-link routes,
+plus a separate `beforeprint`/`afterprint` pair for print:
+
+```js
+const reveal = (node) => {
+  if (!node || !node.querySelectorAll) return;
+  node.querySelectorAll("details.fold").forEach((d) => (d.open = true));
+  for (let n = node; n && n !== document; n = n.parentNode) {
+    if (n.classList?.contains("fold")) n.open = true;
+  }
+};
+```
+
+`reveal()` walks **both directions** on purpose: the `<details class="fold">`
+is a *child* of the `<section>` for a top-level section jump, but a fold can
+also nest inside another fold, so the parent-walk half matters too — either
+walk alone silently does nothing for the case it doesn't cover. It's scoped
+to `details.fold` specifically, not every `<details>`, because the drill
+lists lower in each section are `<details>` too — an unscoped reveal expands
+all hundred prompt rows along with the one section you asked for.
+
+Print gets its own handler, because "open everything" is the print-only
+answer — a report on screen should stay collapsed where the reader left it:
+
+```js
+window.addEventListener("beforeprint", () => {
+  wasClosed = [...document.querySelectorAll("details.fold")].filter((d) => !d.open);
+  wasClosed.forEach((d) => (d.open = true));
+});
+window.addEventListener("afterprint", () => {
+  wasClosed.forEach((d) => (d.open = false));
+  wasClosed = [];
+});
+```
+
+Print needed one more fix beside the folds: `.strip` is `position: sticky`
+and `.shell` is a two-column grid, and both survive into `@media print`
+unless told otherwise — the sticky strip then overlaps the body it indexes.
+The print block forces `.strip` and `.rail` to `position: static` and
+`.shell` to `display: block`.
+
+**The general shape:** a fold hides more than paint — every route that can
+land a user (or a print pass) inside a collapsed region has to open it first,
+and each route tends to be a separate mechanism that fails independently.
+Enumerate the routes, don't fix the one you tripped over first.
+
+## Q19 — a sticky offset in CSS is a fallback, not a measurement
+
+The rail's sticky `top` and every section's `scroll-margin-top` key off
+`--strip-h`, a custom property with a CSS fallback of `3.25rem`. That constant
+was measured against the strip at its default size and was **9px short** of
+the real height, which slid the rail under the strip on load — and the strip
+itself wraps onto a second line at narrow widths, so no single constant is
+ever right for every viewport.
+
+Fixed by measuring instead of asserting:
+
+```js
+const sync = () => term.style.setProperty("--strip-h", strip.offsetHeight + "px");
+sync();
+if (window.ResizeObserver) new ResizeObserver(sync).observe(strip);
+```
+
+`sync()` runs once on load and again on every resize the `ResizeObserver`
+reports, so a wrap at a narrow viewport re-measures instead of leaving the
+stale constant in place.
+
+**The general shape:** a hardcoded CSS value standing in for a runtime
+measurement is right for exactly the layout it was measured on. If the thing
+it describes can reflow (wrap, resize, gain content), the constant is a
+fallback for before JS runs, not the answer — measure it, and re-measure on
+whatever event can change it.
 
 ## Q20 — the numbering in the UI and the numbering in the payload are two different lists
 

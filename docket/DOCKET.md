@@ -7,20 +7,6 @@ docket is the tracker). When an item ships: stamp it ✅ with the date and
 verification status, then move the entry to the archive in the same action.
 Stale open markers cost real sessions — closing means moving.
 
-## Committed
-
-### 51. surface-kit Q17-Q19 were announced in the changelog and never written (2026-08-24)
-
-`specs/surface-kit/index.md`'s 2026-08-23 entry attributes three quirks to D9 — Q17 (the session-report render is not null-guarded), Q18 (folds break navigation and print), Q19 (a hardcoded sticky offset is wrong the moment the thing it measures wraps). None of them exists in `specs/surface-kit/quirks.md`, which ran Q1-Q16 until 2026-08-24.
-
-Found while numbering D10's quirks: the new entries silently took Q17-Q19 and would have permanently collided with what the changelog attributes to D9. D10's are numbered from Q20, and `quirks.md` now carries a placeholder recording the gap with the one-line summaries the changelog preserved.
-
-**What is needed:** write the three out properly from the D9 work — the failing shapes, how each was found, and what the fix was — rather than expanding a one-line summary into invented detail. The D9 PR (#103) and its commit `ce40637` are where the real content lives — the working plan it was built from is gitignored and will not survive a clone, so the PR is the durable source.
-
-**Why it matters beyond tidiness:** the changelog is the index a future reader searches, and it currently promises three quirks the quirks file cannot answer. A quirk that exists only as a changelog sentence is not a quirk anyone can act on — which is the whole reason the file exists.
-
-Worth a cheap guard afterwards: assert every `Q<n>` cited in `index.md` has a matching heading in `quirks.md`. That is what would have caught this on the day.
-
 ## Someday
 
 ### 7. Spec MCP server — revisit when specs gain write-side invariants (2026-08-05)
