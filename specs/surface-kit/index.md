@@ -5,9 +5,9 @@
 > generalizes `check-tokens.mjs` from one inlined region to three so state and
 > behaviour are written once instead of four times.
 
-**Last updated:** 2026-08-20
+**Last updated:** 2026-08-24
 **Commit:** 46947a4
-**Status:** draft
+**Status:** D6 step 2 complete
 
 ## Contents
 
@@ -28,6 +28,11 @@
   signed-off session-report direction (D9), rendered from a real 30-day report:
   the pinned anomaly strip, the comparison rail, and every section folded. The
   visual contract for step 2's third surface
+- [plan-review-direction-d.html](plan-review-direction-d.html) — the signed-off
+  plan-review direction (D10), rendered from a real plan through the **shipped**
+  template with only the four server endpoints stubbed: the manuscript spine,
+  the numbered marginalia and the categorised gutter. Interactive — select text
+  and the popover anchors for real. The visual contract for step 2's last surface
 - [api.md](api.md) — region grammar, checker CLI, and the three producer
   contracts the redesign must not break
 - [quirks.md](quirks.md) — the template-literal corruption class, placeholder
@@ -35,6 +40,30 @@
 - [implementation.md](implementation.md) — key files, phasing, tests, release surface
 
 ## Changelog
+- 2026-08-24: D10 — plan-review becomes a manuscript (D6 step 2, surface 4, the
+  last). The document leads: graph paper gone, a typographic spine of space and
+  rule, and every highlight numbered with the same ordinal its note carries in
+  the review column, which recedes to marginalia with category as colour on the
+  ordinal and the label. `paint()` renders in **document** order rather than
+  insertion order — the counter numbers by document position, so insertion order
+  put the two numberings out of step the moment a note was added above an
+  earlier one — and exposes `data-cat`, since the category was otherwise only
+  written as text and CSS cannot select on text content. Q20 (**the UI order and
+  the payload order are two different lists** — fixing only the render leaves the
+  reviewer's "note 1" arriving as the agent's note 2; found end-to-end against
+  the real server, which the specimen's stubbed `/api/feedback` cannot reach),
+  Q21 (**hiding grid children leaves their tracks** — print auto-placed `.main`
+  into a 248px column and the scroll container clipped output to one screenful:
+  docket #50, pre-existing), Q22 (an appended overlay does not model source
+  order, so a specimen's responsive behaviour is an artifact of how it was
+  built), Q23 (the category set is the popover's chips — "Praise" is not one of
+  them and "Comment" is). **Closes docket #48**: plan-review was the last surface
+  carrying it, and the pairing assertion now runs over all four in
+  `tests/surface-theme-pairing.test.mjs`, treating "declares no extension tokens"
+  as a pass so board-shell's original mis-scope cannot recur. D6 step 2 is
+  complete. Also recorded: Q17–Q19 were attributed to D9 in this changelog and
+  never written into `quirks.md` (docket #51). Specimen:
+  [plan-review-direction-d.html](plan-review-direction-d.html)
 - 2026-08-23: D9 — session-report becomes a cockpit (D6 step 2, surface 3): a
   solid sticky anomaly strip, a comparison rail carrying project shares and a
   per-day sparkline, and every section in a `<details open>`. Q17 (**the render

@@ -63,9 +63,20 @@ Four independent PRs, one plugin each, in ascending risk order:
 3. **session-report** (2452 lines; 11 flex rules, 3 dist trees, no changeset) —
    **shipped 2026-08-23 (D9)**, session-report 1.11.0; specimen
    [session-report-direction-c.html](session-report-direction-c.html)
-4. **plan-review** (1761 lines; 21 flex rules, 4 dist trees).
-   **Needs `pnpm changeset`** — its template is bundled in
-   `packages/condux-opencode/skills/` (Q8)
+4. **plan-review** — **shipped 2026-08-24 (D10)**, condux 2.21.0; specimen
+   [plan-review-direction-d.html](plan-review-direction-d.html). 1761 lines,
+   4 dist trees, with `pnpm changeset` (Q8).
+
+   **The stated risk here was wrong, and the correction is worth keeping.** This
+   row read "21 flex rules" whose flex→grid conversion would disturb the
+   popover's `offsetParent` chain. Measured 2026-08-24: **20** rules (4 in
+   `kit:css`, 16 surface-owned), and **none of them sits on an ancestor of
+   `#popover`** — the chain is `#popover → .main → .app`, two links. The real
+   constraints are that `.main` must stay both the `offsetParent` and the scroll
+   container, and that no sticky chrome may go inside it (`placePopover()` flips
+   below on a hardcoded `main.scrollTop + 4`). Both are now pinned by
+   `tests/plan-review-surface.test.mjs`. Same class of stale audit number as the
+   line counts that caused the order flip — measure before ordering on it.
 
 **The original order put plan-review 3rd and session-report 4th on line counts
 that were both stale (911 and 1516), and ordered on the wrong axis anyway.

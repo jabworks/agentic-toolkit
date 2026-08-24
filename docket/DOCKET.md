@@ -9,26 +9,17 @@ Stale open markers cost real sessions — closing means moving.
 
 ## Committed
 
-### 48. Surface extension tokens ignore the theme toggle on plan-review (2026-08-22)
+### 51. surface-kit Q17-Q19 were announced in the changelog and never written (2026-08-24)
 
-Each HTML surface defines its own extension tokens (`--secondary`, `--card-hover`, `--gold-10`, `--titlebar` and friends) outside the `tokens:core` markers. They are dark-first like the core, so the light values are an override — but they are written as a bare `@media (prefers-color-scheme: light) { :root { … } }` with **no `[data-theme]` blocks at all**.
+`specs/surface-kit/index.md`'s 2026-08-23 entry attributes three quirks to D9 — Q17 (the session-report render is not null-guarded), Q18 (folds break navigation and print), Q19 (a hardcoded sticky offset is wrong the moment the thing it measures wraps). None of them exists in `specs/surface-kit/quirks.md`, which ran Q1-Q16 until 2026-08-24.
 
-Consequence: on a light system, clicking **Dark** flips every core token but leaves those extension tokens at their light values, because the media query still matches. Tokens that alias a core token (`--term-bg: var(--background)`) follow the toggle; literal hexes do not. On session-handoff this rendered a cream titlebar on a `#111110` card — the card inverted and its own header did not.
+Found while numbering D10's quirks: the new entries silently took Q17-Q19 and would have permanently collided with what the changelog attributes to D9. D10's are numbered from Q20, and `quirks.md` now carries a placeholder recording the gap with the one-line summaries the changelog preserved.
 
-Fixed for session-handoff in the D8 redesign: the system-light block became `:root:not([data-theme="dark"])` and a matching `:root[data-theme="light"]` block was added, which is how `scripts/tokens/core.css:84-85,130` already writes it. `tests/session-handoff-surface.test.mjs` pins the pairing and asserts both blocks define the same token set.
+**What is needed:** write the three out properly from the D9 work — the failing shapes, how each was found, and what the fix was — rather than expanding a one-line summary into invented detail. The D9 PR (#103) and its commit `ce40637` are where the real content lives — the working plan it was built from is gitignored and will not survive a clone, so the PR is the durable source.
 
-Originally listed as still broken on three surfaces. **Re-measured 2026-08-23 and only one is left** — the original sweep counted "zero `:root[data-theme=…]` blocks outside the kit regions", which flags a surface that defines *no extension tokens at all* exactly as loudly as one whose tokens are stranded in a media query:
+**Why it matters beyond tidiness:** the changelog is the index a future reader searches, and it currently promises three quirks the quirks file cannot answer. A quirk that exists only as a changelog sentence is not a quirk anyone can act on — which is the whole reason the file exists.
 
-| Surface | Extension tokens outside the kit regions | Status |
-|---|---|---|
-| `skills/session-handoff/references/handoff-template.html` | 26 | ✅ fixed in D8 |
-| `skills/session-report/template.html` | 28 | ✅ fixed 2026-08-23 (D9, session-report 1.11.0) — verified in the browser: on a light system, forcing Dark now paints `--secondary` `#222221` and the titlebar `rgb(34,34,33)`, where it painted `rgb(240,239,227)` before |
-| `skills/plan-review/references/plan-review-template.html` | 2 (`--hl`, `--hl-active`) | ❌ **still broken** — the only one left |
-| `skills/record/server/board-shell.html` | **0** | N/A — never had the defect; its tokens all come from the kit region, which already writes the `[data-theme]` pair |
-
-plan-review is the exception on release: its template is bundled in `packages/condux-opencode/skills/`, so that one needs `pnpm changeset` (surface-kit Q8).
-
-Fold it into plan-review's own D6 step-2 PR (now surface 4 — the order was flipped, see `specs/surface-kit/implementation.md`), since that PR already touches the same CSS block. `tests/session-report-surface.test.mjs` now pins the pairing on a second surface; generalising that assertion to all four would close the class, and can only land once plan-review is fixed.
+Worth a cheap guard afterwards: assert every `Q<n>` cited in `index.md` has a matching heading in `quirks.md`. That is what would have caught this on the day.
 
 ## Someday
 
