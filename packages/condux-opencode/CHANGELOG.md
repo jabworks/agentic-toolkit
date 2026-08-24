@@ -1,5 +1,18 @@
 # @jabworks/condux
 
+## 0.13.3
+
+### Patch Changes
+
+- [#104](https://github.com/jabworks/agentic-toolkit/pull/104) [`3b0dfe3`](https://github.com/jabworks/agentic-toolkit/commit/3b0dfe3a0153f2eed28444eb35f2783a5d72260e) Thanks [@vi-hieu](https://github.com/vi-hieu)! - plan-review: write the feedback file atomically
+
+  `annotate-server.js` wrote the decision with a plain `writeFileSync`, which is
+  `open(O_CREAT|O_TRUNC)` followed by `write()` — two syscalls. A reader polling
+  for the file could win that gap and read a created, still-empty file. Both the
+  steer-mode and manual-mode writes now go through a temp file plus `renameSync`,
+  which is atomic on POSIX: a reader sees either the previous file or the complete
+  new one, never a truncated one. Falls back to a direct write if rename fails.
+
 ## 0.13.2
 
 ### Patch Changes
