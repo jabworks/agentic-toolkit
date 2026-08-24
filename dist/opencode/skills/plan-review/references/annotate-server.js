@@ -172,6 +172,24 @@ function gitRoot() {
   }
 }
 
+// Write atomically. A plain writeFileSync is open(O_CREAT|O_TRUNC) then write()
+// — two syscalls — so any reader polling for the file can win the gap and see a
+// created, still-empty file. Writing a sibling temp and rename()-ing it into
+// place is atomic on POSIX: readers see either the old file or the complete new
+// one, never a truncated one. Same directory so the rename never crosses a
+// filesystem. If rename is unavailable (some Windows AV/lock cases), fall back
+// to the direct write rather than losing the feedback.
+function writeFileAtomic(file, data) {
+  const tmp = file + '.' + process.pid + '.tmp';
+  try {
+    fs.writeFileSync(tmp, data);
+    fs.renameSync(tmp, file);
+  } catch (e) {
+    try { fs.rmSync(tmp, { force: true }); } catch (e2) { /* nothing to clean */ }
+    fs.writeFileSync(file, data);
+  }
+}
+
 function feedbackMarkdown(decision, thread) {
   const lines = ['# Plan Review Feedback', '',
     '- **Decision:** ' + decision,
@@ -262,7 +280,7 @@ function resolveDecision(decision, thread) {
     // browser tab live-reloads when the agent revises the plan on disk. On a
     // terminal decision (Approve/Reject) the review is over, so we exit after the
     // response flushes; on "Request Revisions" we keep serving the next round.
-    fs.writeFileSync(feedbackFile, md);
+    writeFileAtomic(feedbackFile, md);
     const payload = { decision: decision, feedback: md, feedbackFile: feedbackFile };
     if (decisionWaiter) {
       try { decisionWaiter.writeHead(200, { 'Content-Type': 'application/json' }); decisionWaiter.end(JSON.stringify(payload)); } catch (e) { /* client gone */ }
@@ -276,7 +294,7 @@ function resolveDecision(decision, thread) {
       setTimeout(function () { process.exit(0); }, 400);
     }
   } else {
-    fs.writeFileSync(feedbackFile, md);
+    writeFileAtomic(feedbackFile, md);
     log('\n[PLAN-REVIEW FEEDBACK -> ' + feedbackFile + ']\n' + md + '\n');
   }
 }
