@@ -63,4 +63,66 @@ reads as though collision automation is a dead end in general.
 
 Found 2026-08-09 surveying awesome-copilot's maintenance machinery.
 
+### 53. Add a first-class `disallowed` assertion to the trigger-routing eval (2026-08-25)
+
+The one primitive worth stealing from `@microsoft/vally`, salvaged from docket
+#14 (priced and declined 2026-08-25 — see A3b in
+`skills/toolkit-research-frontier/references/health-campaign.md`).
+
+vally's `skill-invocation-grader` takes `{required: string[], disallowed:
+string[]}`. We have the `required` half: `expected_skill` scored against the
+judge's pick. We have no real `disallowed`. Our `should_trigger: false` cases
+approximate it as a *routing decision* ("route this to null"), which is a
+weaker claim than "this skill must NOT fire here" about exactly the collisions
+we care about most.
+
+Why it matters here specifically: A3's dominant error mode is one-hop adjacency
+pairs — discovery↔session-handoff on "resume", draft-plan↔technical-spec on
+doc-creation, subagent-execution↔session-handoff on resume space. A `disallowed`
+assertion states the collision directly instead of inferring it from an
+accuracy dip.
+
+Scope: a per-case optional `disallowed: ["skill-a", "skill-b"]` in
+`skills/*/evals/trigger_eval.json`, scored by `scripts/eval-triggers.mjs`
+alongside `expected_skill`. A case can then pass its routing check and still
+fail for naming a skill that must never win. No trajectories, no new dependency
+— docket #14 established that the trajectory half is not worth buying.
+
+Decide when picked up: whether a `disallowed` violation is a hard fail or a
+separate reported metric, since it changes what the ~89–92% operating band
+means and A3's band is already the number the campaign is judged on.
+
+Related: docket #10 (semantic collision detection) wants the same signal and is
+more expensive to build — this is the cheap version of the same question.
+
+### 54. Re-check #14's corpus-portability finding on a stronger model (2026-08-25)
+
+Docket #14 (priced and declined 2026-08-25) concluded that the trigger-eval
+corpus is not portable to trajectory-based scoring, because its stimuli are
+routing phrases rather than tasks: a 12-case probe produced 3 activations out
+of 12, and every dev-task case activated nothing. `"write the implementation
+plan"` returns a clarifying question — correctly, since there is no task in
+that string.
+
+**Every run in that probe used `claude-haiku-4-5-20251001`.** A stronger model
+may commit to a skill where Haiku asks for clarification, which would soften
+the portability finding. It would not touch #14's other two conclusions —
+vally is unnecessary, and corpus-authoring cost dominates the ~$17 of API
+calls — and a Sonnet/Opus corpus run would price *higher* than $17, so the
+economics only get worse, not better.
+
+Scope: re-run the same 12 cases (or the 6 dev-task ones) on Sonnet, same
+method — `claude -p --output-format stream-json`, count `Skill` tool_use
+blocks. ~$0.30 at Haiku rates, more at Sonnet. The probe harness was
+throwaway (`/tmp/probe.mjs`); rebuild it from A3b's description or write a
+small one — it is ~25 lines.
+
+Second untested variable, cheaper to note than to fix: all runs happened in
+`/tmp` with no project context. A real repo might change activation behaviour,
+though there is still no *task* in the stimulus, so a flip is not expected.
+
+Close as confirmed-or-corrected either way — A3b currently states the
+Haiku-only limitation in its own text, so the record is honest as it stands;
+this only tightens it.
+
 ## Loose threads
