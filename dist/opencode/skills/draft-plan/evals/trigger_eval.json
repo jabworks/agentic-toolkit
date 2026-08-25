@@ -1,8 +1,8 @@
 [
-  { "query": "write the implementation plan", "should_trigger": true, "expected_skill": "draft-plan", "accept": ["workflow"] },
-  { "query": "turn the design into task cards", "should_trigger": true, "expected_skill": "draft-plan" },
+  { "query": "write the implementation plan", "should_trigger": true, "expected_skill": "draft-plan", "accept": ["workflow"], "disallowed": ["technical-spec"] },
+  { "query": "turn the design into task cards", "should_trigger": true, "expected_skill": "draft-plan", "disallowed": ["technical-spec"] },
   { "query": "plan out the epic we signed off yesterday", "should_trigger": true, "expected_skill": "draft-plan" },
-  { "query": "create the .condux/plans file for this feature", "should_trigger": true, "expected_skill": "draft-plan" },
+  { "query": "create the .condux/plans file for this feature", "should_trigger": true, "expected_skill": "draft-plan", "disallowed": ["technical-spec"] },
   { "query": "break this down into tasks with dependencies", "should_trigger": true, "expected_skill": "draft-plan" },
   { "query": "write-plan for checkout v2", "should_trigger": true, "expected_skill": "draft-plan" },
   { "query": "we havent designed this yet but write a plan anyway", "should_trigger": true, "expected_skill": "draft-plan", "accept": ["discovery"] },
