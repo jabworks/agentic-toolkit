@@ -266,10 +266,50 @@ function esc(text) {
 }
 
 // A deliberate markdown subset: paragraphs, #### subheads, bullets, fences,
-// inline code, bold. Anything fancier renders as plain escaped text — honest
-// beats wrong for a board view.
+// pipe tables, inline code, bold. Anything fancier renders as plain escaped
+// text — honest beats wrong for a board view.
 function mdLite(text) {
   return mdBlocks(text).join('\n');
+}
+
+// A table is a header row, a delimiter row, then body rows (docket #43). The
+// delimiter is what makes it a table: a line of pipes on its own is prose that
+// happens to contain pipes, and used to render as such. Alignment colons parse
+// but are ignored — the board sets its own column behaviour.
+const TABLE_DELIM = /^\|?(?:\s*:?-+:?\s*\|)+(?:\s*:?-+:?\s*)?\|?$/;
+
+// Split on unescaped pipes only — an escaped \| is cell content, not a column
+// break, which is the whole point of escaping it. Same rule spec-index.test.mjs
+// applies when it reads the generated catalog.
+function cellsOf(line) {
+  let row = line.trim();
+  if (row.startsWith('|')) row = row.slice(1);
+  if (/(?<!\\)\|$/.test(row)) row = row.slice(0, -1);
+  return row.split(/(?<!\\)\|/).map((c) => c.trim().replaceAll('\\|', '|'));
+}
+
+// Rows arrive as raw lines, header first, delimiter second. The caller has
+// already confirmed the delimiter by lookahead, so this only shapes the output.
+function tableBlock(rows) {
+  const head = cellsOf(rows[0]);
+  const cell = (c) => '<td>' + inline(c) + '</td>';
+  const body = rows.slice(2).map((row) => {
+    const got = cellsOf(row);
+    // Pad a short row so the grid stays rectangular; keep the extras on a long
+    // one, because dropping a cell loses content the author wrote.
+    while (got.length < head.length) got.push('');
+    return '<tr>' + got.map(cell).join('') + '</tr>';
+  });
+  // Wrapped because a card column is ~450px and a table does not reflow: the
+  // wrapper scrolls, the column does not stretch, and the page never gains a
+  // horizontal scrollbar of its own.
+  return (
+    '<div class="tbl"><table>\n<thead><tr>' +
+    head.map((c) => '<th>' + inline(c) + '</th>').join('') +
+    '</tr></thead>' +
+    (body.length > 0 ? '\n<tbody>' + body.join('\n') + '</tbody>' : '') +
+    '\n</table></div>'
+  );
 }
 
 // One entry per block — a paragraph, a whole list, a fence, a subhead — so the
@@ -294,7 +334,8 @@ function mdBlocks(text) {
     }
   };
 
-  for (const line of lines) {
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
     if (fence !== null) {
       if (line.startsWith('```')) {
         out.push('<pre><code>' + esc(fence.join('\n')) + '</code></pre>');
@@ -307,6 +348,19 @@ function mdBlocks(text) {
     if (line.startsWith('```')) {
       flush();
       fence = [];
+      continue;
+    }
+    // Confirmed by lookahead rather than buffered: a pipe line only starts a
+    // table if the NEXT line is a delimiter. Buffering instead made the
+    // not-a-table fallback its own block, which split a paragraph that merely
+    // contained pipes into two — a regression on prose that never involved a
+    // table at all.
+    if (line.startsWith('|') && TABLE_DELIM.test((lines[i + 1] ?? '').trim())) {
+      flush();
+      const rows = [];
+      while (i < lines.length && lines[i].startsWith('|')) rows.push(lines[i++]);
+      i -= 1;
+      out.push(tableBlock(rows));
       continue;
     }
     if (/^####\s/.test(line)) {

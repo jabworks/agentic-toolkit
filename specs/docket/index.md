@@ -22,6 +22,11 @@ BACKLOG.md conventions.
 - [board-direction-a.html](board-direction-a.html) — the signed-off board render (2026-08-21, docket #45)
 
 ## Changelog
+- 2026-08-25: `mdLite()` gains pipe tables (docket #43). Detection is by
+  lookahead to a delimiter row, so prose containing pipes still renders as the
+  paragraph it always did; escaped `\|` stays cell content; ragged rows pad
+  rather than truncate. Wrapped in `.tbl` so a ~450px card scrolls the table
+  instead of stretching, with the board's first table styling. docket 0.11.0.
 - 2026-08-24: fix docket #47 — `displayTitle`'s trailing-date strip is anchored
   to the string end, so `close()`'s appended `— ✅ DONE <date>` stamp defeated
   it on every archived item, not only the duplicate-stamp case that surfaced

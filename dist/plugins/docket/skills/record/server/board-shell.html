@@ -547,6 +547,17 @@ pre{background:var(--muted);border-radius:var(--radius-md);padding:var(--space-2
 code{background:var(--muted);border-radius:var(--radius);padding:.05rem var(--space-1);font-family:var(--mono);font-size:.85em}
 pre code{background:none;padding:0}
 ul{padding-left:1.2rem}
+/* Tables (docket #43). mdLite emits these inside a card body, which is a ~450px
+   column that must not stretch — so the wrapper scrolls and the table keeps its
+   intrinsic width. Header in the mono/uppercase register the board already uses
+   for column heads, rules instead of fills so a table reads as part of the prose
+   rather than a widget dropped into it. */
+.tbl{overflow-x:auto;margin-top:var(--space-2)}
+.tbl table{border-collapse:collapse;font-size:var(--text-sm);line-height:var(--leading-snug)}
+.tbl th{text-align:left;font:500 var(--text-2xs)/1.4 var(--mono);text-transform:uppercase;letter-spacing:var(--tracking-wide);color:var(--muted-foreground);border-bottom:1px solid var(--border);padding:0 var(--space-3) var(--space-1) 0;white-space:nowrap}
+.tbl td{vertical-align:top;padding:var(--space-1) var(--space-3) var(--space-1) 0;border-bottom:1px solid var(--border);color:var(--muted-foreground)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl th:last-child,.tbl td:last-child{padding-right:0}
 /* The archive: a drawer under the board, never a peer column. Rows open to
    the full body. */
 .drawer{margin:0 var(--space-6) var(--space-12);border-top:1px solid var(--border);padding-top:var(--space-4)}

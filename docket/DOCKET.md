@@ -102,25 +102,4 @@ eval runs — what we do by hand across dated reports), `max-repeat` and
 
 Found 2026-08-09 surveying awesome-copilot's maintenance machinery.
 
-### 43. mdLite renders markdown tables as raw pipe text on the docket board (2026-08-20)
-
-`mdLite()` in `skills/record/server/docket-render.mjs` has no table support, so a
-markdown table in a DOCKET.md item body renders as literal pipe text on the
-board. Visible today in item #10, which carries a three-row table:
-
-    | idea | what it does | |---|---| | semantic compare | name + description …
-
-Pre-existing — `mdLite` was untouched by the Surface Kit work — but the
-redesign's cleaner spacing makes it conspicuous, and the docket is the one
-surface whose content is authored as markdown by hand.
-
-Scope if picked up: `mdLite` is deliberately a small subset renderer, not a
-markdown library (rung 1 of the dependency ladder — no deps). A pipe-table
-parser is maybe 25 lines and stays inside that constraint. Decide first whether
-tables belong in item bodies at all, or whether the convention should be to use
-a list instead — the format is a hand-edited file, so a convention is a legitimate
-alternative to a parser.
-
-Found 2026-08-20 while visually verifying the Surface Kit redesign.
-
 ## Loose threads

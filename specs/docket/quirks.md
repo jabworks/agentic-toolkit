@@ -147,3 +147,36 @@ title may legitimately carry one, e.g. "Reopen A4 collision detection (the
 2026-07-14 falsification)". The close stamp itself is deliberately never
 stripped; it is the one thing this regex was never supposed to treat as
 noise.
+
+## mdLite tables: a delimiter is what makes one (2026-08-25, docket #43)
+
+`mdLite()` renders a deliberate markdown subset. Tables were absent until
+docket #43, so a pipe table in an item body printed as literal pipe text —
+nine of them across the dogfood docket, **eight in the archive**. That
+distribution killed the alternative fix the item proposed (convert tables to
+lists by convention): the archive is the record of closed work, and rewriting
+it to suit the renderer is the wrong direction.
+
+Three decisions worth not re-litigating:
+
+- **Detection is lookahead, not buffering.** A pipe line only opens a table
+  when the *next* line is a delimiter. The first implementation buffered pipe
+  lines and fell back to a paragraph when no delimiter arrived — which emitted
+  the fallback as its own block and so split a paragraph that merely contained
+  pipes into two. A regression on prose that never involved a table; caught by
+  the test that asserts the old behaviour survives.
+- **Split on unescaped pipes only.** An escaped `\|` is cell content. Same rule
+  `spec-index.test.mjs` applies when reading the generated catalog.
+- **Ragged rows pad, they do not truncate.** A short row gains empty cells so
+  the grid stays rectangular; a long row keeps its extras, because dropping a
+  cell loses content the author wrote.
+
+The output is wrapped in `<div class="tbl">` because a card column is ~450px
+and a table does not reflow — the wrapper scrolls so the column never stretches
+and the page never gains a horizontal scrollbar. `board-shell.html` had no
+table CSS at all before this, which the item did not scope: emitting `<table>`
+without it renders a browser-default table into a designed surface.
+
+A 4-space-indented line beginning with `|` is still prose — `mdLite` has no
+indented-code-block support, and #43's own body quotes the broken output that
+way. That is correct: it is an illustration, not a table.
