@@ -369,16 +369,21 @@
 /* A keyboard layer nobody can discover is a keyboard layer nobody uses. kit.js
    places this next to every theme group, so the ? overlay has a visible way in
    for anyone who was never told the shortcut exists. */
-/* kit.js wraps the theme group and the help button in this. The theme group
-   keeps growing where its host stretched it (the guide's rail), and stays
-   content-sized where the host did not (the board's action row). */
+/* kit.js wraps the theme group and the help button in this. The pairing is
+   content-sized, so ? sits against the group no matter what the host is: in a
+   flex row the wrapper shrink-wraps anyway, and in block flow (a sidebar) the
+   wrapper fills the width but the group no longer stretches across it. Growing
+   the group is opt-in — a host that wants it to fill the row says so itself,
+   the way the style guide's rail does with `.kit-controls > .themebar`. This
+   was the default until 2026-08-25, and the one surface hosting the group in
+   block flow (plan-review's nav) got a ? at the far edge (docket #52). */
 .kit-controls {
   display: flex;
   align-items: center;
 }
 
 .kit-controls > .kit-theme {
-  flex: 1 1 auto;
+  flex: none;
 }
 
 .kit-helpbtn {

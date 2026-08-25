@@ -12,9 +12,25 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## session-report 1.11.1 — 2026-08-25
+
+- chore(session-report): version 1.11.1
+
+## session-handoff 1.9.1 — 2026-08-25
+
+- chore(session-handoff): version 1.9.1
+
+## docket 0.10.3 — 2026-08-25
+
+- chore(docket): version 0.10.3
+
+## condux 2.21.1 — 2026-08-25
+
+- chore(condux): version 2.21.1
+
 ## docket 0.10.2 — 2026-08-24
 
-- chore(docket): version 0.10.2
+- fix(docket): displayTitle strips the filed date before the close stamp (#109)
 
 ## condux 2.21.0 — 2026-08-24
 
