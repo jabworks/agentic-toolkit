@@ -111,3 +111,154 @@ test('every promoted artifact this policy created is actually committed', () => 
     assert.ok(fs.existsSync(path.join(REPO_ROOT, rel)), 'missing promoted artifact: ' + rel);
   }
 });
+
+// Docket #51: `specs/surface-kit/index.md` credited Q17-Q19 to D9 in its
+// changelog, and none of the three was ever written into `quirks.md`. The
+// citation read as authoritative for two weeks, and closing it cost a session.
+// Same rot as #34 above, different mechanism: there the citation named a path
+// that does not survive a clone, here it names an anchor that never existed.
+//
+// One direction only. A quirk that nobody cites is fine — Q3 and Q4 have stood
+// uncited since the spec was written, because a quirk earns its place by being
+// true, not by being referenced. Asserting the reverse would mean failing today
+// or grandfathering two exceptions, and neither buys anything.
+const QUIRK_HEADING = /^##\s+(Q\d+)\b/;
+
+// A range is how #51 was actually written ("Q17-Q19 were attributed to D9"),
+// so expanding one is not a nicety — an endpoints-only reader would have
+// spared the exact citation this test exists for. Hyphen and en dash both.
+const QUIRK_RANGE = /\bQ(\d+)\s*[-–—]\s*Q(\d+)\b/g;
+
+// An optional spec-dir qualifier binds the citation to another spec:
+// `specs/docket/decisions.md` says "(surface-kit Q9)", which resolves against
+// surface-kit and would otherwise read as a dangling Q9 in docket.
+const QUIRK_CITE = /\b(?:([a-z][a-z0-9-]*)\s+)?Q(\d+)\b/g;
+
+// `Q1 2026` is a quarter, not a quirk. The spec tree is prose, so this costs
+// nothing to exclude and is the one false positive the shape invites.
+const QUARTER = /^\s*\d{4}\b/;
+
+function specDirs() {
+  const abs = path.join(REPO_ROOT, 'specs');
+  return fs
+    .readdirSync(abs, { withFileTypes: true })
+    .filter((e) => e.isDirectory() && !e.name.startsWith('.'))
+    .map((e) => e.name);
+}
+
+// A spec only makes a claim here if its quirks.md actually numbers its
+// headings. `specs/docket/quirks.md` uses prose headings ("Id-space hazards"),
+// so it has no Q-space to resolve against and is not held to one.
+function quirkIndex() {
+  const index = new Map();
+  const duplicates = [];
+  for (const name of specDirs()) {
+    const rel = path.join('specs', name, 'quirks.md');
+    const abs = path.join(REPO_ROOT, rel);
+    if (!fs.existsSync(abs)) continue;
+    const seen = new Set();
+    fs.readFileSync(abs, 'utf8')
+      .split('\n')
+      .forEach((line, i) => {
+        const m = line.match(QUIRK_HEADING);
+        if (!m) return;
+        if (seen.has(m[1])) duplicates.push(`${rel}:${i + 1} → ${m[1]} declared twice`);
+        seen.add(m[1]);
+      });
+    if (seen.size) index.set(name, seen);
+  }
+  return { index, duplicates };
+}
+
+// Returns [{ target, quirk, where }] — `target` is the spec the citation
+// resolves against, which is the qualifier when there is one and the citing
+// file's own spec otherwise.
+export function quirkCitations(rel, body, known) {
+  const own = rel.split(path.sep)[1];
+  const hits = [];
+  body.split('\n').forEach((line, i) => {
+    // A heading declares a quirk; it does not cite one.
+    if (QUIRK_HEADING.test(line)) return;
+    const at = `${rel}:${i + 1}`;
+    const claimed = new Set();
+    for (const m of line.matchAll(QUIRK_RANGE)) {
+      const [lo, hi] = [Number(m[1]), Number(m[2])];
+      if (hi < lo || hi - lo > 50) continue;
+      for (let n = lo; n <= hi; n++) {
+        claimed.add(`Q${n}`);
+        hits.push({ target: own, quirk: `Q${n}`, where: at });
+      }
+    }
+    for (const m of line.matchAll(QUIRK_CITE)) {
+      const quirk = `Q${m[2]}`;
+      if (QUARTER.test(line.slice(m.index + m[0].length))) continue;
+      const target = m[1] && known.has(m[1]) ? m[1] : own;
+      if (target === own && claimed.has(quirk)) continue; // already taken by a range
+      hits.push({ target, quirk, where: at });
+    }
+  });
+  return hits;
+}
+
+test('every Q<n> a spec cites resolves to a quirk that exists (docket #51)', () => {
+  const { index, duplicates } = quirkIndex();
+  assert.deepEqual(duplicates, [], 'a quirk number is declared twice:\n  ' + duplicates.join('\n  '));
+  assert.ok(index.size, 'no spec numbers its quirks — this guard has gone blind');
+
+  const dangling = [];
+  for (const rel of markdownUnder('specs')) {
+    const body = fs.readFileSync(path.join(REPO_ROOT, rel), 'utf8');
+    for (const { target, quirk, where } of quirkCitations(rel, body, index)) {
+      const headings = index.get(target);
+      if (!headings) continue; // that spec does not number its quirks
+      if (!headings.has(quirk)) dangling.push(`${where} → ${quirk} (no "## ${quirk}" in specs/${target}/quirks.md)`);
+    }
+  }
+
+  assert.deepEqual(
+    dangling,
+    [],
+    'a spec cites a quirk that was never written — write the quirk, or drop ' +
+      'the citation:\n  ' + dangling.join('\n  '),
+  );
+});
+
+test('the quirk-citation reader expands ranges, follows qualifiers, and spares quarters', () => {
+  const known = new Map([
+    ['surface-kit', new Set(['Q9'])],
+    ['docket', new Set()],
+  ]);
+  const read = (rel, line) => quirkCitations(rel, line, known).map((h) => `${h.target}:${h.quirk}`);
+
+  // The #51 shape: a range in a changelog line, every member a real citation.
+  assert.deepEqual(read('specs/surface-kit/index.md', 'Q17-Q19 were attributed to D9'), [
+    'surface-kit:Q17',
+    'surface-kit:Q18',
+    'surface-kit:Q19',
+  ]);
+  assert.deepEqual(read('specs/surface-kit/index.md', 'see Q17–Q18 above'), [
+    'surface-kit:Q17',
+    'surface-kit:Q18',
+  ]);
+
+  // A qualifier binds the citation to the spec that owns the quirk.
+  assert.deepEqual(read('specs/docket/decisions.md', 'nowhere to persist (surface-kit Q9)'), [
+    'surface-kit:Q9',
+  ]);
+  // An unknown word before a citation is prose, not a qualifier.
+  assert.deepEqual(read('specs/surface-kit/decisions.md', 'the toggle Q16 covers'), [
+    'surface-kit:Q16',
+  ]);
+  // Possessives and parentheticals are ordinary citations.
+  assert.deepEqual(read('specs/surface-kit/quirks.md', "Q10's polarity test checks the core"), [
+    'surface-kit:Q10',
+  ]);
+
+  // A heading declares; it does not cite. Otherwise every quirk cites itself
+  // and the test can never fail.
+  assert.deepEqual(read('specs/surface-kit/quirks.md', '## Q26 — opt-in behaviour'), []);
+
+  // Quarters are not quirks.
+  assert.deepEqual(read('specs/surface-kit/index.md', 'shipped in Q1 2026'), []);
+  assert.deepEqual(read('specs/surface-kit/index.md', 'Q3 2027 at the earliest'), []);
+});
