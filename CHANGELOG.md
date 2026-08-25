@@ -14,19 +14,23 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## session-report 1.11.1 — 2026-08-25
 
-- chore(session-report): version 1.11.1
+- fix(surface-kit): pair ? against a content-sized theme group (#110)
 
 ## session-handoff 1.9.1 — 2026-08-25
 
-- chore(session-handoff): version 1.9.1
+- fix(surface-kit): pair ? against a content-sized theme group (#110)
+
+## docket 0.11.0 — 2026-08-25
+
+- chore(docket): version 0.11.0
 
 ## docket 0.10.3 — 2026-08-25
 
-- chore(docket): version 0.10.3
+- fix(surface-kit): pair ? against a content-sized theme group (#110)
 
 ## condux 2.21.1 — 2026-08-25
 
-- chore(condux): version 2.21.1
+- fix(surface-kit): pair ? against a content-sized theme group (#110)
 
 ## docket 0.10.2 — 2026-08-24
 

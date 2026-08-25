@@ -483,3 +483,86 @@ test('close refuses an ambiguous id instead of archiving the wrong item', () => 
     cleanup(dir);
   }
 });
+
+// Docket #43: mdLite had no table support, so a markdown table in an item body
+// rendered as literal pipe text. Nine tables were affected across the dogfood
+// docket, eight of them in the archive — which is why the alternative fix
+// (convention: use lists) was rejected. Rewriting them means rewriting the
+// record of closed work.
+function withBody(body) {
+  const dir = scratchDir();
+  fs.mkdirSync(path.join(dir, 'docket'));
+  fs.writeFileSync(
+    path.join(dir, 'docket', 'docket.json'),
+    JSON.stringify({ version: 1, next_id: 2, sections: ['Someday'], created: '2026-08-25' }),
+  );
+  fs.writeFileSync(
+    path.join(dir, 'docket', 'DOCKET.md'),
+    `# T DOCKET\n\n## Someday\n\n### 1. An item (2026-08-25)\n\n${body}\n`,
+  );
+  return dir;
+}
+
+test('mdLite renders a pipe table as a table, not as literal pipe text (docket #43)', () => {
+  const dir = withBody(
+    'Lede.\n\n| idea | what it does |\n|---|---|\n| semantic compare | judged by `meaning` |\n| containment | one **open** issue |\n\nTrailing paragraph.',
+  );
+  try {
+    const html = renderHtml(resolveDocket(dir), { date: '2026-08-25' });
+    // data-search deliberately carries the RAW body so search matches what the
+    // author typed — delimiter row included. Scope the absence checks to
+    // rendered output or they read their own search index back.
+    const rendered = html.replaceAll(/ data-search="[^"]*"/g, '');
+
+    assert.match(html, /<div class="tbl"><table>/, 'the table is wrapped so a narrow card scrolls it');
+    assert.match(html, /<thead><tr><th>idea<\/th><th>what it does<\/th><\/tr><\/thead>/);
+    assert.match(html, /<td>semantic compare<\/td><td>judged by <code>meaning<\/code><\/td>/, 'inline markup still runs inside cells');
+    assert.match(html, /<td>containment<\/td><td>one <strong>open<\/strong> issue<\/td>/);
+    assert.doesNotMatch(rendered, /<p>\s*\|/, 'no row may survive as a paragraph');
+    assert.doesNotMatch(rendered, /\|---\|/, 'the delimiter row is consumed, never printed');
+
+    // The table is a block boundary in both directions — the paragraph after it
+    // must not be swallowed, which is what happens without an explicit flush on
+    // the first non-row line (a table has no blank-line terminator).
+    assert.match(html, /<p>Trailing paragraph\.<\/p>/, 'the block after a table survives');
+  } finally {
+    cleanup(dir);
+  }
+});
+
+test('mdLite leaves pipe text that is not a table alone (docket #43)', () => {
+  // No delimiter row: this is prose that happens to contain pipes, and it
+  // rendered as a paragraph before the table support existed. It still must.
+  const dir = withBody('| not | a table |\nstill the same paragraph.');
+  try {
+    const html = renderHtml(resolveDocket(dir), { date: '2026-08-25' });
+    assert.match(html, /<p>\| not \| a table \| still the same paragraph\.<\/p>/);
+    assert.doesNotMatch(html, /<table>/, 'a delimiter row is what makes a table');
+  } finally {
+    cleanup(dir);
+  }
+});
+
+test('mdLite table handles escaped pipes, ragged rows, alignment, and EOF (docket #43)', () => {
+  const dir = withBody(
+    '| a | b |\n|:--|--:|\n| has \\| pipe | two |\n| short |\n| x | y | extra |',
+  );
+  try {
+    const html = renderHtml(resolveDocket(dir), { date: '2026-08-25' });
+    const rendered = html.replaceAll(/ data-search="[^"]*"/g, '');
+
+    // An escaped pipe is cell content, not a column break — the same rule
+    // spec-index.test.mjs applies when reading the generated catalog.
+    assert.match(html, /<td>has \| pipe<\/td><td>two<\/td>/, 'an escaped pipe stays inside its cell');
+    // A short row is padded so the grid stays rectangular.
+    assert.match(html, /<tr><td>short<\/td><td><\/td><\/tr>/, 'a ragged row is padded, not dropped');
+    // A long row keeps its extra cell — dropping one loses authored content.
+    assert.match(html, /<tr><td>x<\/td><td>y<\/td><td>extra<\/td><\/tr>/, 'an over-long row keeps every cell');
+    // Alignment colons parse and are ignored; the row never reaches the output.
+    assert.doesNotMatch(rendered, /:--/, 'an alignment delimiter is still a delimiter');
+    // The table is the last block in the body — it must still close.
+    assert.match(html, /<\/table><\/div>/, 'a table at end of body still flushes');
+  } finally {
+    cleanup(dir);
+  }
+});
