@@ -5,7 +5,7 @@
 > generalizes `check-tokens.mjs` from one inlined region to three so state and
 > behaviour are written once instead of four times.
 
-**Last updated:** 2026-08-24
+**Last updated:** 2026-08-25
 **Commit:** 46947a4
 **Status:** D6 step 2 complete
 
@@ -40,6 +40,15 @@
 - [implementation.md](implementation.md) — key files, phasing, tests, release surface
 
 ## Changelog
+- 2026-08-25: `.kit-controls > .kit-theme` becomes `flex: none`. The growth was
+  opt-in behaviour written as the kit default, inert on the three surfaces that
+  host the theme group in a flex row and wrong on plan-review, which hosts it in
+  `.nav`'s block flow and so pushed `?` to the far edge of the rail. The one
+  host that wants growth — the style guide's rail — now opts in locally with
+  `.kit-controls > .themebar`. plan-review's rail spacing moves from
+  `.kit-theme` to `.kit-controls`, which the stretch had been masking: flex
+  centres the margin box, so the bottom margin rode the toggle above its `?`.
+  Q26. **Closes docket #52.**
 - 2026-08-24: D10 — plan-review becomes a manuscript (D6 step 2, surface 4, the
   last). The document leads: graph paper gone, a typographic spine of space and
   rule, and every highlight numbered with the same ordinal its note carries in

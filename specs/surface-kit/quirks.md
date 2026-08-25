@@ -449,3 +449,39 @@ The relative selector has to look forward across the wrappers:
 
 Suppress the separator, not the section rule: the rule is the typographic spine
 and applies to every `h2`, while the `---` is redundant only in this pairing.
+
+## Q26 — opt-in behaviour written as a default hides in the hosts that never exercise it
+
+`kit.js` wraps every `.kit-theme` and its generated `?` in a `.kit-controls`
+flex row, and `kit.css` gave the group `flex: 1 1 auto` so it would fill that
+row. The comment defending it named the two cases it thought it covered — "the
+theme group keeps growing where its host stretched it (the guide's rail), and
+stays content-sized where the host did not (the board's action row)" — but the
+rule cannot read its host. It grows whenever `.kit-controls` has spare width.
+
+Three of the four surfaces host the group inside a flex row
+(`header.titlebar`, `.hactions`), where `.kit-controls` is itself a
+content-sized flex item, so there is never spare width and the rule is inert.
+plan-review hosts it at the top of `.nav`, which has no `display` override — in
+block flow the wrapper spans the sidebar, so the group stretched across ~300px
+and left `?` at the far edge (docket #52).
+
+The tell that it was a default and not a contract: the only host that genuinely
+wanted growth was `style-guide.html`, and it asks for it through **its own**
+`.themebar` class, not through anything in the kit. So the kit's default served
+one opt-in consumer and silently mis-served the first host whose layout
+actually exposed it. Inverted 2026-08-25 — `flex: none` in the kit, and the
+guide opts back in with `.kit-controls > .themebar { flex: 1 1 auto }`.
+
+Two things to keep in mind when touching this pairing:
+
+- **The opt-in needs the `.kit-controls >` prefix.** Bare `.themebar` is
+  (0,1,0) and loses to `.kit-controls > .kit-theme` at (0,2,0). Matching the
+  specificity puts source order in charge, and a surface's own CSS follows the
+  kit region. This is the same trap the guide already records above its
+  `.themebar` rules.
+- **Space the wrapper, not the group.** `.kit-controls` centres on the cross
+  axis, and flex centres the *margin box* — so plan-review's
+  `.nav .kit-theme { margin: 0 0 12px }` rode the toggle ~6px above the `?`
+  beside it. The stretch had been masking it. Margins that separate the pairing
+  from what follows belong on `.kit-controls`.

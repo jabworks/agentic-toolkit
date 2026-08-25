@@ -160,20 +160,4 @@ alternative to a parser.
 
 Found 2026-08-20 while visually verifying the Surface Kit redesign.
 
-### 52. plan-review's help button lands far from the theme toggle in the nav rail, not adjacent to it (2026-08-24)
-
-Reported live (screenshots) on `skills/plan-review/references/plan-review-template.html`'s nav rail (`<aside class="nav">`), both single-doc and DIRMODE (CONTENTS/FILES tabs): the `?` keyboard-shortcuts button sits far to the right of the Light/Dark/Auto group, separated by a wide gap, instead of immediately next to "Auto" as the design intends.
-
-Root cause traced (not fixed): kit.js wraps every `.kit-theme` group and a generated `?` button together in a `.kit-controls` div (`scripts/tokens/kit.js:320-349`), and `kit:css` gives `.kit-controls > .kit-theme { flex: 1 1 auto }` so the theme group grows to fill the wrapper — deliberately, per the comment at `scripts/tokens/kit.css:185-190`: "the theme group keeps growing where its host stretched it (the guide's rail), and stays content-sized where the host did not (the board's action row)."
-
-`.nav` is plain block flow (no `display` override in either of its two rules, `plan-review-template.html:518,561`), so `.kit-controls` — a block-level flex container — fills `.nav`'s full width, and `.kit-theme`'s `flex:1 1 auto` then stretches across nearly all of it, pushing `?` to the far edge. `.nav` is a ~300-360px sidebar, so the gap reads as visually disconnected.
-
-The other three kit surfaces don't hit this: session-handoff and session-report place `.kit-theme` in the page header/titlebar, outside their `.rail` entirely (`session-handoff/references/handoff-template.html:1101` vs `:1112` for `<aside class="rail">`) — never inside a narrow block-flow rail. plan-review is the only surface that puts the theme group directly at the top of a narrow block-flow sidebar, which is exactly the "guide's rail" case the kit.js comment names but plan-review's `.nav` never got a matching layout treatment for.
-
-plan-review also carries a local override, `.nav .kit-theme { margin: 0 0 12px; }` (`plan-review-template.html:562`) — bottom-spacing only, not implicated in the gap.
-
-Fix direction (undecided, needs a live-browser check before landing): most likely a `.nav`-scoped override so `.kit-controls > .kit-theme` does not grow inside this specific host (e.g. `.nav .kit-controls > .kit-theme { flex: none }`), matching the "board's action row" content-sized case instead of the "guide's rail" stretched case — despite `.nav` literally being called a rail, it does not want the stretch behavior. Verify both single-doc and DIRMODE, both themes, and confirm nothing else relies on `.kit-theme` filling the row width.
-
-Found 2026-08-24 by the user reporting the visual live.
-
 ## Loose threads

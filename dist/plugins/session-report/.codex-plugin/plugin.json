@@ -1,6 +1,6 @@
 {
   "name": "session-report",
-  "version": "1.11.0",
+  "version": "1.11.1",
   "description": "Generate an explorable HTML report of Codex session usage — tokens, cache efficiency, subagent costs, and slash-command frequency — from local transcripts.",
   "author": {
     "name": "jabworks"
