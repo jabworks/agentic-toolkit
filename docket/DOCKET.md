@@ -63,43 +63,4 @@ reads as though collision automation is a dead end in general.
 
 Found 2026-08-09 surveying awesome-copilot's maintenance machinery.
 
-### 14. Price a trajectory-based routing eval against the judge-prompt harness (2026-08-09)
-
-`scripts/eval-triggers.mjs` renders the live skill catalog into a prompt and
-asks a judge model which skill it would route each query to. That is deliberate
-— the header says it presents "the catalog the host sees" — and it produced ten
-dated reports and a defensible ~89-92% operating band. Its known cost is written
-into A3: **judge variance is the dominant error mode** (44 flaky cases, mostly
-one-hop adjacencies).
-
-A different measurement exists. `@microsoft/vally` (MIT, 0.13.0) ships
-`dist/graders/static/skill-invocation-grader.js`: it takes
-`{required: string[], disallowed: string[]}`, walks `trajectory.events`, counts
-`event.type === "skill_activation"`, and passes only when every required skill
-activated and no disallowed one did. Grader metadata is `costProfile: "free"`,
-`determinism: "static"` — the grading is free and deterministic. The cost sits
-entirely in producing the trajectory: one real agent run per stimulus, against
-~394 cases.
-
-What it would buy: no judge variance, and it measures the host's actual
-skill-loading behaviour rather than a model's opinion about a rendered catalog.
-
-The primitive worth stealing regardless of the verdict: **`disallowed`** — a
-first-class "this skill must NOT fire here" assertion. Our `should_trigger:
-false` cases approximate it as a routing decision, not as an observed
-non-activation, which is a weaker claim about exactly the collisions we care
-about most.
-
-This is a pricing exercise, not a rewrite. Concretely: run a ~30-case subset
-both ways, compare per-case agreement, and cost the full run in wall-clock and
-tokens. If the two agree closely, the cheap harness is vindicated and this
-closes; if they diverge on the flaky adjacency seams, that is a real finding
-about A3's numbers.
-
-Also in vally if this ever gets built out: `compare` (pairwise comparison of two
-eval runs — what we do by hand across dated reports), `max-repeat` and
-`loop-outcome` graders, JSONL/JUnit/markdown reporters.
-
-Found 2026-08-09 surveying awesome-copilot's maintenance machinery.
-
 ## Loose threads
