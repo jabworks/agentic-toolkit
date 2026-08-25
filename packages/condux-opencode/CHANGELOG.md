@@ -1,5 +1,30 @@
 # @jabworks/condux
 
+## 0.14.1
+
+### Patch Changes
+
+- [#110](https://github.com/jabworks/agentic-toolkit/pull/110) [`aa041fb`](https://github.com/jabworks/agentic-toolkit/commit/aa041fbb1375d0cb8a4dea04bdd7b344c559dc7f) Thanks [@vi-hieu](https://github.com/vi-hieu)! - plan-review: pair the ? button against the theme toggle in the nav rail
+
+  `kit.css` gave `.kit-controls > .kit-theme` a `flex: 1 1 auto`, so the theme
+  group grew to fill whatever width its wrapper had. Three of the four surfaces
+  host the group in a flex row where the wrapper is already content-sized, so
+  nothing stretched and the rule looked correct. plan-review hosts it at the top
+  of `.nav`, which is block flow — the wrapper spans the full sidebar, the group
+  stretched across it, and the `?` button landed at the far edge instead of
+  against "Auto".
+
+  The growth was opt-in behaviour written as the default, and its only real
+  consumer was the style guide's rail, which asks for it through its own
+  `.themebar` class. The default is now `flex: none` — content-sized, so the
+  pairing holds in either kind of host — and the guide opts back in locally.
+
+  Also moves plan-review's rail spacing from `.kit-theme` onto `.kit-controls`:
+  flex centres the margin box, so a bottom margin on the group alone rode it
+  ~6px above the `?` it is meant to sit beside.
+
+  Closes docket [#52](https://github.com/jabworks/agentic-toolkit/issues/52).
+
 ## 0.14.0
 
 ### Minor Changes
