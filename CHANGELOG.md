@@ -12,6 +12,10 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## toolkit-ops 1.7.7 — 2026-08-25
+
+- chore(toolkit-ops): version 1.7.7
+
 ## session-report 1.11.1 — 2026-08-25
 
 - fix(surface-kit): pair ? against a content-sized theme group (#110)
@@ -22,7 +26,7 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## docket 0.11.0 — 2026-08-25
 
-- chore(docket): version 0.11.0
+- feat(docket): render pipe tables on the board instead of raw pipes (#113)
 
 ## docket 0.10.3 — 2026-08-25
 

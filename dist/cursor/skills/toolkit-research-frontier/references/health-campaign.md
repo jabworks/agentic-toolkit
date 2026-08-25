@@ -132,6 +132,55 @@ available if they stay noisy. Standing claim unchanged (~89–92%).
   own, not eval phrases.
 - Success criterion unchanged: ≥90% accuracy, zero unexplained collisions.
 
+### A3b. Trajectory-based scoring — PRICED AND DECLINED 2026-08-25 (docket #14)
+
+Priced `@microsoft/vally`'s `skill-invocation-grader` against the judge-prompt
+harness, as docket #14 asked. Three results, and the third closes it.
+
+**vally is not needed.** Its grader walks `trajectory.events` counting
+`skill_activation` against `{required, disallowed}`. That signal is already
+emitted by `claude -p --output-format stream-json` as a `Skill` tool_use block,
+so the free/deterministic half is ~30 lines of our own code. Adding an npm
+dependency to a dependency-averse repo to avoid writing them is the wrong
+trade — the primitive worth stealing is `disallowed`, and it can be added to
+the *existing* judge harness without any of this.
+
+**The API spend is not the cost.** Measured over 15 real runs:
+**$0.027/run, ~9.8s, 1.9 turns** — so the 619-case corpus is ~$17 and ~70
+minutes serial. That is affordable, and it is not the obstacle.
+
+**The corpus is not portable, which is the obstacle.** A 12-case stratified
+probe (6 dev-task, 6 non-dev, all `should_trigger: true`) produced **3
+activations out of 12**. Every dev-task case activated **nothing at all** —
+not the expected skill, and not `condux:workflow` either.
+
+The mechanism is visible in the replies. `"write the implementation plan"`
+returns *"I need to know what you're planning for. What's the task or feature
+you want an implementation plan for?"* — a clarifying question, which is the
+correct response. These stimuli were authored for a routing judge ("given this
+catalog, which skill would you pick for this phrase"), and they are phrases,
+not tasks. A real agent cannot route what is not yet a request.
+
+Control: `"I need to add OAuth2 login with Google to our app"` — a realistic,
+context-bearing prompt — **does** activate `condux:workflow`. So the failure is
+the stimulus shape, not the method and not the router.
+
+**Therefore:** trajectory scoring is not a drop-in replacement for A3. It needs
+a rewritten corpus of realistic task prompts *and* a project fixture to run
+them against (`"verify it live"` needs something to verify). That authoring
+cost dominates the ~$17 of API calls by a wide margin, and it would measure a
+different question — deployed behaviour including hooks, rather than catalog
+legibility.
+
+The cheap harness is vindicated **for what it measures**. Judge variance
+remains its known cost (A3 above); this exercise did not reduce it, and did not
+find a cheaper way to. Revisit only if a fixture repo exists for another reason.
+
+Prediction that failed, recorded because it was wrong in an informative way:
+the condux `SessionStart` routing hook was expected to dominate dev-task cases
+and force `condux:workflow` everywhere. It forced nothing — 0/6 — because those
+cases never became tasks.
+
 ### A4. Collision automation — CLOSED 2026-07-09: lexical approach falsified
 - Preregistered criterion: static n-gram overlap reproduces ≥80% of observed
   collisions with <20% false alarms.
