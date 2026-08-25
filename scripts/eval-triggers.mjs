@@ -24,6 +24,13 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import {
+  isHit,
+  violationRows,
+  violationHeadline,
+  violationSection,
+  scoredWithDisallowed,
+} from './trigger-eval-score.mjs';
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SKILLS_DIR = path.join(REPO_ROOT, 'skills');
@@ -78,14 +85,38 @@ for (const name of fs.readdirSync(SKILLS_DIR)) {
   for (const c of JSON.parse(fs.readFileSync(file, 'utf8'))) {
     const expected = c.should_trigger ? c.expected_skill : null;
     const key = c.query + '||' + expected;
-    if (seen.has(key)) continue;
+    if (seen.has(key)) {
+      // A duplicate is dropped, but its `disallowed` is merged into the case
+      // already kept — a collision assertion is a claim about the query, and
+      // which corpus file happened to be read first is an accident of
+      // readdirSync order (docket #53).
+      //
+      // `accept` is deliberately NOT merged, even though it is dropped the
+      // same way. accept feeds isHit, so widening it can flip a miss to a hit
+      // and move A3's operating band — the exact thing this item's
+      // separate-metric decision exists to prevent. Two collisions in the
+      // corpus today do carry divergent accept sets; that is its own item,
+      // not a side effect of this one.
+      const kept = cases.find((x) => x.query + '||' + x.expected === key);
+      for (const d of c.disallowed || []) if (!kept.disallowed.includes(d)) kept.disallowed.push(d);
+      continue;
+    }
     seen.add(key);
     // kind: "cold" (default) = a fresh user message that should route by itself;
     //       "in-context"     = a follow-up asked while the skill is already
     //                          loaded — excluded from routing scores unless --all.
     // accept: alternate skills that count as correct (e.g. doctrine-correct
     //         `workflow` routing for implementation requests).
-    cases.push({ query: c.query, expected, accept: c.accept || [], kind: c.kind || 'cold', source: name });
+    // disallowed: skills that must NEVER win this query, scored as a separate
+    //         metric — see scripts/trigger-eval-score.mjs.
+    cases.push({
+      query: c.query,
+      expected,
+      accept: c.accept || [],
+      disallowed: c.disallowed || [],
+      kind: c.kind || 'cold',
+      source: name,
+    });
   }
 }
 const inContext = cases.filter((c) => c.kind === 'in-context').length;
@@ -133,11 +164,9 @@ function routeBatch(batch) {
 }
 
 // --- run -------------------------------------------------------------------
-// Hoisted above runOnce so the live progress line can score with exactly the
-// same predicate the final report uses — a running accuracy that disagreed with
-// the report would be worse than none.
-const isHit = (r) => (r.got ?? null) === (r.expected ?? null)
-  || (r.got != null && (r.accept || []).includes(r.got));
+// isHit is imported (not defined here) so the live progress line, the final
+// report and the unit tests all score with exactly the same predicate — a
+// running accuracy that disagreed with the report would be worse than none.
 
 function hms(ms) {
   const s = Math.round(ms / 1000);
@@ -269,6 +298,12 @@ if (RUNS > 1) {
   lines.push(`Trials: ${RUNS} · per-run: ${perRunAcc.map((a) => (100 * a).toFixed(1) + '%').join(' / ')} · mean **${(100 * meanAcc).toFixed(1)}% ± ${(100 * ci95).toFixed(1)}pp** (95% CI, t-dist) · flaky cases: ${flaky.length}`);
 }
 lines.push(`Overall routing accuracy: **${hits.length}/${scored.length} = ${(100 * hits.length / scored.length).toFixed(1)}%**`);
+// docket #53. Computed from the same per-trial answers the flaky table uses, so
+// a collision that fires in one trial of three still shows. Kept off the
+// accuracy line on purpose — see trigger-eval-score.mjs.
+const violations = violationRows(hitCounts, answers, caseKey);
+const violationLine = violationHeadline(violations, scoredWithDisallowed(hitCounts));
+if (violationLine) lines.push(violationLine);
 lines.push('');
 lines.push('## Per expected skill');
 lines.push('');
@@ -286,6 +321,7 @@ for (const r of misses) {
   lines.push(`| ${r.query.replace(/\|/g, '\\|')} | ${r.expected ?? 'null'} | ${r.got ?? 'null'} | ${r.source} |`);
 }
 lines.push('');
+lines.push(...violationSection(violations));
 if (RUNS > 1 && flaky.length) {
   lines.push(`## Flaky cases (${flaky.length} — hit in some trials, missed in others)`);
   lines.push('');

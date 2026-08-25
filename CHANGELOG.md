@@ -12,13 +12,21 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## toolkit-ops 1.7.8 — 2026-08-25
+
+- chore(toolkit-ops): version 1.7.8
+
 ## toolkit-ops 1.7.7 — 2026-08-25
 
-- chore(toolkit-ops): version 1.7.7
+- docs(research): price trajectory-based routing eval, decline it (#14) (#114)
 
 ## session-report 1.11.1 — 2026-08-25
 
 - fix(surface-kit): pair ? against a content-sized theme group (#110)
+
+## session-handoff 1.9.2 — 2026-08-25
+
+- chore(session-handoff): version 1.9.2
 
 ## session-handoff 1.9.1 — 2026-08-25
 
@@ -31,6 +39,10 @@ The `@jabworks/condux` npm package has its own changelog at
 ## docket 0.10.3 — 2026-08-25
 
 - fix(surface-kit): pair ? against a content-sized theme group (#110)
+
+## condux 2.21.2 — 2026-08-25
+
+- chore(condux): version 2.21.2
 
 ## condux 2.21.1 — 2026-08-25
 

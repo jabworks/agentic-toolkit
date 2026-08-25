@@ -196,6 +196,72 @@ cases never became tasks.
   `scripts/collision-scan.mjs` (update it per eval round); the script stays as
   the falsification record and an exploratory lens (`--top`).
 
+### A3c. `disallowed` assertions — SHIPPED 2026-08-25 (docket #53)
+
+The one primitive worth stealing from `@microsoft/vally`, salvaged from A3b's
+decline. vally's grader takes `{required, disallowed}`; we had only the
+`required` half (`expected_skill` scored against the judge's pick). Our
+`should_trigger: false` cases approximated the other half as a *routing
+decision* ("route this to null"), which is a weaker claim than "this skill must
+NOT fire here" about exactly the collisions A3 keeps naming as its dominant
+error mode.
+
+**Shipped as a separate reported metric, not a hard fail.** A `disallowed`
+violation does not touch `isHit`, so the ~89–92% operating band above stays a
+like-for-like series across every run recorded in this section. The alternative
+— failing the case outright — states the collision more strongly but re-bases
+the accuracy number, and that number is what this campaign is judged on. A case
+can now pass its routing check and still be reported as a violation; inferring
+the same collision from an accuracy dip could not have surfaced that at all.
+
+Scope as built:
+- `disallowed: ["skill-a"]`, optional and per-case, in `skills/*/evals/trigger_eval.json`.
+- Scored in `scripts/trigger-eval-score.mjs` — extracted from `eval-triggers.mjs`
+  specifically so the predicates are testable without spawning a judge.
+- Reported as its own headline line plus a `## Disallowed violations` table,
+  counted across **every** trial rather than the last run, since a collision
+  that fires in 1 of 3 trials is the signal.
+- 17 seeded cases covering the three seams A3 names: discovery↔session-handoff
+  ("resume" space), draft-plan↔technical-spec (doc-creation), and
+  subagent-execution↔session-handoff (resume/ledger space).
+
+Two guards, both because this metric's failure mode is silence — a misspelled
+skill name matches no routing answer ever, so the counter reads zero and looks
+like a clean corpus:
+- `tests/trigger-eval-corpus.test.mjs` — the 643-case corpus had **no**
+  validation before this. Every name in `expected_skill` / `accept` /
+  `disallowed` must resolve to a real `skills/<name>/SKILL.md`, no case may
+  disallow its own expectation or an accept alternate, and `disallowed` may not
+  be parked on a `kind: "in-context"` case (default runs never score those).
+- `tests/trigger-eval-score.test.mjs` — the predicates themselves, including an
+  assertion that `isHit` semantics are unchanged.
+
+**Band not yet re-measured.** Two partial runs verified the mechanism on the day
+it shipped, and neither is a band measurement:
+- A **103-case** partial (9 batches, 1 trial) covered 1 of the 17 seeded cases —
+  "resume the design we started yesterday" routed to `discovery` as expected,
+  0 violations. It scored 97.1% on that subset. That number is **not comparable
+  to the ~89–92% standing claim**: different corpus composition (the first 103
+  cold cases alphabetically, not the full corpus), single trial, no CI.
+- A **12-case** run with one case temporarily self-disallowing confirmed the
+  non-empty path: accuracy **12/12 = 100%** *while* the violation table reported
+  a row. That is the design claim made visible — a case passes its routing check
+  and is still reported. The temporary edit was reverted; the corpus test forbids
+  self-disallowing cases precisely because they are self-contradicting.
+
+So the 16 remaining seeded seams have a violation count of *unknown*, not zero.
+The first full multi-trial run after this lands is what makes the number real.
+
+Known gap, deliberately left: the corpus dedup key is `query + expected`, and a
+duplicate's `disallowed` is merged into the kept case while its `accept` is
+still dropped. Merging `accept` too would widen accept sets and could flip
+misses to hits — moving the very band this item's design protects. Two
+collisions in the corpus carry divergent `accept` today
+(`is it safe to hand-edit dist to hotfix this`, `is argument-hint a real
+frontmatter field`); in both, the wider set happens to be the one kept, so the
+drop is currently inert. That is an accident of `readdirSync` order and belongs
+to its own item.
+
 ---
 
 ## Front B — Claude↔Codex manifest parity
