@@ -203,6 +203,16 @@ committing — it fails the build otherwise. The suite now needs
 - `plugin-files.test.mjs` — every plugin has a `plugins/<name>/README.md`, its dist
   copy matches byte for byte, every plugin ships the repo LICENSE, and a bundle's
   README names every skill it ships (condux's claimed 12 while shipping 14)
+- `durable-citations.test.mjs` — citations in committed docs that resolve to
+  nothing, in both of the shapes that have actually shipped. A durable file may
+  not name a path inside gitignored working state (`.condux/`, `.session-handoff/`
+  …) — promote the artifact into the spec dir and cite that (docket #34). And
+  every `Q<n>` a spec cites must exist as a `## Q<n>` in the right `quirks.md`
+  (docket #51, where `surface-kit/index.md` credited Q17-Q19 to D9 and none of
+  the three was written). Citation-direction only: an uncited quirk is fine.
+  Ranges expand (#51's citation *was* a range), a spec-name qualifier resolves
+  cross-spec (`surface-kit Q9` in docket's decisions), a spec whose quirks.md
+  uses prose headings makes no claim, and `Q1 2026` is a quarter
 
 Plugin releases are automated. Merging to `main` runs
 `.github/workflows/plugin-release.yml` → `scripts/release-plugins.mjs --since
