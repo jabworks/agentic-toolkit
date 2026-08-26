@@ -1,5 +1,14 @@
 # Decisions — Discovery Presentation
 
+| # | Decision | Because | Status |
+|---|---|---|---|
+| 1 | Rewire the design artifact's timing rather than build anything new | discovery already writes the file and serves it in a browser — both just happened after the read was over | accepted |
+| 2 | Preview defaults on, announced and reversible | its purpose is helping the next decision, so opt-in defeats it; discovery only runs on LARGE, so there is no small case to protect | accepted |
+| 3 | Blueprint fires on the question, not the noun | a noun test cannot see a design whose subjects are a terminal shape and a markdown file | accepted |
+| 4 | Artifacts must be specific enough to disagree with | a box the reader cannot disagree with carries no information, so it cannot be evidence | accepted |
+| 5 | No auto-open inside discovery | the reader is already looking at the preview; a tab per section is the interruption | accepted |
+| 6 | Terminal-first scope, with the cost named | the live read is felt every session; the double-designed mapping is the accepted price of shipping it first | accepted |
+
 ## Rewire the design artifact's timing rather than build a new one
 
 **Date:** 2026-08-26

@@ -1,5 +1,12 @@
 # Decisions
 
+| # | Decision | Because | Status |
+|---|---|---|---|
+| 1 | Own tree (`dist/cursor/skills/`), not a pointer at the opencode tree | one tree per channel — coupling breaks the moment either host needs a host-specific tweak | accepted |
+| 2 | Shared builder, not a forked script | one fold transform to test; inter-tree drift impossible until a host deliberately diverges | accepted |
+| 3 | Docket installer gains a `cursor` target | scope widened at sign-off; global `~/.cursor/mcp.json` is the installer surface, project-level stays a documented snippet | accepted |
+| 4 | Host-feature gaps are documented, not built | hooks and named agents have no Cursor surface; the README states what works, degrades, and is absent | accepted |
+
 ## Own tree over reuse (2026-08-14)
 
 `dist/cursor/skills/` is its own emitted tree, not a pointer at

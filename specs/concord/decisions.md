@@ -1,5 +1,15 @@
 # Decisions
 
+| # | Decision | Because | Status |
+|---|---|---|---|
+| 1 | Clean-room under MIT, not a fork of `remember` | DPT's Community License bars redistribution and reserves derivative rights; concepts are not the protected part, expression is | accepted |
+| 2 | Codex-only capture; `remember` keeps Claude Code | halves the surface to build and prove, removes cross-host format negotiation; memory not crossing hosts is accepted | accepted |
+| 3 | Hook-thin capture + catch-up-on-start | rollouts are already on disk, so lazy recovery gives crash-resilience without locks, races, or write amplification | accepted |
+| 4 | Pinned tier is never auto-compressed | the characteristic failure of auto-memory is summarizing the one thing the user deliberately kept | accepted |
+| 5 | `codex exec` as the only summarizer, truncation fallback | the host's own CLI — no Claude auth borrowed into Codex, no backend detection | accepted |
+| 6 | Two memory tiers with a hard leak boundary | a global tier is the only way memory leaks between client repos, so the boundary is a rule, not a guideline | accepted |
+| 7 | Node stdlib only | the toolkit's no-plugin-dependencies rule; `node --test` is already the runner | accepted |
+
 ## D1 — Clean-room, not a fork
 
 **Decision:** Write Concord from scratch under MIT; take only the *concept* of

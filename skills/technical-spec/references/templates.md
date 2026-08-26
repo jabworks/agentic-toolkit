@@ -2,6 +2,13 @@
 
 Copy-paste templates for each spec file. Omit sections that don't apply — don't leave empty headings.
 
+**The layering rule, which every template below follows:** a concern file opens
+with a scannable table and carries its reasoning underneath. The table serves
+the reader scanning for one thing, `preflight`'s drift check, and an agent
+loading the spec as context — all three read the same rows. Prose is reserved
+for the one job that needs it: reasoning a future reader must be able to
+follow. Write each table row as a claim someone could check, not a label.
+
 ---
 
 ## index.md
@@ -17,15 +24,19 @@ Copy-paste templates for each spec file. Omit sections that don't apply — don'
 **Status:** draft | review | stable
 
 ## Contents
-- [Decisions](decisions.md) — why we built it this way
-- [API](api.md) — contracts, endpoints, types
-- [Fields](fields.md) — field mappings: BE/3rd-party → UI
-- [Implementation](implementation.md) — how it works, key files
-- [Quirks](quirks.md) — edge cases and gotchas
+
+| File | Answers |
+|---|---|
+| [Decisions](decisions.md) | why it works this way, and what was rejected |
+| [Quirks](quirks.md) | what will bite you, and whether it is mitigated |
 
 ## Changelog
 - {YYYY-MM-DD} ({short-hash}): Initial spec
 ```
+
+The Contents table answers *which file do I open* — one row per concern file
+that actually exists, each `Answers` cell saying what a reader comes to it
+for. Files that don't exist get no row.
 
 **Cite committed paths only.** A spec is durable; the design and plan it came
 from are working state under `.condux/`, gitignored and gone on any other
@@ -41,23 +52,34 @@ rule existed and two were already dead when they were found.
 ```markdown
 # Decisions — {Feature Name}
 
-## {Decision Title}
+| # | Decision | Because | Status |
+|---|---|---|---|
+| 1 | {what was decided, as a claim} | {why, one line} | accepted |
 
-**Date:** {YYYY-MM-DD}
-**Status:** accepted | superseded | deprecated
+## 1. {Decision Title} — {YYYY-MM-DD}
 
-### Context
-Why this decision needed to be made. What constraints or requirements drove it.
+**Decided:** one sentence, stated as a claim.
+**Because:** one sentence — why this option won.
 
-### Decision
-What was decided, stated clearly.
+| Alternative | Why not |
+|---|---|
+| {option considered} | {one line} |
 
-### Rationale
-Why this over the alternatives. Include alternatives considered and why they were rejected.
+**Consequences**
+- {what changes as a result — and where it costs, named}
 
-### Consequences
-What changes as a result — positive and negative trade-offs.
+**Context** *(only when the question's origin is not obvious)*
+{prose — why a decision was needed at all, when the feature doesn't make
+that self-evident}
 ```
+
+The summary table is mandatory and answers "which decisions exist" without
+reading the file. The alternatives table is mandatory too — an empty one is
+visible in a way missing prose is not, and a decision recorded without its
+rejected alternatives is assertion, not rationale. `Context` is the one
+conditional block: `Because` covers why *this* option won; `Context` covers
+why the question arose, which is frequently self-evident. Statuses:
+`accepted | superseded | deprecated`.
 
 ---
 
@@ -75,9 +97,12 @@ What changes as a result — positive and negative trade-offs.
 ## Key Types / Schemas
 
 \`\`\`typescript
-interface ExampleType {
-  id: string;
-  // ...
+// The type says what a field MEANS; fields.md says what HAPPENS to it.
+interface Invoice {
+  id: string;               // Stripe invoice id, `in_`-prefixed
+  amountDue: number;        // minor units (cents) — never format directly
+  status: InvoiceStatus;    // drives the badge; `draft` is hidden in the list
+  voidedAt: string | null;  // ISO 8601; null unless voided
 }
 \`\`\`
 
@@ -88,6 +113,12 @@ interface ExampleType {
 | {Service} | {What we use it for} | {Rate limits, quirks} |
 ```
 
+**Every field carries its meaning inline** — trailing `//` by default; a JSDoc
+block only when a line won't do (units, constraints, nullability semantics).
+This is the two-homes rule: a fact with two homes goes missing from the one
+you are reading, and the un-annotated type is the home readers actually open.
+`fields.md` keeps only what a type cannot express — the journey.
+
 ---
 
 ## fields.md
@@ -95,18 +126,20 @@ interface ExampleType {
 ```markdown
 # Fields — {Feature Name}
 
-Document which fields flow from source (BE or 3rd-party API) to destination (UI or your BE),
-with descriptions so you can glance at the spec instead of traversing the codebase.
+Document which fields flow from source (BE or 3rd-party API) to destination
+(UI or your BE). The Description column is about the TRANSFORMATION — what
+happens to the field on the way — never about what the field means; meaning
+lives on the type in api.md.
 
 ## Response Fields — {Endpoint or Source Name}
 
 > Source: `GET /api/...` or `{ThirdParty} → BE → FE`
 
-| Source Field | UI Label / FE Key | Type | Nullable | Description |
+| Source Field | UI Label / FE Key | Type | Nullable | Transformation |
 |---|---|---|---|---|
-| `user_full_name` | Full Name | `string` | no | Display name shown in profile card |
-| `created_at` | Created | `string (ISO 8601)` | no | Formatted to `MMM D, YYYY` in UI |
-| `metadata.region` | Region | `string` | yes | Omitted from UI when null |
+| `user_full_name` | Full Name | `string` | no | rendered as-is in profile card |
+| `created_at` | Created | `string (ISO 8601)` | no | formatted to `MMM D, YYYY` in UI |
+| `metadata.region` | Region | `string` | yes | omitted from UI when null |
 
 ### Forwarding Chain (3rd-party → BE → FE)
 
@@ -121,10 +154,10 @@ Use this sub-section when your BE proxies a 3rd-party API and renames fields.
 
 > Sent from FE to `POST /api/...`
 
-| FE Key | BE Field | Type | Required | Description |
+| FE Key | BE Field | Type | Required | Transformation |
 |---|---|---|---|---|
-| `email` | `email` | `string` | yes | Validated client-side before send |
-| `preferredName` | `preferred_name` | `string` | no | Optional; omitted if empty |
+| `email` | `email` | `string` | yes | validated client-side before send |
+| `preferredName` | `preferred_name` | `string` | no | omitted from payload if empty |
 ```
 
 ---
@@ -134,24 +167,34 @@ Use this sub-section when your BE proxies a 3rd-party API and renames fields.
 ```markdown
 # Implementation — {Feature Name}
 
-## Overview
-One paragraph on how the feature works end-to-end.
-
-## Key Files
-
 | File | Role |
 |------|------|
 | `src/...` | ... |
 
-## Data Flow
-Step-by-step description of how data moves through the system.
+## Data flow
 
-## Patterns Used
-Non-obvious patterns, abstractions, or conventions introduced.
+1. {step} — {what happens}
+2. {step} — {what happens}
+
+## Patterns
+
+| Pattern | Where | Why not the obvious thing |
+|---|---|---|
+| {pattern used} | {file or layer} | {what it displaced, one line} |
 
 ## Dependencies
+
 Internal modules or external packages this feature leans on heavily.
+
+## Overview *(only when the file table does not already tell the story)*
+
+{prose — the end-to-end narrative, when the table and data flow leave it
+untold}
 ```
+
+Data flow is a numbered list — it is step-by-step by definition and was never
+prose. The Patterns table's third column is mandatory: a pattern recorded
+without the alternative it displaced is trivia, not guidance.
 
 ---
 
@@ -160,10 +203,25 @@ Internal modules or external packages this feature leans on heavily.
 ```markdown
 # Quirks — {Feature Name}
 
-## {Quirk Title}
+| # | Quirk | Trigger | Severity | Mitigated |
+|---|---|---|---|---|
+| Q1 | {symptom, one line} | {what sets it off} | low / medium / high | yes / no / partial |
 
-**Severity:** low | medium | high
+## Q1 — {Quirk Title}
+
 **Discovered:** {date or commit}
 
-Description of the edge case, gotcha, or known issue. Include what triggers it and how it's handled or worked around.
+**Symptom:** what a reader will observe.
+**Trigger:** what sets it off.
+**Cause:** why it happens.
+**Mitigation:** what to do — or "none", said plainly.
+
+{prose — only the part that genuinely needs explaining}
 ```
+
+Quirk headings are `## Q<n> — Title`, always — `durable-citations.test.mjs`
+resolves every `Q<n>` a spec cites against these headings, so the format is a
+contract, not a style. Numbers are unique and ascending, never reused and
+never renumbered (citations from other specs may point at them). The
+`Mitigated` column is a checkable claim: `yes / no / partial`, with `partial`
+explained in the body's **Mitigation** field.

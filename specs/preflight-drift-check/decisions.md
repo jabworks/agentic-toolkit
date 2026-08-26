@@ -1,5 +1,11 @@
 # Decisions
 
+| # | Decision | Because | Status |
+|---|---|---|---|
+| 1 | Checklist item + structured Drift Check section, not a bare line or a new skill | a bare line invites rubber-stamping; a 12th condux skill for ~40 lines collides with preflight's trigger space | accepted |
+| 2 | Drift is bidirectional | code violating the spec and a spec gone stale are findings of equal standing | accepted |
+| 3 | Findings are a soft gate — fix code / update spec / accept knowingly | preflight never blocks finalize, and spec files are never silently updated | accepted |
+
 ## Approach: checklist item + structured Drift Check section (B)
 
 One new checklist item plus a **Drift Check** section in

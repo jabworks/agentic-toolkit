@@ -1,5 +1,12 @@
 # Decisions
 
+| # | Decision | Because | Status |
+|---|---|---|---|
+| 1 | Declaration lives in a repo-level `composition.json` | a plugin.json field would duplicate into both host manifests or privilege one; per-plugin files scatter cross-plugin facts | accepted |
+| 2 | marketplace.json generated whole; doc catalogs via marker blocks | README/CLAUDE.md are crafted docs, not catalogs — only the tables are generated | accepted |
+| 3 | One generic composition test; bespoke tests keep behavior only | mirror assertions belong to the declaration; wire-format and behavior checks stay with their skills | accepted |
+| 4 | Divergent marketplace descriptions stay declared input | deriving them from SKILL.md would silently revert the 2026-08-04 ratification (PR #16) | accepted |
+
 ## D1 — Declaration lives in a repo-level `composition.json`
 
 One committed file at the repo root declares every plugin: bundle membership,

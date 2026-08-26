@@ -1,5 +1,16 @@
 # Decisions
 
+| # | Decision | Because | Status |
+|---|---|---|---|
+| D1 | The core carries the scale; surfaces choose the steps | 38 tokens join the colour core, theme-invariant ones in bare `:root` only; elevation is the one variant exception | accepted |
+| D2 | Mono for display and data; sans for prose and chrome | roles split rather than replace — three surfaces were all-mono, docket alone sans | accepted |
+| D3 | Generalize the region mechanism, not the shell | `check-tokens.mjs` becomes a three-region inliner instead of each surface hand-carrying copies | accepted |
+| D4 | Extract docket's document shell first and alone | a template literal consumes backslashes (`/\s/` → `/s/`), so JS inlining there is unsafe in a way CSS never exposed | accepted |
+| D5 | Adoption is per-surface; the kit ships coherent alone | the kit's visible effects are purely additive, so no surface is forced to restructure on the kit's schedule | accepted |
+| D6 | Sequencing: shell extraction → atomic kit regions → per-surface adoption | the one atomic step is the kit regions across all four surfaces; everything else releases independently | accepted |
+| D7 | Categorical colour is a core group, distinct from accent and semantics | a series identity is neither the surface's voice (`--primary`) nor a status; conflating them was the failure | accepted |
+| D8 | session-handoff is a rail, and the rail indexes rather than holds | the handoff is read once to reload a mental model — navigation belongs in a rail, content in the flow | accepted |
+
 Six ratified calls. Full reasoning in [design.md](design.md); the measurements
 behind them in [audit.md](audit.md).
 

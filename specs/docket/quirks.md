@@ -1,6 +1,6 @@
 # Docket — Quirks & Edge Cases
 
-## The ghost-work lesson (why close is strict)
+## Q1 — The ghost-work lesson (why close is strict)
 
 In terminus, #27 and #29 sat "open" after shipping and each burned a
 session's scoping on ghost work. Hence the contract: shipping an item means
@@ -8,7 +8,7 @@ stamp ✅ + date + verification *and move it* in the same action. `close` does
 both atomically; skills must never stamp without moving. `docket:groom`'s
 stale sweep exists to catch the ones that slip anyway.
 
-## Legacy layout detection
+## Q2 — Legacy layout detection
 
 - Detection order: `<git-root>/docket/` wins; else root `BACKLOG.md` (+
   optional `BACKLOG_ARCHIVE.md`) is recognized as the legacy terminus
@@ -19,7 +19,7 @@ stale sweep exists to catch the ones that slip anyway.
   forced, never auto-run. Terminus itself keeps working untouched.
 - Both layouts present → docket/ wins, warn about the orphaned root files.
 
-## Id-space hazards
+## Q3 — Id-space hazards
 
 - `next_id` drift (hand-edits bypassing the CLI): `check` cross-verifies
   against the observed max and reports it; repair is a manual `docket.json`
@@ -33,7 +33,7 @@ stale sweep exists to catch the ones that slip anyway.
   archive can contain ids with gaps or interleaved order — `check` treats
   gaps as normal, only dupes/reuse as findings.
 
-## Qualified ids: reference, not allocation (2026-08-06)
+## Q4 — Qualified ids: reference, not allocation (2026-08-06)
 
 A bare `### 47.` allocates id 47. A qualified `### 47 (remainder).` only
 references it — the partial-ship convention, where a slice and its parent
@@ -70,7 +70,7 @@ against a max id of 74. The pre-fix code reported 4 `duplicate-id` findings
 there; the fixed code reports none and `docket check` exits 0, which is what
 lets it be wired into a preflight or CI step at all.
 
-## Routing collision surface (intra-bundle)
+## Q5 — Routing collision surface (intra-bundle)
 
 `record` vs `groom` phrasing must stay disjoint: item-level verbs ("add",
 "close #N", "note on #N", "later/someday" capture) → record; whole-backlog
@@ -82,14 +82,14 @@ in 0.1.1 (`skills/{record,groom}/evals/trigger_eval.json`, auto-discovered by
 trigger on generic "backlog" alone in repos with no docket and no legacy
 files — offer scaffold only on explicit intent.
 
-## Proactive capture guardrails
+## Q6 — Proactive capture guardrails
 
 Capture fires on deferral phrases mid-conversation ("later", "someday",
 "we should eventually") but must *offer*, never silently write; one offer
 per idea; declining is remembered for the session. No capture in repos
 without a docket (offer scaffold instead, at most once).
 
-## Browser edge cases
+## Q7 — Browser edge cases
 
 - Empty docket (fresh scaffold) renders a usable empty state, not a blank page.
 - `--serve` binds localhost only; port conflict → next free port, print it.
@@ -98,7 +98,7 @@ without a docket (offer scaffold instead, at most once).
   open board never waits on archive size and a filter can reach into it.
 - Light theme is checked first, then dark (toolkit lesson, 3d3a0d9).
 
-## Frontmatter / repo invariants that bit before
+## Q8 — Frontmatter / repo invariants that bit before
 
 - SKILL.md frontmatter must pass the canonical grammar (no single quotes;
   run `node scripts/check-frontmatter.mjs --fix` — never hand-fix).
@@ -108,7 +108,7 @@ without a docket (offer scaffold instead, at most once).
 - Description/when_to_use budgets: description ≤ 500 chars, frontmatter
   total ≤ 1024 chars, OpenCode merged description ≤ 1024.
 
-## Board columns (2026-08-21)
+## Q9 — Board columns (2026-08-21)
 
 - `--open <id>` must open the targeted card's fold: a `#item-N` that lands on
   a collapsed `<details>` shows the lede only. The deep-link handler sets
@@ -128,7 +128,7 @@ without a docket (offer scaffold instead, at most once).
   `#filter-toggle`; it is rewritten to the column contract as a named plan
   task, never edited silently.
 
-## The close stamp defeats the trailing-date strip (2026-08-24, docket #47)
+## Q10 — The close stamp defeats the trailing-date strip (2026-08-24, docket #47)
 
 `displayTitle`'s strip regex is anchored to the literal end of the string —
 `\(\d{4}-\d{2}-\d{2}[^)]*\)\s*$`. `close()` appends `— ✅ DONE <date>` after
@@ -148,7 +148,7 @@ title may legitimately carry one, e.g. "Reopen A4 collision detection (the
 stripped; it is the one thing this regex was never supposed to treat as
 noise.
 
-## mdLite tables: a delimiter is what makes one (2026-08-25, docket #43)
+## Q11 — mdLite tables: a delimiter is what makes one (2026-08-25, docket #43)
 
 `mdLite()` renders a deliberate markdown subset. Tables were absent until
 docket #43, so a pipe table in an item body printed as literal pipe text —

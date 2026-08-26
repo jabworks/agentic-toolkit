@@ -1,5 +1,17 @@
 # Plugin doctor — Decisions
 
+| # | Decision | Because | Status |
+|---|---|---|---|
+| 1 | Per-plugin doctor, shared by convention | a doctor may require only the plugin's own files — higher rungs of the dependency ladder are what it diagnoses | accepted |
+| 2 | Bundle-prefixed doctor names (`docket-doctor` …) | three directories named `doctor` cannot coexist in the flat `skills/` namespace — forced, not stylistic | accepted |
+| 3 | concord becomes a bundle; its skill renamed `remember` | adding a second skill forces the bundle layout, and `skills/concord/concord/` is a wart; breaking change accepted | accepted |
+| 4 | Probes are static + executable | a static parse is precisely the check that passes while a hook is silently broken | accepted |
+| 5 | Offline only | a doctor runs in degraded conditions by definition; a check that needs egress fails when most needed | accepted |
+| 6 | Diagnose everywhere, repair only where an installer exists | ad-hoc repair logic would duplicate the installer contract and diverge from it | accepted |
+| 7 | Output is the installer's report shape, no JSON | one report family across install and doctor; no current reader needs a second contract | accepted |
+| 8 | condux's front door wraps the two existing scripts, never absorbs | absorbing would delete them from the npx channel, where they are the sole mechanism | accepted |
+| 9 | The Codex hooks feature flag is a probe | a manifest resolving is not a hook firing; the flag was an unprobed input to a probed system | accepted |
+
 ## Per-plugin doctor, shared by convention (approach A)
 
 User-chosen. Each plugin ships its own `doctor.mjs` and doctor skill; nothing

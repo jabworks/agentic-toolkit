@@ -1,5 +1,16 @@
 # Docket — Decisions
 
+| # | Decision | Because | Status |
+|---|---|---|---|
+| 1 | Bundle of two skills, not one | trigger shapes split cleanly (item-level vs whole-backlog); the routing-collision cost is mitigated by disjoint phrasing | accepted |
+| 2 | Bare skill names in the namespace (`docket:record`, `docket:groom`) | condux-style naming; source dirs must equal skill names, so top-level dirs are `skills/record/` and `skills/groom/` | accepted |
+| 3 | Layout A: readable core + yearly archive inside `docket/` | keeps whole-backlog skimability while fixing the observed 202K single-archive pain; `docket.json` makes id allocation collision-proof | accepted |
+| 4 | CLI core, MCP as wrapper | the CLI is the single source of truth and degrades to Bash on any host; hand-rolled stdio JSON-RPC keeps the no-dependency rule | accepted |
+| 5 | Installer ships as the reference implementation of a toolkit convention | detect → register → verify → report generalizes; condux and concord adopt later | accepted |
+| 6 | Browser as CLI subcommand, not a third skill | `docket.mjs browse` adds zero routing surface; both skills invoke it | accepted |
+| 7 | Git tie-in documented, never coupled | the close flow suggests a commit subject; the git-commit skill stays independent per the no-deps rule | accepted |
+| 8 | Board as columns, read-only, lede + fold | a standalone file has nowhere to persist a drag; bodies of 100–200 words cannot stay open in a column | accepted |
+
 ## Bundle, not single skill
 
 User-chosen (approach B). Two skills split by trigger shape: item-level
