@@ -155,6 +155,33 @@ test('kind is either omitted, "cold", or "in-context"', () => {
   assert.deepEqual(bad, [], 'unknown kind values');
 });
 
+test('cases sharing a dedup key agree on accept', () => {
+  // eval-triggers.mjs dedups the corpus on `query + "||" + expected`. A
+  // duplicate's `disallowed` is merged into the kept case; its `accept` is
+  // dropped — deliberately, because accept feeds isHit and a silent merge
+  // could widen the kept case's accept set and move A3's operating band
+  // (docket #55). The drop is only harmless while it is a no-op, and which
+  // copy is "kept" is readdirSync order — an accident, not a contract. So
+  // force the corpus to agree with itself: the same query asserting two
+  // different accept sets in two files is a corpus bug either way.
+  const byKey = new Map();
+  for (const c of allCases()) {
+    const expected = c.should_trigger ? c.expected_skill : null;
+    const key = c.query + '||' + expected;
+    if (!byKey.has(key)) byKey.set(key, []);
+    byKey.get(key).push(c);
+  }
+  const bad = [];
+  for (const group of byKey.values()) {
+    if (group.length < 2) continue;
+    const sets = new Set(group.map((c) => JSON.stringify([...(c.accept || [])].sort())));
+    if (sets.size > 1) {
+      bad.push(group.map((c) => `${c._at} accept=${JSON.stringify(c.accept || [])}`).join(' vs '));
+    }
+  }
+  assert.deepEqual(bad, [], 'duplicate cases with divergent accept — the dropped copy silently loses its assertion');
+});
+
 test('the disallowed field is actually in use', () => {
   // Docket #53 shipped the primitive AND seeded the adjacency pairs it named.
   // If every seed were later deleted, the metric would report nothing forever

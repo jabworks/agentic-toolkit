@@ -16,7 +16,7 @@
   { "query": "why isn't my skill triggering — description looks fine to me", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },
   { "query": "convert this superpowers skill for our toolkit", "should_trigger": true, "expected_skill": "adapting-skills" },
   { "query": "scaffold and register the skill once the wording is done", "should_trigger": true, "expected_skill": "toolkit-foundry" },
-  { "query": "is argument-hint a real frontmatter field", "should_trigger": true, "expected_skill": "toolkit-plugin-reference" },
+  { "query": "is argument-hint a real frontmatter field", "should_trigger": true, "expected_skill": "toolkit-plugin-reference", "accept": ["toolkit-skill-standards"], "note": "Duplicate of the toolkit-plugin-reference case; the corpus test requires duplicates to agree on accept (docket #55)." },
   { "query": "write a good PR description", "should_trigger": false, "expected_skill": null },
   { "query": "improve the docstring of this python function", "should_trigger": false, "expected_skill": null },
   { "query": "lint my typescript code", "should_trigger": false, "expected_skill": null, "accept": ["finalize"], "note": "finalize runs lint as part of its gate, so routing there serves the user. null stays primary: plain lint needs no skill." }

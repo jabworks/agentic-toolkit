@@ -252,15 +252,17 @@ it shipped, and neither is a band measurement:
 So the 16 remaining seeded seams have a violation count of *unknown*, not zero.
 The first full multi-trial run after this lands is what makes the number real.
 
-Known gap, deliberately left: the corpus dedup key is `query + expected`, and a
-duplicate's `disallowed` is merged into the kept case while its `accept` is
-still dropped. Merging `accept` too would widen accept sets and could flip
-misses to hits — moving the very band this item's design protects. Two
-collisions in the corpus carry divergent `accept` today
-(`is it safe to hand-edit dist to hotfix this`, `is argument-hint a real
-frontmatter field`); in both, the wider set happens to be the one kept, so the
-drop is currently inert. That is an accident of `readdirSync` order and belongs
-to its own item.
+Known gap, now guarded (docket #55, 2026-08-26): the corpus dedup key is
+`query + expected`, and a duplicate's `disallowed` is merged into the kept case
+while its `accept` is still dropped. Merging `accept` too would widen accept
+sets and could flip misses to hits — moving the very band this item's design
+protects — so the drop stays, but it is loud instead of silent:
+`tests/trigger-eval-corpus.test.mjs` fails when two cases share a dedup key
+with divergent `accept`, forcing the corpus to agree with itself. The two
+divergent collisions that existed (`is it safe to hand-edit dist to hotfix
+this`, `is argument-hint a real frontmatter field`) were aligned by copying the
+kept case's `accept` onto the dropped copy — band-neutral, since dropped copies
+never run.
 
 ---
 

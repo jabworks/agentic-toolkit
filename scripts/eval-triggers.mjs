@@ -94,9 +94,9 @@ for (const name of fs.readdirSync(SKILLS_DIR)) {
       // `accept` is deliberately NOT merged, even though it is dropped the
       // same way. accept feeds isHit, so widening it can flip a miss to a hit
       // and move A3's operating band — the exact thing this item's
-      // separate-metric decision exists to prevent. Two collisions in the
-      // corpus today do carry divergent accept sets; that is its own item,
-      // not a side effect of this one.
+      // separate-metric decision exists to prevent. Instead the drop is loud:
+      // tests/trigger-eval-corpus.test.mjs fails when two cases share a dedup
+      // key with divergent accept, so the drop is always a no-op (docket #55).
       const kept = cases.find((x) => x.query + '||' + x.expected === key);
       for (const d of c.disallowed || []) if (!kept.disallowed.includes(d)) kept.disallowed.push(d);
       continue;

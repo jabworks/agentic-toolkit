@@ -12,9 +12,13 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## toolkit-ops 1.7.9 — 2026-08-26
+
+- test(evals): fail on divergent accept across a dedup key (#55)
+
 ## toolkit-ops 1.7.8 — 2026-08-25
 
-- chore(toolkit-ops): version 1.7.8
+- feat(evals): score `disallowed` assertions as a separate metric (#53) (#115)
 
 ## toolkit-ops 1.7.7 — 2026-08-25
 
@@ -26,7 +30,7 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## session-handoff 1.9.2 — 2026-08-25
 
-- chore(session-handoff): version 1.9.2
+- feat(evals): score `disallowed` assertions as a separate metric (#53) (#115)
 
 ## session-handoff 1.9.1 — 2026-08-25
 
@@ -42,7 +46,7 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## condux 2.21.2 — 2026-08-25
 
-- chore(condux): version 2.21.2
+- feat(evals): score `disallowed` assertions as a separate metric (#53) (#115)
 
 ## condux 2.21.1 — 2026-08-25
 

@@ -93,40 +93,4 @@ Close as confirmed-or-corrected either way — A3b currently states the
 Haiku-only limitation in its own text, so the record is honest as it stands;
 this only tightens it.
 
-### 55. Merge a duplicate case's `accept` in the trigger corpus, or stop dropping it silently (2026-08-25)
-
-Found while shipping #53 (A3c). `scripts/eval-triggers.mjs` dedups the corpus on
-`query + "||" + expected`. #53 made a duplicate's `disallowed` merge into the kept
-case; its `accept` is still dropped, silently.
-
-Why #53 did not just fix both: `accept` feeds `isHit`. Widening a kept case's
-accept set can flip a MISS to a HIT and move A3's ~89-92% operating band — the
-number the whole health campaign is judged on, and the exact thing #53's
-separate-metric decision existed to protect. Doing it inside #53 would have moved
-the band silently, inside a change whose premise was band comparability.
-
-Measured 2026-08-25: 19 duplicate keys in the corpus, **2 with divergent accept**:
-
-| query | kept | dropped |
-|---|---|---|
-| `is it safe to hand-edit dist to hotfix this` | toolkit-change-control, accept `["toolkit-failure-archaeology"]` | toolkit-debugging-playbook, accept `[]` |
-| `is argument-hint a real frontmatter field` | toolkit-plugin-reference, accept `["toolkit-skill-standards"]` | toolkit-skill-standards, accept `[]` |
-
-In both, the wider set is the one kept — `readdirSync` returns the owning skill's
-directory first, alphabetically, by accident. So the drop is **inert today** and
-merging would be a no-op on the band. That is luck, not a property: renaming a
-skill, or adding a third file carrying the same query with a wider accept, flips
-it without warning.
-
-Two defensible fixes, decide when picked up:
-1. Merge `accept` like `disallowed`, and re-run a band to confirm the no-op
-   empirically rather than by inspection (~10 min, one trial).
-2. Make the drop loud instead — fail `tests/trigger-eval-corpus.test.mjs` when two
-   cases share a dedup key with divergent `accept`, forcing the corpus to agree
-   with itself. Cheaper, no band risk, and arguably the real defect: the same query
-   asserting two different things in two files is a corpus bug either way.
-
-Leaning (2) — the current entry in A3c documents the drop as known and inert, and
-option 2 keeps that true without ever touching isHit.
-
 ## Loose threads
