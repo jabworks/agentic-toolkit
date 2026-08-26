@@ -12,6 +12,10 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## toolkit-ops 1.7.10 — 2026-08-26
+
+- docs(research): first band with `disallowed` live — 93.4% ± 1.9pp (A3d)
+
 ## toolkit-ops 1.7.9 — 2026-08-26
 
 - test(evals): fail on divergent accept across a dedup key (#55)
