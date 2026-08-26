@@ -182,7 +182,7 @@
         },
         {
           "skill": "blueprint",
-          "blurb": "Design-time visual clarity — grayscale HTML wireframes for UI surfaces, inline-SVG diagrams (data models, flows, architecture, state machines) for backend work; dependency-free, structure not styling"
+          "blurb": "Design-time visual clarity — HTML wireframes and full renders for UI surfaces in the surface-kit token language (two modes, one skeleton), inline-SVG diagrams (data models, flows, architecture, state machines) for backend work; dependency-free"
         },
         {
           "skill": "draft-plan",

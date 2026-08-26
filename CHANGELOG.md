@@ -16,6 +16,10 @@ The `@jabworks/condux` npm package has its own changelog at
 
 - test(evals): fail on divergent accept across a dedup key (#55)
 
+## condux 2.22.0 — 2026-08-26
+
+- chore(condux): version 2.22.0
+
 ## toolkit-ops 1.7.8 — 2026-08-25
 
 - feat(evals): score `disallowed` assertions as a separate metric (#53) (#115)

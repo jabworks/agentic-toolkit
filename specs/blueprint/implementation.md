@@ -6,8 +6,10 @@
 skills/blueprint/
   SKILL.md                    # lean: trigger contract, flow, boundaries
   references/
-    wireframe-kit.md          # wireframe discipline rules + copyable base CSS
+    wireframe-kit.md          # two-mode discipline + copyable mode CSS blocks
     diagram-kit.md            # inline-SVG patterns: ER, flow, architecture, state
+    token-core.css            # byte-pinned copy of scripts/tokens/core.css
+                              # (guarded by tests/blueprint-kit.test.mjs)
 ```
 
 ## Artifacts

@@ -17,6 +17,8 @@
   directions (blueprint = structural clarity at design time; those = aesthetic
   or host-specific surfaces).
 - **Wireframe discipline drift:** the failure mode of HTML mockups is quietly
-  becoming styled UI. The kit must state the discipline as hard rules
-  (grayscale palette only, system font stack, no brand colors, no imagery)
-  so outputs stay unambiguous wireframes.
+  becoming styled UI. Since the 2026-08-26 two-mode rework the discipline is
+  mechanical, not just stated: wireframe mode's CSS may only reference the
+  neutral token allowlist, asserted by `tests/blueprint-kit.test.mjs`
+  (chromatic vocabulary belongs to render mode), and the kit's token core is
+  byte-pinned to `scripts/tokens/core.css` by the same test.

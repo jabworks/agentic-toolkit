@@ -331,7 +331,7 @@ opt-in at checkpoints or justified by genuinely parallel work.
 |---|---|
 | [/workflow](./skills/workflow/) | Tier router — infer Small/Medium/Large, confirm with user, load only the skills the tier needs |
 | [/discovery](./skills/discovery/) | Design gate — goal-round questions, alternatives, then a post-approach detail round (contracts, mappings, edge cases); sign-off saves the design doc and, default-on, a structured tech spec |
-| [/blueprint](./skills/blueprint/) | Design-time visual clarity — grayscale HTML wireframes for UI surfaces, inline-SVG diagrams (data models, flows, architecture, state machines) for backend work; dependency-free, structure not styling |
+| [/blueprint](./skills/blueprint/) | Design-time visual clarity — HTML wireframes and full renders for UI surfaces in the surface-kit token language (two modes, one skeleton), inline-SVG diagrams (data models, flows, architecture, state machines) for backend work; dependency-free |
 | [/draft-plan](./skills/draft-plan/) | Lean task-card plan (what/why/gotchas/deps), Markdown, LARGE tasks only |
 | [/test-first-development](./skills/test-first-development/) | Opt-in tests-first — one upfront consent, then red-green-refactor; asks before editing existing specs |
 | [/subagent-execution](./skills/subagent-execution/) | Named specialist agents for LARGE plans, only when justified, never to fill time |

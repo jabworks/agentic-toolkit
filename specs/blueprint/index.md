@@ -1,10 +1,11 @@
 # blueprint — Tech Spec
 
 > condux skill producing dependency-free visual clarity artifacts at design
-> time — grayscale HTML wireframes for UI, inline-SVG system diagrams for BE.
+> time — HTML wireframes and renders for UI in the surface-kit token
+> language (two modes, one skeleton), inline-SVG system diagrams for BE.
 
-**Last updated:** 2026-08-20
-**Commit:** ca92d16
+**Last updated:** 2026-08-26
+**Commit:** HEAD
 **Status:** draft
 
 ## Contents
@@ -14,4 +15,6 @@
 - [quirks.md](quirks.md) — edge cases: headless hosts, non-git repos, citation promotion
 
 ## Changelog
+- 2026-08-26 (HEAD): Grayscale dialect retired — wireframe/render modes on the
+  surface-kit token core; see the scoped fidelity decision in decisions.md
 - 2026-08-20 (ca92d16): Initial spec — discovery sign-off

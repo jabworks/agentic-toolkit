@@ -9,10 +9,25 @@
 - **Name: `blueprint`.** Structural by definition — covers UI wireframes and
   system diagrams alike, and signals clarity-not-aesthetics. Candidates
   rejected: `mockup` (FE-only connotation), `sketch` (vague), `visual-draft`.
-- **Clarity-first fidelity, single mode.** Wireframe discipline is enforced:
-  grayscale, boxes, annotations, no brand styling. Aesthetic direction is
-  explicitly out of scope — that is the boundary against taste-style skills,
-  the `design` canvas, and Figma. No hi-fi mode in v1.
+- **Clarity-first fidelity, single mode.** ~~Wireframe discipline is enforced:
+  grayscale, boxes, annotations, no brand styling.~~ **Scoped 2026-08-26
+  (ratified by Harvey):** superseded by two modes over one shared skeleton,
+  both in the surface-kit token core — `wireframe` (schematic: dashed
+  grouping, neutral colour roles only, semantics silent; the structural
+  discipline survives here) and `render` (full house language: accent,
+  semantic and categorical colour, elevation, motion; for sign-off and
+  presentation). Promotion is a style-block swap — the skeleton never
+  changes, which is what keeps a render honest to the approved structure.
+  The original boundary survives in scoped form: aesthetic *direction* is
+  still out of scope — render mode means the house language, never brand
+  exploration — so the line against taste-style skills, the `design` canvas,
+  and Figma holds. Driver: the grayscale dialect made blueprint output the
+  only toolkit HTML not speaking surface-kit, and it showed. Diagrams keep
+  a single look, re-skinned in tokens. `references/token-core.css` is a
+  byte-identical copy of `scripts/tokens/core.css`, guarded by
+  `tests/blueprint-kit.test.mjs`; the same test pins wireframe mode's CSS
+  to a neutral token allowlist so "wireframe stays structural" is a failing
+  test, not a hope.
 - **Dependency-free (ladder rung 1).** Self-contained HTML + hand-authored
   inline SVG. No Mermaid CDN, no image generation, no host-specific renderers.
   Works identically on Claude Code, Codex, OpenCode, Cursor.

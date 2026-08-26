@@ -172,10 +172,12 @@ design that lives only in conversation doesn't count as signed off.
 ignored — see the bootstrap step there. Honour an `AGENTS.md` path override
 if the project defines one.
 
-For full design mockups — grayscale UI wireframes, data-model / flow /
-architecture diagrams — load the `blueprint` skill; the design doc links the
-files it produces. For *picking between* side-by-side options in the browser,
-see `references/mockup-picker.md` (it can point at blueprint's files).
+For full design mockups — UI wireframes and renders in the house token
+language, data-model / flow / architecture diagrams — load the `blueprint`
+skill; the design doc links the files it produces. At sign-off, offer to
+promote the chosen wireframes to render mode (a style-block swap). For
+*picking between* side-by-side options in the browser, see
+`references/mockup-picker.md` (it can point at blueprint's files).
 
 ## Design Review Loop
 

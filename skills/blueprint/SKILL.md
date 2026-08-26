@@ -1,6 +1,6 @@
 ---
 name: blueprint
-description: Produce dependency-free visual clarity artifacts at design time — grayscale HTML wireframes for UI screens and flows, and inline-SVG system diagrams (data models, flows, architecture, state machines) for backend work.
+description: Produce dependency-free visual clarity artifacts at design time — HTML wireframes and full renders for UI screens and flows in the house design language (surface-kit tokens), and inline-SVG system diagrams (data models, flows, architecture, state machines) for backend work.
 when_to_use: During /discovery when the feature has a UI surface or a data model, from /draft-plan task cards, or standalone on "mock this up", "wireframe this screen", "visualize the data model", "sketch the architecture", "diagram the flow". Not for aesthetic or brand direction, editable design canvases or Figma, charts from real data, or generating code from a mockup.
 argument-hint: "[surface or model to visualize — optional; defaults to the current design context]"
 ---
@@ -9,7 +9,9 @@ argument-hint: "[surface or model to visualize — optional; defaults to the cur
 
 Make the design visible before it's built. Wireframes tell a frontend dev what
 goes where and why; system diagrams tell a backend dev what talks to what.
-Structure, never style.
+Structure first — and everything speaks the house design language (the
+surface-kit token core), so a mockup already looks like it belongs to the
+product family.
 
 ## Usage
 
@@ -34,9 +36,11 @@ Structure, never style.
 │                                                                  │
 │  Step 2: PRODUCE                                                 │
 │  One self-contained HTML file per screen / flow state / diagram. │
-│  Wireframes follow references/wireframe-kit.md.                  │
-│  Diagrams follow references/diagram-kit.md.                      │
-│  No external assets, no CDN, no fonts beyond the system stack.   │
+│  Wireframes follow references/wireframe-kit.md — wireframe mode  │
+│  by default; render mode when structure is signed off or the     │
+│  user asks for fidelity. Diagrams follow references/             │
+│  diagram-kit.md. All styling from references/token-core.css.     │
+│  No external assets, no CDN, no font files.                      │
 │                                                                  │
 │  Step 3: DELIVER                                                 │
 │  Open in the browser (xdg-open / open). If neither works         │
@@ -51,11 +55,15 @@ Structure, never style.
 
 ## The Two Families
 
-**Wireframes (UI clarity).** Grayscale boxes with real content hierarchy and
-annotation callouts. A wireframe answers: what elements exist, how they group,
-what order they read in, what happens on each state (empty, loading, error,
-populated). Multiple states of one flow are separate files, named for the
-state. The full discipline — hard rules plus a copyable base-CSS block — is in
+**Wireframes and renders (UI clarity).** Two modes over one shared skeleton,
+both in the house tokens. *Wireframe mode* (default) is schematic — dashed
+grouping, neutral roles only, annotation callouts — and answers: what elements
+exist, how they group, what order they read in, what happens on each state
+(empty, loading, error, populated). *Render mode* unlocks the full language
+(accent, semantic and categorical colour, elevation, motion) to show how the
+settled structure will look; promotion is a style-block swap, the skeleton
+never changes. Multiple states of one flow are separate files, named for the
+state. The full discipline — hard rules plus copyable mode CSS blocks — is in
 `references/wireframe-kit.md`.
 
 **System diagrams (BE clarity).** Hand-authored inline SVG for four shapes:
@@ -95,8 +103,9 @@ mockup into the spec directory first and cite the committed copy.
 ## What Does NOT Happen
 
 ```
-✗ Brand styling, palettes, typography choices, premium polish — structure only
-✗ Colors beyond grayscale (one muted annotation accent is the ceiling)
+✗ Palettes or typography outside the shared token core — the house language
+  is the ceiling, render mode included; blueprint is not a brand playground
+✗ Chromatic colour in wireframe mode (neutral roles + the annotation accent)
 ✗ External dependencies — no Mermaid CDN, no image generation, no Figma
 ✗ Code generation from the mockup (that's implementation's job, later)
 ✗ Charts of real data (that's a dataviz concern, not a design mockup)
