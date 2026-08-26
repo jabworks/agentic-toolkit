@@ -48,13 +48,18 @@
     "query": "show me a wireframe of both options for the onboarding screen",
     "should_trigger": true,
     "expected_skill": "blueprint",
-    "accept": ["discovery"]
+    "accept": [
+      "discovery"
+    ]
   },
   {
     "query": "before planning, can we visualize what this feature will look like",
     "should_trigger": true,
     "expected_skill": "blueprint",
-    "accept": ["discovery", "workflow"]
+    "accept": [
+      "discovery",
+      "workflow"
+    ]
   },
   {
     "query": "mock up the ER diagram for the new billing tables",
@@ -82,19 +87,29 @@
     "query": "build the settings page from the approved design",
     "should_trigger": false,
     "expected_skill": null,
-    "accept": ["workflow"],
+    "accept": [
+      "workflow"
+    ],
     "note": "Building from an approved design is an implementation request; workflow's any-implementation-request claim covers it. The case still guards blueprint against the \"design\" bait."
   },
   {
     "query": "implement this Figma design as a React component",
     "should_trigger": false,
     "expected_skill": null,
-    "accept": ["workflow"],
+    "accept": [
+      "workflow"
+    ],
     "note": "Implementing a design in code is an implementation request; workflow covers it. The case still guards blueprint against the \"Figma design\" bait."
   },
   {
     "query": "pick a color palette and typography for the marketing site",
     "should_trigger": false,
     "expected_skill": null
+  },
+  {
+    "query": "sketch how the CLI, the cache file and the background daemon hand off to each other",
+    "should_trigger": true,
+    "expected_skill": "blueprint",
+    "note": "No UI surface and no data model — the old noun-shaped trigger could not see this. The section turns on \"what talks to what\", which is a blueprint question."
   }
 ]

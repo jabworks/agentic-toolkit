@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Discovery section loop — terminal, design file, browser</title>
+<style>
+/* Shared design core — do not hand-edit; edit scripts/tokens/core.css. */
+:root {
+  --background: #111110;
+  --card: #191918;
+  --card-foreground: #eeeeec;
+  --popover: #222221;
+  --foreground: #eeeeec;
+  --muted: #222221;
+  --muted-foreground: #b5b3ad;
+  --border: #3b3a37;
+  --input: #3b3a37;
+  --primary: #978365;
+  --primary-foreground: #ffffff;
+  --primary-hover: #a39073;
+  --primary-muted: #24231f;
+  --primary-text: #cbb99f;
+  --ring: #978365;
+  --accent: #2a2a28;
+  --success: #71d083;
+  --success-muted: #1b2a1e;
+  --success-border: #2d5736;
+  --warning: #ffca16;
+  --warning-muted: #302008;
+  --warning-border: #5c3d05;
+  --destructive: #ff977d;
+  --destructive-muted: #391714;
+  --destructive-border: #6e2920;
+  --info: #70b8ff;
+  --info-muted: #0d2847;
+  --info-border: #104d87;
+  /* categorical — series identity; neither the accent nor the semantics */
+  --cat-1: #cf686e;
+  --cat-2: #897ed6;
+  --cat-3: #41a265;
+  --cat-4: #3694d4;
+  --cat-5: #94911b;
+  --cat-6: #ba6cae;
+  --cat-7: #c37827;
+  --cat-8: #00a0a4;
+  --cat-other: #686560;
+  --outline: rgba(237, 237, 236, 0.08);
+  --subtle: #686560;
+  --shadow-sm: 0 1px 2px rgba(6, 6, 5, 0.5);
+  --shadow-md: 0 4px 14px rgba(6, 6, 5, 0.55);
+  --shadow-lg: 0 20px 60px rgba(6, 6, 5, 0.62);
+  --mono: "Geist Mono", "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Monaco, "Cascadia Code", monospace;
+  --sans: "Geist", "Inter Tight", ui-sans-serif, system-ui, -apple-system, "Segoe UI Variable Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --text-2xs: 0.6875rem;
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.5rem;
+  --text-4xl: 3.5rem;
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading-normal: 1.55;
+  --leading-relaxed: 1.7;
+  --tracking-tight: -0.022em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.06em;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-8: 3rem;
+  --space-12: 4rem;
+  --radius-sm: 0.1875rem;
+  --radius: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-full: 9999px;
+  --dur-fast: 120ms;
+  --dur: 200ms;
+  --dur-slow: 320ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --background: #f6f5ef;
+    --card: #fcfbf6;
+    --card-foreground: #36302a;
+    --popover: #fcfbf6;
+    --foreground: #36302a;
+    --muted: #f0efe3;
+    --muted-foreground: #726c5e;
+    --border: #ddd6c6;
+    --input: #ddd6c6;
+    --primary: #967e60;
+    --primary-foreground: #ffffff;
+    --primary-hover: #897254;
+    --primary-muted: #efece0;
+    --primary-text: #6f5e44;
+    --ring: #967e60;
+    --accent: #eae7da;
+    --success: #3f7a34;
+    --success-muted: #e6f5e2;
+    --success-border: #c2e1b3;
+    --warning: #93761d;
+    --warning-muted: #fbf4c4;
+    --warning-border: #ebd87f;
+    --destructive: #bf4f3b;
+    --destructive-muted: #fbe8e2;
+    --destructive-border: #f0c9ba;
+    --info: #3f6fa6;
+    --info-muted: #e6f1fc;
+    --info-border: #bed7ef;
+    --cat-1: #b04d54;
+    --cat-2: #6f63b8;
+    --cat-3: #1e874b;
+    --cat-4: #0a78b7;
+    --cat-5: #797600;
+    --cat-6: #9d5192;
+    --cat-7: #a45e00;
+    --cat-8: #008f93;
+    --cat-other: #a8a294;
+    --outline: rgba(54, 48, 42, 0.08);
+    --subtle: #a8a294;
+    --shadow-sm: 0 1px 2px rgba(54, 48, 42, 0.1);
+    --shadow-md: 0 4px 14px rgba(54, 48, 42, 0.13);
+    --shadow-lg: 0 20px 60px rgba(54, 48, 42, 0.18);
+  }
+}
+:root[data-theme="light"] {
+  --background: #f6f5ef;
+  --card: #fcfbf6;
+  --card-foreground: #36302a;
+  --popover: #fcfbf6;
+  --foreground: #36302a;
+  --muted: #f0efe3;
+  --muted-foreground: #726c5e;
+  --border: #ddd6c6;
+  --input: #ddd6c6;
+  --primary: #967e60;
+  --primary-foreground: #ffffff;
+  --primary-hover: #897254;
+  --primary-muted: #efece0;
+  --primary-text: #6f5e44;
+  --ring: #967e60;
+  --accent: #eae7da;
+  --success: #3f7a34;
+  --success-muted: #e6f5e2;
+  --success-border: #c2e1b3;
+  --warning: #93761d;
+  --warning-muted: #fbf4c4;
+  --warning-border: #ebd87f;
+  --destructive: #bf4f3b;
+  --destructive-muted: #fbe8e2;
+  --destructive-border: #f0c9ba;
+  --info: #3f6fa6;
+  --info-muted: #e6f1fc;
+  --info-border: #bed7ef;
+  --cat-1: #b04d54;
+  --cat-2: #6f63b8;
+  --cat-3: #1e874b;
+  --cat-4: #0a78b7;
+  --cat-5: #797600;
+  --cat-6: #9d5192;
+  --cat-7: #a45e00;
+  --cat-8: #008f93;
+  --cat-other: #a8a294;
+  --outline: rgba(54, 48, 42, 0.08);
+  --subtle: #a8a294;
+  --shadow-sm: 0 1px 2px rgba(54, 48, 42, 0.1);
+  --shadow-md: 0 4px 14px rgba(54, 48, 42, 0.13);
+  --shadow-lg: 0 20px 60px rgba(54, 48, 42, 0.18);
+}
+
+* { margin: 0; box-sizing: border-box; }
+body {
+  font-family: var(--sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  background: var(--background);
+  color: var(--foreground);
+  padding: var(--space-6);
+}
+.frame {
+  background: var(--card);
+  border: 1px dashed var(--muted-foreground);
+  border-radius: var(--radius-sm);
+  max-width: 1100px; margin: 0 auto; padding: var(--space-6);
+}
+.topbar {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding-bottom: var(--space-4); border-bottom: 1px solid var(--border);
+  margin-bottom: var(--space-5);
+}
+.topbar h1 { font-size: var(--text-lg); letter-spacing: var(--tracking-tight); font-weight: 600; }
+.topbar .crumb {
+  font-family: var(--mono); font-size: var(--text-2xs);
+  text-transform: uppercase; letter-spacing: var(--tracking-wide);
+  color: var(--muted-foreground);
+}
+.lede {
+  font-size: var(--text-sm); color: var(--muted-foreground);
+  max-width: 68ch; margin-bottom: var(--space-5);
+}
+svg { max-width: 100%; height: auto; display: block; }
+svg text { font-family: var(--sans); font-size: 13px; fill: var(--foreground); }
+text.mono { font-family: var(--mono); font-size: 12px; }
+text.title { font-weight: 600; }
+text.note { font-family: var(--sans); font-size: 11px; fill: var(--muted-foreground); }
+text.note-mono { font-family: var(--mono); font-size: 11px; fill: var(--muted-foreground); }
+text.accent { fill: var(--primary-text); }
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="topbar">
+    <h1>Discovery — the per-section loop</h1>
+    <span class="crumb">condux · discovery · step 3</span>
+  </div>
+  <p class="lede">
+    Where a design is written, where it is read, and what the terminal is left carrying.
+    The design file is the one thing that changes: it exists from section one, not from sign-off.
+  </p>
+
+  <svg viewBox="0 0 1000 570" role="img"
+       aria-label="Flow diagram: terminal, design file and browser across discovery's per-section loop, with the draft-plan gate reading the file's status.">
+    <defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5"
+              markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="var(--subtle)"/>
+      </marker>
+    </defs>
+
+    <!-- 1. entry: the file is created at section one -->
+    <text class="note" x="635" y="26" text-anchor="middle">1. §1 opens — the design file is created immediately</text>
+    <text class="note-mono" x="635" y="42" text-anchor="middle">status: in-progress</text>
+    <line x1="635" y1="52" x2="635" y2="86" stroke="var(--subtle)" marker-end="url(#arrow)"/>
+
+    <!-- YOU -->
+    <g transform="translate(40,150)">
+      <rect width="110" height="26" fill="var(--muted)" stroke="var(--border)" rx="3"/>
+      <text class="title" x="55" y="18" text-anchor="middle">you</text>
+      <rect y="26" width="110" height="74" fill="var(--card)" stroke="var(--border)"/>
+      <text class="note" x="10" y="48">deciding one</text>
+      <text class="note" x="10" y="64">section at a</text>
+      <text class="note" x="10" y="80">time</text>
+    </g>
+
+    <!-- TERMINAL -->
+    <g transform="translate(230,110)">
+      <rect width="220" height="26" fill="var(--muted)" stroke="var(--border)" rx="3"/>
+      <text class="title" x="110" y="18" text-anchor="middle">terminal</text>
+      <rect y="26" width="220" height="150" fill="var(--card)" stroke="var(--border)"/>
+      <text class="mono" x="12" y="50">§ heading + intent</text>
+      <text class="mono" x="12" y="72">the decision, as options</text>
+      <text class="mono" x="12" y="94">what changed since §n-1</text>
+      <text class="mono" x="12" y="116">→ whole design: browser</text>
+      <text class="note" x="12" y="146">carries the ask, not the design</text>
+      <text class="note" x="12" y="164">fixed shape · density budget</text>
+    </g>
+
+    <!-- DESIGN FILE — the one accent -->
+    <g transform="translate(520,90)">
+      <rect width="230" height="26" fill="var(--primary-muted)" stroke="var(--primary)" rx="3"/>
+      <text class="title accent" x="115" y="18" text-anchor="middle">design file</text>
+      <rect y="26" width="230" height="170" fill="var(--card)" stroke="var(--primary)"/>
+      <text class="note-mono" x="12" y="48">.condux/designs/&lt;date&gt;-&lt;slug&gt;.md</text>
+      <text class="mono" x="12" y="74">§1 approach          ✓</text>
+      <text class="mono" x="12" y="96">§2 section shape     ✓</text>
+      <text class="mono" x="12" y="118">§3 open questions    …</text>
+      <text class="note" x="12" y="148">one file, appended per section</text>
+      <text class="note" x="12" y="166">exists from §1 — today only at §7</text>
+      <text class="note" x="12" y="184">this is the whole change</text>
+    </g>
+
+    <!-- BROWSER -->
+    <g transform="translate(830,130)">
+      <rect width="150" height="26" fill="var(--muted)" stroke="var(--border)" rx="3"/>
+      <text class="title" x="75" y="18" text-anchor="middle">browser</text>
+      <rect y="26" width="150" height="100" fill="var(--card)" stroke="var(--border)"/>
+      <text class="note" x="12" y="48">the design, whole</text>
+      <text class="note" x="12" y="68">live-reloads on write</text>
+      <text class="note" x="12" y="88">annotate · steer</text>
+      <text class="note-mono" x="12" y="112">plan-review --steer</text>
+    </g>
+
+    <!-- 3 / 4 : terminal ↔ you -->
+    <line x1="226" y1="166" x2="156" y2="166" stroke="var(--subtle)" marker-end="url(#arrow)"/>
+    <text class="note" x="191" y="158" text-anchor="middle">3. the card</text>
+    <line x1="156" y1="216" x2="226" y2="216" stroke="var(--subtle)" marker-end="url(#arrow)"/>
+    <text class="note" x="191" y="234" text-anchor="middle">4. decide</text>
+
+    <!-- 5 : terminal → file -->
+    <line x1="452" y1="190" x2="516" y2="190" stroke="var(--subtle)" marker-end="url(#arrow)"/>
+    <text class="note" x="484" y="182" text-anchor="middle">5. append</text>
+    <text class="note" x="484" y="206" text-anchor="middle">agreed §</text>
+
+    <!-- 2 / 6 : file → browser -->
+    <line x1="752" y1="190" x2="826" y2="190" stroke="var(--subtle)" marker-end="url(#arrow)"/>
+    <text class="note" x="789" y="178" text-anchor="middle">2. launch</text>
+    <text class="note" x="789" y="208" text-anchor="middle">6. reload</text>
+
+    <!-- return: you read it in the browser (dashed — a reading relationship, not a hop) -->
+    <path d="M905,258 L905,310 L95,310 L95,252" fill="none" stroke="var(--subtle)"
+          stroke-dasharray="4 3" marker-end="url(#arrow)"/>
+    <text class="note" x="500" y="302" text-anchor="middle">you read the design whole here — so the card never has to carry it</text>
+
+    <!-- 7 : sign-off flips the status -->
+    <line x1="535" y1="288" x2="535" y2="388" stroke="var(--subtle)" marker-end="url(#arrow)"/>
+    <text class="note" x="548" y="336">7. sign-off flips</text>
+    <text class="note-mono" x="548" y="352">status → signed-off</text>
+
+    <!-- draft-plan gate -->
+    <g transform="translate(390,390)">
+      <rect width="290" height="26" fill="var(--muted)" stroke="var(--border)" rx="3"/>
+      <text class="title" x="145" y="18" text-anchor="middle">draft-plan gate</text>
+      <rect y="26" width="290" height="94" fill="var(--card)" stroke="var(--border)"/>
+      <text class="mono" x="12" y="50">reads frontmatter status</text>
+      <text class="mono" x="12" y="76">signed-off  → plan proceeds</text>
+      <text class="mono" x="12" y="98">in-progress → soft gate asks</text>
+    </g>
+
+    <!-- the gotcha -->
+    <line x1="684" y1="450" x2="726" y2="450" stroke="var(--subtle)" marker-end="url(#arrow)"/>
+    <text class="note" x="734" y="430">8. today the gate is the file&#8217;s mere</text>
+    <text class="note" x="734" y="446">existence. Create it at §1 and an</text>
+    <text class="note" x="734" y="462">abandoned §2 would pass it —</text>
+    <text class="note" x="734" y="478">hence the status field.</text>
+  </svg>
+</div>
+</body>
+</html>

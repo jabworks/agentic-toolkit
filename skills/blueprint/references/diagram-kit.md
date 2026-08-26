@@ -34,6 +34,29 @@ of the `<style>` block, verbatim.
 - Every relationship line gets a label. An unlabeled arrow is a guess the
   reader has to make.
 
+## The Specificity Rule
+
+Every label must name something real from *this* design — a path, a command, a
+field, a state, a status value, an endpoint. **If a label would be equally true
+of a different feature, it is too vague.**
+
+A diagram is evidence for a decision. A box the reader cannot disagree with
+carries no information, so it cannot be evidence — and "generic enough to fit
+any feature" is the single most common reason a produced artifact turns out not
+to help anyone.
+
+| Too vague | Specific |
+|---|---|
+| `Design Doc` | `.condux/designs/<date>-<slug>.md` |
+| `Preview` | `plan-review --steer` |
+| `Gate` | `signed-off → plan proceeds` |
+| `Status` | `status: in-progress` |
+| `saves` | `5. append agreed §` |
+
+The rule bites hardest early, when the specifics are not settled yet — which is
+the correct time for it to bite. A diagram drawn before there is anything
+concrete to put in it is decoration, and should not be drawn.
+
 ## 1. Entity / Data-Model
 
 One `<g>` per entity: title bar + field rows. Keys marked `PK` / `FK`; edge

@@ -14,11 +14,15 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## toolkit-ops 1.7.10 — 2026-08-26
 
-- docs(research): first band with `disallowed` live — 93.4% ± 1.9pp (A3d)
+- docs(research): first band with `disallowed` live — 93.4% ± 1.9pp (A3d) (#117)
 
 ## toolkit-ops 1.7.9 — 2026-08-26
 
 - test(evals): fail on divergent accept across a dedup key (#55)
+
+## condux 2.23.0 — 2026-08-26
+
+- feat(discovery): build the design in a live doc, one card at a time
 
 ## condux 2.22.1 — 2026-08-26
 

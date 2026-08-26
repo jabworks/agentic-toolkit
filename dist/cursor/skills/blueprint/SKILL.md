@@ -1,6 +1,6 @@
 ---
 name: blueprint
-description: "Produce dependency-free visual clarity artifacts at design time — HTML wireframes and full renders for UI screens and flows in the house design language (surface-kit tokens), and inline-SVG system diagrams (data models, flows, architecture, state machines) for backend work. During /discovery when the feature has a UI surface or a data model, from /draft-plan task cards, or standalone on \"mock this up\", \"wireframe this screen\", \"visualize the data model\", \"sketch the architecture\", \"diagram the flow\". Not for aesthetic or brand direction, editable design canvases or Figma, charts from real data, or generating code from a mockup."
+description: "Produce dependency-free visual clarity artifacts at design time — HTML wireframes and full renders for UI screens and flows in the house design language (surface-kit tokens), and inline-SVG system diagrams (data models, flows, architecture, state machines) for backend work. During /discovery when a section turns on what entities exist, what happens in what order, what talks to what, what states are legal, or what goes where on a screen; from /draft-plan task cards; or standalone on \"mock this up\", \"wireframe this screen\", \"visualize the data model\", \"sketch the architecture\", \"diagram the flow\". Not for aesthetic or brand direction, editable design canvases or Figma, charts from real data, or generating code from a mockup."
 argument-hint: "[surface or model to visualize — optional; defaults to the current design context]"
 ---
 
@@ -26,12 +26,13 @@ product family.
 ┌──────────────────────────────────────────────────────────────────┐
 │                         BLUEPRINT                                │
 ├──────────────────────────────────────────────────────────────────┤
-│  Step 1: ASSESS SURFACES                                         │
-│  What does the feature touch?                                    │
-│    - UI screens or flows        → wireframe family               │
-│    - Data models, services,     → diagram family                 │
-│      flows, state machines                                       │
-│    - Both                       → both families                  │
+│  Step 1: ASSESS THE QUESTION                                     │
+│  What is the reader trying to answer?                            │
+│    - What goes where on a screen → wireframe family              │
+│    - What exists / what happens  → diagram family                │
+│      / what talks to what /                                      │
+│      what states are legal                                       │
+│    - Two of these               → one artifact each              │
 │                                                                  │
 │  Step 2: PRODUCE                                                 │
 │  One self-contained HTML file per screen / flow state / diagram. │
@@ -42,9 +43,13 @@ product family.
 │  No external assets, no CDN, no font files.                      │
 │                                                                  │
 │  Step 3: DELIVER                                                 │
-│  Open in the browser (xdg-open / open). If neither works         │
-│  (headless, SSH), print the absolute paths and continue —        │
-│  never fail on delivery. Always state which mode was produced    │
+│  Standalone: open in the browser (xdg-open / open). If neither   │
+│  works (headless, SSH), print the absolute paths and continue —  │
+│  never fail on delivery.                                         │
+│  Inside /discovery: open NOTHING. Link the file from the design  │
+│  doc and let the running preview reload — see Inside the         │
+│  Workflow.                                                       │
+│  Either way, always state which mode was produced                │
 │  and offer the flip: "wireframe mode — say 'promote to render'   │
 │  for the full house look" (or the reverse). The mode is never    │
 │  chosen silently.                                                │
@@ -93,9 +98,26 @@ mockup into the spec directory first and cite the committed copy.
 
 ## Inside the Workflow
 
-- **/discovery** loads this skill at the propose step when the feature has a
-  UI surface or a data model — the mockups render the proposal, and the
-  signed-off design doc links the chosen ones. Side-by-side option *picking*
+- **/discovery** loads this skill at the propose step when a section's decision
+  turns on one of the five questions below — not when the feature "has" a UI
+  surface or a data model. That noun test has a blind spot: a design whose
+  subjects are, say, a terminal output shape and a markdown file contains
+  neither, and still needs a flow diagram. A question test has no such gap,
+  because the reader asks the question regardless of what the feature is made of.
+
+  | The question the section turns on | Shape |
+  |---|---|
+  | What entities exist and how do they relate? | entity / data-model |
+  | What happens, in what order, when X occurs? | request / data flow |
+  | What services exist and what talks to what? | architecture |
+  | What states are legal and what moves between them? | state machine |
+  | What goes where on a screen, and in what order does it read? | wireframe |
+
+  **Inside discovery, deliver by linking — never by opening.** The reader
+  already has the design preview open (discovery launches it at §1 and it
+  live-reloads on every write). Add the mockup's path to the design doc and the
+  link appears there. A tab per section is the interruption this avoids;
+  standalone invocations keep opening on deliver. Side-by-side option *picking*
   stays with discovery's own mockup-picker.
 - **/draft-plan** task cards may cite mockup paths so an implementer sees the
   visual target for their task.
@@ -111,5 +133,8 @@ mockup into the spec directory first and cite the committed copy.
 ✗ External dependencies — no Mermaid CDN, no image generation, no Figma
 ✗ Code generation from the mockup (that's implementation's job, later)
 ✗ Charts of real data (that's a dataviz concern, not a design mockup)
+✗ Labels generic enough to fit another feature — see the specificity rule in
+  both kits; a box the reader can't disagree with isn't evidence
+✗ Opening a browser tab while running inside /discovery
 ✗ Editing the mockups after design sign-off without saying so
 ```

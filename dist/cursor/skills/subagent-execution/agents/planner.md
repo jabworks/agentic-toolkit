@@ -22,6 +22,8 @@ Both can run in parallel if they don't depend on each other's output.
 
 For LARGE tasks (cross-cutting, unclear scope, multiple subsystems), `/discovery` should have already run before you are invoked — it produces the signed-off design you turn into an executable plan. That design is a saved artifact: glob `.condux/designs/*<slug>*.md` (and `specs/<slug>/` for a tech-spec) and **read it first** — it is your source of truth for scope, chosen approach, and out-of-scope items. Do not re-derive or second-guess design decisions already settled there; if the file is missing for a large task, ask whether discovery has run rather than filling in the design yourself.
 
+**Check its `status` before trusting it.** Discovery creates the design file at its first section, not at sign-off, so finding the file does not mean the design was approved. Read the frontmatter: `signed-off` (or no `status` field at all, which means the file predates the field and was therefore saved at sign-off) means the design is settled and the paragraph above applies in full. `in-progress` means discovery started and did not finish — stop and ask whether to resume discovery, and do not plan from it. An unfinished design is the one case where the file is present and still must not be treated as source of truth.
+
 ## Task Size Classification
 
 - **Large (3+ files OR any architectural change)**: ask up to 3 impact-prioritized clarifying questions in one message, then delegate to `explorer`/`researcher`, then produce the full plan with ADR.

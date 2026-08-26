@@ -58,6 +58,16 @@ mixes both signals.
 8. **Self-contained.** All CSS inline in a `<style>` block. No external
    requests of any kind. The file must render identically from `file://`.
    The token core carries dark and light themes; the page follows the OS.
+9. **Specific enough to disagree with.** Every label names something real from
+   *this* design — a route, a field, a state, a real CTA. If a label would be
+   equally true of a different feature, it is too vague: `Submit` on a form
+   whose button says "Save and invite", a nav reading `Item · Item · Item`, a
+   panel titled `Details`. This is rule 5 pushed one step further — rule 5 asks
+   for the intended text, this asks whether the intended text distinguishes
+   anything. A wireframe is evidence for a layout decision, and an element the
+   reader cannot disagree with is not evidence. It bites hardest before the
+   specifics are settled, which is exactly when a wireframe should not be
+   drawn yet. Same rule, same reasoning as `diagram-kit.md`.
 
 ## Page Skeleton
 

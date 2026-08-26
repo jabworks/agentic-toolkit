@@ -178,11 +178,11 @@
         },
         {
           "skill": "discovery",
-          "blurb": "Design gate — goal-round questions, alternatives, then a post-approach detail round (contracts, mappings, edge cases); sign-off saves the design doc and, default-on, a structured tech spec"
+          "blurb": "Design gate — goal-round questions, alternatives, then a post-approach detail round (contracts, mappings, edge cases); the design doc builds section by section in a live browser preview, and sign-off signs it off plus, default-on, a structured tech spec"
         },
         {
           "skill": "blueprint",
-          "blurb": "Design-time visual clarity — HTML wireframes and full renders for UI surfaces in the surface-kit token language (two modes, one skeleton), inline-SVG diagrams (data models, flows, architecture, state machines) for backend work; dependency-free"
+          "blurb": "Design-time visual clarity — fires on the question a decision turns on, not on whether a feature has a UI; HTML wireframes and full renders in the surface-kit token language (two modes, one skeleton), inline-SVG diagrams (data models, flows, architecture, state machines); dependency-free"
         },
         {
           "skill": "draft-plan",

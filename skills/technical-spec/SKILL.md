@@ -52,6 +52,15 @@ writing → run the scaffold script → write or update the concern files and
 `index.md` → offer the live HTML preview. Each step is specified in the
 sections below.
 
+**When `discovery` calls this at sign-off**, the design document already
+exists and has since the design's first section — discovery creates it at §1
+and appends to it as each section is agreed. So the input here is a finished
+file on disk, not a summary reconstructed from the conversation: read
+`.condux/designs/YYYY-MM-DD-<feature>.md` and map its sections into the
+concern files. Discovery's own preview server is already running against that
+file, so the live-preview offer below applies to the *spec directory* only —
+never start a second server for the design.
+
 ## Required Notifications
 
 Always announce and confirm before writing or editing. Never silently modify files.

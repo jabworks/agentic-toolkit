@@ -21,9 +21,15 @@ Before Step 1, check for an existing design: glob `.condux/designs/*<slug>*.md`
 and both spec scopes — `<package-root>/specs/<slug>/` and
 `<git-root>/specs/<slug>/`, the workflow router's two-scope lookup (slug =
 kebab-case of the feature name). If any
-exists, offer: "Found an existing design for this feature at `<path>` —
-resume from there, or start a fresh discovery?" Accept either answer, same
-as any other soft gate in this skill.
+exists, read its frontmatter `status` and offer accordingly:
+
+- `signed-off`, or no `status` field at all (the file predates the field, so
+  it was saved at sign-off): "Found a signed-off design for this feature at
+  `<path>` — resume from there, or start a fresh discovery?"
+- `in-progress`: "Found a discovery that stopped partway at `<path>`
+  (`<n>` sections agreed) — pick up where it left off, or start fresh?"
+
+Accept either answer, same as any other soft gate in this skill.
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
@@ -46,12 +52,15 @@ as any other soft gate in this skill.
 │  No implementation detail yet — that's Step 4's job.           │
 │                                                                  │
 │  Step 3: PROPOSE                                                │
-│  Present 2-3 approaches with tradeoffs.                        │
-│  Show design in sections — get acknowledgment per section      │
-│  before moving on.                                              │
-│  UI surface or data model involved? Load `blueprint` to        │
-│  render the proposal visually — wireframes and diagrams        │
-│  become part of what gets signed off.                           │
+│  Announce the section list, then create the design file        │
+│  (status: in-progress) and open the live preview.              │
+│  Present one section at a time in the card shape, get          │
+│  acknowledgment, append the agreed section to the file.        │
+│  §1 is approaches-and-tradeoffs; the rest follow the design.   │
+│  Full contract: The Section Card, below.                        │
+│  Does a section's decision turn on one of blueprint's five     │
+│  questions? Load `blueprint` — the artifact is linked from     │
+│  the design doc, not opened in a new tab.                       │
 │                                                                  │
 │  Step 4: DETAIL ROUND — feed the spec                           │
 │  With the approach chosen, ask ONE more batch, grouped by      │
@@ -79,13 +88,15 @@ as any other soft gate in this skill.
 │  Get explicit approval: "Looks good, proceed to planning"      │
 │  Do not proceed to /draft-plan without this.                    │
 │                                                                  │
-│  Step 7: SAVE DESIGN + SPEC (mandatory)                         │
-│  Write the design summary to                                    │
-│  .condux/designs/YYYY-MM-DD-<feature>.md — this is the         │
-│  artifact /draft-plan's gate check globs for.                   │
+│  Step 7: SIGN OFF THE FILE + SPEC (mandatory)                   │
+│  The design file already exists — Step 3 created it and        │
+│  every agreed section is in it. Flip its frontmatter            │
+│  status: in-progress → signed-off. That flip is what           │
+│  /draft-plan's gate check reads.                                │
 │  Spec write-back is default-on: persist the concern files       │
 │  too (Spec Integration below) unless the user opts out.         │
-│  Then offer the browser review loop (Design Review Loop).       │
+│  The preview is already running — reuse it (Design Review       │
+│  Loop); never launch a second server or open a second tab.      │
 └──────────────────────────────────────────────────────────────────┘
 ```
 
@@ -148,7 +159,104 @@ Accept either answer. Never block. Never lecture.
 ✗ Proceeding to planning without explicit sign-off
 ✗ Treating a well-defined ticket as needing full discovery
 ✗ Widening past the named target surface without saying so
+✗ A section card that runs past one screen, or a paragraph past three lines
+✗ Launching a second preview server, or opening a tab the user didn't ask for
 ```
+
+## The Section Card (Step 3)
+
+Step 3 used to say "show design in sections" and stop, which left the shape to
+be reinvented every time — and what came out was prose. The shape is now fixed.
+
+**Before §1, announce the section list.** Name every section you intend to
+present, in order: *"4 sections: approach · section shape · blueprint trigger ·
+rollout."* Three lines, and the reader knows the shape of the conversation
+before they are inside it. Then create the design file and open the preview
+(next section), and begin.
+
+**Every card, same skeleton:**
+
+```
+## §n of N · <name>                    ← position, always
+<one line: what this section decides>
+
+<the evidence — table, list, or a linked artifact. Never a wall.>
+
+**Recommendation:** <X>, because <one sentence>.
+<the decision, as named options>
+```
+
+**Three rules underneath it:**
+
+| Rule | Why |
+|---|---|
+| The card fits one screen — about 25 lines. Overflow goes into the design file, and the card links it. | Without a number this is advice, not a contract, and advice is what produced the walls. |
+| No paragraph runs past three lines. Longer means it is a table or a list. | Prose is the failure mode. A table cannot sprawl. |
+| Rejected alternatives get one line each with a why-not; the full reasoning lives in the file. | Alternatives are why the recommendation can be trusted, and are also what bloats the card. |
+
+The per-section stops stay. They were never the problem — the problem was that
+the design existed only as scrollback, so the thread was lost between them. The
+`§n of N` marker and the live file are what hold it.
+
+**Visuals.** Load `blueprint` when a section's decision turns on one of its five
+questions — what entities exist · what happens in what order · what talks to
+what · what states are legal · what goes where on a screen. Inside discovery
+the artifact is *linked from the design doc*, never opened in its own tab: the
+running preview reloads and shows the link, so the reader stays where they are.
+
+## The Design File and the Live Preview (Step 3 onward)
+
+**The file is created at §1, not at sign-off.** Write
+`.condux/designs/YYYY-MM-DD-<feature>.md` with frontmatter
+`status: in-progress` when Step 3 opens, and append each section to it as it is
+agreed. This is the whole mechanism behind the card contract: the card can stay
+small precisely because the design has somewhere else to live.
+
+```markdown
+---
+status: in-progress
+date: YYYY-MM-DD
+feature: <slug>
+---
+```
+
+At Step 7, flip `status` to `signed-off`. `/draft-plan` and the `planner` agent
+both read that value; **a design file with `status: in-progress` does not
+satisfy their gate**, which is what keeps an abandoned discovery from being
+planned against. (A file with no `status` field at all predates this contract
+and was only ever written at sign-off, so absence means `signed-off`.)
+
+**The preview runs from §1, by default.** Launch it with the design file, in
+manual mode — no `--steer`, which would block on a decision:
+
+```bash
+node /path/to/plan-review/references/annotate-server.js .condux/designs/<file>.md --no-reject
+```
+
+Manual mode renders, watches the directory and live-reloads over SSE without
+blocking, so every appended section appears in the tab the reader already has
+open. It still accepts a submitted decision, which means **one server covers
+the whole of discovery** — launched at §1, still serving at sign-off. Never
+start a second one.
+
+Announce it and move on — do not ask first:
+
+> "Design preview running at http://127.0.0.1:7777 — it updates as we go. Say
+> the word if you'd rather I close it."
+
+The preview's purpose is to help make the *next* decision, so gating it behind
+an opt-in defeats what it is for; and discovery only runs on the LARGE tier, so
+there is no small case to protect from the ceremony. The default is visible and
+reversible, never silent.
+
+**Fail open.** No Node, no browser, headless, port taken — say so once in a
+single line and continue terminal-only. The design file is still written and
+still appended to; only the preview is missing. Never block discovery on it,
+and never retry in a loop. `--no-open` exists for the headless case.
+
+`.condux/` is gitignored working state, created on demand at the git root (see
+`/workflow` → Artifacts). The bootstrap check now happens at §1 rather than at
+sign-off — still ask only once.
 
 ## Output
 
@@ -162,51 +270,50 @@ A short design summary covering:
 Detail-round answers (Step 4) belong in the spec concern files, not the
 summary — the summary stays short; the spec carries the detail.
 
-Save to: `.condux/designs/YYYY-MM-DD-<feature>.md` — always, at sign-off
-(Step 7). The saved file is what `/draft-plan`'s gate check globs for; a
-design that lives only in conversation doesn't count as signed off.
+Lives at: `.condux/designs/YYYY-MM-DD-<feature>.md`, created at §1 and
+appended to per section (see The Design File and the Live Preview). Step 7
+does not write it — it flips its `status` to `signed-off`, and that flip is
+what `/draft-plan`'s gate check reads. A design that lives only in
+conversation doesn't count as signed off, and neither does one still marked
+`in-progress`.
 
-`.condux/` is gitignored working state, created on demand at the git root
-(see `/workflow` → Artifacts). Before the first write, make sure it's
-ignored — see the bootstrap step there. Honour an `AGENTS.md` path override
-if the project defines one.
+Honour an `AGENTS.md` path override if the project defines one.
 
 For full design mockups — UI wireframes and renders in the house token
 language, data-model / flow / architecture diagrams — load the `blueprint`
-skill; the design doc links the files it produces. At sign-off, offer to
+skill; the design doc links the files it produces, and the running preview
+shows the link rather than a new tab opening. At sign-off, offer to
 promote the chosen wireframes to render mode (a style-block swap). For
 *picking between* side-by-side options in the browser, see
 `references/mockup-picker.md` (it can point at blueprint's files).
 
 ## Design Review Loop
 
-After saving, always offer — mirroring `/draft-plan`'s post-save review:
+At Step 7, after the status flip, always offer — mirroring `/draft-plan`'s
+post-save review:
 
-> "Design saved to `<path>`. Want to review it in the browser before we plan,
-> or go straight to /draft-plan?"
+> "Design signed off at `<path>`. Want a pass over it in the browser before we
+> plan, or go straight to /draft-plan?"
 
-**If review chosen:** locate `annotate-server.js` from the installed
-`plan-review` skill (`find ~/.claude ~/.codex ~/.agents -name
-annotate-server.js -path '*plan-review*' 2>/dev/null | head -1`) and launch
-it in `--steer` mode against the saved design file (or the spec directory,
-if the design was saved as a tech spec — see Spec Integration below):
+**The server is already running** — it has been since §1, and the reader has
+been watching the design accumulate in it. Do not launch another and do not
+open another tab. `--no-reject` is independent of `--steer`, so the design
+stage's **accept-or-fix** semantics (no Reject verdict — that belongs to plan
+review) are already in force from the §1 launch.
 
-```bash
-node /path/to/plan-review/references/annotate-server.js .condux/designs/<file>.md --steer --no-reject
-```
+**If a review pass is chosen:** point the reader at the tab they already have,
+ask them to annotate and submit a decision, and read the result — the submitted
+decision lands in the feedback file in manual mode rather than being long-polled:
 
-Poll `GET http://127.0.0.1:7777/api/decision` (long-poll — blocks until a
-decision is submitted) and branch on the result. Design review is
-**accept-or-fix** — `--no-reject` hides the Reject verdict, which belongs to
-plan review, not the design stage (directory/spec review hides it on its own;
-the flag matters for single-file design review):
+- **Approve** → proceed to `/draft-plan`, carrying any feedback notes into the plan.
+- **Request Revisions** → revise the design file in place per the feedback (the
+  open tab live-reloads over SSE), then ask again.
 
-- **Approve** → design is signed off; proceed to `/draft-plan`, carrying any
-  feedback notes into the plan.
-- **Request Revisions** → revise the design file in place per the feedback
-  (the open tab live-reloads over SSE), then poll again.
+**If the preview failed open at §1** (no Node, no browser, headless) there is no
+tab to point at. Say so in one line and go straight to planning; do not retry
+the launch here.
 
-**If straight to planning chosen:** proceed directly, no server launch.
+**If straight to planning chosen:** proceed directly.
 
 ## Spec Integration (Live Preview)
 
