@@ -6,7 +6,7 @@
   { "query": "should we add a script that fails when dist drifts", "should_trigger": true, "expected_skill": "toolkit-research-frontier" },
   { "query": "how would we automate trigger collision detection", "should_trigger": true, "expected_skill": "toolkit-research-frontier" },
   { "query": "is it worth adding yaml validation to the tests", "should_trigger": true, "expected_skill": "toolkit-research-frontier" },
-  { "query": "where did we leave the trigger-eval work", "should_trigger": true, "expected_skill": "toolkit-research-frontier" },
+  { "query": "where did we leave the trigger-eval work", "should_trigger": true, "expected_skill": "toolkit-research-frontier", "disallowed": ["remember"] },
   { "query": "next three steps for the skill library", "should_trigger": true, "expected_skill": "toolkit-research-frontier" },
   { "query": "do our trigger evals actually get executed anywhere", "should_trigger": true, "expected_skill": "toolkit-research-frontier" },
   { "query": "is manifest parity enforced now or still open", "should_trigger": true, "expected_skill": "toolkit-research-frontier" },

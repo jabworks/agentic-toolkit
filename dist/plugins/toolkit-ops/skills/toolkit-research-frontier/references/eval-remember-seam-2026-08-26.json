@@ -1,0 +1,8563 @@
+[
+  {
+    "query": "adapt this generic skill template to my stack",
+    "expected": "adapting-skills",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "adapting-skills",
+    "got": "adapting-skills",
+    "runs": [
+      "adapting-skills",
+      "adapting-skills",
+      "adapting-skills"
+    ]
+  },
+  {
+    "query": "convert this superpowers skill for our toolkit",
+    "expected": "adapting-skills",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "adapting-skills",
+    "got": "adapting-skills",
+    "runs": [
+      "adapting-skills",
+      "adapting-skills",
+      "adapting-skills"
+    ]
+  },
+  {
+    "query": "clone this skill and make it match our conventions",
+    "expected": "adapting-skills",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "adapting-skills",
+    "got": "adapting-skills",
+    "runs": [
+      "adapting-skills",
+      "adapting-skills",
+      "adapting-skills"
+    ]
+  },
+  {
+    "query": "scaffold the new module the way we usually structure things",
+    "expected": "adapting-skills",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "adapting-skills",
+    "got": "adapting-skills",
+    "runs": [
+      "adapting-skills",
+      "adapting-skills",
+      "adapting-skills"
+    ]
+  },
+  {
+    "query": "improve the description of the skill in my api gateway repo",
+    "expected": "adapting-skills",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "adapting-skills",
+    "got": "adapting-skills",
+    "runs": [
+      "adapting-skills",
+      "adapting-skills",
+      "adapting-skills"
+    ]
+  },
+  {
+    "query": "update this project's local skill so it triggers better",
+    "expected": "adapting-skills",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "adapting-skills",
+    "got": "adapting-skills",
+    "runs": [
+      "adapting-skills",
+      "adapting-skills",
+      "adapting-skills"
+    ]
+  },
+  {
+    "query": "the skill in .codex/skills never fires, fix its frontmatter",
+    "expected": "adapting-skills",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "adapting-skills",
+    "got": "adapting-skills",
+    "runs": [
+      "adapting-skills",
+      "adapting-skills",
+      "adapting-skills"
+    ]
+  },
+  {
+    "query": "tighten the trigger contract on this repo's implement-api skill",
+    "expected": "adapting-skills",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "adapting-skills",
+    "got": "adapting-skills",
+    "runs": [
+      "adapting-skills",
+      "adapting-skills",
+      "adapting-skills"
+    ]
+  },
+  {
+    "query": "add eval cases for the skill we ship in the other project",
+    "expected": "adapting-skills",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "adapting-skills",
+    "got": "adapting-skills",
+    "runs": [
+      "adapting-skills",
+      "adapting-skills",
+      "adapting-skills"
+    ]
+  },
+  {
+    "query": "bring this skill up to my authoring standards",
+    "expected": "adapting-skills",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "adapting-skills",
+    "got": "adapting-skills",
+    "runs": [
+      "adapting-skills",
+      "adapting-skills",
+      "adapting-skills"
+    ]
+  },
+  {
+    "query": "create a new skill for the toolkit and register it",
+    "expected": "toolkit-foundry",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "adapting-skills",
+    "got": "toolkit-foundry",
+    "runs": [
+      "toolkit-foundry",
+      "toolkit-foundry",
+      "toolkit-foundry"
+    ]
+  },
+  {
+    "query": "review this skill description for collisions",
+    "expected": "toolkit-skill-standards",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "adapting-skills",
+    "got": "toolkit-skill-standards",
+    "runs": [
+      "toolkit-skill-standards",
+      "toolkit-skill-standards",
+      "toolkit-skill-standards"
+    ]
+  },
+  {
+    "query": "why isn't my toolkit skill triggering after install",
+    "expected": "toolkit-debugging-playbook",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "adapting-skills",
+    "got": "toolkit-debugging-playbook",
+    "runs": [
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook"
+    ]
+  },
+  {
+    "query": "write up what we decided as a spec",
+    "expected": "technical-spec",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "adapting-skills",
+    "got": "technical-spec",
+    "runs": [
+      "technical-spec",
+      "technical-spec",
+      "technical-spec"
+    ]
+  },
+  {
+    "query": "improve the performance of this function",
+    "expected": null,
+    "accept": [
+      "workflow"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "adapting-skills",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "update the npm package to the latest version",
+    "expected": null,
+    "accept": [
+      "workflow"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "adapting-skills",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "adapt the design to mobile breakpoints",
+    "expected": null,
+    "accept": [
+      "workflow"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "adapting-skills",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "mock this up before we build it",
+    "expected": "blueprint",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "blueprint",
+    "got": "blueprint",
+    "runs": [
+      "blueprint",
+      "blueprint",
+      "blueprint"
+    ]
+  },
+  {
+    "query": "wireframe the settings page so the frontend dev knows what to expect",
+    "expected": "blueprint",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "blueprint",
+    "got": "blueprint",
+    "runs": [
+      "blueprint",
+      "blueprint",
+      "blueprint"
+    ]
+  },
+  {
+    "query": "can you mock up the checkout flow including the empty and error states",
+    "expected": "blueprint",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "blueprint",
+    "got": "blueprint",
+    "runs": [
+      "blueprint",
+      "blueprint",
+      "blueprint"
+    ]
+  },
+  {
+    "query": "visualize the data model for orders and customers",
+    "expected": "blueprint",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "blueprint",
+    "got": "blueprint",
+    "runs": [
+      "blueprint",
+      "blueprint",
+      "blueprint"
+    ]
+  },
+  {
+    "query": "sketch the architecture for the notification service",
+    "expected": "blueprint",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "blueprint",
+    "got": "blueprint",
+    "runs": [
+      "blueprint",
+      "blueprint",
+      "blueprint"
+    ]
+  },
+  {
+    "query": "diagram the auth flow between the gateway and the identity service",
+    "expected": "blueprint",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "blueprint",
+    "got": "blueprint",
+    "runs": [
+      "blueprint",
+      "blueprint",
+      "blueprint"
+    ]
+  },
+  {
+    "query": "draw the state machine for the subscription lifecycle",
+    "expected": "blueprint",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "blueprint",
+    "got": "blueprint",
+    "runs": [
+      "blueprint",
+      "blueprint",
+      "blueprint"
+    ]
+  },
+  {
+    "query": "I want a visual of how the entities relate before we touch the schema",
+    "expected": "blueprint",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "blueprint",
+    "got": "blueprint",
+    "runs": [
+      "blueprint",
+      "blueprint",
+      "blueprint"
+    ]
+  },
+  {
+    "query": "give me a quick layout mockup of the dashboard so we agree on structure",
+    "expected": "blueprint",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "blueprint",
+    "got": "blueprint",
+    "runs": [
+      "blueprint",
+      "blueprint",
+      "blueprint"
+    ]
+  },
+  {
+    "query": "show me a wireframe of both options for the onboarding screen",
+    "expected": "blueprint",
+    "accept": [
+      "discovery"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "blueprint",
+    "got": "blueprint",
+    "runs": [
+      "blueprint",
+      "blueprint",
+      "blueprint"
+    ]
+  },
+  {
+    "query": "before planning, can we visualize what this feature will look like",
+    "expected": "blueprint",
+    "accept": [
+      "discovery",
+      "workflow"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "blueprint",
+    "got": "blueprint",
+    "runs": [
+      "blueprint",
+      "blueprint",
+      "blueprint"
+    ]
+  },
+  {
+    "query": "make this landing page look premium",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "blueprint",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "plot signups per week as a bar chart",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "blueprint",
+    "got": "dataviz",
+    "runs": [
+      "dataviz",
+      null,
+      "dataviz"
+    ]
+  },
+  {
+    "query": "build the settings page from the approved design",
+    "expected": null,
+    "accept": [
+      "workflow"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "blueprint",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "implement this Figma design as a React component",
+    "expected": null,
+    "accept": [
+      "workflow"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "blueprint",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "pick a color palette and typography for the marketing site",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "blueprint",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "sketch how the CLI, the cache file and the background daemon hand off to each other",
+    "expected": "blueprint",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "blueprint",
+    "got": "blueprint",
+    "runs": [
+      "blueprint",
+      "blueprint",
+      "blueprint"
+    ]
+  },
+  {
+    "query": "review this before merging",
+    "expected": "code-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "code-review",
+    "got": "code-review",
+    "runs": [
+      "code-review",
+      "code-review",
+      "code-review"
+    ]
+  },
+  {
+    "query": "code review the diff",
+    "expected": "code-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "code-review",
+    "got": "code-review",
+    "runs": [
+      "code-review",
+      "code-review",
+      "code-review"
+    ]
+  },
+  {
+    "query": "check this PR",
+    "expected": "code-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "code-review",
+    "got": "code-review",
+    "runs": [
+      "code-review",
+      "code-review",
+      "code-review"
+    ]
+  },
+  {
+    "query": "review branch feature/sso",
+    "expected": "code-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "code-review",
+    "got": "code-review",
+    "runs": [
+      "code-review",
+      "code-review",
+      "code-review"
+    ]
+  },
+  {
+    "query": "any security issues in this change?",
+    "expected": "code-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "code-review",
+    "got": "code-review",
+    "runs": [
+      "code-review",
+      "code-review",
+      "code-review"
+    ]
+  },
+  {
+    "query": "give me a severity report on these changes",
+    "expected": "code-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "code-review",
+    "got": "code-review",
+    "runs": [
+      "code-review",
+      "code-review",
+      "code-review"
+    ]
+  },
+  {
+    "query": "re-review now that I applied the fixes",
+    "expected": "code-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "code-review",
+    "got": "code-review",
+    "runs": [
+      "code-review",
+      "code-review",
+      "code-review"
+    ]
+  },
+  {
+    "query": "was the approach in this diff right?",
+    "expected": "code-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "code-review",
+    "got": "code-review",
+    "runs": [
+      "code-review",
+      "code-review",
+      "code-review"
+    ]
+  },
+  {
+    "query": "review this function for perf problems",
+    "expected": "code-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "code-review",
+    "got": "code-review",
+    "runs": [
+      "code-review",
+      "code-review",
+      "code-review"
+    ]
+  },
+  {
+    "query": "lgtm?",
+    "expected": "code-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "code-review",
+    "got": "code-review",
+    "runs": [
+      "code-review",
+      "code-review",
+      "code-review"
+    ]
+  },
+  {
+    "query": "find n+1 queries in this diff",
+    "expected": "code-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "code-review",
+    "got": "code-review",
+    "runs": [
+      "code-review",
+      "code-review",
+      "code-review"
+    ]
+  },
+  {
+    "query": "reveiw pls",
+    "expected": "code-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "code-review",
+    "got": "code-review",
+    "runs": [
+      "code-review",
+      "code-review",
+      "code-review"
+    ]
+  },
+  {
+    "query": "fix the critical findings from the review",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "code-review",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "review the plan before implementation",
+    "expected": "plan-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "code-review",
+    "got": "plan-review",
+    "runs": [
+      "plan-review",
+      "plan-review",
+      "plan-review"
+    ]
+  },
+  {
+    "query": "review the spec folder",
+    "expected": "plan-review",
+    "accept": [
+      "spec-browser"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "code-review",
+    "got": "spec-browser",
+    "runs": [
+      "spec-browser",
+      "spec-browser",
+      "spec-browser"
+    ]
+  },
+  {
+    "query": "merge it into main",
+    "expected": "git-operations",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "code-review",
+    "got": "git-operations",
+    "runs": [
+      "git-operations",
+      "git-operations",
+      "git-operations"
+    ]
+  },
+  {
+    "query": "review my resume",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "code-review",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "what is a csrf token",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "code-review",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "what's our convention for naming boolean props",
+    "expected": "coding-directive",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "coding-directive",
+    "got": "coding-directive",
+    "runs": [
+      "coding-directive",
+      "coding-directive",
+      "coding-directive"
+    ]
+  },
+  {
+    "query": "does this component file follow my style guide",
+    "expected": "coding-directive",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "coding-directive",
+    "got": "coding-directive",
+    "runs": [
+      "coding-directive",
+      "coding-directive",
+      "coding-directive"
+    ]
+  },
+  {
+    "query": "fix the import order in this file to match our convention",
+    "expected": "coding-directive",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "coding-directive",
+    "got": "coding-directive",
+    "runs": [
+      "coding-directive",
+      "coding-directive",
+      "coding-directive"
+    ]
+  },
+  {
+    "query": "should this be an interface or a type in our codebase",
+    "expected": "coding-directive",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "coding-directive",
+    "got": "coding-directive",
+    "runs": [
+      "coding-directive",
+      "coding-directive",
+      "coding-directive"
+    ]
+  },
+  {
+    "query": "set up prettier and tsconfig with my usual settings",
+    "expected": "coding-directive",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "coding-directive",
+    "got": "coding-directive",
+    "runs": [
+      "coding-directive",
+      "coding-directive",
+      "coding-directive"
+    ]
+  },
+  {
+    "query": "lint bans nested ternaries here, rewrite this the way I'd want it",
+    "expected": "coding-directive",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "coding-directive",
+    "got": "coding-directive",
+    "runs": [
+      "coding-directive",
+      "coding-directive",
+      "coding-directive"
+    ]
+  },
+  {
+    "query": "why do we ban default exports",
+    "expected": "coding-directive",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "coding-directive",
+    "got": "coding-directive",
+    "runs": [
+      "coding-directive",
+      "coding-directive",
+      "coding-directive"
+    ]
+  },
+  {
+    "query": "make this file match house code style",
+    "expected": "coding-directive",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "coding-directive",
+    "got": "coding-directive",
+    "runs": [
+      "coding-directive",
+      "coding-directive",
+      "coding-directive"
+    ]
+  },
+  {
+    "query": "review this component for style conformance",
+    "expected": "coding-directive",
+    "accept": [
+      "code-review"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "coding-directive",
+    "got": "coding-directive",
+    "runs": [
+      "coding-directive",
+      "coding-directive",
+      "coding-directive"
+    ]
+  },
+  {
+    "query": "scaffold a new package the way we usually structure things",
+    "expected": "adapting-skills",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "coding-directive",
+    "got": "adapting-skills",
+    "runs": [
+      "adapting-skills",
+      "adapting-skills",
+      "adapting-skills"
+    ]
+  },
+  {
+    "query": "run the end-of-task quality gates",
+    "expected": "finalize",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "coding-directive",
+    "got": "finalize",
+    "runs": [
+      "finalize",
+      "finalize",
+      "finalize"
+    ]
+  },
+  {
+    "query": "add a search input to the header",
+    "expected": null,
+    "accept": [
+      "workflow"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "coding-directive",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "why is the checkout page returning 500",
+    "expected": null,
+    "accept": [
+      "root-cause-analysis",
+      "workflow"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "coding-directive",
+    "got": "root-cause-analysis",
+    "runs": [
+      "root-cause-analysis",
+      "workflow",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "commit these changes",
+    "expected": "git-commit",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "coding-directive",
+    "got": "git-commit",
+    "runs": [
+      "git-commit",
+      "git-commit",
+      "git-commit"
+    ]
+  },
+  {
+    "query": "update the npm packages to latest",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "coding-directive",
+    "got": null,
+    "runs": [
+      "workflow",
+      "workflow",
+      null
+    ]
+  },
+  {
+    "query": "is concord actually capturing on this machine?",
+    "expected": "concord-doctor",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "concord-doctor",
+    "got": "concord-doctor",
+    "runs": [
+      "concord-doctor",
+      "concord-doctor",
+      "concord-doctor"
+    ]
+  },
+  {
+    "query": "check my concord install",
+    "expected": "concord-doctor",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "concord-doctor",
+    "got": "concord-doctor",
+    "runs": [
+      "concord-doctor",
+      "concord-doctor",
+      "concord-doctor"
+    ]
+  },
+  {
+    "query": "nothing from last session came back at startup",
+    "expected": "concord-doctor",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "concord-doctor",
+    "got": "concord-doctor",
+    "runs": [
+      "concord-doctor",
+      "concord-doctor",
+      "concord-doctor"
+    ]
+  },
+  {
+    "query": "did the concord hooks actually get wired into codex?",
+    "expected": "concord-doctor",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "concord-doctor",
+    "got": "concord-doctor",
+    "runs": [
+      "concord-doctor",
+      "concord-doctor",
+      "concord-doctor"
+    ]
+  },
+  {
+    "query": "memory stopped being recalled after I updated codex",
+    "expected": "concord-doctor",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "concord-doctor",
+    "got": "concord-doctor",
+    "runs": [
+      "concord-doctor",
+      "concord-doctor",
+      "concord-doctor"
+    ]
+  },
+  {
+    "query": "run a health check on concord",
+    "expected": "concord-doctor",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "concord-doctor",
+    "got": "concord-doctor",
+    "runs": [
+      "concord-doctor",
+      "concord-doctor",
+      "concord-doctor"
+    ]
+  },
+  {
+    "query": "remember that deploys need the VPN",
+    "expected": "remember",
+    "accept": [],
+    "disallowed": [
+      "technical-spec"
+    ],
+    "kind": "cold",
+    "source": "concord-doctor",
+    "got": "remember",
+    "runs": [
+      "remember",
+      "remember",
+      "remember"
+    ]
+  },
+  {
+    "query": "what did we work on yesterday?",
+    "expected": "remember",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "concord-doctor",
+    "got": "remember",
+    "runs": [
+      "remember",
+      "remember",
+      "remember"
+    ]
+  },
+  {
+    "query": "search my memory for the auth refactor",
+    "expected": "remember",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "concord-doctor",
+    "got": "remember",
+    "runs": [
+      "remember",
+      "remember",
+      "remember"
+    ]
+  },
+  {
+    "query": "why isn't my skill triggering",
+    "expected": "toolkit-debugging-playbook",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "concord-doctor",
+    "got": "toolkit-debugging-playbook",
+    "runs": [
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook"
+    ]
+  },
+  {
+    "query": "wrap up this session",
+    "expected": "session-handoff",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "concord-doctor",
+    "got": "session-handoff",
+    "runs": [
+      "session-handoff",
+      "session-handoff",
+      "session-handoff"
+    ]
+  },
+  {
+    "query": "has this dist drift thing happened before",
+    "expected": "toolkit-failure-archaeology",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "concord-doctor",
+    "got": "toolkit-failure-archaeology",
+    "runs": [
+      "toolkit-failure-archaeology",
+      "toolkit-failure-archaeology",
+      "toolkit-failure-archaeology"
+    ]
+  },
+  {
+    "query": "how does human memory consolidation work?",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "concord-doctor",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "my redis cache keeps evicting keys",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "concord-doctor",
+    "got": "root-cause-analysis",
+    "runs": [
+      "root-cause-analysis",
+      "root-cause-analysis",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "is condux actually working on this machine?",
+    "expected": "condux-doctor",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "condux-doctor",
+    "got": "condux-doctor",
+    "runs": [
+      "condux-doctor",
+      "condux-doctor",
+      "condux-doctor"
+    ]
+  },
+  {
+    "query": "check my condux install",
+    "expected": "condux-doctor",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "condux-doctor",
+    "got": "condux-doctor",
+    "runs": [
+      "condux-doctor",
+      "condux-doctor",
+      "condux-doctor"
+    ]
+  },
+  {
+    "query": "the routing rule stopped showing up at session start",
+    "expected": "condux-doctor",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "condux-doctor",
+    "got": "condux-doctor",
+    "runs": [
+      "condux-doctor",
+      "condux-doctor",
+      "condux-doctor"
+    ]
+  },
+  {
+    "query": "did the condux SessionStart hook actually fire?",
+    "expected": "condux-doctor",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "condux-doctor",
+    "got": "condux-doctor",
+    "runs": [
+      "condux-doctor",
+      "condux-doctor",
+      "condux-doctor"
+    ]
+  },
+  {
+    "query": "the specialist agents are missing after I updated the plugin",
+    "expected": "condux-doctor",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "condux-doctor",
+    "got": "condux-doctor",
+    "runs": [
+      "condux-doctor",
+      "condux-doctor",
+      "condux-doctor"
+    ]
+  },
+  {
+    "query": "run a health check on condux",
+    "expected": "condux-doctor",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "condux-doctor",
+    "got": "condux-doctor",
+    "runs": [
+      "condux-doctor",
+      "condux-doctor",
+      "condux-doctor"
+    ]
+  },
+  {
+    "query": "verify condux registered properly on codex",
+    "expected": "condux-doctor",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "condux-doctor",
+    "got": "condux-doctor",
+    "runs": [
+      "condux-doctor",
+      "condux-doctor",
+      "condux-doctor"
+    ]
+  },
+  {
+    "query": "add a search filter to the invoice table",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "condux-doctor",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "how do condux tiers work?",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "condux-doctor",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "dist drifted from skills after my edit",
+    "expected": "toolkit-debugging-playbook",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "condux-doctor",
+    "got": "toolkit-debugging-playbook",
+    "runs": [
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook"
+    ]
+  },
+  {
+    "query": "what should I work on next?",
+    "expected": "groom",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "condux-doctor",
+    "got": "groom",
+    "runs": [
+      "groom",
+      "groom",
+      "groom"
+    ]
+  },
+  {
+    "query": "what is a git hook?",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "condux-doctor",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "my laptop fan is loud when node runs",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "condux-doctor",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "check the health of the kubernetes cluster",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "condux-doctor",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "lets figure out the design for the billing revamp",
+    "expected": "discovery",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "discovery",
+    "got": "discovery",
+    "runs": [
+      "discovery",
+      "discovery",
+      "discovery"
+    ]
+  },
+  {
+    "query": "not sure what the scope is, help me think this through",
+    "expected": "discovery",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "discovery",
+    "got": "discovery",
+    "runs": [
+      "discovery",
+      "discovery",
+      "discovery"
+    ]
+  },
+  {
+    "query": "i have a rough idea for an activity feed",
+    "expected": "discovery",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "discovery",
+    "got": "discovery",
+    "runs": [
+      "discovery",
+      "discovery",
+      "discovery"
+    ]
+  },
+  {
+    "query": "clarify the requirements before we build anything",
+    "expected": "discovery",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "discovery",
+    "got": "discovery",
+    "runs": [
+      "discovery",
+      "discovery",
+      "discovery"
+    ]
+  },
+  {
+    "query": "surface some alternatives for the state management approach",
+    "expected": "discovery",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "discovery",
+    "got": "discovery",
+    "runs": [
+      "discovery",
+      "discovery",
+      "discovery"
+    ]
+  },
+  {
+    "query": "design session for the new onboarding",
+    "expected": "discovery",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "discovery",
+    "got": "discovery",
+    "runs": [
+      "discovery",
+      "discovery",
+      "discovery"
+    ]
+  },
+  {
+    "query": "brainstorm ideas for the notifications feature",
+    "expected": "discovery",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "discovery",
+    "got": "discovery",
+    "runs": [
+      "discovery",
+      "discovery",
+      "discovery"
+    ]
+  },
+  {
+    "query": "whats done look like for this feature? lets align first",
+    "expected": "discovery",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "discovery",
+    "got": "discovery",
+    "runs": [
+      "discovery",
+      "discovery",
+      "discovery"
+    ]
+  },
+  {
+    "query": "resume the design we started yesterday",
+    "expected": "discovery",
+    "accept": [],
+    "disallowed": [
+      "session-handoff"
+    ],
+    "kind": "cold",
+    "source": "discovery",
+    "got": "discovery",
+    "runs": [
+      "discovery",
+      "discovery",
+      "discovery"
+    ]
+  },
+  {
+    "query": "found an existing design doc for this, continue from it",
+    "expected": "discovery",
+    "accept": [],
+    "disallowed": [
+      "session-handoff"
+    ],
+    "kind": "cold",
+    "source": "discovery",
+    "got": "discovery",
+    "runs": [
+      "discovery",
+      "discovery",
+      "discovery"
+    ]
+  },
+  {
+    "query": "design a database schema for multi-tenancy",
+    "expected": "discovery",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "discovery",
+    "got": "discovery",
+    "runs": [
+      "blueprint",
+      "discovery",
+      "discovery"
+    ]
+  },
+  {
+    "query": "big refactor, unclear boundaries — where do we even start",
+    "expected": "discovery",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "discovery",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "discovery",
+      "workflow"
+    ]
+  },
+  {
+    "query": "resume where we left off last session",
+    "expected": "session-handoff",
+    "accept": [],
+    "disallowed": [
+      "discovery"
+    ],
+    "kind": "cold",
+    "source": "discovery",
+    "got": "session-handoff",
+    "runs": [
+      "session-handoff",
+      "session-handoff",
+      "session-handoff"
+    ]
+  },
+  {
+    "query": "pick up from the handoff doc",
+    "expected": "session-handoff",
+    "accept": [],
+    "disallowed": [
+      "discovery"
+    ],
+    "kind": "cold",
+    "source": "discovery",
+    "got": "session-handoff",
+    "runs": [
+      "session-handoff",
+      "session-handoff",
+      "session-handoff"
+    ]
+  },
+  {
+    "query": "we already have a signed off design, write the plan",
+    "expected": "draft-plan",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "discovery",
+    "got": "draft-plan",
+    "runs": [
+      "draft-plan",
+      "draft-plan",
+      "draft-plan"
+    ]
+  },
+  {
+    "query": "skip discovery, just plan it",
+    "expected": "draft-plan",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "discovery",
+    "got": "draft-plan",
+    "runs": [
+      "draft-plan",
+      "draft-plan",
+      "draft-plan"
+    ]
+  },
+  {
+    "query": "small tweak to the button color",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "discovery",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "review the plan in the browser",
+    "expected": "plan-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "discovery",
+    "got": "plan-review",
+    "runs": [
+      "plan-review",
+      "plan-review",
+      "plan-review"
+    ]
+  },
+  {
+    "query": "save what we decided as a spec",
+    "expected": "technical-spec",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "discovery",
+    "got": "technical-spec",
+    "runs": [
+      "technical-spec",
+      "technical-spec",
+      "technical-spec"
+    ]
+  },
+  {
+    "query": "why does checkout 500 on submit",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "discovery",
+    "got": "root-cause-analysis",
+    "runs": [
+      "root-cause-analysis",
+      "root-cause-analysis",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "help me write my resume",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "discovery",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "design a logo for the app",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "discovery",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "is docket actually working on this machine?",
+    "expected": "docket-doctor",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "docket-doctor",
+    "got": "docket-doctor",
+    "runs": [
+      "docket-doctor",
+      "docket-doctor",
+      "docket-doctor"
+    ]
+  },
+  {
+    "query": "check my docket install",
+    "expected": "docket-doctor",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "docket-doctor",
+    "got": "docket-doctor",
+    "runs": [
+      "docket-doctor",
+      "docket-doctor",
+      "docket-doctor"
+    ]
+  },
+  {
+    "query": "the docket mcp tools stopped showing up",
+    "expected": "docket-doctor",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "docket-doctor",
+    "got": "docket-doctor",
+    "runs": [
+      "docket-doctor",
+      "docket-doctor",
+      "docket-doctor"
+    ]
+  },
+  {
+    "query": "verify the docket registration on this host",
+    "expected": "docket-doctor",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "docket-doctor",
+    "got": "docket-doctor",
+    "runs": [
+      "docket-doctor",
+      "docket-doctor",
+      "docket-doctor"
+    ]
+  },
+  {
+    "query": "docket_add isn't available anymore, what happened",
+    "expected": "docket-doctor",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "docket-doctor",
+    "got": "docket-doctor",
+    "runs": [
+      "docket-doctor",
+      "docket-doctor",
+      "docket-doctor"
+    ]
+  },
+  {
+    "query": "I just installed the docket plugin on my laptop — did it register?",
+    "expected": "docket-doctor",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "docket-doctor",
+    "got": "docket-doctor",
+    "runs": [
+      "docket-doctor",
+      "docket-doctor",
+      "docket-doctor"
+    ]
+  },
+  {
+    "query": "run a health check on docket",
+    "expected": "docket-doctor",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "docket-doctor",
+    "got": "docket-doctor",
+    "runs": [
+      "docket-doctor",
+      "docket-doctor",
+      "docket-doctor"
+    ]
+  },
+  {
+    "query": "is the docket mcp server answering?",
+    "expected": "docket-doctor",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "docket-doctor",
+    "got": "docket-doctor",
+    "runs": [
+      "docket-doctor",
+      "docket-doctor",
+      "docket-doctor"
+    ]
+  },
+  {
+    "query": "dist looks out of date compared to skills/",
+    "expected": "toolkit-debugging-playbook",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "docket-doctor",
+    "got": "toolkit-debugging-playbook",
+    "runs": [
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook"
+    ]
+  },
+  {
+    "query": "the plugin isn't showing up after I edited the marketplace file",
+    "expected": "toolkit-debugging-playbook",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "docket-doctor",
+    "got": "toolkit-debugging-playbook",
+    "runs": [
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook"
+    ]
+  },
+  {
+    "query": "add this to the docket: probe the opencode registration",
+    "expected": "record",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "docket-doctor",
+    "got": "record",
+    "runs": [
+      "record",
+      "record",
+      "record"
+    ]
+  },
+  {
+    "query": "groom the backlog and tell me what's stale",
+    "expected": "groom",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "docket-doctor",
+    "got": "groom",
+    "runs": [
+      "groom",
+      "groom",
+      "groom"
+    ]
+  },
+  {
+    "query": "close #1, the doctor shipped",
+    "expected": "record",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "docket-doctor",
+    "got": "record",
+    "runs": [
+      "record",
+      "record",
+      "record"
+    ]
+  },
+  {
+    "query": "how do I write an MCP server?",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "docket-doctor",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "my doctor's appointment is on Tuesday, remind me",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "docket-doctor",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "what does a JSON-RPC initialize request look like?",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "docket-doctor",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "check the health endpoint of the staging API",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "docket-doctor",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "write the implementation plan",
+    "expected": "draft-plan",
+    "accept": [
+      "workflow"
+    ],
+    "disallowed": [
+      "technical-spec"
+    ],
+    "kind": "cold",
+    "source": "draft-plan",
+    "got": "draft-plan",
+    "runs": [
+      "draft-plan",
+      "draft-plan",
+      "draft-plan"
+    ]
+  },
+  {
+    "query": "turn the design into task cards",
+    "expected": "draft-plan",
+    "accept": [],
+    "disallowed": [
+      "technical-spec"
+    ],
+    "kind": "cold",
+    "source": "draft-plan",
+    "got": "draft-plan",
+    "runs": [
+      "draft-plan",
+      "draft-plan",
+      "draft-plan"
+    ]
+  },
+  {
+    "query": "plan out the epic we signed off yesterday",
+    "expected": "draft-plan",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "draft-plan",
+    "got": "draft-plan",
+    "runs": [
+      "draft-plan",
+      "draft-plan",
+      "draft-plan"
+    ]
+  },
+  {
+    "query": "create the .condux/plans file for this feature",
+    "expected": "draft-plan",
+    "accept": [],
+    "disallowed": [
+      "technical-spec"
+    ],
+    "kind": "cold",
+    "source": "draft-plan",
+    "got": "draft-plan",
+    "runs": [
+      "draft-plan",
+      "draft-plan",
+      "draft-plan"
+    ]
+  },
+  {
+    "query": "break this down into tasks with dependencies",
+    "expected": "draft-plan",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "draft-plan",
+    "got": "draft-plan",
+    "runs": [
+      "draft-plan",
+      "draft-plan",
+      "draft-plan"
+    ]
+  },
+  {
+    "query": "write-plan for checkout v2",
+    "expected": "draft-plan",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "draft-plan",
+    "got": "draft-plan",
+    "runs": [
+      "draft-plan",
+      "draft-plan",
+      "draft-plan"
+    ]
+  },
+  {
+    "query": "we havent designed this yet but write a plan anyway",
+    "expected": "draft-plan",
+    "accept": [
+      "discovery"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "draft-plan",
+    "got": "draft-plan",
+    "runs": [
+      "draft-plan",
+      "draft-plan",
+      "draft-plan"
+    ]
+  },
+  {
+    "query": "the plan needs revision per the review feedback",
+    "expected": "draft-plan",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "draft-plan",
+    "got": "draft-plan",
+    "runs": [
+      "draft-plan",
+      "draft-plan",
+      "draft-plan"
+    ]
+  },
+  {
+    "query": "plan for migrating to app router, design is signed off",
+    "expected": "draft-plan",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "draft-plan",
+    "got": "draft-plan",
+    "runs": [
+      "draft-plan",
+      "draft-plan",
+      "draft-plan"
+    ]
+  },
+  {
+    "query": "quick inline plan for a medium sized task",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "draft-plan",
+    "got": "draft-plan",
+    "runs": [
+      "draft-plan",
+      "draft-plan",
+      "draft-plan"
+    ]
+  },
+  {
+    "query": "review the plan in the browser before implementing",
+    "expected": "plan-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "draft-plan",
+    "got": "plan-review",
+    "runs": [
+      "plan-review",
+      "plan-review",
+      "plan-review"
+    ]
+  },
+  {
+    "query": "execute the plan with agents",
+    "expected": "subagent-execution",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "draft-plan",
+    "got": "subagent-execution",
+    "runs": [
+      "subagent-execution",
+      "subagent-execution",
+      "subagent-execution"
+    ]
+  },
+  {
+    "query": "design isnt agreed yet, help me align first",
+    "expected": "discovery",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "draft-plan",
+    "got": "discovery",
+    "runs": [
+      "discovery",
+      "discovery",
+      "discovery"
+    ]
+  },
+  {
+    "query": "add a task to my todo list",
+    "expected": null,
+    "accept": [
+      "record"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "draft-plan",
+    "got": "record",
+    "runs": [
+      "record",
+      "record",
+      "record"
+    ]
+  },
+  {
+    "query": "plan my sprint for next week",
+    "expected": null,
+    "accept": [
+      "groom"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "draft-plan",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "make a project timeline gantt chart",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "draft-plan",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "run the quality gate",
+    "expected": "finalize",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "finalize",
+    "got": "finalize",
+    "runs": [
+      "finalize",
+      "finalize",
+      "finalize"
+    ]
+  },
+  {
+    "query": "typecheck lint format test",
+    "expected": "finalize",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "finalize",
+    "got": "finalize",
+    "runs": [
+      "finalize",
+      "finalize",
+      "finalize"
+    ]
+  },
+  {
+    "query": "finalize the task",
+    "expected": "finalize",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "finalize",
+    "got": "finalize",
+    "runs": [
+      "finalize",
+      "finalize",
+      "finalize"
+    ]
+  },
+  {
+    "query": "all done implementing, run the checks",
+    "expected": "finalize",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "finalize",
+    "got": "finalize",
+    "runs": [
+      "finalize",
+      "finalize",
+      "finalize"
+    ]
+  },
+  {
+    "query": "run tests and lint before I commit",
+    "expected": "finalize",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "finalize",
+    "got": "finalize",
+    "runs": [
+      "finalize",
+      "finalize",
+      "finalize"
+    ]
+  },
+  {
+    "query": "finalize just apps/web",
+    "expected": "finalize",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "finalize",
+    "got": "finalize",
+    "runs": [
+      "finalize",
+      "finalize",
+      "finalize"
+    ]
+  },
+  {
+    "query": "am I actually done though",
+    "expected": "preflight",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "finalize",
+    "got": "preflight",
+    "runs": [
+      "preflight",
+      "preflight",
+      "preflight"
+    ]
+  },
+  {
+    "query": "commit this with a proper message",
+    "expected": "git-commit",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "finalize",
+    "got": "git-commit",
+    "runs": [
+      "git-commit",
+      "git-commit",
+      "git-commit"
+    ]
+  },
+  {
+    "query": "fix this type error in the component",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "finalize",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "why is this one test failing",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "finalize",
+    "got": "root-cause-analysis",
+    "runs": [
+      "root-cause-analysis",
+      "workflow",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "review the diff before merge",
+    "expected": "code-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "finalize",
+    "got": "code-review",
+    "runs": [
+      "code-review",
+      "code-review",
+      "code-review"
+    ]
+  },
+  {
+    "query": "format this sql query nicely for the doc",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "finalize",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "what does the no-unused-vars eslint rule mean",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "finalize",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "release the package to npm",
+    "expected": "release",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "finalize",
+    "got": "release",
+    "runs": [
+      "release",
+      "release",
+      "release"
+    ]
+  },
+  {
+    "query": "set up a worktree for this feature",
+    "expected": "git-worktree",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "git-worktree",
+    "got": "git-worktree",
+    "runs": [
+      "git-worktree",
+      "git-worktree",
+      "git-worktree"
+    ]
+  },
+  {
+    "query": "create an isolated workspace before I start",
+    "expected": "git-worktree",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "git-worktree",
+    "got": "git-worktree",
+    "runs": [
+      "git-worktree",
+      "git-worktree",
+      "git-worktree"
+    ]
+  },
+  {
+    "query": "git worktree add isn't working",
+    "expected": "git-worktree",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "git-worktree",
+    "got": "git-worktree",
+    "runs": [
+      "git-worktree",
+      "git-worktree",
+      "git-worktree"
+    ]
+  },
+  {
+    "query": "list my worktrees",
+    "expected": "git-worktree",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "git-worktree",
+    "got": "git-worktree",
+    "runs": [
+      "git-worktree",
+      "git-worktree",
+      "git-worktree"
+    ]
+  },
+  {
+    "query": "how do I switch between worktrees",
+    "expected": "git-worktree",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "git-worktree",
+    "got": "git-worktree",
+    "runs": [
+      "git-worktree",
+      "git-worktree",
+      "git-worktree"
+    ]
+  },
+  {
+    "query": "clean up the worktrees I'm not using anymore",
+    "expected": "git-worktree",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "git-worktree",
+    "got": "git-worktree",
+    "runs": [
+      "git-worktree",
+      "git-worktree",
+      "git-worktree"
+    ]
+  },
+  {
+    "query": "prune stale worktrees",
+    "expected": "git-worktree",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "git-worktree",
+    "got": "git-worktree",
+    "runs": [
+      "git-worktree",
+      "git-worktree",
+      "git-worktree"
+    ]
+  },
+  {
+    "query": "remove a worktree without losing the branch",
+    "expected": "git-worktree",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "git-worktree",
+    "got": "git-worktree",
+    "runs": [
+      "git-worktree",
+      "git-worktree",
+      "git-worktree"
+    ]
+  },
+  {
+    "query": "git says my branch is already checked out somewhere else",
+    "expected": "git-worktree",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "git-worktree",
+    "got": "git-worktree",
+    "runs": [
+      "git-worktree",
+      "git-worktree",
+      "git-worktree"
+    ]
+  },
+  {
+    "query": "missing but locked working tree",
+    "expected": "git-worktree",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "git-worktree",
+    "got": "git-worktree",
+    "runs": [
+      "git-worktree",
+      "git-worktree",
+      "git-worktree"
+    ]
+  },
+  {
+    "query": "I deleted the worktree folder and git still lists it",
+    "expected": "git-worktree",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "git-worktree",
+    "got": "git-worktree",
+    "runs": [
+      "git-worktree",
+      "git-worktree",
+      "git-worktree"
+    ]
+  },
+  {
+    "query": "move my uncommitted changes to the other worktree",
+    "expected": "git-worktree",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "git-worktree",
+    "got": "git-worktree",
+    "runs": [
+      "git-worktree",
+      "git-worktree",
+      "git-worktree"
+    ]
+  },
+  {
+    "query": "should I use a parallel checkout for this",
+    "expected": "git-worktree",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "git-worktree",
+    "got": "git-worktree",
+    "runs": [
+      "git-worktree",
+      "git-worktree",
+      "git-worktree"
+    ]
+  },
+  {
+    "query": "give the agent its own sandbox tree to work in",
+    "expected": "git-worktree",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "git-worktree",
+    "got": "git-worktree",
+    "runs": [
+      "git-worktree",
+      "git-worktree",
+      "git-worktree"
+    ]
+  },
+  {
+    "query": "my worktree directory got committed into the repo",
+    "expected": "git-worktree",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "git-worktree",
+    "got": "git-worktree",
+    "runs": [
+      "git-operations",
+      "git-operations",
+      "git-worktree"
+    ]
+  },
+  {
+    "query": "isolate this task so it doesn't touch my current branch",
+    "expected": "git-worktree",
+    "accept": [
+      "git-operations"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "git-worktree",
+    "got": "git-worktree",
+    "runs": [
+      "git-worktree",
+      "git-worktree",
+      "git-worktree"
+    ]
+  },
+  {
+    "query": "park what I'm doing and start something else",
+    "expected": "git-operations",
+    "accept": [
+      "git-worktree"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "git-worktree",
+    "got": "git-operations",
+    "runs": [
+      "git-operations",
+      "git-operations",
+      "git-operations"
+    ]
+  },
+  {
+    "query": "undo my last commit",
+    "expected": "git-operations",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "git-worktree",
+    "got": "git-operations",
+    "runs": [
+      "git-operations",
+      "git-operations",
+      "git-operations"
+    ]
+  },
+  {
+    "query": "throw away these uncommitted changes",
+    "expected": "git-operations",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "git-worktree",
+    "got": "git-operations",
+    "runs": [
+      "git-operations",
+      "git-operations",
+      "git-operations"
+    ]
+  },
+  {
+    "query": "stash this and switch branches",
+    "expected": "git-operations",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "git-worktree",
+    "got": "git-operations",
+    "runs": [
+      "git-operations",
+      "git-operations",
+      "git-operations"
+    ]
+  },
+  {
+    "query": "pull in the latest from main",
+    "expected": "git-operations",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "git-worktree",
+    "got": "git-operations",
+    "runs": [
+      "git-operations",
+      "git-operations",
+      "git-operations"
+    ]
+  },
+  {
+    "query": "I think I lost a commit, help me recover it",
+    "expected": "git-operations",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "git-worktree",
+    "got": "git-operations",
+    "runs": [
+      "git-operations",
+      "git-operations",
+      "git-operations"
+    ]
+  },
+  {
+    "query": "write a commit message for this diff",
+    "expected": "git-commit",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "git-worktree",
+    "got": "git-commit",
+    "runs": [
+      "git-commit",
+      "git-commit",
+      "git-commit"
+    ]
+  },
+  {
+    "query": "run three agents in parallel on separate branches",
+    "expected": "subagent-deployment",
+    "accept": [
+      "git-worktree"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "git-worktree",
+    "got": "subagent-deployment",
+    "runs": [
+      "subagent-deployment",
+      "subagent-deployment",
+      "subagent-deployment"
+    ]
+  },
+  {
+    "query": "what is a git worktree",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "git-worktree",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "explain the difference between a fork and a clone",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "git-worktree",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "how many worktrees does the team use on average",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "git-worktree",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "add a submodule to this repo",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "git-worktree",
+    "got": null,
+    "runs": [
+      "git-operations",
+      "git-operations",
+      null
+    ]
+  },
+  {
+    "query": "bisect to find the bad commit",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "git-worktree",
+    "got": null,
+    "runs": [
+      "root-cause-analysis",
+      "git-operations",
+      null
+    ]
+  },
+  {
+    "query": "groom the backlog",
+    "expected": "groom",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "groom",
+    "got": "groom",
+    "runs": [
+      "groom",
+      "groom",
+      "groom"
+    ]
+  },
+  {
+    "query": "anything stale on the docket?",
+    "expected": "groom",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "groom",
+    "got": "groom",
+    "runs": [
+      "groom",
+      "groom",
+      "groom"
+    ]
+  },
+  {
+    "query": "check the ids",
+    "expected": "groom",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "groom",
+    "got": "groom",
+    "runs": [
+      "groom",
+      "groom",
+      "groom"
+    ]
+  },
+  {
+    "query": "what's on the docket right now?",
+    "expected": "groom",
+    "accept": [
+      "record"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "groom",
+    "got": "groom",
+    "runs": [
+      "groom",
+      "groom",
+      "groom"
+    ]
+  },
+  {
+    "query": "run the stale sweep",
+    "expected": "groom",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "groom",
+    "got": "groom",
+    "runs": [
+      "groom",
+      "groom",
+      "groom"
+    ]
+  },
+  {
+    "query": "found #18 still open but we shipped it last week",
+    "expected": "groom",
+    "accept": [
+      "record"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "groom",
+    "got": "groom",
+    "runs": [
+      "groom",
+      "groom",
+      "groom"
+    ]
+  },
+  {
+    "query": "sanity-check the id space for dupes",
+    "expected": "groom",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "groom",
+    "got": "groom",
+    "runs": [
+      "groom",
+      "groom",
+      "groom"
+    ]
+  },
+  {
+    "query": "recommend what to tackle from the open board",
+    "expected": "groom",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "groom",
+    "got": "groom",
+    "runs": [
+      "groom",
+      "groom",
+      "groom"
+    ]
+  },
+  {
+    "query": "does the docket need grooming?",
+    "expected": "groom",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "groom",
+    "got": "groom",
+    "runs": [
+      "groom",
+      "groom",
+      "groom"
+    ]
+  },
+  {
+    "query": "any ghost work sitting open?",
+    "expected": "groom",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "groom",
+    "got": "groom",
+    "runs": [
+      "groom",
+      "groom",
+      "groom"
+    ]
+  },
+  {
+    "query": "close #14, it shipped",
+    "expected": "record",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "groom",
+    "got": "record",
+    "runs": [
+      "record",
+      "record",
+      "record"
+    ]
+  },
+  {
+    "query": "add a note to #3 about the flaky CI",
+    "expected": "record",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "groom",
+    "got": "record",
+    "runs": [
+      "record",
+      "record",
+      "record"
+    ]
+  },
+  {
+    "query": "capture this for later: migrate to pnpm",
+    "expected": "record",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "groom",
+    "got": "record",
+    "runs": [
+      "record",
+      "record",
+      "record"
+    ]
+  },
+  {
+    "query": "archive #21 with a verification note",
+    "expected": "record",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "groom",
+    "got": "record",
+    "runs": [
+      "record",
+      "record",
+      "record"
+    ]
+  },
+  {
+    "query": "groom the dog before the vet appointment",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "groom",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "check the ids of these database rows for duplicates",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "groom",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "clear the stale cache entries in redis",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "groom",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "what's next on the meeting agenda?",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "groom",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "verify it live",
+    "expected": "live-verification",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "live-verification",
+    "got": "live-verification",
+    "runs": [
+      "live-verification",
+      "live-verification",
+      "live-verification"
+    ]
+  },
+  {
+    "query": "did this actually work in the browser",
+    "expected": "live-verification",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "live-verification",
+    "got": "live-verification",
+    "runs": [
+      "live-verification",
+      "live-verification",
+      "live-verification"
+    ]
+  },
+  {
+    "query": "verify on preview then merge",
+    "expected": "live-verification",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "live-verification",
+    "got": "live-verification",
+    "runs": [
+      "live-verification",
+      "live-verification",
+      "live-verification"
+    ]
+  },
+  {
+    "query": "does it render right",
+    "expected": "live-verification",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "live-verification",
+    "got": "live-verification",
+    "runs": [
+      "live-verification",
+      "live-verification",
+      "live-verification"
+    ]
+  },
+  {
+    "query": "check the preview env before pushing",
+    "expected": "live-verification",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "live-verification",
+    "got": "live-verification",
+    "runs": [
+      "live-verification",
+      "live-verification",
+      "live-verification"
+    ]
+  },
+  {
+    "query": "check it in the browser before we ship",
+    "expected": "live-verification",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "live-verification",
+    "got": "live-verification",
+    "runs": [
+      "live-verification",
+      "live-verification",
+      "live-verification"
+    ]
+  },
+  {
+    "query": "live verify before pushing",
+    "expected": "live-verification",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "live-verification",
+    "got": "live-verification",
+    "runs": [
+      "live-verification",
+      "live-verification",
+      "live-verification"
+    ]
+  },
+  {
+    "query": "click through the flow and confirm it works",
+    "expected": "live-verification",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "live-verification",
+    "got": "live-verification",
+    "runs": [
+      "live-verification",
+      "live-verification",
+      "live-verification"
+    ]
+  },
+  {
+    "query": "hit the endpoint and check the response before we push",
+    "expected": "live-verification",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "live-verification",
+    "got": "live-verification",
+    "runs": [
+      "live-verification",
+      "live-verification",
+      "live-verification"
+    ]
+  },
+  {
+    "query": "does dark mode actually look right",
+    "expected": "live-verification",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "live-verification",
+    "got": "live-verification",
+    "runs": [
+      "live-verification",
+      "live-verification",
+      "live-verification"
+    ]
+  },
+  {
+    "query": "run it and watch it work before I commit",
+    "expected": "live-verification",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "live-verification",
+    "got": "live-verification",
+    "runs": [
+      "live-verification",
+      "live-verification",
+      "live-verification"
+    ]
+  },
+  {
+    "query": "confirm the component actually renders now",
+    "expected": "live-verification",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "live-verification",
+    "got": "live-verification",
+    "runs": [
+      "live-verification",
+      "live-verification",
+      "live-verification"
+    ]
+  },
+  {
+    "query": "spin up the app and check the change before pushing",
+    "expected": "live-verification",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "live-verification",
+    "got": "live-verification",
+    "runs": [
+      "live-verification",
+      "live-verification",
+      "live-verification"
+    ]
+  },
+  {
+    "query": "did the button actually fix itself, go look",
+    "expected": "live-verification",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "live-verification",
+    "got": "live-verification",
+    "runs": [
+      "live-verification",
+      "live-verification",
+      "live-verification"
+    ]
+  },
+  {
+    "query": "run typecheck and lint before I commit",
+    "expected": "finalize",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "live-verification",
+    "got": "finalize",
+    "runs": [
+      "finalize",
+      "finalize",
+      "finalize"
+    ]
+  },
+  {
+    "query": "run the full test suite",
+    "expected": "finalize",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "live-verification",
+    "got": "finalize",
+    "runs": [
+      "finalize",
+      "finalize",
+      "finalize"
+    ]
+  },
+  {
+    "query": "am I actually done, did I miss anything",
+    "expected": "preflight",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "live-verification",
+    "got": "preflight",
+    "runs": [
+      "preflight",
+      "preflight",
+      "preflight"
+    ]
+  },
+  {
+    "query": "are all the plan steps covered",
+    "expected": "preflight",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "live-verification",
+    "got": "preflight",
+    "runs": [
+      "preflight",
+      "preflight",
+      "preflight"
+    ]
+  },
+  {
+    "query": "review this diff before merge",
+    "expected": "code-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "live-verification",
+    "got": "code-review",
+    "runs": [
+      "code-review",
+      "code-review",
+      "code-review"
+    ]
+  },
+  {
+    "query": "review the code quality here",
+    "expected": "code-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "live-verification",
+    "got": "code-review",
+    "runs": [
+      "code-review",
+      "code-review",
+      "code-review"
+    ]
+  },
+  {
+    "query": "let's review the plan before we build",
+    "expected": "plan-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "live-verification",
+    "got": "plan-review",
+    "runs": [
+      "plan-review",
+      "plan-review",
+      "plan-review"
+    ]
+  },
+  {
+    "query": "walk me through the plan and annotate it",
+    "expected": "plan-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "live-verification",
+    "got": "plan-review",
+    "runs": [
+      "plan-review",
+      "plan-review",
+      "plan-review"
+    ]
+  },
+  {
+    "query": "what does the CSS overflow property do",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "live-verification",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "open the annotation ui for this plan",
+    "expected": "plan-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "plan-review",
+    "got": "plan-review",
+    "runs": [
+      "plan-review",
+      "plan-review",
+      "plan-review"
+    ]
+  },
+  {
+    "query": "let me annotate before you implement",
+    "expected": "plan-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "plan-review",
+    "got": "plan-review",
+    "runs": [
+      "plan-review",
+      "plan-review",
+      "plan-review"
+    ]
+  },
+  {
+    "query": "plan review on .condux/plans/2026-07-04-git-skills.md",
+    "expected": "plan-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "plan-review",
+    "got": "plan-review",
+    "runs": [
+      "plan-review",
+      "plan-review",
+      "plan-review"
+    ]
+  },
+  {
+    "query": "run the steer mode review loop",
+    "expected": "plan-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "plan-review",
+    "got": "plan-review",
+    "runs": [
+      "plan-review",
+      "plan-review",
+      "plan-review"
+    ]
+  },
+  {
+    "query": "review the spec directory with per-file notes",
+    "expected": "plan-review",
+    "accept": [
+      "spec-browser"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "plan-review",
+    "got": "plan-review",
+    "runs": [
+      "spec-browser",
+      "plan-review",
+      "plan-review"
+    ]
+  },
+  {
+    "query": "open live preview of specs/wan-config",
+    "expected": "plan-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "plan-review",
+    "got": "plan-review",
+    "runs": [
+      "plan-review",
+      "plan-review",
+      "plan-review"
+    ]
+  },
+  {
+    "query": "approve / request revisions flow for this plan",
+    "expected": "plan-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "plan-review",
+    "got": "plan-review",
+    "runs": [
+      "plan-review",
+      "plan-review",
+      "plan-review"
+    ]
+  },
+  {
+    "query": "the exitplanmode hook isnt opening the browser",
+    "expected": "plan-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "plan-review",
+    "got": "plan-review",
+    "runs": [
+      "plan-review",
+      "plan-review",
+      "plan-review"
+    ]
+  },
+  {
+    "query": "install the codex stop hook for plan review",
+    "expected": "plan-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "plan-review",
+    "got": "plan-review",
+    "runs": [
+      "plan-review",
+      "plan-review",
+      "plan-review"
+    ]
+  },
+  {
+    "query": "reject this plan, dont build it",
+    "expected": "plan-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "plan-review",
+    "got": "plan-review",
+    "runs": [
+      "plan-review",
+      "plan-review",
+      "plan-review"
+    ]
+  },
+  {
+    "query": "send my notes on section 3 back to the agent",
+    "expected": "plan-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "plan-review",
+    "got": "plan-review",
+    "runs": [
+      "plan-review",
+      "plan-review",
+      "plan-review"
+    ]
+  },
+  {
+    "query": "something like plannotator?",
+    "expected": "plan-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "plan-review",
+    "got": null,
+    "runs": [
+      null,
+      "plan-review",
+      null
+    ]
+  },
+  {
+    "query": "review this code diff",
+    "expected": "code-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "plan-review",
+    "got": "code-review",
+    "runs": [
+      "code-review",
+      "code-review",
+      "code-review"
+    ]
+  },
+  {
+    "query": "review pr #42 on github",
+    "expected": "code-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "plan-review",
+    "got": "code-review",
+    "runs": [
+      "code-review",
+      "code-review",
+      "code-review"
+    ]
+  },
+  {
+    "query": "write the plan first",
+    "expected": "draft-plan",
+    "accept": [
+      "workflow"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "plan-review",
+    "got": "draft-plan",
+    "runs": [
+      "draft-plan",
+      "draft-plan",
+      "draft-plan"
+    ]
+  },
+  {
+    "query": "browse all our specs as one doc site",
+    "expected": "spec-browser",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "plan-review",
+    "got": "spec-browser",
+    "runs": [
+      "spec-browser",
+      "spec-browser",
+      "spec-browser"
+    ]
+  },
+  {
+    "query": "build the spec index catalog",
+    "expected": "spec-browser",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "plan-review",
+    "got": "spec-browser",
+    "runs": [
+      "spec-browser",
+      "spec-browser",
+      "spec-browser"
+    ]
+  },
+  {
+    "query": "review this google doc proposal",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "plan-review",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "am I done?",
+    "expected": "preflight",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "preflight",
+    "got": "preflight",
+    "runs": [
+      "preflight",
+      "preflight",
+      "preflight"
+    ]
+  },
+  {
+    "query": "verify this",
+    "expected": "preflight",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "preflight",
+    "got": "preflight",
+    "runs": [
+      "live-verification",
+      "preflight",
+      "preflight"
+    ]
+  },
+  {
+    "query": "did I miss anything before finalize",
+    "expected": "preflight",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "preflight",
+    "got": "preflight",
+    "runs": [
+      "preflight",
+      "preflight",
+      "preflight"
+    ]
+  },
+  {
+    "query": "preflight check",
+    "expected": "preflight",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "preflight",
+    "got": "preflight",
+    "runs": [
+      "preflight",
+      "preflight",
+      "preflight"
+    ]
+  },
+  {
+    "query": "is the feature actually complete",
+    "expected": "preflight",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "preflight",
+    "got": "preflight",
+    "runs": [
+      "preflight",
+      "preflight",
+      "preflight"
+    ]
+  },
+  {
+    "query": "check all the requirements are met",
+    "expected": "preflight",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "preflight",
+    "got": "preflight",
+    "runs": [
+      "preflight",
+      "preflight",
+      "preflight"
+    ]
+  },
+  {
+    "query": "any debug logs left behind?",
+    "expected": "preflight",
+    "accept": [
+      "code-review"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "preflight",
+    "got": "preflight",
+    "runs": [
+      "preflight",
+      "preflight",
+      "preflight"
+    ]
+  },
+  {
+    "query": "did we cover the edge cases",
+    "expected": "preflight",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "preflight",
+    "got": "preflight",
+    "runs": [
+      "preflight",
+      "preflight",
+      "preflight"
+    ]
+  },
+  {
+    "query": "ready to finalize?",
+    "expected": "preflight",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "preflight",
+    "got": "preflight",
+    "runs": [
+      "preflight",
+      "preflight",
+      "preflight"
+    ]
+  },
+  {
+    "query": "are all the plan steps done",
+    "expected": "preflight",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "preflight",
+    "got": "preflight",
+    "runs": [
+      "preflight",
+      "preflight",
+      "preflight"
+    ]
+  },
+  {
+    "query": "I tested it manually, ship it",
+    "expected": "preflight",
+    "accept": [
+      "finalize",
+      "release"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "preflight",
+    "got": "preflight",
+    "runs": [
+      "release",
+      "git-commit",
+      "preflight"
+    ]
+  },
+  {
+    "query": "only changed one line, can we skip the checks",
+    "expected": "preflight",
+    "accept": [
+      "finalize"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "preflight",
+    "got": "preflight",
+    "runs": [
+      null,
+      null,
+      "preflight"
+    ]
+  },
+  {
+    "query": "done-ness check b4 finalize",
+    "expected": "preflight",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "preflight",
+    "got": "preflight",
+    "runs": [
+      "preflight",
+      "preflight",
+      "preflight"
+    ]
+  },
+  {
+    "query": "double check my work on this feature",
+    "expected": "preflight",
+    "accept": [
+      "code-review"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "preflight",
+    "got": "code-review",
+    "runs": [
+      "code-review",
+      "code-review",
+      "code-review"
+    ]
+  },
+  {
+    "query": "run typecheck and the tests now",
+    "expected": "finalize",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "preflight",
+    "got": "finalize",
+    "runs": [
+      "finalize",
+      "finalize",
+      "finalize"
+    ]
+  },
+  {
+    "query": "review the diff quality",
+    "expected": "code-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "preflight",
+    "got": "code-review",
+    "runs": [
+      "code-review",
+      "code-review",
+      "code-review"
+    ]
+  },
+  {
+    "query": "am I done shipping this skill to the marketplace",
+    "expected": "toolkit-change-control",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "preflight",
+    "got": "toolkit-change-control",
+    "runs": [
+      "toolkit-change-control",
+      "toolkit-change-control",
+      "toolkit-change-control"
+    ]
+  },
+  {
+    "query": "does the code still match the spec",
+    "expected": "preflight",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "preflight",
+    "got": "preflight",
+    "runs": [
+      "preflight",
+      "preflight",
+      "preflight"
+    ]
+  },
+  {
+    "query": "check for spec drift",
+    "expected": "preflight",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "preflight",
+    "got": "preflight",
+    "runs": [
+      "preflight",
+      "preflight",
+      "preflight"
+    ]
+  },
+  {
+    "query": "did the implementation diverge from what we specced",
+    "expected": "preflight",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "preflight",
+    "got": "preflight",
+    "runs": [
+      "preflight",
+      "preflight",
+      "preflight"
+    ]
+  },
+  {
+    "query": "update the spec with what we built",
+    "expected": "technical-spec",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "preflight",
+    "got": "technical-spec",
+    "runs": [
+      "technical-spec",
+      "technical-spec",
+      "technical-spec"
+    ]
+  },
+  {
+    "query": "verify the deployment is healthy in prod",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "preflight",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "airplane preflight checklist template",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "preflight",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "double check this math for me",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "preflight",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "add this to the docket: rate-limit the webhook endpoint",
+    "expected": "record",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "record",
+    "got": "record",
+    "runs": [
+      "record",
+      "record",
+      "record"
+    ]
+  },
+  {
+    "query": "close #12, it shipped",
+    "expected": "record",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "record",
+    "got": "record",
+    "runs": [
+      "record",
+      "record",
+      "record"
+    ]
+  },
+  {
+    "query": "note on #7: blocked on the auth migration",
+    "expected": "record",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "record",
+    "got": "record",
+    "runs": [
+      "record",
+      "record",
+      "record"
+    ]
+  },
+  {
+    "query": "put that idea on the backlog",
+    "expected": "record",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "record",
+    "got": "record",
+    "runs": [
+      "record",
+      "record",
+      "record"
+    ]
+  },
+  {
+    "query": "we should eventually cache these lookups",
+    "expected": "record",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "record",
+    "got": "record",
+    "runs": [
+      "record",
+      "record",
+      "record"
+    ]
+  },
+  {
+    "query": "someday: dark mode for the board",
+    "expected": "record",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "record",
+    "got": "record",
+    "runs": [
+      "record",
+      "record",
+      "record"
+    ]
+  },
+  {
+    "query": "split #9 into frontend and backend items",
+    "expected": "record",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "record",
+    "got": "record",
+    "runs": [
+      "record",
+      "record",
+      "record"
+    ]
+  },
+  {
+    "query": "show me the docket",
+    "expected": "record",
+    "accept": [
+      "groom"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "record",
+    "got": "record",
+    "runs": [
+      "record",
+      "record",
+      "record"
+    ]
+  },
+  {
+    "query": "file that for later",
+    "expected": "record",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "record",
+    "got": "record",
+    "runs": [
+      "record",
+      "record",
+      "record"
+    ]
+  },
+  {
+    "query": "capture this idea before we lose it",
+    "expected": "record",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "record",
+    "got": "record",
+    "runs": [
+      "record",
+      "record",
+      "record"
+    ]
+  },
+  {
+    "query": "this repo needs a backlog, set one up",
+    "expected": "record",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "record",
+    "got": "record",
+    "runs": [
+      "record",
+      "record",
+      "record"
+    ]
+  },
+  {
+    "query": "mark #23 done and archive it",
+    "expected": "record",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "record",
+    "got": "record",
+    "runs": [
+      "record",
+      "record",
+      "record"
+    ]
+  },
+  {
+    "query": "close out anything that's gone stale",
+    "expected": "groom",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "record",
+    "got": "groom",
+    "runs": [
+      "groom",
+      "groom",
+      "groom"
+    ]
+  },
+  {
+    "query": "which open item should I pick up next",
+    "expected": "groom",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "record",
+    "got": "groom",
+    "runs": [
+      "groom",
+      "groom",
+      "groom"
+    ]
+  },
+  {
+    "query": "are there shipped items still sitting open?",
+    "expected": "groom",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "record",
+    "got": "groom",
+    "runs": [
+      "groom",
+      "groom",
+      "groom"
+    ]
+  },
+  {
+    "query": "give the whole backlog a once-over",
+    "expected": "groom",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "record",
+    "got": "groom",
+    "runs": [
+      "groom",
+      "groom",
+      "groom"
+    ]
+  },
+  {
+    "query": "what's a product backlog in scrum?",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "record",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "reorder the sprint backlog in Jira for me",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "record",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "record a demo video of the app",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "record",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "note that in the PR description",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "record",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "cut a release",
+    "expected": "release",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "release",
+    "got": "release",
+    "runs": [
+      "release",
+      "release",
+      "release"
+    ]
+  },
+  {
+    "query": "release v2.3.0",
+    "expected": "release",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "release",
+    "got": "release",
+    "runs": [
+      "release",
+      "release",
+      "release"
+    ]
+  },
+  {
+    "query": "tag and publish this",
+    "expected": "release",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "release",
+    "got": "release",
+    "runs": [
+      "release",
+      "release",
+      "release"
+    ]
+  },
+  {
+    "query": "ship a new version of condux",
+    "expected": "release",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "release",
+    "got": "release",
+    "runs": [
+      "release",
+      "release",
+      "release"
+    ]
+  },
+  {
+    "query": "create a github release with notes",
+    "expected": "release",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "release",
+    "got": "release",
+    "runs": [
+      "release",
+      "release",
+      "release"
+    ]
+  },
+  {
+    "query": "bump the version and tag it",
+    "expected": "release",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "release",
+    "got": "release",
+    "runs": [
+      "release",
+      "release",
+      "release"
+    ]
+  },
+  {
+    "query": "everything's merged and green — ship v1.4.0",
+    "expected": "release",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "release",
+    "got": "release",
+    "runs": [
+      "release",
+      "release",
+      "release"
+    ]
+  },
+  {
+    "query": "whats in the next release",
+    "expected": "release",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "release",
+    "got": "release",
+    "runs": [
+      "release",
+      "release",
+      "release"
+    ]
+  },
+  {
+    "query": "draft release notes from the commits",
+    "expected": "release",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "release",
+    "got": "release",
+    "runs": [
+      "release",
+      "release",
+      "release"
+    ]
+  },
+  {
+    "query": "changeset version and publish",
+    "expected": "release",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "release",
+    "got": "release",
+    "runs": [
+      "release",
+      "release",
+      "release"
+    ]
+  },
+  {
+    "query": "merge the version packages PR",
+    "expected": "release",
+    "accept": [
+      "git-operations"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "release",
+    "got": "release",
+    "runs": [
+      "release",
+      "release",
+      "release"
+    ]
+  },
+  {
+    "query": "undo the release we just cut",
+    "expected": "release",
+    "accept": [
+      "git-operations"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "release",
+    "got": "git-operations",
+    "runs": [
+      "git-operations",
+      "git-operations",
+      "git-operations"
+    ]
+  },
+  {
+    "query": "npm unpublish the broken version",
+    "expected": "release",
+    "accept": [
+      "git-operations"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "release",
+    "got": "release",
+    "runs": [
+      null,
+      "release",
+      "release"
+    ]
+  },
+  {
+    "query": "publish the plugin to the marketplace",
+    "expected": "release",
+    "accept": [
+      "toolkit-change-control",
+      "toolkit-foundry"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "release",
+    "got": "release",
+    "runs": [
+      "release",
+      "release",
+      "release"
+    ]
+  },
+  {
+    "query": "cut a releese pls",
+    "expected": "release",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "release",
+    "got": "release",
+    "runs": [
+      "release",
+      "release",
+      "release"
+    ]
+  },
+  {
+    "query": "push my branch up",
+    "expected": "git-operations",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "release",
+    "got": "git-operations",
+    "runs": [
+      null,
+      "git-operations",
+      "git-operations"
+    ]
+  },
+  {
+    "query": "is this toolkit change ready to publish",
+    "expected": "toolkit-change-control",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "release",
+    "got": "toolkit-change-control",
+    "runs": [
+      "toolkit-change-control",
+      "toolkit-change-control",
+      "toolkit-change-control"
+    ]
+  },
+  {
+    "query": "deploy to production",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "release",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "whats our release cadence this quarter",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "release",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "press release for the launch",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "release",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "checkout crashes on empty cart",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "root-cause-analysis",
+    "got": "root-cause-analysis",
+    "runs": [
+      "root-cause-analysis",
+      "root-cause-analysis",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "TypeError: cannot read property of undefined in the orders page",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "root-cause-analysis",
+    "got": "root-cause-analysis",
+    "runs": [
+      "root-cause-analysis",
+      "root-cause-analysis",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "why does this test fail intermittently",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "root-cause-analysis",
+    "got": "root-cause-analysis",
+    "runs": [
+      "root-cause-analysis",
+      "root-cause-analysis",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "debug the 500 on the orders endpoint",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "root-cause-analysis",
+    "got": "root-cause-analysis",
+    "runs": [
+      "root-cause-analysis",
+      "root-cause-analysis",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "the app broke after the last deploy",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "root-cause-analysis",
+    "got": "root-cause-analysis",
+    "runs": [
+      "root-cause-analysis",
+      "root-cause-analysis",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "trace this bug to its root cause",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "root-cause-analysis",
+    "got": "root-cause-analysis",
+    "runs": [
+      "root-cause-analysis",
+      "root-cause-analysis",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "3 fixes failed already, whats the next idea",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "root-cause-analysis",
+    "got": "root-cause-analysis",
+    "runs": [
+      "root-cause-analysis",
+      "root-cause-analysis",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "reproduce this issue first before touching anything",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "root-cause-analysis",
+    "got": "root-cause-analysis",
+    "runs": [
+      "root-cause-analysis",
+      "root-cause-analysis",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "just patch it quickly, we can investigate later",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "root-cause-analysis",
+    "got": "workflow",
+    "runs": [
+      "root-cause-analysis",
+      null,
+      "workflow"
+    ]
+  },
+  {
+    "query": "systematic debugging pls",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "root-cause-analysis",
+    "got": "root-cause-analysis",
+    "runs": [
+      "root-cause-analysis",
+      "root-cause-analysis",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "regression after the refactor, find the cause",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "root-cause-analysis",
+    "got": "root-cause-analysis",
+    "runs": [
+      "root-cause-analysis",
+      "root-cause-analysis",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "why is prod slower since tuesday",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "root-cause-analysis",
+    "got": "root-cause-analysis",
+    "runs": [
+      "root-cause-analysis",
+      "root-cause-analysis",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "what does this stack trace mean",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "root-cause-analysis",
+    "got": null,
+    "runs": [
+      "root-cause-analysis",
+      "root-cause-analysis",
+      null
+    ]
+  },
+  {
+    "query": "two unrelated failures showed up, split the work",
+    "expected": "subagent-deployment",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "root-cause-analysis",
+    "got": "subagent-deployment",
+    "runs": [
+      "subagent-deployment",
+      "subagent-deployment",
+      "subagent-deployment"
+    ]
+  },
+  {
+    "query": "add error handling to this function",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "root-cause-analysis",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "fix the bug — I already know exactly whats wrong",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "root-cause-analysis",
+    "got": "workflow",
+    "runs": [
+      "root-cause-analysis",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "my toolkit skill isnt triggering",
+    "expected": "toolkit-debugging-playbook",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "root-cause-analysis",
+    "got": "toolkit-debugging-playbook",
+    "runs": [
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook"
+    ]
+  },
+  {
+    "query": "dist looks out of date vs skills/",
+    "expected": "toolkit-debugging-playbook",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "root-cause-analysis",
+    "got": "toolkit-debugging-playbook",
+    "runs": [
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook"
+    ]
+  },
+  {
+    "query": "bug bounty writeup for the blog",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "root-cause-analysis",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "debug my printer connection",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "root-cause-analysis",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "save state before I close this",
+    "expected": "session-handoff",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "session-handoff",
+    "got": "session-handoff",
+    "runs": [
+      "session-handoff",
+      "session-handoff",
+      "session-handoff"
+    ]
+  },
+  {
+    "query": "create a handoff for the next session",
+    "expected": "session-handoff",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "session-handoff",
+    "got": "session-handoff",
+    "runs": [
+      "session-handoff",
+      "session-handoff",
+      "session-handoff"
+    ]
+  },
+  {
+    "query": "continue from last session",
+    "expected": "session-handoff",
+    "accept": [],
+    "disallowed": [
+      "discovery"
+    ],
+    "kind": "cold",
+    "source": "session-handoff",
+    "got": "session-handoff",
+    "runs": [
+      "session-handoff",
+      "session-handoff",
+      "session-handoff"
+    ]
+  },
+  {
+    "query": "resume from the handoff doc",
+    "expected": "session-handoff",
+    "accept": [],
+    "disallowed": [
+      "discovery"
+    ],
+    "kind": "cold",
+    "source": "session-handoff",
+    "got": "session-handoff",
+    "runs": [
+      "session-handoff",
+      "session-handoff",
+      "session-handoff"
+    ]
+  },
+  {
+    "query": "pick up where the last session left off",
+    "expected": "session-handoff",
+    "accept": [],
+    "disallowed": [
+      "discovery",
+      "subagent-execution"
+    ],
+    "kind": "cold",
+    "source": "session-handoff",
+    "got": "session-handoff",
+    "runs": [
+      "session-handoff",
+      "session-handoff",
+      "session-handoff"
+    ]
+  },
+  {
+    "query": "context is almost full, preserve what matters",
+    "expected": "session-handoff",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "session-handoff",
+    "got": "session-handoff",
+    "runs": [
+      "session-handoff",
+      "session-handoff",
+      "session-handoff"
+    ]
+  },
+  {
+    "query": "we're at 85% context, do your thing",
+    "expected": "session-handoff",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "session-handoff",
+    "got": "session-handoff",
+    "runs": [
+      "session-handoff",
+      "session-handoff",
+      "session-handoff"
+    ]
+  },
+  {
+    "query": "switching to the payments work, park this session",
+    "expected": "session-handoff",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "session-handoff",
+    "got": "session-handoff",
+    "runs": [
+      "session-handoff",
+      "session-handoff",
+      "session-handoff"
+    ]
+  },
+  {
+    "query": "prune old handoffs",
+    "expected": "session-handoff",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "session-handoff",
+    "got": "session-handoff",
+    "runs": [
+      "session-handoff",
+      "session-handoff",
+      "session-handoff"
+    ]
+  },
+  {
+    "query": "clear the handoffs folder",
+    "expected": "session-handoff",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "session-handoff",
+    "got": "session-handoff",
+    "runs": [
+      "session-handoff",
+      "session-handoff",
+      "session-handoff"
+    ]
+  },
+  {
+    "query": "restore the state from yesterday's handoff",
+    "expected": "session-handoff",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "session-handoff",
+    "got": "session-handoff",
+    "runs": [
+      "session-handoff",
+      "session-handoff",
+      "session-handoff"
+    ]
+  },
+  {
+    "query": "hand this off to a fresh session",
+    "expected": "session-handoff",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "session-handoff",
+    "got": "session-handoff",
+    "runs": [
+      "session-handoff",
+      "session-handoff",
+      "session-handoff"
+    ]
+  },
+  {
+    "query": "make sure the next session knows where we left off",
+    "expected": "session-handoff",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "session-handoff",
+    "got": "session-handoff",
+    "runs": [
+      "session-handoff",
+      "session-handoff",
+      "session-handoff"
+    ]
+  },
+  {
+    "query": "continue implementing the plan from the progress ledger",
+    "expected": "subagent-execution",
+    "accept": [],
+    "disallowed": [
+      "session-handoff"
+    ],
+    "kind": "cold",
+    "source": "session-handoff",
+    "got": "subagent-execution",
+    "runs": [
+      "subagent-execution",
+      "subagent-execution",
+      "subagent-execution"
+    ]
+  },
+  {
+    "query": "session timeout bug in the auth flow",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "session-handoff",
+    "got": "root-cause-analysis",
+    "runs": [
+      "root-cause-analysis",
+      "root-cause-analysis",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "hand off the project to another team",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "session-handoff",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "resume the paused CI pipeline",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "session-handoff",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "fix these 3 unrelated failing test files at once",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-deployment",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "subagent-deployment",
+      "workflow"
+    ]
+  },
+  {
+    "query": "in parallel: look up the stripe api and explore the auth module",
+    "expected": "subagent-deployment",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-deployment",
+    "got": "subagent-deployment",
+    "runs": [
+      "subagent-deployment",
+      "subagent-deployment",
+      "subagent-deployment"
+    ]
+  },
+  {
+    "query": "two independent bugs in different packages, handle both",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-deployment",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "subagent-deployment",
+      "workflow"
+    ]
+  },
+  {
+    "query": "fan out this research across agents",
+    "expected": "subagent-deployment",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-deployment",
+    "got": "subagent-deployment",
+    "runs": [
+      "subagent-deployment",
+      "subagent-deployment",
+      "subagent-deployment"
+    ]
+  },
+  {
+    "query": "batch these lookups together",
+    "expected": "subagent-deployment",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-deployment",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "run these together, theyre totally unrelated",
+    "expected": "subagent-deployment",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-deployment",
+    "got": "subagent-deployment",
+    "runs": [
+      "subagent-deployment",
+      "subagent-deployment",
+      "subagent-deployment"
+    ]
+  },
+  {
+    "query": "spawn a generic subagent with this custom prompt",
+    "expected": "subagent-deployment",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-deployment",
+    "got": "subagent-deployment",
+    "runs": [
+      "subagent-deployment",
+      "subagent-deployment",
+      "subagent-deployment"
+    ]
+  },
+  {
+    "query": "dispatch all three coders in the same message",
+    "expected": "subagent-deployment",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-deployment",
+    "got": "subagent-deployment",
+    "runs": [
+      "subagent-deployment",
+      "subagent-deployment",
+      "subagent-deployment"
+    ]
+  },
+  {
+    "query": "kick off explorer and researcher while I keep working",
+    "expected": "subagent-deployment",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-deployment",
+    "got": "subagent-deployment",
+    "runs": [
+      "subagent-deployment",
+      "subagent-deployment",
+      "subagent-deployment"
+    ]
+  },
+  {
+    "query": "independant tasks, no shared files, go",
+    "expected": "subagent-deployment",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-deployment",
+    "got": "subagent-deployment",
+    "runs": [
+      "subagent-deployment",
+      "subagent-deployment",
+      "subagent-deployment"
+    ]
+  },
+  {
+    "query": "execute plan tasks 1 through 6 in order with agents",
+    "expected": "subagent-execution",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-deployment",
+    "got": "subagent-execution",
+    "runs": [
+      "subagent-execution",
+      "subagent-execution",
+      "subagent-execution"
+    ]
+  },
+  {
+    "query": "one small task, just do it yourself",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-deployment",
+    "got": null,
+    "runs": [
+      "workflow",
+      "workflow",
+      null
+    ]
+  },
+  {
+    "query": "deploy the app to production",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-deployment",
+    "got": null,
+    "runs": [
+      null,
+      "workflow",
+      null
+    ]
+  },
+  {
+    "query": "set up the deployment pipeline for staging",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-deployment",
+    "got": null,
+    "runs": [
+      "workflow",
+      "workflow",
+      null
+    ]
+  },
+  {
+    "query": "parallelize the test suite in ci",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-deployment",
+    "got": null,
+    "runs": [
+      "workflow",
+      "workflow",
+      null
+    ]
+  },
+  {
+    "query": "map reduce over these records",
+    "expected": null,
+    "accept": [
+      "workflow"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-deployment",
+    "got": null,
+    "runs": [
+      "workflow",
+      "workflow",
+      null
+    ]
+  },
+  {
+    "query": "execute the plan with specialist agents",
+    "expected": "subagent-execution",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-execution",
+    "got": "subagent-execution",
+    "runs": [
+      "subagent-execution",
+      "subagent-execution",
+      "subagent-execution"
+    ]
+  },
+  {
+    "query": "run the plan task by task with subagents",
+    "expected": "subagent-execution",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-execution",
+    "got": "subagent-execution",
+    "runs": [
+      "subagent-execution",
+      "subagent-execution",
+      "subagent-execution"
+    ]
+  },
+  {
+    "query": "use the coder agent to implement the plan",
+    "expected": "subagent-execution",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-execution",
+    "got": "subagent-execution",
+    "runs": [
+      "subagent-execution",
+      "subagent-execution",
+      "subagent-execution"
+    ]
+  },
+  {
+    "query": "resume plan execution from the ledger",
+    "expected": "subagent-execution",
+    "accept": [],
+    "disallowed": [
+      "session-handoff"
+    ],
+    "kind": "cold",
+    "source": "subagent-execution",
+    "got": "subagent-execution",
+    "runs": [
+      "subagent-execution",
+      "subagent-execution",
+      "subagent-execution"
+    ]
+  },
+  {
+    "query": "spawn agents for the LARGE plan",
+    "expected": "subagent-execution",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-execution",
+    "got": "subagent-execution",
+    "runs": [
+      "subagent-execution",
+      "subagent-execution",
+      "subagent-execution"
+    ]
+  },
+  {
+    "query": "whats in spawn-rules for picking an agent",
+    "expected": "subagent-execution",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-execution",
+    "got": "subagent-execution",
+    "runs": [
+      "subagent-execution",
+      "subagent-execution",
+      "subagent-execution"
+    ]
+  },
+  {
+    "query": "prepare a task brief for task 4",
+    "expected": "subagent-execution",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-execution",
+    "got": "subagent-execution",
+    "runs": [
+      "subagent-execution",
+      "subagent-execution",
+      "subagent-execution"
+    ]
+  },
+  {
+    "query": "build the review package for the implementer's commits",
+    "expected": "subagent-execution",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-execution",
+    "got": "subagent-execution",
+    "runs": [
+      "subagent-execution",
+      "subagent-execution",
+      "subagent-execution"
+    ]
+  },
+  {
+    "query": "which model should the coder agent get for this task",
+    "expected": "subagent-execution",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-execution",
+    "got": "subagent-execution",
+    "runs": [
+      "subagent-execution",
+      "subagent-execution",
+      "subagent-execution"
+    ]
+  },
+  {
+    "query": "continue the wave, tasks 5 and 6 are unblocked",
+    "expected": "subagent-execution",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-execution",
+    "got": "subagent-execution",
+    "runs": [
+      "subagent-execution",
+      "subagent-execution",
+      "subagent-execution"
+    ]
+  },
+  {
+    "query": "we compacted mid-plan, where were we with the agents",
+    "expected": "subagent-execution",
+    "accept": [],
+    "disallowed": [
+      "session-handoff"
+    ],
+    "kind": "cold",
+    "source": "subagent-execution",
+    "got": "subagent-execution",
+    "runs": [
+      "subagent-execution",
+      "subagent-execution",
+      "subagent-execution"
+    ]
+  },
+  {
+    "query": "dont re-dispatch tasks that are already done",
+    "expected": "subagent-execution",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-execution",
+    "got": "subagent-execution",
+    "runs": [
+      "subagent-execution",
+      "subagent-execution",
+      "subagent-execution"
+    ]
+  },
+  {
+    "query": "spawn the agents for this plan",
+    "expected": "subagent-execution",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-execution",
+    "got": "subagent-execution",
+    "runs": [
+      "subagent-execution",
+      "subagent-execution",
+      "subagent-execution"
+    ]
+  },
+  {
+    "query": "dispatch these three unrelated fixes in parallel",
+    "expected": "subagent-deployment",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-execution",
+    "got": "subagent-deployment",
+    "runs": [
+      "subagent-deployment",
+      "subagent-deployment",
+      "subagent-deployment"
+    ]
+  },
+  {
+    "query": "fan out independent lookups across agents",
+    "expected": "subagent-deployment",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-execution",
+    "got": "subagent-deployment",
+    "runs": [
+      "subagent-deployment",
+      "subagent-deployment",
+      "subagent-deployment"
+    ]
+  },
+  {
+    "query": "three independent bugs, fix them concurrently",
+    "expected": "subagent-deployment",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-execution",
+    "got": "workflow",
+    "runs": [
+      "subagent-deployment",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "ill implement the plan myself top to bottom",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-execution",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "the plan is fully implemented, verify it",
+    "expected": "preflight",
+    "accept": [
+      "live-verification"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-execution",
+    "got": "live-verification",
+    "runs": [
+      "live-verification",
+      "live-verification",
+      "live-verification"
+    ]
+  },
+  {
+    "query": "orchestrate the ci pipeline stages",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-execution",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "kubernetes pod scheduling question",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "subagent-execution",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "save spec",
+    "expected": "technical-spec",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "technical-spec",
+    "got": "technical-spec",
+    "runs": [
+      "technical-spec",
+      "technical-spec",
+      "technical-spec"
+    ]
+  },
+  {
+    "query": "document what we decided",
+    "expected": "technical-spec",
+    "accept": [],
+    "disallowed": [
+      "draft-plan",
+      "remember"
+    ],
+    "kind": "cold",
+    "source": "technical-spec",
+    "got": "technical-spec",
+    "runs": [
+      "technical-spec",
+      "technical-spec",
+      "technical-spec"
+    ]
+  },
+  {
+    "query": "spec this out",
+    "expected": "technical-spec",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "technical-spec",
+    "got": "technical-spec",
+    "runs": [
+      "technical-spec",
+      "technical-spec",
+      "technical-spec"
+    ]
+  },
+  {
+    "query": "persist the api contract and the quirks we found",
+    "expected": "technical-spec",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "technical-spec",
+    "got": "technical-spec",
+    "runs": [
+      "technical-spec",
+      "technical-spec",
+      "technical-spec"
+    ]
+  },
+  {
+    "query": "write up the field mappings from backend to UI",
+    "expected": "technical-spec",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "technical-spec",
+    "got": "technical-spec",
+    "runs": [
+      "technical-spec",
+      "technical-spec",
+      "technical-spec"
+    ]
+  },
+  {
+    "query": "update the spec for wan-config",
+    "expected": "technical-spec",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "technical-spec",
+    "got": "technical-spec",
+    "runs": [
+      "technical-spec",
+      "technical-spec",
+      "technical-spec"
+    ]
+  },
+  {
+    "query": "scaffold a spec folder for this feature",
+    "expected": "technical-spec",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "technical-spec",
+    "got": "technical-spec",
+    "runs": [
+      "technical-spec",
+      "technical-spec",
+      "technical-spec"
+    ]
+  },
+  {
+    "query": "record the decision rationale for future sessions",
+    "expected": "technical-spec",
+    "accept": [],
+    "disallowed": [
+      "draft-plan",
+      "remember"
+    ],
+    "kind": "cold",
+    "source": "technical-spec",
+    "got": "technical-spec",
+    "runs": [
+      "technical-spec",
+      "technical-spec",
+      "technical-spec"
+    ]
+  },
+  {
+    "query": "bump the index.md changelog for the spec",
+    "expected": "technical-spec",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "technical-spec",
+    "got": null,
+    "runs": [
+      null,
+      "workflow",
+      null
+    ]
+  },
+  {
+    "query": "save the design as a tech spec with live preview",
+    "expected": "technical-spec",
+    "accept": [],
+    "disallowed": [
+      "draft-plan"
+    ],
+    "kind": "cold",
+    "source": "technical-spec",
+    "got": "technical-spec",
+    "runs": [
+      "technical-spec",
+      "technical-spec",
+      "technical-spec"
+    ]
+  },
+  {
+    "query": "sepc this out pls",
+    "expected": "technical-spec",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "technical-spec",
+    "got": "technical-spec",
+    "runs": [
+      "technical-spec",
+      "technical-spec",
+      "technical-spec"
+    ]
+  },
+  {
+    "query": "write up what we decided about the milestone",
+    "expected": "technical-spec",
+    "accept": [],
+    "disallowed": [
+      "draft-plan"
+    ],
+    "kind": "cold",
+    "source": "technical-spec",
+    "got": "technical-spec",
+    "runs": [
+      "technical-spec",
+      "technical-spec",
+      "technical-spec"
+    ]
+  },
+  {
+    "query": "load the spec for checkout before we start the task",
+    "expected": "workflow",
+    "accept": [
+      "spec-browser"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "technical-spec",
+    "got": "workflow",
+    "runs": [
+      null,
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "browse the specs tree",
+    "expected": "spec-browser",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "technical-spec",
+    "got": "spec-browser",
+    "runs": [
+      "spec-browser",
+      "spec-browser",
+      "spec-browser"
+    ]
+  },
+  {
+    "query": "where is the spec for the auth feature",
+    "expected": "spec-browser",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "technical-spec",
+    "got": "spec-browser",
+    "runs": [
+      "spec-browser",
+      "spec-browser",
+      "spec-browser"
+    ]
+  },
+  {
+    "query": "design the feature first before documenting",
+    "expected": "discovery",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "technical-spec",
+    "got": null,
+    "runs": [
+      "discovery",
+      "discovery",
+      null
+    ]
+  },
+  {
+    "query": "generate openapi yaml from the routes",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "technical-spec",
+    "got": null,
+    "runs": [
+      "workflow",
+      null,
+      null
+    ]
+  },
+  {
+    "query": "write jsdoc comments for this module",
+    "expected": null,
+    "accept": [
+      "workflow"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "technical-spec",
+    "got": null,
+    "runs": [
+      "workflow",
+      null,
+      null
+    ]
+  },
+  {
+    "query": "host our swagger docs somewhere",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "technical-spec",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "write tests first for this",
+    "expected": "test-first-development",
+    "accept": [
+      "workflow"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "test-first-development",
+    "got": "test-first-development",
+    "runs": [
+      "test-first-development",
+      "test-first-development",
+      "test-first-development"
+    ]
+  },
+  {
+    "query": "tdd this feature",
+    "expected": "test-first-development",
+    "accept": [
+      "workflow"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "test-first-development",
+    "got": "test-first-development",
+    "runs": [
+      "test-first-development",
+      "test-first-development",
+      "test-first-development"
+    ]
+  },
+  {
+    "query": "test-first for the parser module",
+    "expected": "test-first-development",
+    "accept": [
+      "workflow"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "test-first-development",
+    "got": "test-first-development",
+    "runs": [
+      "test-first-development",
+      "test-first-development",
+      "test-first-development"
+    ]
+  },
+  {
+    "query": "write failing tests before implementing",
+    "expected": "test-first-development",
+    "accept": [
+      "workflow"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "test-first-development",
+    "got": "test-first-development",
+    "runs": [
+      "test-first-development",
+      "test-first-development",
+      "test-first-development"
+    ]
+  },
+  {
+    "query": "red green refactor cycle please",
+    "expected": "test-first-development",
+    "accept": [
+      "workflow"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "test-first-development",
+    "got": "test-first-development",
+    "runs": [
+      "test-first-development",
+      "test-first-development",
+      "test-first-development"
+    ]
+  },
+  {
+    "query": "can you do this test driven",
+    "expected": "test-first-development",
+    "accept": [
+      "workflow"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "test-first-development",
+    "got": "test-first-development",
+    "runs": [
+      "test-first-development",
+      "test-first-development",
+      "test-first-development"
+    ]
+  },
+  {
+    "query": "write unit tests for the date helpers before you code them",
+    "expected": "test-first-development",
+    "accept": [
+      "workflow"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "test-first-development",
+    "got": "test-first-development",
+    "runs": [
+      "test-first-development",
+      "test-first-development",
+      "test-first-development"
+    ]
+  },
+  {
+    "query": "update the failing test to match the new behavior",
+    "expected": "test-first-development",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "test-first-development",
+    "got": "test-first-development",
+    "runs": [
+      "test-first-development",
+      "test-first-development",
+      "test-first-development"
+    ]
+  },
+  {
+    "query": "the test is failing so just fix the test",
+    "expected": "test-first-development",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "test-first-development",
+    "got": "test-first-development",
+    "runs": [
+      "test-first-development",
+      "test-first-development",
+      "test-first-development"
+    ]
+  },
+  {
+    "query": "should I tdd ui components",
+    "expected": "test-first-development",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "test-first-development",
+    "got": "test-first-development",
+    "runs": [
+      "test-first-development",
+      "test-first-development",
+      "test-first-development"
+    ]
+  },
+  {
+    "query": "bug: prove it with a failing test then fix it",
+    "expected": "test-first-development",
+    "accept": [
+      "workflow",
+      "root-cause-analysis"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "test-first-development",
+    "got": "test-first-development",
+    "runs": [
+      "test-first-development",
+      "test-first-development",
+      "test-first-development"
+    ]
+  },
+  {
+    "query": "tets first plz",
+    "expected": "test-first-development",
+    "accept": [
+      "workflow"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "test-first-development",
+    "got": "test-first-development",
+    "runs": [
+      "test-first-development",
+      "test-first-development",
+      "test-first-development"
+    ]
+  },
+  {
+    "query": "add tests for the existing legacy code",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "test-first-development",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "implement the currency formatter utility",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "test-first-development",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "write e2e tests with playwright for the flow",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "test-first-development",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "run the tests",
+    "expected": "finalize",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "test-first-development",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "why is this test flaky",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "test-first-development",
+    "got": "root-cause-analysis",
+    "runs": [
+      "root-cause-analysis",
+      "root-cause-analysis",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "jest config setup for the monorepo",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "test-first-development",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "wheres the coverage report hosted",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "test-first-development",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "is this skill shipped or do I still need something",
+    "expected": "toolkit-change-control",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-change-control",
+    "got": "toolkit-change-control",
+    "runs": [
+      "toolkit-change-control",
+      "toolkit-change-control",
+      "toolkit-change-control"
+    ]
+  },
+  {
+    "query": "ready to publish the new skill?",
+    "expected": "toolkit-change-control",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-change-control",
+    "got": "toolkit-change-control",
+    "runs": [
+      "toolkit-change-control",
+      "toolkit-change-control",
+      "toolkit-change-control"
+    ]
+  },
+  {
+    "query": "what version do I bump after editing the finalize skill",
+    "expected": "toolkit-change-control",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-change-control",
+    "got": "toolkit-change-control",
+    "runs": [
+      "toolkit-change-control",
+      "toolkit-change-control",
+      "toolkit-change-control"
+    ]
+  },
+  {
+    "query": "did I register this plugin properly",
+    "expected": "toolkit-change-control",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-change-control",
+    "got": "toolkit-change-control",
+    "runs": [
+      "toolkit-change-control",
+      "toolkit-change-control",
+      "toolkit-change-control"
+    ]
+  },
+  {
+    "query": "I added a new skill folder but forgot if I need to touch marketplace.json too",
+    "expected": "toolkit-change-control",
+    "accept": [
+      "toolkit-plugin-reference",
+      "toolkit-foundry"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-change-control",
+    "got": "toolkit-foundry",
+    "runs": [
+      "toolkit-foundry",
+      "toolkit-foundry",
+      "toolkit-foundry"
+    ]
+  },
+  {
+    "query": "do doc-only changes need a version bump",
+    "expected": "toolkit-change-control",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-change-control",
+    "got": "toolkit-change-control",
+    "runs": [
+      "toolkit-change-control",
+      "toolkit-change-control",
+      "toolkit-change-control"
+    ]
+  },
+  {
+    "query": "whats the checklist before I commit toolkit changes",
+    "expected": "toolkit-change-control",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-change-control",
+    "got": "toolkit-change-control",
+    "runs": [
+      "toolkit-change-control",
+      "toolkit-change-control",
+      "toolkit-change-control"
+    ]
+  },
+  {
+    "query": "can I call this done? skill md written and synced",
+    "expected": "toolkit-change-control",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-change-control",
+    "got": "toolkit-change-control",
+    "runs": [
+      "toolkit-change-control",
+      "toolkit-change-control",
+      "toolkit-change-control"
+    ]
+  },
+  {
+    "query": "bump condux for the frontmatter fix — major minor or patch?",
+    "expected": "toolkit-change-control",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-change-control",
+    "got": "toolkit-change-control",
+    "runs": [
+      "toolkit-change-control",
+      "toolkit-change-control",
+      "toolkit-change-control"
+    ]
+  },
+  {
+    "query": "which manifest gets the version field, marketplace or plugin.json",
+    "expected": "toolkit-plugin-reference",
+    "accept": [
+      "toolkit-change-control"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-change-control",
+    "got": "toolkit-plugin-reference",
+    "runs": [
+      "toolkit-plugin-reference",
+      "toolkit-plugin-reference",
+      "toolkit-plugin-reference"
+    ]
+  },
+  {
+    "query": "did the dist mirror get updated when I edited the skill",
+    "expected": "toolkit-change-control",
+    "accept": [
+      "toolkit-debugging-playbook"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-change-control",
+    "got": "toolkit-debugging-playbook",
+    "runs": [
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook"
+    ]
+  },
+  {
+    "query": "retire the spec-browser skill, what do I remove",
+    "expected": "toolkit-change-control",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-change-control",
+    "got": "toolkit-change-control",
+    "runs": [
+      "toolkit-change-control",
+      "toolkit-change-control",
+      "toolkit-change-control"
+    ]
+  },
+  {
+    "query": "quick temp skill, skip the marketplace bit for now",
+    "expected": "toolkit-change-control",
+    "accept": [
+      "toolkit-foundry"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-change-control",
+    "got": "toolkit-foundry",
+    "runs": [
+      "toolkit-foundry",
+      "toolkit-foundry",
+      "toolkit-foundry"
+    ]
+  },
+  {
+    "query": "is it safe to hand-edit dist to hotfix this",
+    "expected": "toolkit-change-control",
+    "accept": [
+      "toolkit-failure-archaeology"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-change-control",
+    "got": "toolkit-failure-archaeology",
+    "runs": [
+      "toolkit-debugging-playbook",
+      "toolkit-change-control",
+      "toolkit-failure-archaeology"
+    ]
+  },
+  {
+    "query": "user says they still see the old skill behavior after my fix shipped",
+    "expected": "toolkit-debugging-playbook",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-change-control",
+    "got": "root-cause-analysis",
+    "runs": [
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "scaffold a brand new skill for me",
+    "expected": "toolkit-foundry",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-change-control",
+    "got": "toolkit-foundry",
+    "runs": [
+      "toolkit-foundry",
+      "toolkit-foundry",
+      "toolkit-foundry"
+    ]
+  },
+  {
+    "query": "review my description wording",
+    "expected": "toolkit-skill-standards",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-change-control",
+    "got": "toolkit-skill-standards",
+    "runs": [
+      "toolkit-skill-standards",
+      "toolkit-skill-standards",
+      "toolkit-skill-standards"
+    ]
+  },
+  {
+    "query": "am I done with this react feature?",
+    "expected": "preflight",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-change-control",
+    "got": "preflight",
+    "runs": [
+      "preflight",
+      "preflight",
+      "preflight"
+    ]
+  },
+  {
+    "query": "run typecheck lint and tests on my project",
+    "expected": "finalize",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-change-control",
+    "got": "finalize",
+    "runs": [
+      "finalize",
+      "finalize",
+      "finalize"
+    ]
+  },
+  {
+    "query": "write the commit message for this diff",
+    "expected": "git-commit",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-change-control",
+    "got": "git-commit",
+    "runs": [
+      "git-commit",
+      "git-commit",
+      "git-commit"
+    ]
+  },
+  {
+    "query": "whats semver",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-change-control",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "publish my npm package",
+    "expected": "release",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-change-control",
+    "got": "release",
+    "runs": [
+      "release",
+      "release",
+      "release"
+    ]
+  },
+  {
+    "query": "my skill isnt triggering",
+    "expected": "toolkit-debugging-playbook",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-debugging-playbook",
+    "got": "toolkit-debugging-playbook",
+    "runs": [
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook"
+    ]
+  },
+  {
+    "query": "why doesn't the plugin show up after install",
+    "expected": "toolkit-debugging-playbook",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-debugging-playbook",
+    "got": "toolkit-debugging-playbook",
+    "runs": [
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook"
+    ]
+  },
+  {
+    "query": "the installed version of session-report behaves differently than the repo",
+    "expected": "toolkit-debugging-playbook",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-debugging-playbook",
+    "got": "toolkit-debugging-playbook",
+    "runs": [
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook"
+    ]
+  },
+  {
+    "query": "plugin.json fails to parse on install",
+    "expected": "toolkit-debugging-playbook",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-debugging-playbook",
+    "got": "toolkit-debugging-playbook",
+    "runs": [
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook"
+    ]
+  },
+  {
+    "query": "condux agents seem stale after I edited explorer.md",
+    "expected": "toolkit-debugging-playbook",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-debugging-playbook",
+    "got": "condux-doctor",
+    "runs": [
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook",
+      "condux-doctor"
+    ]
+  },
+  {
+    "query": "user reports the old bug is still there after the fix shipped",
+    "expected": "toolkit-debugging-playbook",
+    "accept": [
+      "root-cause-analysis"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-debugging-playbook",
+    "got": "root-cause-analysis",
+    "runs": [
+      "root-cause-analysis",
+      "root-cause-analysis",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "skill shows up with an empty description in the picker",
+    "expected": "toolkit-debugging-playbook",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-debugging-playbook",
+    "got": "toolkit-debugging-playbook",
+    "runs": [
+      "toolkit-skill-standards",
+      "toolkit-skill-standards",
+      "toolkit-debugging-playbook"
+    ]
+  },
+  {
+    "query": "why does codex install fail with missing plugin.json",
+    "expected": "toolkit-debugging-playbook",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-debugging-playbook",
+    "got": "toolkit-debugging-playbook",
+    "runs": [
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook"
+    ]
+  },
+  {
+    "query": "tests say dist drifted, what do I do",
+    "expected": "toolkit-debugging-playbook",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-debugging-playbook",
+    "got": "toolkit-debugging-playbook",
+    "runs": [
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook"
+    ]
+  },
+  {
+    "query": "node --test failing on manifest parity",
+    "expected": "toolkit-debugging-playbook",
+    "accept": [
+      "toolkit-change-control"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-debugging-playbook",
+    "got": "toolkit-debugging-playbook",
+    "runs": [
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook"
+    ]
+  },
+  {
+    "query": "skil not trigering help",
+    "expected": "toolkit-debugging-playbook",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-debugging-playbook",
+    "got": "toolkit-debugging-playbook",
+    "runs": [
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook"
+    ]
+  },
+  {
+    "query": "plugin install worked in claude code but codex cant see it",
+    "expected": "toolkit-debugging-playbook",
+    "accept": [
+      "docket-doctor"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-debugging-playbook",
+    "got": "toolkit-debugging-playbook",
+    "runs": [
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook"
+    ]
+  },
+  {
+    "query": "is docket registered on this machine?",
+    "expected": "docket-doctor",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-debugging-playbook",
+    "got": "docket-doctor",
+    "runs": [
+      "docket-doctor",
+      "docket-doctor",
+      "docket-doctor"
+    ]
+  },
+  {
+    "query": "the docket mcp server stopped answering after I updated the plugin",
+    "expected": "docket-doctor",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-debugging-playbook",
+    "got": "docket-doctor",
+    "runs": [
+      "docket-doctor",
+      "docket-doctor",
+      "docket-doctor"
+    ]
+  },
+  {
+    "query": "check whether docket is healthy on this laptop",
+    "expected": "docket-doctor",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-debugging-playbook",
+    "got": "docket-doctor",
+    "runs": [
+      "docket-doctor",
+      "docket-doctor",
+      "docket-doctor"
+    ]
+  },
+  {
+    "query": "my react app crashes on load",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-debugging-playbook",
+    "got": "root-cause-analysis",
+    "runs": [
+      "root-cause-analysis",
+      "root-cause-analysis",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "debug this failing jest test in my project",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-debugging-playbook",
+    "got": "root-cause-analysis",
+    "runs": [
+      "root-cause-analysis",
+      "root-cause-analysis",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "review the description wording for triggering",
+    "expected": "toolkit-skill-standards",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-debugging-playbook",
+    "got": "toolkit-skill-standards",
+    "runs": [
+      "toolkit-skill-standards",
+      "toolkit-skill-standards",
+      "toolkit-skill-standards"
+    ]
+  },
+  {
+    "query": "has this drift thing happened before",
+    "expected": "toolkit-failure-archaeology",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-debugging-playbook",
+    "got": "toolkit-failure-archaeology",
+    "runs": [
+      "toolkit-failure-archaeology",
+      "toolkit-failure-archaeology",
+      "toolkit-failure-archaeology"
+    ]
+  },
+  {
+    "query": "what fields does plugin.json need",
+    "expected": "toolkit-plugin-reference",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-debugging-playbook",
+    "got": "toolkit-plugin-reference",
+    "runs": [
+      "toolkit-plugin-reference",
+      "toolkit-plugin-reference",
+      "toolkit-plugin-reference"
+    ]
+  },
+  {
+    "query": "browser devtools show a network error on my site",
+    "expected": null,
+    "accept": [
+      "root-cause-analysis"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-debugging-playbook",
+    "got": "workflow",
+    "runs": [
+      null,
+      "root-cause-analysis",
+      "workflow"
+    ]
+  },
+  {
+    "query": "fix the 502 on my nginx server",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-debugging-playbook",
+    "got": "workflow",
+    "runs": [
+      null,
+      "root-cause-analysis",
+      "workflow"
+    ]
+  },
+  {
+    "query": "has this happened before",
+    "expected": "toolkit-failure-archaeology",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-failure-archaeology",
+    "got": "toolkit-failure-archaeology",
+    "runs": [
+      "toolkit-failure-archaeology",
+      "toolkit-failure-archaeology",
+      "toolkit-failure-archaeology"
+    ]
+  },
+  {
+    "query": "why do we never edit dist directly, whats the story",
+    "expected": "toolkit-failure-archaeology",
+    "accept": [
+      "toolkit-orientation"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-failure-archaeology",
+    "got": "toolkit-failure-archaeology",
+    "runs": [
+      "toolkit-failure-archaeology",
+      "toolkit-failure-archaeology",
+      "toolkit-failure-archaeology"
+    ]
+  },
+  {
+    "query": "add this incident to the ledger",
+    "expected": "toolkit-failure-archaeology",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-failure-archaeology",
+    "got": "toolkit-failure-archaeology",
+    "runs": [
+      "toolkit-failure-archaeology",
+      "toolkit-failure-archaeology",
+      "toolkit-failure-archaeology"
+    ]
+  },
+  {
+    "query": "did we ever try per-package spec paths",
+    "expected": "toolkit-failure-archaeology",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-failure-archaeology",
+    "got": "toolkit-failure-archaeology",
+    "runs": [
+      "toolkit-failure-archaeology",
+      "toolkit-failure-archaeology",
+      "toolkit-failure-archaeology"
+    ]
+  },
+  {
+    "query": "whats the deal with the stale codex cache incident",
+    "expected": "toolkit-failure-archaeology",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-failure-archaeology",
+    "got": "toolkit-failure-archaeology",
+    "runs": [
+      "toolkit-failure-archaeology",
+      "toolkit-failure-archaeology",
+      "toolkit-failure-archaeology"
+    ]
+  },
+  {
+    "query": "why does sync.sh special-case the agents dir",
+    "expected": "toolkit-failure-archaeology",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-failure-archaeology",
+    "got": "toolkit-failure-archaeology",
+    "runs": [
+      "toolkit-failure-archaeology",
+      "toolkit-failure-archaeology",
+      "toolkit-failure-archaeology"
+    ]
+  },
+  {
+    "query": "show me past marketplace registration screwups",
+    "expected": "toolkit-failure-archaeology",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-failure-archaeology",
+    "got": "toolkit-failure-archaeology",
+    "runs": [
+      "toolkit-failure-archaeology",
+      "toolkit-failure-archaeology",
+      "toolkit-failure-archaeology"
+    ]
+  },
+  {
+    "query": "we should try monorepo plan paths",
+    "expected": "toolkit-failure-archaeology",
+    "accept": [
+      "toolkit-research-frontier"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-failure-archaeology",
+    "got": "toolkit-research-frontier",
+    "runs": [
+      "toolkit-research-frontier",
+      "toolkit-research-frontier",
+      "toolkit-research-frontier"
+    ]
+  },
+  {
+    "query": "why is grep -P banned here",
+    "expected": "toolkit-failure-archaeology",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-failure-archaeology",
+    "got": "toolkit-failure-archaeology",
+    "runs": [
+      null,
+      null,
+      "toolkit-failure-archaeology"
+    ]
+  },
+  {
+    "query": "when did the invariant tests get added and why",
+    "expected": "toolkit-failure-archaeology",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-failure-archaeology",
+    "got": null,
+    "runs": [
+      "toolkit-failure-archaeology",
+      null,
+      null
+    ]
+  },
+  {
+    "query": "whats the doctrine on version bumps and why does it exist",
+    "expected": "toolkit-failure-archaeology",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-failure-archaeology",
+    "got": "toolkit-failure-archaeology",
+    "runs": [
+      "toolkit-failure-archaeology",
+      "toolkit-failure-archaeology",
+      "toolkit-failure-archaeology"
+    ]
+  },
+  {
+    "query": "what mistakes did past sessions make in this repo",
+    "expected": "toolkit-failure-archaeology",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-failure-archaeology",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "record that the parity test just caught an asymmetric edit",
+    "expected": "toolkit-failure-archaeology",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-failure-archaeology",
+    "got": "toolkit-failure-archaeology",
+    "runs": [
+      "record",
+      "remember",
+      "toolkit-failure-archaeology"
+    ]
+  },
+  {
+    "query": "history of the technical-spec plugin, why is there no standalone dist for it",
+    "expected": "toolkit-failure-archaeology",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-failure-archaeology",
+    "got": null,
+    "runs": [
+      "toolkit-failure-archaeology",
+      "toolkit-orientation",
+      null
+    ]
+  },
+  {
+    "query": "why are there two rename commits a605be9 and 0b88ab2",
+    "expected": "toolkit-failure-archaeology",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-failure-archaeology",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "my skill is broken right now help",
+    "expected": "toolkit-debugging-playbook",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-failure-archaeology",
+    "got": "toolkit-debugging-playbook",
+    "runs": [
+      "toolkit-debugging-playbook",
+      "root-cause-analysis",
+      "toolkit-debugging-playbook"
+    ]
+  },
+  {
+    "query": "how do I use git bisect to find a bad commit",
+    "expected": "git-operations",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-failure-archaeology",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "what version do I bump for this change",
+    "expected": "toolkit-change-control",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-failure-archaeology",
+    "got": "toolkit-change-control",
+    "runs": [
+      "toolkit-change-control",
+      "toolkit-change-control",
+      "toolkit-change-control"
+    ]
+  },
+  {
+    "query": "has this happened before in my nextjs app",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-failure-archaeology",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "write a postmortem for our production outage",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-failure-archaeology",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "git blame this line for me",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-failure-archaeology",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "how is this repo organized",
+    "expected": "toolkit-orientation",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-orientation",
+    "got": "toolkit-orientation",
+    "runs": [
+      "toolkit-orientation",
+      "toolkit-orientation",
+      "toolkit-orientation"
+    ]
+  },
+  {
+    "query": "where do skills actually live in agentic-toolkit, skills/ or dist?",
+    "expected": "toolkit-orientation",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-orientation",
+    "got": "toolkit-orientation",
+    "runs": [
+      "toolkit-orientation",
+      "toolkit-orientation",
+      "toolkit-orientation"
+    ]
+  },
+  {
+    "query": "what is the dist folder for",
+    "expected": "toolkit-orientation",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-orientation",
+    "got": "toolkit-orientation",
+    "runs": [
+      "toolkit-orientation",
+      "toolkit-orientation",
+      "toolkit-orientation"
+    ]
+  },
+  {
+    "query": "which files here are generated vs hand written",
+    "expected": "toolkit-orientation",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-orientation",
+    "got": "toolkit-orientation",
+    "runs": [
+      "toolkit-orientation",
+      "toolkit-orientation",
+      "toolkit-orientation"
+    ]
+  },
+  {
+    "query": "im new to this repo, give me the lay of the land",
+    "expected": "toolkit-orientation",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-orientation",
+    "got": "toolkit-orientation",
+    "runs": [
+      "toolkit-orientation",
+      "toolkit-orientation",
+      "toolkit-orientation"
+    ]
+  },
+  {
+    "query": "where should I NOT write files in this repo",
+    "expected": "toolkit-orientation",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-orientation",
+    "got": "toolkit-orientation",
+    "runs": [
+      "toolkit-orientation",
+      "toolkit-orientation",
+      "toolkit-orientation"
+    ]
+  },
+  {
+    "query": "why is there a skills/condux dir inside dist/plugins/condux",
+    "expected": "toolkit-orientation",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-orientation",
+    "got": "toolkit-orientation",
+    "runs": [
+      "toolkit-orientation",
+      "toolkit-orientation",
+      "toolkit-orientation"
+    ]
+  },
+  {
+    "query": "can I edit dist/plugins/session-report directly? quick fix",
+    "expected": "toolkit-orientation",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-orientation",
+    "got": "toolkit-orientation",
+    "runs": [
+      "toolkit-orientation",
+      "toolkit-orientation",
+      "toolkit-orientation"
+    ]
+  },
+  {
+    "query": "readme says one thing but the folder looks different, which do I trust",
+    "expected": "toolkit-orientation",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-orientation",
+    "got": "toolkit-orientation",
+    "runs": [
+      "toolkit-orientation",
+      "toolkit-orientation",
+      "toolkit-orientation"
+    ]
+  },
+  {
+    "query": "wheres the marketplace json and what reads it",
+    "expected": "toolkit-orientation",
+    "accept": [
+      "toolkit-plugin-reference"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-orientation",
+    "got": "toolkit-orientation",
+    "runs": [
+      "toolkit-orientation",
+      "toolkit-orientation",
+      "toolkit-orientation"
+    ]
+  },
+  {
+    "query": "whered the .claude/skills folder go",
+    "expected": "toolkit-orientation",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-orientation",
+    "got": "toolkit-orientation",
+    "runs": [
+      "toolkit-orientation",
+      "toolkit-orientation",
+      "toolkit-orientation"
+    ]
+  },
+  {
+    "query": "explain the two install channels, npx skills add vs plugin install",
+    "expected": "toolkit-plugin-reference",
+    "accept": [
+      "toolkit-orientation"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-orientation",
+    "got": "toolkit-orientation",
+    "runs": [
+      "toolkit-orientation",
+      "toolkit-orientation",
+      "toolkit-orientation"
+    ]
+  },
+  {
+    "query": "whats the difference between .claude-plugin and .codex-plugin manifests",
+    "expected": "toolkit-plugin-reference",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-orientation",
+    "got": "toolkit-plugin-reference",
+    "runs": [
+      "toolkit-plugin-reference",
+      "toolkit-plugin-reference",
+      "toolkit-plugin-reference"
+    ]
+  },
+  {
+    "query": "add a new skill to the toolkit",
+    "expected": "toolkit-foundry",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-orientation",
+    "got": "toolkit-foundry",
+    "runs": [
+      "toolkit-foundry",
+      "toolkit-foundry",
+      "toolkit-foundry"
+    ]
+  },
+  {
+    "query": "why isnt my skill triggering",
+    "expected": "toolkit-debugging-playbook",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-orientation",
+    "got": "toolkit-debugging-playbook",
+    "runs": [
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook"
+    ]
+  },
+  {
+    "query": "is this skill fully shipped?",
+    "expected": "toolkit-change-control",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-orientation",
+    "got": "toolkit-change-control",
+    "runs": [
+      "toolkit-change-control",
+      "toolkit-change-control",
+      "toolkit-change-control"
+    ]
+  },
+  {
+    "query": "what does the condux workflow tier system do",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-orientation",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "help me undo my last commit",
+    "expected": "git-operations",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-orientation",
+    "got": "git-operations",
+    "runs": [
+      "git-operations",
+      "git-operations",
+      "git-operations"
+    ]
+  },
+  {
+    "query": "format this markdown table",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-orientation",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "orient me in the maestro-api-gateway repo",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-orientation",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "claude vs codex manifest differences",
+    "expected": "toolkit-plugin-reference",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-plugin-reference",
+    "got": "toolkit-plugin-reference",
+    "runs": [
+      "toolkit-plugin-reference",
+      "toolkit-plugin-reference",
+      "toolkit-plugin-reference"
+    ]
+  },
+  {
+    "query": "whats the marketplace entry format",
+    "expected": "toolkit-plugin-reference",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-plugin-reference",
+    "got": "toolkit-plugin-reference",
+    "runs": [
+      "toolkit-plugin-reference",
+      "toolkit-plugin-reference",
+      "toolkit-plugin-reference"
+    ]
+  },
+  {
+    "query": "does the claude manifest need the interface block",
+    "expected": "toolkit-plugin-reference",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-plugin-reference",
+    "got": "toolkit-plugin-reference",
+    "runs": [
+      "toolkit-plugin-reference",
+      "toolkit-plugin-reference",
+      "toolkit-plugin-reference"
+    ]
+  },
+  {
+    "query": "where does the hooks field go, claude or codex manifest",
+    "expected": "toolkit-plugin-reference",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-plugin-reference",
+    "got": "toolkit-plugin-reference",
+    "runs": [
+      "toolkit-plugin-reference",
+      "toolkit-plugin-reference",
+      "toolkit-plugin-reference"
+    ]
+  },
+  {
+    "query": "skills path — ./skills or ./skills/name?",
+    "expected": "toolkit-plugin-reference",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-plugin-reference",
+    "got": "toolkit-plugin-reference",
+    "runs": [
+      "toolkit-orientation",
+      "toolkit-orientation",
+      "toolkit-plugin-reference"
+    ]
+  },
+  {
+    "query": "is strict a real marketplace field here",
+    "expected": "toolkit-plugin-reference",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-plugin-reference",
+    "got": "toolkit-plugin-reference",
+    "runs": [
+      "toolkit-plugin-reference",
+      "toolkit-plugin-reference",
+      "toolkit-plugin-reference"
+    ]
+  },
+  {
+    "query": "how does npx skills add find the skills in this repo",
+    "expected": "toolkit-plugin-reference",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-plugin-reference",
+    "got": "toolkit-plugin-reference",
+    "runs": [
+      "toolkit-orientation",
+      null,
+      "toolkit-plugin-reference"
+    ]
+  },
+  {
+    "query": "what frontmatter fields are actually parsed vs just convention",
+    "expected": "toolkit-plugin-reference",
+    "accept": [
+      "toolkit-skill-standards"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-plugin-reference",
+    "got": "toolkit-skill-standards",
+    "runs": [
+      "toolkit-plugin-reference",
+      "toolkit-skill-standards",
+      "toolkit-skill-standards"
+    ]
+  },
+  {
+    "query": "hooks is missing from the condux claude manifest, is that a bug",
+    "expected": "toolkit-plugin-reference",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-plugin-reference",
+    "got": "toolkit-plugin-reference",
+    "runs": [
+      "toolkit-plugin-reference",
+      "toolkit-plugin-reference",
+      "toolkit-plugin-reference"
+    ]
+  },
+  {
+    "query": "whats a valid category value for the marketplace entry",
+    "expected": "toolkit-plugin-reference",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-plugin-reference",
+    "got": "toolkit-plugin-reference",
+    "runs": [
+      "toolkit-plugin-reference",
+      "toolkit-plugin-reference",
+      "toolkit-plugin-reference"
+    ]
+  },
+  {
+    "query": "keywords differ between the two manifests, does the parity test care",
+    "expected": "toolkit-plugin-reference",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-plugin-reference",
+    "got": "toolkit-plugin-reference",
+    "runs": [
+      "toolkit-plugin-reference",
+      "toolkit-plugin-reference",
+      "toolkit-plugin-reference"
+    ]
+  },
+  {
+    "query": "what is defaultPrompt for",
+    "expected": "toolkit-plugin-reference",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-plugin-reference",
+    "got": "toolkit-plugin-reference",
+    "runs": [
+      "toolkit-plugin-reference",
+      "toolkit-plugin-reference",
+      "toolkit-plugin-reference"
+    ]
+  },
+  {
+    "query": "how do plugin caches refresh when I ship a fix",
+    "expected": "toolkit-plugin-reference",
+    "accept": [
+      "toolkit-debugging-playbook"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-plugin-reference",
+    "got": "toolkit-plugin-reference",
+    "runs": [
+      "toolkit-orientation",
+      null,
+      "toolkit-plugin-reference"
+    ]
+  },
+  {
+    "query": "what does $schema in marketplace.json actually do",
+    "expected": "toolkit-plugin-reference",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-plugin-reference",
+    "got": "toolkit-plugin-reference",
+    "runs": [
+      "toolkit-plugin-reference",
+      "toolkit-plugin-reference",
+      "toolkit-plugin-reference"
+    ]
+  },
+  {
+    "query": "is argument-hint a real frontmatter field",
+    "expected": "toolkit-plugin-reference",
+    "accept": [
+      "toolkit-skill-standards"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-plugin-reference",
+    "got": "toolkit-skill-standards",
+    "runs": [
+      "toolkit-plugin-reference",
+      "toolkit-skill-standards",
+      "toolkit-skill-standards"
+    ]
+  },
+  {
+    "query": "add the marketplace entry for my new skill",
+    "expected": "toolkit-foundry",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-plugin-reference",
+    "got": "toolkit-foundry",
+    "runs": [
+      "toolkit-foundry",
+      "toolkit-foundry",
+      "toolkit-foundry"
+    ]
+  },
+  {
+    "query": "manifest fails json parse on install",
+    "expected": "toolkit-debugging-playbook",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-plugin-reference",
+    "got": "toolkit-debugging-playbook",
+    "runs": [
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook"
+    ]
+  },
+  {
+    "query": "which version do I bump for this change",
+    "expected": "toolkit-change-control",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-plugin-reference",
+    "got": "toolkit-change-control",
+    "runs": [
+      "toolkit-change-control",
+      "toolkit-change-control",
+      "toolkit-change-control"
+    ]
+  },
+  {
+    "query": "write an MCP server manifest",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-plugin-reference",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "package.json exports field question",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-plugin-reference",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "what should we improve next in the toolkit",
+    "expected": "toolkit-research-frontier",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-research-frontier",
+    "got": "toolkit-research-frontier",
+    "runs": [
+      "toolkit-research-frontier",
+      "toolkit-research-frontier",
+      "toolkit-research-frontier"
+    ]
+  },
+  {
+    "query": "whats still open after the audit",
+    "expected": "toolkit-research-frontier",
+    "accept": [
+      "groom"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-research-frontier",
+    "got": null,
+    "runs": [
+      null,
+      "toolkit-research-frontier",
+      null
+    ]
+  },
+  {
+    "query": "toolkit roadmap",
+    "expected": "toolkit-research-frontier",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-research-frontier",
+    "got": "toolkit-research-frontier",
+    "runs": [
+      "toolkit-research-frontier",
+      "toolkit-research-frontier",
+      "toolkit-research-frontier"
+    ]
+  },
+  {
+    "query": "run the health campaign",
+    "expected": "toolkit-research-frontier",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-research-frontier",
+    "got": "toolkit-research-frontier",
+    "runs": [
+      "toolkit-research-frontier",
+      "toolkit-research-frontier",
+      "toolkit-research-frontier"
+    ]
+  },
+  {
+    "query": "should we add a script that fails when dist drifts",
+    "expected": "toolkit-research-frontier",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-research-frontier",
+    "got": "toolkit-research-frontier",
+    "runs": [
+      "toolkit-research-frontier",
+      null,
+      "toolkit-research-frontier"
+    ]
+  },
+  {
+    "query": "how would we automate trigger collision detection",
+    "expected": "toolkit-research-frontier",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-research-frontier",
+    "got": "toolkit-research-frontier",
+    "runs": [
+      "toolkit-research-frontier",
+      "toolkit-research-frontier",
+      "toolkit-research-frontier"
+    ]
+  },
+  {
+    "query": "is it worth adding yaml validation to the tests",
+    "expected": "toolkit-research-frontier",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-research-frontier",
+    "got": "toolkit-research-frontier",
+    "runs": [
+      "toolkit-research-frontier",
+      null,
+      "toolkit-research-frontier"
+    ]
+  },
+  {
+    "query": "where did we leave the trigger-eval work",
+    "expected": "toolkit-research-frontier",
+    "accept": [],
+    "disallowed": [
+      "remember"
+    ],
+    "kind": "cold",
+    "source": "toolkit-research-frontier",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "next three steps for the skill library",
+    "expected": "toolkit-research-frontier",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-research-frontier",
+    "got": "toolkit-research-frontier",
+    "runs": [
+      "toolkit-research-frontier",
+      "toolkit-research-frontier",
+      "toolkit-research-frontier"
+    ]
+  },
+  {
+    "query": "do our trigger evals actually get executed anywhere",
+    "expected": "toolkit-research-frontier",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-research-frontier",
+    "got": "toolkit-research-frontier",
+    "runs": [
+      null,
+      "toolkit-research-frontier",
+      "toolkit-research-frontier"
+    ]
+  },
+  {
+    "query": "is manifest parity enforced now or still open",
+    "expected": "toolkit-research-frontier",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-research-frontier",
+    "got": "toolkit-research-frontier",
+    "runs": [
+      "toolkit-research-frontier",
+      "toolkit-research-frontier",
+      "toolkit-research-frontier"
+    ]
+  },
+  {
+    "query": "how do I check whether our skill descriptions route correctly on a real model",
+    "expected": "toolkit-research-frontier",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-research-frontier",
+    "got": "toolkit-skill-standards",
+    "runs": [
+      "toolkit-skill-standards",
+      null,
+      "toolkit-skill-standards"
+    ]
+  },
+  {
+    "query": "docs catalog test — worth adding?",
+    "expected": "toolkit-research-frontier",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-research-frontier",
+    "got": "toolkit-research-frontier",
+    "runs": [
+      "toolkit-research-frontier",
+      "toolkit-research-frontier",
+      "toolkit-research-frontier"
+    ]
+  },
+  {
+    "query": "we shoud probly test frontmater yaml strictly",
+    "expected": "toolkit-research-frontier",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-research-frontier",
+    "got": "toolkit-research-frontier",
+    "runs": [
+      "toolkit-research-frontier",
+      "toolkit-research-frontier",
+      "toolkit-research-frontier"
+    ]
+  },
+  {
+    "query": "what did the 2026-07-08 audit leave open",
+    "expected": "toolkit-research-frontier",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-research-frontier",
+    "got": "toolkit-research-frontier",
+    "runs": [
+      "toolkit-failure-archaeology",
+      "toolkit-research-frontier",
+      "toolkit-research-frontier"
+    ]
+  },
+  {
+    "query": "fix this failing test right now",
+    "expected": "toolkit-debugging-playbook",
+    "accept": [
+      "workflow",
+      "root-cause-analysis",
+      "test-first-development"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-research-frontier",
+    "got": "test-first-development",
+    "runs": [
+      "test-first-development",
+      "workflow",
+      "test-first-development"
+    ]
+  },
+  {
+    "query": "improve this skill's description",
+    "expected": "toolkit-skill-standards",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-research-frontier",
+    "got": "toolkit-skill-standards",
+    "runs": [
+      "toolkit-skill-standards",
+      "toolkit-skill-standards",
+      "toolkit-skill-standards"
+    ]
+  },
+  {
+    "query": "what should we improve next in my saas product",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-research-frontier",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "whats the roadmap for my nextjs app",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-research-frontier",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "research react server components for me",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-research-frontier",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "what open source alternatives exist for plannotator",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-research-frontier",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "review this skill description",
+    "expected": "toolkit-skill-standards",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-skill-standards",
+    "got": "toolkit-skill-standards",
+    "runs": [
+      "toolkit-skill-standards",
+      "toolkit-skill-standards",
+      "toolkit-skill-standards"
+    ]
+  },
+  {
+    "query": "my description is 600 chars is that ok",
+    "expected": "toolkit-skill-standards",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-skill-standards",
+    "got": "toolkit-skill-standards",
+    "runs": [
+      "toolkit-skill-standards",
+      "toolkit-skill-standards",
+      "toolkit-skill-standards"
+    ]
+  },
+  {
+    "query": "does this new skill collide with toolkit-foundry",
+    "expected": "toolkit-skill-standards",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-skill-standards",
+    "got": "toolkit-skill-standards",
+    "runs": [
+      "toolkit-skill-standards",
+      "toolkit-skill-standards",
+      "toolkit-skill-standards"
+    ]
+  },
+  {
+    "query": "where should this long checklist live, SKILL.md or references",
+    "expected": "toolkit-skill-standards",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-skill-standards",
+    "got": "toolkit-skill-standards",
+    "runs": [
+      "toolkit-skill-standards",
+      "toolkit-skill-standards",
+      "toolkit-skill-standards"
+    ]
+  },
+  {
+    "query": "write frontmatter for a new toolkit skill",
+    "expected": "toolkit-skill-standards",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-skill-standards",
+    "got": "toolkit-skill-standards",
+    "runs": [
+      "toolkit-skill-standards",
+      "toolkit-skill-standards",
+      "toolkit-skill-standards"
+    ]
+  },
+  {
+    "query": "whats the max frontmatter size again",
+    "expected": "toolkit-skill-standards",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-skill-standards",
+    "got": "toolkit-skill-standards",
+    "runs": [
+      "toolkit-skill-standards",
+      "toolkit-skill-standards",
+      "toolkit-skill-standards"
+    ]
+  },
+  {
+    "query": "should the description start with Use when or can I use when_to_use",
+    "expected": "toolkit-skill-standards",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-skill-standards",
+    "got": "toolkit-skill-standards",
+    "runs": [
+      "toolkit-skill-standards",
+      "toolkit-skill-standards",
+      "toolkit-skill-standards"
+    ]
+  },
+  {
+    "query": "make this skill trigger better",
+    "expected": "toolkit-skill-standards",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-skill-standards",
+    "got": "toolkit-skill-standards",
+    "runs": [
+      "toolkit-skill-standards",
+      "toolkit-skill-standards",
+      "toolkit-skill-standards"
+    ]
+  },
+  {
+    "query": "two of my skills keep both triggering on the same prompt",
+    "expected": "toolkit-skill-standards",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-skill-standards",
+    "got": "toolkit-skill-standards",
+    "runs": [
+      "toolkit-skill-standards",
+      "toolkit-skill-standards",
+      "toolkit-skill-standards"
+    ]
+  },
+  {
+    "query": "my yaml description has a colon and things broke",
+    "expected": "toolkit-skill-standards",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-skill-standards",
+    "got": "toolkit-skill-standards",
+    "runs": [
+      "toolkit-skill-standards",
+      "toolkit-failure-archaeology",
+      "toolkit-skill-standards"
+    ]
+  },
+  {
+    "query": "does my skill need a when-not-to-use section",
+    "expected": "toolkit-skill-standards",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-skill-standards",
+    "got": "toolkit-skill-standards",
+    "runs": [
+      "toolkit-skill-standards",
+      "toolkit-skill-standards",
+      "toolkit-skill-standards"
+    ]
+  },
+  {
+    "query": "shorten this description under 500 chars without losing triggers",
+    "expected": "toolkit-skill-standards",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-skill-standards",
+    "got": "toolkit-skill-standards",
+    "runs": [
+      "toolkit-skill-standards",
+      "toolkit-skill-standards",
+      "toolkit-skill-standards"
+    ]
+  },
+  {
+    "query": "what belongs in references vs scripts dir of a skill",
+    "expected": "toolkit-skill-standards",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-skill-standards",
+    "got": "toolkit-skill-standards",
+    "runs": [
+      null,
+      "toolkit-skill-standards",
+      "toolkit-skill-standards"
+    ]
+  },
+  {
+    "query": "check my new skill against the house style",
+    "expected": "toolkit-skill-standards",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-skill-standards",
+    "got": "toolkit-skill-standards",
+    "runs": [
+      "toolkit-skill-standards",
+      "toolkit-skill-standards",
+      "toolkit-skill-standards"
+    ]
+  },
+  {
+    "query": "why isn't my skill triggering — description looks fine to me",
+    "expected": "toolkit-debugging-playbook",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-skill-standards",
+    "got": "toolkit-debugging-playbook",
+    "runs": [
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook",
+      "toolkit-debugging-playbook"
+    ]
+  },
+  {
+    "query": "scaffold and register the skill once the wording is done",
+    "expected": "toolkit-foundry",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-skill-standards",
+    "got": "toolkit-foundry",
+    "runs": [
+      "toolkit-foundry",
+      "toolkit-foundry",
+      "toolkit-foundry"
+    ]
+  },
+  {
+    "query": "write a good PR description",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-skill-standards",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "improve the docstring of this python function",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-skill-standards",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "lint my typescript code",
+    "expected": null,
+    "accept": [
+      "finalize"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "toolkit-skill-standards",
+    "got": "finalize",
+    "runs": [
+      null,
+      null,
+      "finalize"
+    ]
+  },
+  {
+    "query": "add an export button to the invoice table",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "workflow",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "fix the label on the settings page",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "workflow",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "build a new auth flow with SSO",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "workflow",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "refactor the dashboard module to feature-sliced design",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "workflow",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "new endpoint for order history",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "workflow",
+    "got": "condux:workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "condux:workflow"
+    ]
+  },
+  {
+    "query": "can you wire the onSave prop through",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "workflow",
+    "got": "condux:workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "condux:workflow"
+    ]
+  },
+  {
+    "query": "implement dark mode",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "workflow",
+    "got": "condux:workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "condux:workflow"
+    ]
+  },
+  {
+    "query": "quick typo fix in the header",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "workflow",
+    "got": "condux:workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "condux:workflow"
+    ]
+  },
+  {
+    "query": "treat this as LARGE: migrate sessions to redis",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "workflow",
+    "got": "condux:workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "condux:workflow"
+    ]
+  },
+  {
+    "query": "route this task",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "workflow",
+    "got": "condux:workflow",
+    "runs": [
+      null,
+      null,
+      "condux:workflow"
+    ]
+  },
+  {
+    "query": "implemnt a serch bar in the navbar",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "workflow",
+    "got": "condux:workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "condux:workflow"
+    ]
+  },
+  {
+    "query": "update the readme wording for the install section",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "workflow",
+    "got": "condux:workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "condux:workflow"
+    ]
+  },
+  {
+    "query": "theres a bug where checkout crashes on empty cart",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "workflow",
+    "got": "condux:workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "condux:workflow"
+    ]
+  },
+  {
+    "query": "i want to explore ideas for a notification system",
+    "expected": "discovery",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "workflow",
+    "got": "condux:discovery",
+    "runs": [
+      "discovery",
+      "discovery",
+      "condux:discovery"
+    ]
+  },
+  {
+    "query": "write the plan for the feature we just designed",
+    "expected": "draft-plan",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "workflow",
+    "got": "condux:draft-plan",
+    "runs": [
+      "draft-plan",
+      "draft-plan",
+      "condux:draft-plan"
+    ]
+  },
+  {
+    "query": "am I done? verify this",
+    "expected": "preflight",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "workflow",
+    "got": "condux:preflight",
+    "runs": [
+      "preflight",
+      "preflight",
+      "condux:preflight"
+    ]
+  },
+  {
+    "query": "review this diff before I merge",
+    "expected": "code-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "workflow",
+    "got": "code-review",
+    "runs": [
+      "code-review",
+      "code-review",
+      "code-review"
+    ]
+  },
+  {
+    "query": "whats the difference between the workflow tiers",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "workflow",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "how does condux work",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "workflow",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "explain the soft gates",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "workflow",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "can I skip workflow and just start",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "workflow",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "what are the four named agents",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "workflow",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "who wins, my CLAUDE.md or condux rules",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "workflow",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "why does condux ban mid-task test runs",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "workflow",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "what should we improve next in the toolkit repo",
+    "expected": "toolkit-research-frontier",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "workflow",
+    "got": "toolkit-research-frontier",
+    "runs": [
+      "toolkit-research-frontier",
+      "toolkit-research-frontier",
+      "toolkit-research-frontier"
+    ]
+  },
+  {
+    "query": "format this json blob",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "workflow",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "explain how react suspense works",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "source": "workflow",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  }
+]

@@ -5,7 +5,7 @@
   { "query": "did the concord hooks actually get wired into codex?", "should_trigger": true, "expected_skill": "concord-doctor" },
   { "query": "memory stopped being recalled after I updated codex", "should_trigger": true, "expected_skill": "concord-doctor" },
   { "query": "run a health check on concord", "should_trigger": true, "expected_skill": "concord-doctor" },
-  { "query": "remember that deploys need the VPN", "should_trigger": true, "expected_skill": "remember" },
+  { "query": "remember that deploys need the VPN", "should_trigger": true, "expected_skill": "remember", "disallowed": ["technical-spec"] },
   { "query": "what did we work on yesterday?", "should_trigger": true, "expected_skill": "remember" },
   { "query": "search my memory for the auth refactor", "should_trigger": true, "expected_skill": "remember" },
   { "query": "why isn't my skill triggering", "should_trigger": true, "expected_skill": "toolkit-debugging-playbook" },

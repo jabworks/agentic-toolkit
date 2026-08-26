@@ -93,31 +93,6 @@ Close as confirmed-or-corrected either way — A3b currently states the
 Haiku-only limitation in its own text, so the record is honest as it stands;
 this only tightens it.
 
-### 56. Seed `disallowed` on the technical-spec<->remember adjacency (2026-08-25)
-
-Found by the first band run with `disallowed` live (A3d,
-`eval-disallowed-band-2026-08-25.md`).
-
-`"record the decision rationale for future sessions"` expects `technical-spec` and
-routed to **`remember`** in 2 of 3 trials. `remember` is concord's memory skill. No
-phase of the health campaign has ever named this adjacency — A3's narrative was
-written before `remember` joined the catalog, and every doc-creation miss since has
-been attributed to the draft-plan↔technical-spec seam by default.
-
-The case carries `disallowed: ["draft-plan"]`, which is why we know it is *not* that
-seam: 0 violations, so it never once lost to draft-plan.
-
-Scope: add `disallowed: ["remember"]` to the technical-spec cases in the
-"record/document what we decided" space, and the mirror assertion on `remember`'s own
-corpus for its memory-capture phrasings. Then re-run to see whether it is a contract
-gap or judge noise at n=3.
-
-Worth checking while here: `remember` appears **4 times** as a miss target corpus-wide
-(A3d's table), so this may not be limited to technical-spec.
-
-Related: docket #10 (semantic collision detection) — this is a worked example of a
-collision that lexical and accuracy-dip methods both miss.
-
 ### 58. Re-run the 2026-07-11 corpus subset to separate contract lift from composition lift (2026-08-25)
 
 A3d measured **93.4% ± 1.9pp**, up from **88.4% ± 0.7pp** on 2026-07-11, and updated
