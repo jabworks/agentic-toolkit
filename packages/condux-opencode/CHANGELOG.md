@@ -1,5 +1,18 @@
 # @jabworks/condux
 
+## 0.17.0
+
+### Minor Changes
+
+- [#122](https://github.com/jabworks/agentic-toolkit/pull/122) [`43753b5`](https://github.com/jabworks/agentic-toolkit/commit/43753b53d6acd61cab8d8f4315db43bd5c019af9) Thanks [@vi-hieu](https://github.com/vi-hieu)! - technical-spec's concern-file templates are layered: every file opens with a
+  scannable summary table and carries its reasoning underneath. decisions.md
+  drops the four ADR prose headings for Decided/Because one-liners with a
+  mandatory alternatives table; quirks.md gets Symptom/Trigger/Cause/Mitigation
+  with canonical `## Q<n> — Title` headings; api.md types annotate every field
+  inline (the type says what a field means, fields.md says what happens to it);
+  implementation.md's data flow becomes a numbered list; index.md's Contents
+  becomes a File/Answers table, pre-shaped by the scaffold.
+
 ## 0.16.0
 
 ### Minor Changes
