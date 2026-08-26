@@ -12,9 +12,13 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## toolkit-ops 1.7.12 — 2026-08-26
+
+- chore(toolkit-ops): version 1.7.12
+
 ## toolkit-ops 1.7.11 — 2026-08-26
 
-- chore(toolkit-ops): version 1.7.11
+- feat(workflow,draft-plan): widen contracts against the null-route error mode
 
 ## toolkit-ops 1.7.10 — 2026-08-26
 
@@ -24,9 +28,13 @@ The `@jabworks/condux` npm package has its own changelog at
 
 - test(evals): fail on divergent accept across a dedup key (#55)
 
+## condux 2.24.3 — 2026-08-26
+
+- chore(condux): version 2.24.3
+
 ## condux 2.24.2 — 2026-08-26
 
-- chore(condux): version 2.24.2
+- feat(workflow,draft-plan): widen contracts against the null-route error mode
 
 ## condux 2.24.1 — 2026-08-26
 
@@ -47,6 +55,10 @@ The `@jabworks/condux` npm package has its own changelog at
 ## condux 2.22.0 — 2026-08-26
 
 - feat(blueprint): speak the surface-kit design language, two modes
+
+## concord 0.6.1 — 2026-08-26
+
+- chore(concord): version 0.6.1
 
 ## toolkit-ops 1.7.8 — 2026-08-25
 

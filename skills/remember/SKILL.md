@@ -1,7 +1,7 @@
 ---
 name: remember
 description: Continuous memory for Codex — write explicit remembers, and recall from Concord's own tiers when a question reaches past what session start injected.
-when_to_use: Trigger on "remember that…", "note for next time", "keep this in mind", "what did we do last time", or a question about Concord's memory files, tiers, or hooks. Not for saving state to resume a task mid-flight — that is session-handoff. Not for open-ended retrospective questions, even about this project — "what mistakes did past sessions make", "what did the audit leave open", "has this happened before" in another project — Concord holds a session log, not a mistake ledger or audit index; a toolkit mistake in this project is toolkit-failure-archaeology, and there is no skill for the rest.
+when_to_use: Trigger on "remember that…", "note for next time", "keep this in mind", "what did we do last time", or a question about Concord's memory files, tiers, or hooks. Not for saving state to resume a task mid-flight — that is session-handoff. Not for recording project decisions, rationale, or specs — even phrased as for-future-sessions, durable project knowledge belongs in the repo's spec tree (technical-spec), not session memory. Not for open-ended retrospective questions, even about this project — "what mistakes did past sessions make", "what did the audit leave open", "has this happened before" in another project — Concord holds a session log, not a mistake ledger or audit index; a toolkit mistake in this project is toolkit-failure-archaeology, and there is no skill for the rest.
 ---
 
 # Concord
