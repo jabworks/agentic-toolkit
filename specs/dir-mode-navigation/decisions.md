@@ -1,5 +1,14 @@
 # Decisions
 
+| # | Decision | Because | Status |
+|---|---|---|---|
+| 1 | Doc-site split: folder tree + filter + breadcrumb + prev/next | the bar is "reads like a real doc site" at 50+ docs — a quieter flat list still scrolls forever | accepted |
+| 2 | Filter matches docs AND headings | one box that finds only doc names is half a search | accepted |
+| 3 | Collapse default: fold all except the active doc's ancestors | the sidebar fits a screenful and orientation survives at the 50+ scale | accepted |
+| 4 | Badge counts roll up to collapsed folder rows | pending feedback must never be invisible; a tree fighting the user's fold state is worse than a count | accepted |
+| 5 | Prev/next reuses the existing `docs[]` order | the order `listDocs()` already emits; no new ordering scheme, no frontmatter weights | accepted |
+| 6 | Single-file plan mode untouched — every addition `DIRMODE`-gated | plan review's core surface must render byte-for-byte as before | accepted |
+
 ## Architecture: doc-site split (2026-08-13)
 
 Chosen over a minimal retrofit of the flat list and over a Ctrl-K

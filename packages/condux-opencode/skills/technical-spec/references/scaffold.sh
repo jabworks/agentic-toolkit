@@ -101,6 +101,11 @@ cat > "$SPEC_DIR/index.md" <<EOF
 
 ## Contents
 
+| File | Answers |
+|---|---|
+<!-- One row per concern file you actually create — link + what a reader
+     comes to it for. Files that don't exist get no row. -->
+
 ## Changelog
 - $DATE ($COMMIT): Initial spec
 EOF

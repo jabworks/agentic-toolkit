@@ -1,5 +1,15 @@
 # blueprint — Decisions
 
+| # | Decision | Because | Status |
+|---|---|---|---|
+| 1 | Condux bundle member, not a standalone plugin | cross-plugin dependencies are banned, and bundle membership guarantees presence at the phase the skill exists for | accepted |
+| 2 | Name: `blueprint` | structural by definition — covers wireframes and system diagrams alike, signals clarity-not-aesthetics | accepted |
+| 3 | Grayscale single-mode discipline | superseded 2026-08-26 by two modes (wireframe/render) over one skeleton in the surface-kit tokens; the structural discipline survives in wireframe mode | superseded |
+| 4 | Dependency-free: self-contained HTML + inline SVG | no Mermaid CDN or image generation — identical on all four hosts (ladder rung 1) | accepted |
+| 5 | Two output families, chosen by surface | UI → wireframes, data model / topology → diagrams, both → both | accepted |
+| 6 | `mockup-picker.md` and `choice-server.js` stay in discovery | option picking is discovery's UX, and moving them breaks single-skill npx installs | accepted |
+| 7 | Three entry points + trigger-eval cases ship with the skill | the motivating defect was a mockup skill that almost never fired | accepted |
+
 - **Condux bundle member, not a standalone plugin.** Cross-plugin dependencies
   are banned (docket #6), so a standalone plugin would degrade the discovery
   integration to "load if installed". Bundle membership guarantees presence at

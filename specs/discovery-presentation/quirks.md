@@ -1,6 +1,6 @@
 # Quirks — Discovery Presentation
 
-## Q1. Creating the design file at §1 silently invalidates draft-plan's gate
+## Q1 — Creating the design file at §1 silently invalidates draft-plan's gate
 
 **Severity:** high
 **Discovered:** 2026-08-26 (during design, before implementation)
@@ -38,7 +38,7 @@ what every reader assumed it meant.
 
 ---
 
-## Q2. plan-review's markdown renderer escapes all HTML, by design
+## Q2 — plan-review's markdown renderer escapes all HTML, by design
 
 **Severity:** medium
 **Discovered:** 2026-08-26
@@ -68,7 +68,7 @@ escaping boundary described above.
 
 ---
 
-## Q3. A noun-shaped trigger cannot see a design that has no nouns
+## Q3 — A noun-shaped trigger cannot see a design that has no nouns
 
 **Severity:** medium
 **Discovered:** 2026-08-26
@@ -88,7 +88,7 @@ Worth remembering when writing any trigger contract, not just this one.
 
 ---
 
-## Q4. Two homes for one fact is how an explanation goes missing
+## Q4 — Two homes for one fact is how an explanation goes missing
 
 **Severity:** medium
 **Discovered:** 2026-08-26 (pass two — recorded here while the evidence is fresh)

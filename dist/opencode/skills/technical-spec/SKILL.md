@@ -95,8 +95,24 @@ Parse `commit`, `date`, and the **absolute spec path** from the output — use t
 
 Read [references/templates.md](references/templates.md) for the structure of each file.
 
+**The layering rule.** Every concern file opens with its summary table; the
+reasoning sits underneath; prose appears only where it earns its keep — the
+reasoning a future reader must be able to follow. Fill the table layer first:
+it is what a scanning human, `preflight`'s drift check, and an agent loading
+the spec all read, so write each row as a claim someone could check.
+
+**The two-homes rule.** A type in `api.md` says what each field *means* —
+trailing `//` per field, JSDoc only when a line won't do. `fields.md` says
+what *happens to it* — mapping and transformation only. One fact never lives
+in both places: a fact with two homes goes missing from the one being read.
+
+**Quirk headings are `## Q<n> — Title`.** The `Q<n>` anchors are a citation
+contract (`durable-citations.test.mjs` resolves them), so numbers are unique,
+ascending, and never renumbered.
+
 - Write only files that have real content
-- After writing, update the `## Contents` section in `index.md` with links to the files you created
+- After writing, update the `## Contents` table in `index.md` — one row per
+  file created, the `Answers` cell saying what a reader comes to it for
 - Replace the HTML comment the scaffold left below the title with a one-line
   `> …` note saying what the spec is for. That note is what `spec-browser`'s
   catalog shows for the spec; leave it and the spec is listed with nothing to
@@ -177,3 +193,5 @@ feedback file, if a decision is submitted).
 | Vague decisions | Each decision needs context + rationale + consequences |
 | Creating empty placeholder files | Only create a file when it has real content |
 | Forgetting to update index.md Contents | Always link to files you create |
+| Prose blob where the template has a table | Fill the table layer first; prose only for reasoning the table can't carry |
+| Bare interface with the field meanings in fields.md | Meaning goes on the type (`//` per field); fields.md carries only the journey |

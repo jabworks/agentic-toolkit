@@ -1,6 +1,6 @@
 # Edge cases and failure modes
 
-## Project-root resolution
+## Q1 — Project-root resolution
 
 | Situation | Resolution |
 |---|---|
@@ -12,7 +12,7 @@
 Rationale for main-worktree: continuity matters most exactly when switching
 between worktrees on one feature. Per-worktree isolation would lose it there.
 
-## Subagent rollouts
+## Q2 — Subagent rollouts
 
 Codex subagent sessions carry `agent_nickname` / `agent_role` in `session_meta`.
 **Skipped** — a single explorer run emits hundreds of tool calls that would swamp
@@ -22,7 +22,7 @@ parent session's messages.
 The reader **records that a subagent rollout was seen and skipped** (count in
 `state.json`), so enabling capture later is a config flip rather than a rewrite.
 
-## Rollout parsing hazards
+## Q3 — Rollout parsing hazards
 
 Carried over from `skills/session-report/analyze-codex.mjs`, which already
 handles these:
@@ -37,7 +37,7 @@ handles these:
 - A truncated final line is normal for a live session — parse line-by-line and
   discard unparseable lines silently rather than failing the file.
 
-## Consolidation failure modes
+## Q4 — Consolidation failure modes
 
 | Failure | Behavior |
 |---|---|
@@ -49,19 +49,19 @@ handles these:
 **Invariant:** consolidation never destroys data it has not successfully written
 elsewhere. Promotion is copy-then-truncate, never move.
 
-## Hook safety
+## Q5 — Hook safety
 
 A hook that throws must never break the session. Every handler wraps its body,
 exits 0 unconditionally, and logs failures to `<.concord>/logs/` rather than
 stderr. A memory plugin that can wedge Codex is worse than no memory plugin.
 
-## Recall budget overflow
+## Q6 — Recall budget overflow
 
 If `pinned` + global alone exceed the budget, emit them and note the overflow —
 the exempt tiers are exempt. Unbounded growth of `pinned.md` is a real risk over
 months; surfacing the overflow is the signal to prune.
 
-## Privacy
+## Q7 — Privacy
 
 The **project** tier is the sensitive one, not the global tier. `.concord/`
 holds verbatim prompts and tool output captured automatically from the rollout —

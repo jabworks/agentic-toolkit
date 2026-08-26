@@ -1,5 +1,12 @@
 # Decisions
 
+| # | Decision | Because | Status |
+|---|---|---|---|
+| 1 | An uninstaller reverses only what it exclusively owns | Codex's hooks flag has three writers and no owner; reference-counting needs banned cross-plugin knowledge and fails in the dangerous direction | accepted |
+| 2 | Machinery lives in the writer, not the front door | reversal is cheap where the writer already knows the shape of what it wrote; scattered install knowledge is what #9 fixed | accepted |
+| 3 | UNINSTALL.md at plugin root wrapping the deep procedure | the shape #19 settled for INSTALL.md, for reasons that carry over unchanged | accepted |
+| 4 | Surgical removal, never restore-from-backup | the `.bak` after a second install holds an already-registered config — restoring it would reinstate the registration being removed | accepted |
+
 ## 1. An uninstaller reverses only what it exclusively owns
 
 Shared host state is never cleared. `[features] hooks = true` in Codex's

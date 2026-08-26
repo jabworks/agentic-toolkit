@@ -1,26 +1,26 @@
 # Quirks
 
-## Immediate-children-only skill discovery
+## Q1 — Immediate-children-only skill discovery
 
 Spec clients never recurse below `skills/<child>/` — a nested tree fails
 *silently* (plugin valid, zero skills). This is why the bundles had to
 flatten; any future bundle must keep its skills at depth one.
 
-## Closed schemas, two severities
+## Q2 — Closed schemas, two severities
 
 An unknown top-level field in plugin.json is reported-and-ignored, but any
 other schema violation is **fatal** — the client rejects the whole plugin
 without loading components. The generator emits only the closed field set
 so there is nothing to reject.
 
-## Two MCP dialects in one plugin
+## Q3 — Two MCP dialects in one plugin
 
 Claude's `.mcp.json` (no `type`, `${CLAUDE_PLUGIN_ROOT}`) and the spec's
 `mcp.json` (`type` required, `${PLUGIN_ROOT}`) ship side by side. Neither
 host reads the other's file. Keep them in lockstep by hand when the server
 path changes — both live in `plugins/docket/`.
 
-## Stray root plugin.json is inert on Claude — NOT on Codex
+## Q4 — Stray root plugin.json is inert on Claude — NOT on Codex
 
 Claude Code reads `.claude-plugin/plugin.json` and ignores the root
 manifest: `claude plugin validate --strict` passed with it present
@@ -56,7 +56,7 @@ Codex prompt — under `codex exec` that prompt hangs the run. Instrument the
 hook's **script body** instead; that preserves the trusted command
 identity.
 
-## Cursor detects format by manifest
+## Q5 — Cursor detects format by manifest
 
 "Cursor detects the format from the plugin manifest" — a root plugin.json
 makes it an Agent Plugin; `.cursor-plugin/plugin.json` would make it a
