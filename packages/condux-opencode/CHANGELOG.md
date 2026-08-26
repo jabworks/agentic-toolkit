@@ -1,5 +1,13 @@
 # @jabworks/condux
 
+## 0.17.1
+
+### Patch Changes
+
+- [#125](https://github.com/jabworks/agentic-toolkit/pull/125) [`c7db3ff`](https://github.com/jabworks/agentic-toolkit/commit/c7db3ff3d2653e9293b3341912a37d281c1083cb) Thanks [@vi-hieu](https://github.com/vi-hieu)! - discovery: announce the preview URL the annotate server actually printed instead of a hardcoded `http://127.0.0.1:7777` — manual mode binds a free port (docket [#63](https://github.com/jabworks/agentic-toolkit/issues/63))
+
+- [#126](https://github.com/jabworks/agentic-toolkit/pull/126) [`2f29e61`](https://github.com/jabworks/agentic-toolkit/commit/2f29e6143a5954d7d142e5dca71a1ccb1db9ab97) Thanks [@vi-hieu](https://github.com/vi-hieu)! - workflow + draft-plan: widen the trigger contracts against the null-route error mode (docket [#57](https://github.com/jabworks/agentic-toolkit/issues/57)) — workflow now claims any dev task at any size (tests, CI/config, docs edits, one-liners), draft-plan names its `.condux/plans/` artifact and routes design-less plan requests to its own soft gate
+
 ## 0.17.0
 
 ### Minor Changes
