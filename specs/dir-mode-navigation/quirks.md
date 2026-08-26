@@ -13,29 +13,24 @@
 
 ## Q1 — Filter-hidden annotated docs
 
-**Symptom:** an annotated doc hidden by the filter looks dropped from the
-review.
+**Symptom:** an annotated doc hidden by the filter looks dropped from the review.
 **Trigger:** filtering while annotations exist.
 **Cause:** the filter is a view over the tree, and annotations live per doc.
-**Mitigation:** yes — the filter is a transient view and never affects what
-gets submitted; a hidden annotated doc still appears in badge rollups and in
-the verdict strip's grouped feedback.
+**Mitigation:** yes — the filter is a transient view and never affects what gets submitted; a hidden annotated doc still appears in badge rollups and in the verdict strip's grouped feedback.
 
 ## Q2 — Clearing the filter restores prior collapse state
 
 **Symptom:** a search that costs the user their fold work.
 **Trigger:** filtering, then clearing the filter.
 **Cause:** filtering necessarily expands matching branches.
-**Mitigation:** yes — clearing restores the prior collapse state, not "all
-collapsed"; the user's fold work survives a search.
+**Mitigation:** yes — clearing restores the prior collapse state, not "all collapsed"; the user's fold work survives a search.
 
 ## Q3 — Deep nesting clamps indentation
 
 **Symptom:** sidebar rows squeezed unreadable by deep trees.
 **Trigger:** nesting past ~3 levels.
 **Cause:** unbounded indent in a fixed-width sidebar.
-**Mitigation:** yes — indentation stops growing past ~3 levels (matches
-today's `lvl` clamp).
+**Mitigation:** yes — indentation stops growing past ~3 levels (matches today's `lvl` clamp).
 
 ## Q4 — Docs with no headings
 
@@ -49,30 +44,25 @@ today's `lvl` clamp).
 **Symptom:** docs with no folder needing a place in a folder tree.
 **Trigger:** root-level files in the reviewed directory.
 **Cause:** the tree is folder-grouped.
-**Mitigation:** yes — they sit above the first folder group, as the current
-flat list already orders them.
+**Mitigation:** yes — they sit above the first folder group, as the current flat list already orders them.
 
 ## Q6 — `review.feedback.md` and dotfiles never appear
 
 **Symptom:** the review's own working files showing up as reviewable docs.
 **Trigger:** rendering the tree from the directory contents.
 **Cause:** the directory holds more than the reviewable docs.
-**Mitigation:** yes — `listDocs()` already excludes them; the tree renders
-exactly its output.
+**Mitigation:** yes — `listDocs()` already excludes them; the tree renders exactly its output.
 
 ## Q7 — Switching docs via prev/next or breadcrumb
 
 **Symptom:** lost scroll positions or highlights on navigation.
 **Trigger:** switching docs by any route other than the sidebar.
 **Cause:** per-doc state lives in the panes.
-**Mitigation:** yes — every route goes through `switchDoc()`: scroll
-positions per doc keep working, and hidden panes stay in the DOM so
-highlights survive.
+**Mitigation:** yes — every route goes through `switchDoc()`: scroll positions per doc keep working, and hidden panes stay in the DOM so highlights survive.
 
 ## Q8 — Badge rollup double-count guard
 
 **Symptom:** a folder badge larger than the annotations it contains.
 **Trigger:** summing doc badges and heading badges together.
 **Cause:** heading badges subdivide the same annotations the doc badge counts.
-**Mitigation:** yes — a folder row's count sums doc-level counts only, so
-each annotation is counted once.
+**Mitigation:** yes — a folder row's count sums doc-level counts only, so each annotation is counted once.

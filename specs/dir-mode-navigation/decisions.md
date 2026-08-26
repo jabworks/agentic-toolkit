@@ -11,10 +11,8 @@
 
 ## 1. Architecture: doc-site split — 2026-08-13
 
-**Decided:** collapsible folder tree sidebar + filter box, active-doc-only
-headings, breadcrumb over the content pane, prev/next footer.
-**Because:** the target scale is 50+ nested docs and the signed-off bar is
-"reads like a real doc site".
+**Decided:** collapsible folder tree sidebar + filter box, active-doc-only headings, breadcrumb over the content pane, prev/next footer.
+**Because:** the target scale is 50+ nested docs and the signed-off bar is "reads like a real doc site".
 
 | Alternative | Why not |
 |---|---|
@@ -23,8 +21,7 @@ headings, breadcrumb over the content pane, prev/next footer.
 
 ## 2. Filter matches docs AND headings — 2026-08-13
 
-**Decided:** one box finds both "the quirks file" and "the Error shapes
-section" — matched headings render under each hit doc.
+**Decided:** one box finds both "the quirks file" and "the Error shapes section" — matched headings render under each hit doc.
 **Because:** a box that finds only doc names is half a search.
 
 | Alternative | Why not |
@@ -33,10 +30,8 @@ section" — matched headings render under each hit doc.
 
 ## 3. Collapse default: everything folded except the active doc's ancestors — 2026-08-13
 
-**Decided:** the default fold state keeps only the active doc's ancestor
-chain open.
-**Because:** the sidebar always fits roughly a screenful and orientation is
-preserved.
+**Decided:** the default fold state keeps only the active doc's ancestor chain open.
+**Because:** the sidebar always fits roughly a screenful and orientation is preserved.
 
 | Alternative | Why not |
 |---|---|
@@ -44,8 +39,7 @@ preserved.
 
 ## 4. Badge counts roll up to collapsed folder rows — 2026-08-13
 
-**Decided:** a collapsed folder shows the summed annotation count of its
-contents.
+**Decided:** a collapsed folder shows the summed annotation count of its contents.
 **Because:** pending feedback is never invisible.
 
 | Alternative | Why not |
@@ -54,12 +48,10 @@ contents.
 
 ## 5. Prev/next reuses the existing docs[] order — 2026-08-13
 
-**Decided:** folder-grouped, `index.md` first per folder, alphabetical
-otherwise — the order `listDocs()` already emits.
+**Decided:** folder-grouped, `index.md` first per folder, alphabetical otherwise — the order `listDocs()` already emits.
 **Because:** no new ordering scheme, no frontmatter weights.
 
 ## 6. Single-file plan mode is untouched — 2026-08-13
 
 **Decided:** every piece of new chrome is `DIRMODE`-gated.
-**Because:** plan review's core surface (one file, TOC of its headings,
-annotation flow) must render byte-for-byte as before.
+**Because:** plan review's core surface (one file, TOC of its headings, annotation flow) must render byte-for-byte as before.

@@ -9,11 +9,8 @@
 
 ## D1 — Declaration lives in a repo-level `composition.json`
 
-**Decided:** one committed file at the repo root declares every plugin —
-bundle membership, plugin-level dir mappings, marketplace description,
-catalog rows.
-**Because:** cross-plugin facts need one home that neither host manifest
-owns.
+**Decided:** one committed file at the repo root declares every plugin — bundle membership, plugin-level dir mappings, marketplace description, catalog rows.
+**Because:** cross-plugin facts need one home that neither host manifest owns.
 
 | Alternative | Why not |
 |---|---|
@@ -22,9 +19,7 @@ owns.
 
 ## D2 — Generate marketplace.json fully; doc catalogs via marker blocks
 
-**Decided:** `.claude-plugin/marketplace.json` is written whole by the
-generator; `README.md` / `CLAUDE.md` keep their hand-written prose, with only
-the catalog tables inside `<!-- catalog:begin/end -->` markers regenerated.
+**Decided:** `.claude-plugin/marketplace.json` is written whole by the generator; `README.md` / `CLAUDE.md` keep their hand-written prose, with only the catalog tables inside `<!-- catalog:begin/end -->` markers regenerated.
 **Because:** ours is a crafted doc, not a catalog.
 
 | Alternative | Why not |
@@ -33,27 +28,14 @@ the catalog tables inside `<!-- catalog:begin/end -->` markers regenerated.
 
 ## D3 — One generic composition test; bespoke tests keep behavior only
 
-**Decided:** `tests/composition.test.mjs` asserts: every declared source→dest
-pair mirrors byte-for-byte, no undeclared plugin-level dir exists in
-`dist/plugins/*/`, marketplace.json + both doc blocks match generator output,
-and the declaration is schema-valid. `condux-hooks.test.mjs`, the agents
-check in `skill-invariants.test.mjs`, and `docket-server.test.mjs` drop only
-their mirror assertions; wire-format / host-variable / server-behavior checks
-stay. `docs-catalog.test.mjs` retires (presence is implied by generated
-blocks).
-**Because:** mirror assertions belong to the declaration; behavior checks
-belong with their skills.
+**Decided:** `tests/composition.test.mjs` asserts: every declared source→dest pair mirrors byte-for-byte, no undeclared plugin-level dir exists in `dist/plugins/*/`, marketplace.json + both doc blocks match generator output, and the declaration is schema-valid. `condux-hooks.test.mjs`, the agents check in `skill-invariants.test.mjs`, and `docket-server.test.mjs` drop only their mirror assertions; wire-format / host-variable / server-behavior checks stay. `docs-catalog.test.mjs` retires (presence is implied by generated blocks).
+**Because:** mirror assertions belong to the declaration; behavior checks belong with their skills.
 
 ## D4 — Divergent marketplace descriptions are declared input
 
-**Decided:** the generator reads `plugins.<name>.marketplace.description`
-from the declaration and never derives it from SKILL.md.
-**Because:** the 2026-08-04 ratification (PR #16) that marketplace
-descriptions may diverge from SKILL.md descriptions is preserved — flattening
-the two back together would silently revert a ratified decision.
+**Decided:** the generator reads `plugins.<name>.marketplace.description` from the declaration and never derives it from SKILL.md.
+**Because:** the 2026-08-04 ratification (PR #16) that marketplace descriptions may diverge from SKILL.md descriptions is preserved — flattening the two back together would silently revert a ratified decision.
 
 ## Out of scope
 
-`build-opencode.mjs` (keeps its own discovery; may read composition later),
-release machinery, npm channel, skill content changes, per-bundle README
-prose.
+`build-opencode.mjs` (keeps its own discovery; may read composition later), release machinery, npm channel, skill content changes, per-bundle README prose.

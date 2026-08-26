@@ -8,10 +8,8 @@
 
 ## 1. Approach: checklist item + structured Drift Check section (B)
 
-**Decided:** one new checklist item plus a **Drift Check** section in
-`skills/preflight/SKILL.md` defining the full procedure.
-**Because:** the method has to live where the check runs, and preflight
-already owns the moment.
+**Decided:** one new checklist item plus a **Drift Check** section in `skills/preflight/SKILL.md` defining the full procedure.
+**Because:** the method has to live where the check runs, and preflight already owns the moment.
 
 | Alternative | Why not |
 |---|---|
@@ -20,24 +18,17 @@ already owns the moment.
 
 ## 2. Drift is bidirectional
 
-**Decided:** both directions are findings of equal standing — implementation
-violating a spec'd contract / mapping / edge case, and a spec gone stale
-because the implementation legitimately evolved.
-**Because:** either direction leaves the spec and the code disagreeing, which
-is the condition the check exists to surface.
+**Decided:** both directions are findings of equal standing — implementation violating a spec'd contract / mapping / edge case, and a spec gone stale because the implementation legitimately evolved.
+**Because:** either direction leaves the spec and the code disagreeing, which is the condition the check exists to surface.
 
 ## 3. Findings are a soft gate
 
-**Decided:** report + user decides per finding: **fix code / update spec /
-accept knowingly**.
-**Because:** preflight never blocks `/finalize`, and spec files are never
-silently updated — consistent with condux doctrine (soft gates, user in
-control, and technical-spec's "never silently modify spec files").
+**Decided:** report + user decides per finding: **fix code / update spec / accept knowingly**.
+**Because:** preflight never blocks `/finalize`, and spec files are never silently updated — consistent with condux doctrine (soft gates, user in control, and technical-spec's "never silently modify spec files").
 
 ## Kept out of scope
 
-*(assumed at design time — not-goals question went unanswered; confirm
-before revisiting)*
+*(assumed at design time — not-goals question went unanswered; confirm before revisiting)*
 
 - No new scripts/tooling — prose-only, dependency-free
 - No CI integration — interactive preflight step only
