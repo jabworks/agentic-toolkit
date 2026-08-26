@@ -1,5 +1,13 @@
 # @jabworks/condux
 
+## 0.15.1
+
+### Patch Changes
+
+- [`cca86f7`](https://github.com/jabworks/agentic-toolkit/commit/cca86f77a8b99dfdbfdd474d16511e833d26b6a6) Thanks [@vi-hieu](https://github.com/vi-hieu)! - blueprint announces its mode at delivery and offers the flip (promote to
+  render / back to wireframe) — the default is visible and reversible, never
+  silent.
+
 ## 0.15.0
 
 ### Minor Changes
