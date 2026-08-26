@@ -196,33 +196,6 @@ Worth doing only as its own piece of work with its own reasoning. It was
 explicitly ruled out of discovery-presentation pass one rather than deferred
 by accident — see `specs/discovery-presentation/quirks.md` Q2.
 
-### 60. Pass two: technical-spec's templates read heavy (2026-08-26)
-
-Pain point 4 of the five reported against discovery's design output on
-2026-08-26. Pass one fixed the live terminal read; this is the written
-artifact, deferred deliberately at design time.
-
-The symptom: the spec a session produces is a hard read afterwards.
-`decisions.md`'s template is four prose headings per decision — Context,
-Decision, Rationale, Consequences — so a spec with six decisions is
-twenty-four headings of prose with no scannable layer. `implementation.md`
-opens with "One paragraph on how the feature works end-to-end" and
-`quirks.md` is freeform description per quirk.
-
-The fix is probably the same one that worked for the terminal card: a fixed
-shape with a density budget, tables where a table is honest, and prose
-reserved for the reasoning that cannot be tabulated. What pass one learned is
-that "be concise" is advice, and advice is what produced the walls — the
-budget has to be a number.
-
-**Known cost, accepted when this was deferred:** the design-doc to
-`decisions.md` mapping gets designed twice, once as pass one's section-card
-contract and once here. Read `skills/discovery/SKILL.md`'s "The Section Card"
-before starting — the §-card shape is the input this template consumes, and
-the two should agree rather than each invent a structure.
-
-See `specs/discovery-presentation/` (§4) for why it was split.
-
 ### 61. Pass two: types in a spec carry no inline explanation (2026-08-26)
 
 Pain point 5 of the five reported against discovery's design output on
