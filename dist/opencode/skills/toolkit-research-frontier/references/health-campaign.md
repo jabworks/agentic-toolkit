@@ -236,21 +236,91 @@ like a clean corpus:
 - `tests/trigger-eval-score.test.mjs` — the predicates themselves, including an
   assertion that `isHit` semantics are unchanged.
 
-**Band not yet re-measured.** Two partial runs verified the mechanism on the day
-it shipped, and neither is a band measurement:
+Two partial runs verified the mechanism on the day it shipped, before the band
+run below. Neither is a band measurement:
 - A **103-case** partial (9 batches, 1 trial) covered 1 of the 17 seeded cases —
   "resume the design we started yesterday" routed to `discovery` as expected,
-  0 violations. It scored 97.1% on that subset. That number is **not comparable
-  to the ~89–92% standing claim**: different corpus composition (the first 103
-  cold cases alphabetically, not the full corpus), single trial, no CI.
+  0 violations. It scored 97.1% on that subset, which is not comparable to
+  anything: different corpus composition, single trial, no CI.
 - A **12-case** run with one case temporarily self-disallowing confirmed the
   non-empty path: accuracy **12/12 = 100%** *while* the violation table reported
   a row. That is the design claim made visible — a case passes its routing check
   and is still reported. The temporary edit was reverted; the corpus test forbids
   self-disallowing cases precisely because they are self-contradicting.
 
-So the 16 remaining seeded seams have a violation count of *unknown*, not zero.
-The first full multi-trial run after this lands is what makes the number real.
+### A3d. First band with `disallowed` live — MEASURED 2026-08-25
+
+`eval-disallowed-band-2026-08-25.{md,json}`, 598 cold cases, 3 trials,
+**0 failed batches** (the first clean multi-trial run since 2026-07-12).
+
+Per-run **93.8 / 93.8 / 92.5** → mean **93.4% ± 1.9pp** (95% CI, t-dist).
+
+**The ≥90% criterion is met for the first time, not straddled.** The interval is
+[91.5, 95.3]; every prior 3-trial run put the lower bound below 90 (88.7 ± 4.7,
+88.6 ± 3.8, 88.4 ± 0.7). Standing claim updated from ~89–92% to **~92–95%**.
+
+**Read this as not-like-for-like.** The corpus grew 394 → 598 cold cases since
+the 88.4% run on 2026-07-11, and the added skills (session-handoff, docket,
+coding-directive, blueprint, release, git-worktree) are newer contracts written
+against the authoring standards. Part of the lift is genuine contract work; part
+is composition. The two are not separated here, and separating them would mean
+re-running the 2026-07-11 corpus subset — worth doing before treating ~92–95% as
+a claim about the *older* skills specifically.
+
+#### The `disallowed` result, which is the point of the run
+
+**0 violations out of 17 seeded cases, across all 3 trials.** Not one seeded
+seam fired. That is a real negative result, and it is more informative than it
+first looks, because two of the 17 cases *did* miss:
+
+| case | expected | answers across 3 trials | disallowed | verdict |
+|---|---|---|---|---|
+| `create the .condux/plans file for this feature` | draft-plan | null, null, null | technical-spec | missed to **null**, never to the rival |
+| `record the decision rationale for future sessions` | technical-spec | remember, technical-spec, remember | draft-plan | missed to **`remember`**, never to the rival |
+
+Both sit in the draft-plan↔technical-spec doc-creation space that A3 has named
+as a dominant error mode since 2026-07-08. **In neither case did the
+hypothesised collision occur.** One is an under-trigger; the other is a
+collision with `remember` — an adjacency no phase of this campaign has ever
+named, and one that only exists because concord's memory skill joined the
+catalog after A3's narrative was written.
+
+Without this metric both cases would have appeared in the miss table as ordinary
+"doc-creation seam" misses and been read as confirmation. This is precisely the
+claim A3c was built to make available: *inferring a collision from an accuracy
+dip cannot distinguish "lost to its rival" from "lost to null" or "lost to
+someone else entirely."*
+
+#### Corpus-wide, the same pattern holds
+
+Across all 598 cases and 3 trials there were 119 miss-answers. Their targets:
+
+| target | count | share |
+|---|---|---|
+| **null** | 66 | **55%** |
+| toolkit-debugging-playbook | 6 | 5% |
+| workflow | 5 | 4% |
+| root-cause-analysis | 5 | 4% |
+| remember | 4 | 3% |
+| everything else (long tail) | 33 | 28% |
+
+**The dominant error mode is under-triggering, not collision.** More than half
+of all misses are the judge declining to route at all — which the judge prompt
+explicitly encourages ("Prefer null over a weak match"). A3's standing text
+attributes the error mode to "judge variance, mostly one-hop adjacencies"; that
+is now only the minority case, and the `disallowed` result independently
+corroborates it.
+
+Weakest skills this run: draft-plan 77%, workflow 79%, toolkit-failure-archaeology
+82%, toolkit-research-frontier 83%, technical-spec 87%. Flaky cases: 51 (up from
+37–39, but on a corpus 52% larger).
+
+**Next, in priority order:** (1) seed `disallowed` on the technical-spec↔remember
+adjacency now that it is named, since no case asserts it yet; (2) attack the
+null-route mode on draft-plan and workflow, which is a trigger-contract problem,
+not a disambiguation problem — the two need opposite fixes and the campaign has
+been applying the disambiguation one; (3) re-run the 2026-07-11 corpus subset to
+separate contract lift from composition lift.
 
 Known gap, now guarded (docket #55, 2026-08-26): the corpus dedup key is
 `query + expected`, and a duplicate's `disallowed` is merged into the kept case
