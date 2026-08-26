@@ -1345,11 +1345,23 @@
       let DIRMODE=false, docs=[], activeDoc=null;
       const docState={}; // name -> { md, pane, scroll, key, headings }
 
+      // A design file carries its sign-off state in frontmatter, and renderBlocks
+      // maps a bare `---` to <hr> — so without this the reader sees a rule, a
+      // stray `status: …` paragraph and a second rule above every design. Only a
+      // block at position 0 counts; the `---` separators these documents use
+      // between sections must still render as horizontal rules. st.md keeps the
+      // raw text, because the revision diff and scanDocPaths both read it and a
+      // frontmatter-only change has to stay visible there.
+      function stripFrontmatter(md){
+        const m=/^---\r?\n[\s\S]*?\r?\n---\r?\n?/.exec(md);
+        return m?md.slice(m[0].length):md;
+      }
+
       function renderDocPane(doc, md){
         const st=docState[doc];
         st.md=md; st.pane.innerHTML=''; st.headings=[];
         let section='(top)';
-        renderBlocks(md).forEach(function(b,idx){
+        renderBlocks(stripFrontmatter(md)).forEach(function(b,idx){
           const id=st.key+'-blk-'+idx;
           const wrap=document.createElement('div'); wrap.className='blk'; wrap.id=id; wrap.innerHTML=b.html;
           if(b.heading){ section=id; st.headings.push({id:id,level:b.heading.level,text:b.heading.text}); }

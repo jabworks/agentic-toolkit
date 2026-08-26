@@ -21,10 +21,26 @@ Turn a signed-off design into a clear, executable plan. Lean task cards, not mic
    `.condux/designs/*<slug>*.md` and both spec scopes —
    `<package-root>/specs/<slug>/` and `<git-root>/specs/<slug>/`, same
    two-scope lookup as the workflow router (slug = kebab-case of the
-   feature name) — for an existing signed-off design; if found,
-   treat this check as satisfied without asking. Otherwise ask: "We
+   feature name) — for an existing signed-off design; if found, **read
+   its `status`** (see below) and treat this check as satisfied without
+   asking only when it is `signed-off`. Otherwise ask: "We
    haven't aligned on the design yet — run /discovery first, or confirm
    you want to skip it."
+
+**Reading `status`.** Discovery creates the design file at its first
+section, not at sign-off, so the file existing no longer means the design
+was approved. Its frontmatter carries the answer:
+
+| `status` | Means | Gate |
+|---|---|---|
+| `signed-off` | discovery reached sign-off | satisfied |
+| `in-progress` | discovery started and did not finish | **not** satisfied — ask |
+| *absent* | written before this field existed | satisfied |
+
+A missing `status` means `signed-off`. Every design file written before
+this field existed was only ever saved at sign-off, so absence is a
+positive signal, not an unknown — reading it the other way retroactively
+invalidates every design already on disk.
 
 The plan is written as Markdown — optimized for AI agent consumption during
 execution. To read it in the browser, use `plan-review` (see After Saving);
