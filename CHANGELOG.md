@@ -20,6 +20,10 @@ The `@jabworks/condux` npm package has its own changelog at
 
 - test(evals): fail on divergent accept across a dedup key (#55)
 
+## condux 2.24.1 — 2026-08-26
+
+- chore(condux): version 2.24.1
+
 ## condux 2.24.0 — 2026-08-26
 
 - feat(technical-spec): layer every concern file — table on top, reasoning underneath

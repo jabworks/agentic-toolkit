@@ -250,24 +250,4 @@ it earns its keep), and a design-doc template should consume that vocabulary
 rather than invent a parallel one. Note the deliberate asymmetry — the design
 doc feeds `decisions.md`, so their shapes should agree.
 
-### 63. discovery's SKILL.md hardcodes port 7777; the server auto-assigns (2026-08-26)
-
-Found 2026-08-26 by running the shipped 2.23.0 discovery flow. The skill tells
-the agent the preview is at `http://127.0.0.1:7777` in both the Design File
-section and the Design Review Loop, but `annotate-server.js` binds a free port
-and prints it — this session got 37357.
-
-Consequence is small but real: the agent announces a URL that does not serve,
-and the reader has to find the right one in the terminal scrollback. It matters
-more now than it used to, because pass one made the preview default-on and the
-announcement is the only place the URL appears.
-
-Fix is to parse the port from the server's own startup output and announce
-that, rather than repeating a constant. Check `plan-review`'s own docs and
-`technical-spec`'s preview section for the same hardcoded value before
-declaring it fixed.
-
-Deliberately kept out of the spec-artifact-readability change: that work is
-scope-locked to `skills/technical-spec`, and this is a `skills/discovery` bug.
-
 ## Loose threads

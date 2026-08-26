@@ -240,10 +240,13 @@ open. It still accepts a submitted decision, which means **one server covers
 the whole of discovery** — launched at §1, still serving at sign-off. Never
 start a second one.
 
-Announce it and move on — do not ask first:
+Manual mode binds a **free port** — there is no fixed number to assume. The
+server prints the URL on startup (`Plan review → http://127.0.0.1:<port>`, on
+stderr); read it from that output and announce exactly that URL — do not ask
+first:
 
-> "Design preview running at http://127.0.0.1:7777 — it updates as we go. Say
-> the word if you'd rather I close it."
+> "Design preview running at http://127.0.0.1:<port> — it updates as we go.
+> Say the word if you'd rather I close it."
 
 The preview's purpose is to help make the *next* decision, so gating it behind
 an opt-in defeats what it is for; and discovery only runs on the LARGE tier, so
