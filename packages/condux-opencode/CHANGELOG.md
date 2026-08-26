@@ -1,5 +1,11 @@
 # @jabworks/condux
 
+## 0.17.2
+
+### Patch Changes
+
+- [#128](https://github.com/jabworks/agentic-toolkit/pull/128) [`d620749`](https://github.com/jabworks/agentic-toolkit/commit/d620749ddf3f621a41649ede27a9d11c4e3b3078) Thanks [@vi-hieu](https://github.com/vi-hieu)! - technical-spec: claim the record-the-decision-rationale space explicitly — recording decisions for the future is spec work even when phrased as remembering (docket [#56](https://github.com/jabworks/agentic-toolkit/issues/56), the technical-spec↔remember seam)
+
 ## 0.17.1
 
 ### Patch Changes
