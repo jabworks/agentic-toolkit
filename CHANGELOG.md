@@ -16,6 +16,10 @@ The `@jabworks/condux` npm package has its own changelog at
 
 - test(evals): fail on divergent accept across a dedup key (#55)
 
+## condux 2.22.1 — 2026-08-26
+
+- chore(condux): version 2.22.1
+
 ## condux 2.22.0 — 2026-08-26
 
 - feat(blueprint): speak the surface-kit design language, two modes

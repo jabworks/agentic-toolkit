@@ -45,7 +45,10 @@ product family.
 │  Step 3: DELIVER                                                 │
 │  Open in the browser (xdg-open / open). If neither works         │
 │  (headless, SSH), print the absolute paths and continue —        │
-│  never fail on delivery.                                         │
+│  never fail on delivery. Always state which mode was produced    │
+│  and offer the flip: "wireframe mode — say 'promote to render'   │
+│  for the full house look" (or the reverse). The mode is never    │
+│  chosen silently.                                                │
 │                                                                  │
 │  Step 4: LINK                                                    │
 │  Reference the files from the design doc or task card that       │

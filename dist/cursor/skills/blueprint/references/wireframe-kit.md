@@ -24,7 +24,11 @@ mode on the body: `<body data-blueprint-mode="wireframe">` (or `"render"`).
 
 Default to wireframe mode. Produce a render when the structure is already
 signed off, when the user asks for fidelity ("make it look real", "mock this
-up properly"), or when discovery offers promotion at sign-off.
+up properly"), or when discovery offers promotion at sign-off. Whichever mode
+you produce, say so at delivery and offer the other in one line — "wireframe
+mode; say 'promote to render' for the full look" — so the default is visible
+and reversible, never silent. Ask upfront only when the request genuinely
+mixes both signals.
 
 ## Hard Rules
 
