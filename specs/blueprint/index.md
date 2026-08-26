@@ -5,7 +5,7 @@
 > language (two modes, one skeleton), inline-SVG system diagrams for BE.
 
 **Last updated:** 2026-08-26
-**Commit:** HEAD
+**Commit:** 1d1c39f
 **Status:** draft
 
 ## Contents
@@ -15,6 +15,6 @@
 - [quirks.md](quirks.md) — edge cases: headless hosts, non-git repos, citation promotion
 
 ## Changelog
-- 2026-08-26 (HEAD): Grayscale dialect retired — wireframe/render modes on the
+- 2026-08-26 (1d1c39f): Grayscale dialect retired — wireframe/render modes on the
   surface-kit token core; see the scoped fidelity decision in decisions.md
 - 2026-08-20 (ca92d16): Initial spec — discovery sign-off

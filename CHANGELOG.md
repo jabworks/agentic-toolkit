@@ -18,7 +18,7 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## condux 2.22.0 — 2026-08-26
 
-- chore(condux): version 2.22.0
+- feat(blueprint): speak the surface-kit design language, two modes
 
 ## toolkit-ops 1.7.8 — 2026-08-25
 
