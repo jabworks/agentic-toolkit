@@ -12,6 +12,10 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## toolkit-ops 1.7.11 — 2026-08-26
+
+- chore(toolkit-ops): version 1.7.11
+
 ## toolkit-ops 1.7.10 — 2026-08-26
 
 - docs(research): first band with `disallowed` live — 93.4% ± 1.9pp (A3d) (#117)
@@ -20,9 +24,13 @@ The `@jabworks/condux` npm package has its own changelog at
 
 - test(evals): fail on divergent accept across a dedup key (#55)
 
+## condux 2.24.2 — 2026-08-26
+
+- chore(condux): version 2.24.2
+
 ## condux 2.24.1 — 2026-08-26
 
-- chore(condux): version 2.24.1
+- fix(discovery): announce the preview URL the server prints, not 7777
 
 ## condux 2.24.0 — 2026-08-26
 
