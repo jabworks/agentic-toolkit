@@ -1,7 +1,7 @@
 ---
 name: draft-plan
 description: Turns a signed-off design into an executable plan of lean task cards (what, why, gotchas, dependencies). Writes Markdown; review in the browser via plan-review.
-when_to_use: Run for LARGE tasks after /discovery sign-off. Never writes a plan without a signed-off design — if discovery hasn't run, apply the soft gate first.
+when_to_use: Run for LARGE tasks after /discovery sign-off, and for any request to write, create, or revise a task plan — including creating or updating the .condux/plans file, the artifact this skill owns. A plan request with no signed-off design still routes here; the skill applies the soft gate itself rather than writing a plan without one.
 argument-hint: "<feature name or design summary>"
 effort: high
 ---

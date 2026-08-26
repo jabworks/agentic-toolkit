@@ -118,35 +118,6 @@ Worth checking while here: `remember` appears **4 times** as a miss target corpu
 Related: docket #10 (semantic collision detection) — this is a worked example of a
 collision that lexical and accuracy-dip methods both miss.
 
-### 57. Attack the null-route error mode on draft-plan and workflow (2026-08-25)
-
-A3d's corpus-wide finding: of 119 miss-answers across 3 trials, **66 (55%) route to
-null** — the judge declining to route at all. The dominant error mode is
-**under-triggering, not collision**.
-
-This matters because it needs the opposite fix from what the campaign has been doing.
-Two months of A3 work has been *disambiguation* — sharpening contracts so adjacent
-skills stop stealing each other's queries. Disambiguation makes a skill claim *less*,
-which if anything worsens a null-route. The null cases need contracts that claim
-*more* of their own space.
-
-The judge prompt says "Prefer null over a weak match", so some null-routing is
-correct behaviour and the corpus's `should_trigger: false` cases depend on it. The
-work is separating "correctly declined" from "should have fired and didn't".
-
-Weakest skills this run, both null-dominated:
-- **draft-plan 77%** (30/39) — worst in the corpus. `"create the .condux/plans file
-  for this feature"` routed to null in **all 3 trials**.
-- **workflow 79%** (90/114) — the entry-contract skill, so its misses are the most
-  costly: a null here means a dev task routes nowhere.
-
-Method: pull the null-missing cases from
-`eval-disallowed-band-2026-08-25.json` (filter `runs` for null where
-`should_trigger` is true), classify each as contract gap vs. genuinely ambiguous
-stimulus, then widen the two contracts against the gaps only. Re-run to confirm the
-band holds — a contract that claims more can cost accuracy elsewhere, which is
-exactly what `disallowed` now measures.
-
 ### 58. Re-run the 2026-07-11 corpus subset to separate contract lift from composition lift (2026-08-25)
 
 A3d measured **93.4% ± 1.9pp**, up from **88.4% ± 0.7pp** on 2026-07-11, and updated
