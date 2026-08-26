@@ -18,7 +18,7 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## condux 2.22.1 — 2026-08-26
 
-- chore(condux): version 2.22.1
+- feat(blueprint): announce the mode at delivery, offer the flip
 
 ## condux 2.22.0 — 2026-08-26
 
