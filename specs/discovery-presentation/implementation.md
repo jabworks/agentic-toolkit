@@ -27,6 +27,7 @@ No new machinery: every mechanism below already ships.
 | `skills/subagent-execution/agents/planner.md` | same `status` check before treating a globbed design as settled (found during planning — see Q1) |
 | `skills/plan-review/references/plan-review-template.html` | `stripFrontmatter()` at the `renderBlocks` call (found during planning — see Q2) |
 | `tests/discovery-presentation.test.mjs` | guards the status contract, the card rules, the trigger questions, the specificity rule and `stripFrontmatter` |
+| `skills/blueprint/evals/trigger_eval.json` | one case for a design with no UI surface and no data model that still turns on "what talks to what" — the gap the noun trigger could not see |
 | `skills/plan-review/references/annotate-server.js` | unchanged; relied on, not modified |
 
 Plus the usual shipping surface: `composition.json` blurbs if they describe the
