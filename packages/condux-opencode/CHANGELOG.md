@@ -1,5 +1,14 @@
 # @jabworks/condux
 
+## 0.15.0
+
+### Minor Changes
+
+- [`1d1c39f`](https://github.com/jabworks/agentic-toolkit/commit/1d1c39f47abdf228514ad3ecbc83071d29072c41) Thanks [@vi-hieu](https://github.com/vi-hieu)! - blueprint speaks the surface-kit design language: two modes (schematic
+  wireframe on neutral tokens, full-language render) over one shared skeleton,
+  promotion by style-block swap; diagrams re-skinned in tokens; ships
+  token-core.css (byte-guarded copy of the shared core).
+
 ## 0.14.2
 
 ### Patch Changes
