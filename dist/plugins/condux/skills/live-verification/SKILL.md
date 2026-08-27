@@ -77,14 +77,22 @@ Order of checks, because this is where the defects were:
 
 One artifact per claim that has a visual or observable outcome — screenshot,
 response body, console excerpt. Store under
-`<git-root>/.condux/verification/<YYYY-MM-DD>-<slug>/` and reference the file
-in the report. Console errors and failed network requests seen along the way
+`<git-root>/.condux/verification/<YYYY-MM-DD>-<slug>/` — everything a run
+produces lives inside that dir, nothing at the verification root. Name each
+evidence file for the claim it supports and reference it from the report's
+claim table. Console errors and failed network requests seen along the way
 get reported even when they belong to another feature.
+
+Then write `report.md` into the same dir, in the shape of
+`references/report-template.md` — every run writes one, including runs where
+nothing could be driven (the template carries the fallback shape).
 
 ### Step 5 — Report and stop
 
-One pass. Fix what you found, re-verify only the claims that failed, then
-stop. This skill does not loop.
+The terminal report **is** `report.md`: print the file's content — never a
+second shape that can drift from the persisted one. One pass. Fix what you
+found, re-verify only the claims that failed, update `report.md` to match,
+then stop. This skill does not loop.
 
 ## Failure Handling
 
@@ -113,31 +121,13 @@ Two failed attempts on the same claim is the ceiling. Report and move on.
 
 ## Output Format
 
-```
-## Live verification: <change>
-
-Target     http://localhost:3000 (pnpm dev — started by this run)
-Themes     light ✓  dark ✓
-
-Claim                                          Evidence            Verdict
-Save disabled while mutation in flight         save-pending.png    ✓
-Failed save shows server message inline        save-error.png      ✓
-Escape closes dialog, focus returns to trigger —                   ✗ focus lands on body
-Empty list renders the empty state             empty-state.png     ✓
-
-Also seen: 2 console errors on mount (pre-existing, unrelated to this change)
-
-1 claim failed. Fixed focus return in dialog.tsx:44 — re-verified ✓
-```
-
-When nothing could be driven:
-
-```
-## Live verification: <change>
-
-Target     none — no dev/start/storybook script and nothing on the usual ports
-Verdict    NOT VERIFIED — 3 claims unchecked, listed below
-```
+The report shape — the fixed header table (Date / Target / Diff / Themes),
+the claim table (Claim | Evidence | Verdict), "Also seen", and the outcome
+line — lives in `references/report-template.md`, the canonical home. It also
+carries the fallback shape for when nothing could be driven; that run still
+writes `report.md`, because an absent report is indistinguishable from a run
+that never happened. Fixed header keys and a fixed claim-table shape are what
+make two runs of the same surface comparable.
 
 ## What Does NOT Happen
 

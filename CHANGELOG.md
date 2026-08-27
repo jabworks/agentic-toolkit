@@ -12,9 +12,13 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## condux 2.25.0 — 2026-08-27
+
+- feat(discovery,live-verification): give both persisted artifacts a template (#62)
+
 ## toolkit-ops 1.7.12 — 2026-08-26
 
-- chore(toolkit-ops): version 1.7.12
+- feat(evals): seed and close the technical-spec<->remember seam
 
 ## toolkit-ops 1.7.11 — 2026-08-26
 
@@ -30,7 +34,7 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## condux 2.24.3 — 2026-08-26
 
-- chore(condux): version 2.24.3
+- feat(evals): seed and close the technical-spec<->remember seam
 
 ## condux 2.24.2 — 2026-08-26
 
@@ -58,7 +62,7 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## concord 0.6.1 — 2026-08-26
 
-- chore(concord): version 0.6.1
+- feat(evals): seed and close the technical-spec<->remember seam
 
 ## toolkit-ops 1.7.8 — 2026-08-25
 
