@@ -207,18 +207,16 @@ running preview reloads and shows the link, so the reader stays where they are.
 ## The Design File and the Live Preview (Step 3 onward)
 
 **The file is created at §1, not at sign-off.** Write
-`.condux/designs/YYYY-MM-DD-<feature>.md` with frontmatter
-`status: in-progress` when Step 3 opens, and append each section to it as it is
-agreed. This is the whole mechanism behind the card contract: the card can stay
-small precisely because the design has somewhere else to live.
+`.condux/designs/YYYY-MM-DD-<feature>.md` when Step 3 opens, and append each
+section to it as it is agreed. This is the whole mechanism behind the card
+contract: the card can stay small precisely because the design has somewhere
+else to live.
 
-```markdown
----
-status: in-progress
-date: YYYY-MM-DD
-feature: <slug>
----
-```
+**The file's shape lives in `references/design-template.md`** — the canonical
+home of the frontmatter contract (`status` / `date` / `feature`), the section
+set, and the lifecycle stamp saying when each part gets written. Copy its
+at-creation parts when the file is created; append each agreed section in its
+§-entry shape (the section card's presentation twin — same four facts).
 
 At Step 7, flip `status` to `signed-off`. `/draft-plan` and the `planner` agent
 both read that value; **a design file with `status: in-progress` does not
@@ -274,7 +272,8 @@ Detail-round answers (Step 4) belong in the spec concern files, not the
 summary — the summary stays short; the spec carries the detail.
 
 Lives at: `.condux/designs/YYYY-MM-DD-<feature>.md`, created at §1 and
-appended to per section (see The Design File and the Live Preview). Step 7
+appended to per section, in the shape of `references/design-template.md`
+(see The Design File and the Live Preview). Step 7
 does not write it — it flips its `status` to `signed-off`, and that flip is
 what `/draft-plan`'s gate check reads. A design that lives only in
 conversation doesn't count as signed off, and neither does one still marked
