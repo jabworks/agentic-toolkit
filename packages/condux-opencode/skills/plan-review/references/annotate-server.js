@@ -131,6 +131,35 @@ function readPlan(doc) {
   } catch (e) { return ''; }
 }
 
+// Artifact serving: sibling *.html / *.svg files (blueprint mockups and
+// diagrams), enumerated with the same walk rules as listDocs(). Membership in
+// this list is the only door — the request URL is never path-resolved, so
+// traversal shapes can't reach the filesystem. Stdin-mode plans live in
+// os.tmpdir() (see main), where a sibling walk would enumerate unrelated
+// files; artifact serving is off there.
+function artifactRoot() {
+  if (tmpPlanFile) return null;
+  return DIR_MODE ? planFile : path.dirname(planFile);
+}
+
+function listArtifacts() {
+  const root = artifactRoot();
+  if (!root) return [];
+  const out = [];
+  (function walk(rel) {
+    let entries;
+    try { entries = fs.readdirSync(path.join(root, rel || '.'), { withFileTypes: true }); }
+    catch (e) { return; }
+    entries.forEach(function (e) {
+      if (e.name[0] === '.') return;
+      const r = rel ? rel + '/' + e.name : e.name;
+      if (e.isDirectory()) walk(r);
+      else if (/\.(html|svg)$/i.test(e.name) && !/\.feedback\./i.test(e.name)) out.push(r);
+    });
+  })('');
+  return out;
+}
+
 function watchPlan() {
   try {
     if (DIR_MODE) {
@@ -318,7 +347,13 @@ function handler(req, res) {
 
   if (req.method === 'GET' && p === '/') {
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-    return res.end(TEMPLATE.replace(/\{\{PLAN_NAME\}\}/g, escapeHtml(path.basename(planFile))));
+    return res.end(TEMPLATE
+      .replace(/\{\{PLAN_NAME\}\}/g, escapeHtml(path.basename(planFile)))
+      // Decision-bar affordance: manual mode defers the decision to a file the
+      // agent reads at its next checkpoint; every other mode (steer, hook,
+      // codex) has a live listener blocked on the decision, so only true
+      // manual may carry the deferred copy.
+      .replace(/\{\{MODE\}\}/g, CODEX_STOP_MODE ? 'codex' : HOOK_MODE ? 'hook' : STEER_MODE ? 'steer' : 'manual'));
   }
   if (req.method === 'GET' && p === '/api/plan') {
     res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
@@ -382,6 +417,23 @@ function handler(req, res) {
       }
     });
     return;
+  }
+  if (req.method === 'GET' && p !== '/' && p.indexOf('/api/') !== 0) {
+    // Enumerated artifacts only (see listArtifacts). Served script-dead:
+    // CSP sandbox gives the document an opaque origin and disables script
+    // execution, so an agent-authored artifact can never reach /api/*.
+    let rel = null;
+    try { rel = decodeURIComponent(p.slice(1)); } catch (e) { /* malformed → 404 */ }
+    if (rel && listArtifacts().indexOf(rel) >= 0) {
+      try {
+        const body = fs.readFileSync(path.join.apply(path, [artifactRoot()].concat(rel.split('/'))));
+        res.writeHead(200, {
+          'Content-Type': /\.svg$/i.test(rel) ? 'image/svg+xml' : 'text/html; charset=utf-8',
+          'Content-Security-Policy': 'sandbox',
+        });
+        return res.end(body);
+      } catch (e) { /* deleted between walk and read → 404 */ }
+    }
   }
   res.writeHead(404);
   res.end();

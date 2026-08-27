@@ -12,9 +12,13 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## condux 2.27.0 — 2026-08-27
+
+- chore(condux): version 2.27.0
+
 ## condux 2.26.0 — 2026-08-27
 
-- chore(condux): version 2.26.0
+- feat(discovery,blueprint): cite artifact paths, never relative links (#59 interim)
 
 ## condux 2.25.0 — 2026-08-27
 

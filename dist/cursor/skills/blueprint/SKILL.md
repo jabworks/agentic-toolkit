@@ -46,19 +46,19 @@ product family.
 │  Standalone: open in the browser (xdg-open / open). If neither   │
 │  works (headless, SSH), print the absolute paths and continue —  │
 │  never fail on delivery.                                         │
-│  Inside /discovery: open NOTHING. Cite the file's path in the    │
-│  design doc as inline code and let the running preview reload —  │
-│  see Inside the Workflow.                                        │
+│  Inside /discovery: open NOTHING. Link the file from the design  │
+│  doc (label = href = its served-root-relative path) and let the  │
+│  running preview reload — see Inside the Workflow.               │
 │  Either way, always state which mode was produced                │
 │  and offer the flip: "wireframe mode — say 'promote to render'   │
 │  for the full house look" (or the reverse). The mode is never    │
 │  chosen silently.                                                │
 │                                                                  │
-│  Step 4: CITE                                                    │
-│  Cite the files' paths (inline code, git-root-relative) in the   │
-│  design doc or task card that motivated them, so the visual      │
-│  target travels with the design. Never a clickable relative      │
-│  link — those 404 in the review preview.                         │
+│  Step 4: LINK                                                    │
+│  Link the files from the design doc or task card that motivated  │
+│  them — a markdown link whose href and label are the same        │
+│  served-root-relative path — so the visual target travels with   │
+│  the design and the click opens it in the review preview.        │
 └──────────────────────────────────────────────────────────────────┘
 ```
 
@@ -115,17 +115,18 @@ mockup into the spec directory first and cite the committed copy.
   | What states are legal and what moves between them? | state machine |
   | What goes where on a screen, and in what order does it read? | wireframe |
 
-  **Inside discovery, deliver by citing — never by opening.** The reader
+  **Inside discovery, deliver by linking — never by opening.** The reader
   already has the design preview open (discovery launches it at §1 and it
-  live-reloads on every write). Add the mockup's git-root-relative path to the
-  design doc as inline code and the citation appears there; the reader opens
-  the file from the editor or filesystem. Never a clickable relative link —
-  the annotate server serves only the review page and `/api/*`, so relative
-  links 404 in the preview. And never an inlined copy of the diagram beside
-  the artifact: one fact, two homes is how the copies drift. A tab per section
-  is the interruption this avoids; standalone invocations keep opening on
-  deliver. Side-by-side option *picking* stays with discovery's own
-  mockup-picker.
+  live-reloads on every write). Add a markdown link whose href and label are
+  the same served-root-relative path — `[mockups/flow.html](mockups/flow.html)`
+  — and the link appears in the doc; the preview serves enumerated sibling
+  `.html`/`.svg` files script-dead, so clicking opens the artifact. An older
+  preview shows the path as the label and loses nothing. Never a
+  git-root-relative href (it cannot resolve against the served root), and
+  never an inlined copy of the diagram beside the artifact: one fact, two
+  homes is how the copies drift. A tab per section is the interruption this
+  avoids; standalone invocations keep opening on deliver. Side-by-side option
+  *picking* stays with discovery's own mockup-picker.
 - **/draft-plan** task cards may cite mockup paths so an implementer sees the
   visual target for their task.
 - Standalone asks ("mock this up", "visualize the data model") run the same

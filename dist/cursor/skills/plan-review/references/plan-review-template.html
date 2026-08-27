@@ -1648,14 +1648,21 @@
         });
         updateBadges(); updateSummary();
       }
+      // Server mode, injected at render. 'manual' = no live listener: the
+      // decision lands in the feedback file and the agent reads it at its next
+      // checkpoint. Anything else (steer, or an unreplaced literal from an
+      // older server) keeps the live-submission copy.
+      const SERVER_MODE='{{MODE}}';
+      const MANUAL=SERVER_MODE==='manual';
       // Live summary in the decision bar — what rides along with the decision.
       function updateSummary(){
         const n=annotations.filter(function(a){return a.kind==='note';}).length;
         const m=annotations.filter(function(a){return a.kind==='chat';}).length;
         const parts=[];
         if(n)parts.push(n+' note'+(n>1?'s':'')); if(m)parts.push(m+' message'+(m>1?'s':''));
-        document.getElementById('dbar-summary').textContent=
-          parts.length?parts.join(' · ')+' will be sent with your decision':'No notes or messages yet — a decision sends on its own';
+        document.getElementById('dbar-summary').textContent=MANUAL
+          ?(parts.length?parts.join(' · ')+' will be recorded with your decision — the agent reads it at its next checkpoint':'Decisions are recorded for the agent — it reads them at its next checkpoint')
+          :(parts.length?parts.join(' · ')+' will be sent with your decision':'No notes or messages yet — a decision sends on its own');
       }
       function updateBadges(){
         const counts={}, docCounts={};
@@ -1680,18 +1687,29 @@
       }
 
       // Per-decision confirmation copy — what the agent does with each verdict.
+      // Two tables: live (steer) and deferred (manual). Manual copy never
+      // implies a listener, and never pulses a waiting dot — nothing is waiting.
       const SENT={
         'Approve':          {cls:'approve',ico:'✓',wait:false,title:'Approved',sub:'Sent to the agent — it will proceed and implement the plan.'},
         'Request Revisions':{cls:'revise', ico:'',wait:true, title:'Revisions requested',sub:'Your notes are on their way. The agent will revise the plan; the updated version reloads here when it’s ready.'},
         'Reject':           {cls:'deny',   ico:'✕',wait:false,title:'Rejected',sub:'Sent to the agent — it will not implement this. It steps back to reconsider whether the feature should be built at all.'},
+      };
+      const SENT_MANUAL={
+        'Approve':          {cls:'approve',ico:'✓',wait:false,title:'Approval recorded',sub:'Saved to the feedback file — the agent reads it at its next checkpoint. Nothing is watching live.'},
+        'Request Revisions':{cls:'revise', ico:'',wait:false,title:'Revisions recorded',sub:'Saved to the feedback file — the agent picks your notes up at its next checkpoint. Nothing is watching live.'},
+        'Reject':           {cls:'deny',   ico:'✕',wait:false,title:'Rejection recorded',sub:'Saved to the feedback file — the agent reads it at its next checkpoint. Nothing is watching live.'},
       };
       let submitting=false, decisionSent=false;
       function clearAllNotes(){
         annotations.slice().forEach(function(a){ if(a.kind==='note') unhighlight(a.id); });
         annotations.length=0; nextId=1; paint();
       }
-      function showSent(decision){
-        const cfg=SENT[decision]||SENT['Request Revisions'];
+      function showSent(decision,mode){
+        // The toast follows the mode /api/feedback reports; the injected
+        // constant is the fallback when the response carried none.
+        const manual=(mode||SERVER_MODE)==='manual';
+        const table=manual?SENT_MANUAL:SENT;
+        const cfg=table[decision]||table['Request Revisions'];
         document.getElementById('dbar-live').style.display='none';
         const ico=document.getElementById('sent-ico');
         ico.className='ico'+(cfg.wait?' dot':''); ico.textContent=cfg.wait?'':cfg.ico;
@@ -1715,11 +1733,13 @@
           // conversation would mean two different notes.
           const r=await fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({decision:decision,thread:threadOrder()})});
           if(!r.ok) throw new Error('status '+r.status);
+          let mode=SERVER_MODE;
+          try{ mode=(await r.json()).mode||mode; }catch(e){}
           hideApiError();
           decisionSent=true;    // a terminal decision makes the server exit —
                                  // the SSE drop that follows is expected, not a fault
           clearAllNotes();      // notes clear the moment the decision is sent
-          showSent(decision);
+          showSent(decision,mode);
         }catch(e){
           showApiError('Could not send your decision — the review server may be unreachable. Nothing was sent; try again.');
           document.querySelectorAll('.dbar button').forEach(function(b){b.disabled=false;});
@@ -1729,6 +1749,13 @@
       document.getElementById('send').onclick=sendChat;
       document.getElementById('input').addEventListener('keydown',function(e){if((e.metaKey||e.ctrlKey)&&e.key==='Enter')sendChat();});
       document.querySelectorAll('.dbar button[data-decision]').forEach(function(b){b.onclick=function(){submit(b.dataset.decision);};});
+      // Manual mode: the buttons record, they don't transmit — say so.
+      if(MANUAL){
+        const RECORD={'Approve':'Record approval','Request Revisions':'Record revisions','Reject':'Record rejection'};
+        document.querySelectorAll('.dbar button[data-decision]').forEach(function(b){
+          if(RECORD[b.dataset.decision]) b.textContent=RECORD[b.dataset.decision];
+        });
+      }
 
       // ---- Revision diff (self-contained line-level LCS, no deps) ----
       function lineDiff(a,b){

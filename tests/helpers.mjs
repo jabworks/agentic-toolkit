@@ -19,14 +19,18 @@ export function spawnServer(scriptPath, args, urlPattern, timeoutMs = 5000) {
       ));
     }, timeoutMs);
 
-    proc.stdout.on('data', (chunk) => {
+    // Modes that reserve stdout for JSON (--steer, hook modes) log the ready
+    // URL on stderr instead — watch both streams for the pattern.
+    const onData = (chunk) => {
       buffer += chunk.toString();
       const match = buffer.match(urlPattern);
       if (match) {
         clearTimeout(timer);
         resolve({ proc, port: Number(match[1]) });
       }
-    });
+    };
+    proc.stdout.on('data', onData);
+    proc.stderr.on('data', onData);
     proc.on('error', (err) => { clearTimeout(timer); reject(err); });
   });
 }

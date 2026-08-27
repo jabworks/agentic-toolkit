@@ -31,7 +31,7 @@ feature: <slug>
 |---|---|
 | <alternative> | <one line> |
 
-<evidence — table, list, or a cited blueprint artifact path. Never a wall.>
+<evidence — table, list, or a linked blueprint artifact (served-root-relative, label = href). Never a wall.>
 
 ## Constraints & out of scope                [accumulates — rows added any time]
 
