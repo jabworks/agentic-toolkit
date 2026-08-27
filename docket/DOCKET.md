@@ -142,30 +142,6 @@ Worth doing only as its own piece of work with its own reasoning. It was
 explicitly ruled out of discovery-presentation pass one rather than deferred
 by accident — see `specs/discovery-presentation/quirks.md` Q2.
 
-### 61. Pass two: types in a spec carry no inline explanation (2026-08-26)
-
-Pain point 5 of the five reported against discovery's design output on
-2026-08-26, and the one with the sharpest cause. Reported as: "the data shape
-or types/interfaces lacks comments and jsdocs for localized explanation, I
-either had to search for it or the explanation was non-existent."
-
-The cause is that `technical-spec`'s templates give one fact two homes.
-`api.md`'s "Key Types / Schemas" block is a bare interface with no guidance to
-annotate anything — just `id: string;` and a `// ...` placeholder. `fields.md`
-then carries a separate table *with* a Description column. So the explanation
-frequently does exist; it is just never on the type the reader is looking at.
-Neither file is wrong on its own, which is exactly why this survived.
-
-Two candidate fixes, and picking between them is the work: annotate the type
-in place (JSDoc or trailing comments per field, `fields.md` keeping only the
-source-to-UI mapping that a type genuinely cannot express), or generate one
-from the other so they cannot drift. The first is cheaper and probably right;
-the second is what stops the drift returning.
-
-Whichever wins, the rule to write down is the general one: **a fact with two
-homes goes missing from the one you are reading.** See
-`specs/discovery-presentation/quirks.md` Q4.
-
 ### 62. discovery and live-verification write artifacts with no template (2026-08-26)
 
 Raised 2026-08-26 while designing spec-artifact-readability (#60/#61). The
