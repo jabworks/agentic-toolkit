@@ -1,5 +1,11 @@
 # @jabworks/condux
 
+## 0.20.0
+
+### Minor Changes
+
+- [`6bbc093`](https://github.com/jabworks/agentic-toolkit/commit/6bbc093ae4b51a72b3a3f82c745cbf57e3476a57) Thanks [@vi-hieu](https://github.com/vi-hieu)! - The plan-review annotate server serves enumerated sibling blueprint artifacts (`.html`/`.svg`) at root-relative paths, script-dead (`Content-Security-Policy: sandbox`), so design docs and specs can link artifacts and the click works; discovery and blueprint flip from inline-code citations to served-root-relative links (label = href); the manual-mode decision bar stops implying a live listener ("Record decision" + deferred-read copy via a `{{MODE}}` injection). Resolves docket [#59](https://github.com/jabworks/agentic-toolkit/issues/59); spec at `specs/artifact-serving/`.
+
 ## 0.19.0
 
 ### Minor Changes
