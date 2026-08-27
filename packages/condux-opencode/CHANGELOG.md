@@ -1,5 +1,15 @@
 # @jabworks/condux
 
+## 0.18.0
+
+### Minor Changes
+
+- [#130](https://github.com/jabworks/agentic-toolkit/pull/130) [`93e2544`](https://github.com/jabworks/agentic-toolkit/commit/93e254490f1bcaf208e95b4b3554a7702189b675) Thanks [@vi-hieu](https://github.com/vi-hieu)! - Artifact templates for discovery and live-verification (docket [#62](https://github.com/jabworks/agentic-toolkit/issues/62)): the
+  design doc gains a lifecycle-stamped template (`design-template.md`, the
+  canonical home of the frontmatter contract and the four-facts § entry), and
+  live-verification persists its report — `report.md` per run dir from
+  `report-template.md`, the terminal report being the file's printed content.
+
 ## 0.17.2
 
 ### Patch Changes
