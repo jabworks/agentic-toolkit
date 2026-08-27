@@ -1,5 +1,11 @@
 # @jabworks/condux
 
+## 0.19.0
+
+### Minor Changes
+
+- [`277911e`](https://github.com/jabworks/agentic-toolkit/commit/277911e95327b744fd706dd513dabc36e7a9543f) Thanks [@vi-hieu](https://github.com/vi-hieu)! - Discovery and blueprint cite blueprint-artifact paths as inline code instead of clickable relative links (which 404 against the annotate server), blueprint's Step 4 is renamed LINK→CITE, and discovery's sign-off gains promote-on-cite: a blueprint artifact the spec references is copied into the spec directory and cited by its committed path.
+
 ## 0.18.0
 
 ### Minor Changes
