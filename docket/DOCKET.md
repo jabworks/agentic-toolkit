@@ -142,34 +142,4 @@ Worth doing only as its own piece of work with its own reasoning. It was
 explicitly ruled out of discovery-presentation pass one rather than deferred
 by accident — see `specs/discovery-presentation/quirks.md` Q2.
 
-### 62. discovery and live-verification write artifacts with no template (2026-08-26)
-
-Raised 2026-08-26 while designing spec-artifact-readability (#60/#61). The
-question was "can we create complete templates for all the skills that produce
-artifacts" — measured, the gap is two skills, not all of them.
-
-Skills that persist an artifact and already carry a template: `draft-plan`
-(`plan-template.md`), `technical-spec` (`templates.md`), `blueprint` (both
-kits), `session-handoff` (`handoff-template.md` + `.html`), `record`
-(`scaffold-templates.md`).
-
-The two without one:
-
-- **`discovery`** → `.condux/designs/*.md`. Its "Output" section is four
-  bullets — "what we're building and why", "approach chosen", "constraints and
-  out-of-scope", "open questions" — and nothing about shape. Pass one gave the
-  terminal *card* a hard contract and left the *file* freeform, so the design
-  doc's structure is still reinvented each session. Sharpened by the fact that
-  the file is now the primary reading surface, which is exactly the change that
-  made its shapelessness matter.
-- **`live-verification`** → `.condux/verification/*`. No `references/` at all.
-  Evidence capture with no stated shape is hard to compare across runs, which
-  is most of what verification evidence is for.
-
-Do this *after* #60 lands: the concern-file templates being designed there are
-the reference shape (table layer on top, reasoning underneath, prose only where
-it earns its keep), and a design-doc template should consume that vocabulary
-rather than invent a parallel one. Note the deliberate asymmetry — the design
-doc feeds `decisions.md`, so their shapes should agree.
-
 ## Loose threads
