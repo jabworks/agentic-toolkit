@@ -59,7 +59,7 @@ feature: <slug>
 ## §n · <name> — AGREED <date>              [appended per agreement]
 **Decided:** <choice>, because <one line>.
 | Rejected | Why not |                      (one line each)
-<evidence table / linked blueprint artifact — never a wall>
+<evidence table / cited blueprint artifact path — never a wall>
 
 ## Constraints & out of scope               [accumulates — rows added any time]
 | Constraint / exclusion | Why |

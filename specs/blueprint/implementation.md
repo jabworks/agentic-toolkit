@@ -16,7 +16,9 @@ skills/blueprint/
 
 - Output: `.condux/designs/<date>-<feature>/mockups/<name>.html`
   (self-contained; one file per screen/flow state or per diagram).
-- Beside the feature's design doc, which links them (ephemeral→ephemeral OK).
+- Beside the feature's design doc, which cites them by path — inline code,
+  never a clickable relative link, which 404s in the review preview
+  (ephemeral→ephemeral OK; see discovery-presentation Q5).
 - Cited from `specs/` or other durable content → promote the file into the
   spec directory first (citation doctrine, unchanged).
 - Delivery: `xdg-open` (Linux) / `open` (macOS); headless fallback = write

@@ -60,8 +60,8 @@ Accept either answer, same as any other soft gate in this skill.
 │  §1 is approaches-and-tradeoffs; the rest follow the design.   │
 │  Full contract: The Section Card, below.                        │
 │  Does a section's decision turn on one of blueprint's five     │
-│  questions? Load `blueprint` — the artifact is linked from     │
-│  the design doc, not opened in a new tab.                       │
+│  questions? Load `blueprint` — the artifact path is cited      │
+│  in the design doc as inline code, not opened in a new tab.    │
 │                                                                  │
 │  Step 4: DETAIL ROUND — feed the spec                           │
 │  With the approach chosen, ask ONE more batch, grouped by      │
@@ -181,7 +181,7 @@ before they are inside it. Then create the design file and open the preview
 ## §n of N · <name>                    ← position, always
 <one line: what this section decides>
 
-<the evidence — table, list, or a linked artifact. Never a wall.>
+<the evidence — table, list, or a cited artifact path. Never a wall.>
 
 **Recommendation:** <X>, because <one sentence>.
 <the decision, as named options>
@@ -202,8 +202,12 @@ the design existed only as scrollback, so the thread was lost between them. The
 **Visuals.** Load `blueprint` when a section's decision turns on one of its five
 questions — what entities exist · what happens in what order · what talks to
 what · what states are legal · what goes where on a screen. Inside discovery
-the artifact is *linked from the design doc*, never opened in its own tab: the
-running preview reloads and shows the link, so the reader stays where they are.
+the artifact's git-root-relative path is *cited in the design doc as inline
+code* (e.g. `.condux/designs/assets/checkout-flow.html`), never opened in its
+own tab and never written as a clickable relative link — the annotate server
+serves only the review page and `/api/*`, so a relative link 404s in the
+preview. The preview reloads and shows the citation; the reader opens the
+file from the editor or filesystem.
 
 ## The Design File and the Live Preview (Step 3 onward)
 
@@ -284,11 +288,15 @@ Honour an `AGENTS.md` path override if the project defines one.
 
 For full design mockups — UI wireframes and renders in the house token
 language, data-model / flow / architecture diagrams — load the `blueprint`
-skill; the design doc links the files it produces, and the running preview
-shows the link rather than a new tab opening. At sign-off, offer to
-promote the chosen wireframes to render mode (a style-block swap). For
-*picking between* side-by-side options in the browser, see
-`references/mockup-picker.md` (it can point at blueprint's files).
+skill; the design doc cites the paths of the files it produces as inline
+code, and the running preview shows the citation rather than a new tab
+opening. At sign-off, offer to promote the chosen wireframes to render mode
+(a style-block swap). If the spec references a blueprint artifact, promote
+the file too: copy it into the spec directory and cite the committed path —
+a committed spec may never point into `.condux/`, which is gone on any other
+clone (workflow's citation-direction rule). For *picking between*
+side-by-side options in the browser, see `references/mockup-picker.md` (it
+can point at blueprint's files).
 
 ## Design Review Loop
 
