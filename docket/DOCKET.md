@@ -142,4 +142,24 @@ Worth doing only as its own piece of work with its own reasoning. It was
 explicitly ruled out of discovery-presentation pass one rather than deferred
 by accident — see `specs/discovery-presentation/quirks.md` Q2.
 
+2026-08-27: field evidence from a Codex session on another project (a
+numeric-KPI discovery). A blueprint artifact linked relatively from the
+design doc 404'd in the preview — the annotate server serves only the review
+page and `/api/*`, so discovery's promise that "the running preview …
+shows the link" is structurally unkeepable: every relative link resolves
+against the server and dies. The agent root-caused it correctly, then inlined
+an ASCII copy of the diagram beside the HTML artifact — one fact, two homes,
+the exact drift shape #61 closed. Two consequences for this item:
+
+1. "One click between the reader and the picture" understates the status
+   quo — the click is a 404 surfacing to the user mid-review. The decision
+   is now **serve-or-embed**, not embed-or-link, and serving sibling files
+   is a *wider* boundary than the audited SVG passthrough (path traversal,
+   agent-authored files), so the security reasoning gets more load-bearing,
+   not less.
+2. Interim contract fix worth shipping regardless of the outcome: discovery
+   and blueprint must stop writing clickable relative links into design docs
+   — cite the artifact path as inline code (what the Codex agent improvised,
+   minus the duplicated diagram) until the server question is decided.
+
 ## Loose threads
