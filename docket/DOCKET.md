@@ -162,4 +162,12 @@ the exact drift shape #61 closed. Two consequences for this item:
    — cite the artifact path as inline code (what the Codex agent improvised,
    minus the duplicated diagram) until the server question is decided.
 
+2026-08-27 (later): interim contract fix SHIPPED as condux 2.26.0 — discovery
+and blueprint cite artifact paths as inline code (git-root-relative), never
+clickable relative links; blueprint's Step 4 renamed LINK→CITE; discovery's
+sign-off gained promote-on-cite (a blueprint artifact the spec references is
+copied into the spec dir and cited by its committed path). Field evidence
+recorded as `specs/discovery-presentation/quirks.md` Q5. **Entry stays open**
+for the serve-or-embed decision itself.
+
 ## Loose threads
