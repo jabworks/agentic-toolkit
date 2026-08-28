@@ -120,4 +120,36 @@ If the subset also lifts, the contract work is real and the standing claim holds
 generally. If it sits near 88%, the standing claim is about corpus composition and
 should be restated that way.
 
+### 64. Extend trigger-eval harness with optional injected-context preamble per case (2026-08-28)
+
+`scripts/eval-triggers.mjs` cases are `(query, expected_skill)` with no context
+field, so suppressed-class conditions (digest injected before the turn) cannot
+be replayed — `specs/trigger-reliability/quirks.md` Q4. Adding an optional
+per-case preamble would let the harness reproduce the eval-pass/live-fail
+suppression signature instead of only its vocabulary half.
+
+### 65. toolkit-debugging-playbook applied-but-cold — evaluate for a routing nudge next period (2026-08-28)
+
+Its period-1 rewrite shipped 2026-08-06 (`400f346`); on 2026-08-20 a user turn
+stating its literal remit ("the skill for visual mockups almost never fire")
+still missed (`specs/trigger-reliability/period-2-report.md`). No lexical room
+left. Per the routing-nudge convention (toolkit-skill-standards), a nudge needs
+a measured suppressed-class verdict and a live trigger surface to condition on —
+period 3 should decide whether "being inside the toolkit repo" qualifies.
+
+### 66. Classify vedge/axon/lightweight-bff Codex transcripts (92 sessions excluded from period-2 corpus) (2026-08-28)
+
+Excluded conservatively from the period-2 mine on naming (possible corporate).
+If Harvey classifies them personal, re-run the mine with them included — the
+headline asymmetry doesn't depend on them, but toolkit-skill fire rates in
+sibling repos go unmeasured while they're out.
+
+### 67. Replace third-party remember plugin with our own memory stack on Claude Code? (2026-08-28)
+
+The suppressor in `specs/trigger-reliability/` Q1 is
+`claude-plugins-official/remember`'s SessionStart digest. The D2 nudge counters
+it without touching it; owning the memory stack (concord already owns Codex)
+would let digest and skills cooperate instead. Deliberately deferred at design
+time — decision, not implementation, is the next step.
+
 ## Loose threads

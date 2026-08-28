@@ -50,6 +50,7 @@
     "skills/subagent-execution/references/review-package.sh": "assembles a review package for the code-review flow; local only.",
     "skills/subagent-execution/references/task-brief.sh": "renders a task brief for a spawned agent; local only.",
     "skills/technical-spec/references/scaffold.sh": "scaffolds a specs/ tree; path-escape refusal covered by tests/script-safety.test.mjs.",
+    "skills/session-handoff/hooks/session-start.mjs": "session-handoff's SessionStart nudge — conditional routing directive when handoffs exist, both hosts, fails open; behavior gated by tests/session-handoff-hooks.test.mjs.",
     "skills/workflow/hooks/session-start.mjs": "condux's SessionStart hook — injects the routing payload on both hosts, fails open."
   }
 }
