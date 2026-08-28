@@ -1,14 +1,20 @@
 # Implementation — Trigger Reliability
 
+> **2026-08-28 — the nudge was retired.** session-handoff 2.0.0 removes the
+> SessionStart hook this document describes shipping (D2, retired). Sections
+> below that record the period-2 ship are left as written — they are an accurate
+> record of what shipped then, and rewriting history to match a later decision
+> would lose the sequence. The key-files table is live and has been corrected.
+
 ## Key files
 
 | File | Role |
 |---|---|
 | `skills/workflow/hooks/routing.md` + condux `session-start.mjs` | the proven routing-injection pattern the nudge generalizes (payload as prose, script emits per-host wire format, fails open) |
 | `tests/condux-hooks.test.mjs` | precedent for hook gates: per-host root variables, wire formats, fail-open |
-| `skills/session-handoff/` (+ its dist/plugin trees) | first nudge recipient; resume trigger surface `.session-handoff/`, legacy `handoffs/` |
+| `skills/session-handoff/` (+ its dist/plugin trees) | the suppressed skill; resume trigger surface `.session-handoff/`, legacy `handoffs/`. Was the first and only nudge recipient — hook removed in 2.0.0, so the skill now carries no countermeasure |
 | `skills/toolkit-change-control/`, `skills/toolkit-research-frontier/`, `skills/toolkit-debugging-playbook/`, `skills/remember/` | pending period-1 rewrites #1, #2, #3, #8 (D6) |
-| `skills/toolkit-skill-standards/SKILL.md` | gains the nudge-pattern rules so future suppressed-class verdicts have a named remedy |
+| `skills/toolkit-skill-standards/SKILL.md` | carries the nudge-pattern rules — house doctrine with **zero live instances** since 2.0.0; whether it survives is docket #69 |
 | `specs/friction-audit-2026-07-29/trigger-matrix.md` | period-1 methodology — period 2 mirrors it for comparability |
 | `scripts/eval-triggers.mjs` + `scripts/trigger-eval-score.mjs` | the trigger harness; docket #64 added the optional per-case `context` preamble and its separate metric (Q4) |
 | `composition.json` → `scripts/sync.sh` → `node --test` | registration and drift gates for every shipped change |

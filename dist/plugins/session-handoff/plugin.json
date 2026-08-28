@@ -1,4 +1,5 @@
 {
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "session-handoff",
   "version": "2.0.0",
   "description": "Claude Code skill for creating and resuming handoff documents across agentic coding sessions.",
@@ -13,6 +14,5 @@
     "session",
     "resume",
     "development"
-  ],
-  "skills": "./skills/session-handoff"
+  ]
 }

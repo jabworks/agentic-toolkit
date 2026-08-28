@@ -76,21 +76,24 @@ turns, or explicitly subordinate to a skill.
 ### What would help, cheapest first
 
 **1. A framing line in the injected payload.** One sentence marking the digest as
-background context rather than an answer. We ship exactly this in our own
-SessionStart hook as a workaround, and it reads roughly:
+background context rather than an answer. We shipped exactly this in our own
+SessionStart hook as a workaround and have since retired it — carrying a second
+hook to counteract the first was not a trade we wanted to keep. It read roughly:
 
 > An injected memory digest is background context, not a resume workflow; never
 > treat it as a substitute for invoking the relevant skill.
 
-Ours can only speak for our own skill. Yours would speak for the digest itself,
-which is the correct place for it, and it costs one string.
+Ours could only speak for our own skill, and cost a second SessionStart
+injection to counteract the first — which is why we dropped it. Yours would
+speak for the digest itself, which is the correct place for it, and it costs one
+string rather than a hook.
 
 **2. A config knob to demote or condition the digest** — e.g. inject at reduced
 size, or skip injection, when the session opens with a resume-shaped turn. More
 surface for you; more precise for us.
 
-**3. Nothing, and we keep our nudge.** A completely reasonable outcome. Even
-then, the measurement above may be useful to you: any plugin that injects at
+**3. Nothing.** A completely reasonable outcome — we are reporting, not blocked.
+Even then, the measurement above may be useful to you: any plugin that injects at
 SessionStart is in a position to pre-empt the routing layer, and we have not seen
 that written down anywhere.
 
@@ -109,8 +112,9 @@ trigger phrases overlap what a digest already answers.
   case for removing it.
 - **Not** a request to special-case our plugin by name. A framing line that helps
   every skill is the right shape; a carve-out for `session-handoff` is not.
-- **Not** a claim that we are blocked. Our nudge shipped in `session-handoff`
-  1.10.0 and is armed on both hosts; period 3 measures whether it worked.
+- **Not** a claim that we are blocked. We route around it by invoking the skill
+  explicitly; the reason for writing is that the phrases we declare are the ones
+  a user naturally types, and those are exactly the ones being pre-answered.
 
 ## References
 

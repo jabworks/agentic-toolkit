@@ -12,13 +12,21 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## toolkit-ops 1.7.14 — 2026-08-28
+
+- chore(toolkit-ops): version 1.7.14
+
 ## toolkit-ops 1.7.13 — 2026-08-28
 
 - feat(session-handoff,toolkit-ops,docket,git-worktree): class-routed trigger-reliability fixes (#134)
 
+## session-handoff 2.0.0 — 2026-08-28
+
+- chore(session-handoff): version 2.0.0
+
 ## session-handoff 1.10.1 — 2026-08-28
 
-- feat(session-handoff): optional injected-context preamble for the trigger eval
+- feat(session-handoff): optional injected-context preamble for the trigger eval (#135)
 
 ## session-handoff 1.10.0 — 2026-08-28
 
