@@ -225,8 +225,16 @@ digest, an index) that satisfies the information need before the trigger is
 consulted. Measured in `specs/trigger-reliability/` — vocabulary rewrites
 demonstrably cannot fix this class, so do not respond to it by fattening the
 description. The remedy is a SessionStart hook injecting a short routing
-directive; `session-handoff/hooks/` is the reference implementation, condux's
-`workflow/hooks/routing.md` the precedent.
+directive; condux's `workflow/hooks/routing.md` is the only shipped instance.
+
+**Status (2026-08-28): this convention has no recipient.** session-handoff
+carried the one nudge and 2.0.0 removed it — a second SessionStart hook for a
+single skill was not judged worth its cost. The rules below stand as analysis
+and are unfalsified rather than validated: the nudge was never measured, and
+`specs/trigger-reliability/` Q4 shows no harness can measure one. Whether the
+convention survives at all is docket #69. Until that lands, treat it as a
+documented option, not the standard answer — and do not add a nudge to a skill
+on the strength of this section alone.
 
 Non-negotiables, in priority order:
 

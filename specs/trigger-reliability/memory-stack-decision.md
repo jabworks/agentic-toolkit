@@ -164,6 +164,39 @@ the upstream request should not wait for period 3.
 closes when the criterion fires at period 3, or earlier if the upstream request
 is accepted.
 
+## Criterion voided the same day — the nudge was removed (2026-08-28)
+
+Hours after the ratification above, Harvey removed the session-handoff
+SessionStart hook (D2, now retired; session-handoff 2.0.0). **The pre-registered
+criterion measured that nudge's efficacy, so removing it voids the criterion.**
+The threshold table above is kept as the record of what was pre-registered, and
+must not be applied.
+
+Saying that plainly matters more than replacing it quickly. A threshold table
+written *after* removing the instrument it was meant to test is not
+pre-registered, whatever it is labelled — and pre-registration is the only
+property that made the original one worth anything. So this section defines what
+period 3 can still observe, and deliberately does **not** set a number that
+fires a decision on its own.
+
+**What period 3 now measures:** `session-handoff`'s resume-shaped fire rate with
+**no countermeasure on our side** — the same instrument as period 2 (D5), minus
+the nudge. Period 2's ~9% is the direct comparison point, and it was itself
+measured without the nudge, which shipped after it. Period 3 answers a narrower
+but cleaner question: *does the suppression persist, and is it stable?*
+
+| Observation | What it supports |
+|---|---|
+| Rate stays near ~9% | Suppression is stable and unremediated. Port becomes a live option — but as a decision Harvey makes on the evidence, not one a threshold fires. |
+| Rate rises materially without a nudge | Something else moved it (corpus mix, host changes, model updates). Re-examine Q1's mechanism before acting on any option. |
+| Upstream accepts the request first | Resolves the class without a port. Closes #67 regardless of the number. |
+
+**The port no longer has an automatic trigger.** That is the substantive change,
+and it cuts against expedience: with the cheap remedy withdrawn and the
+expensive one no longer auto-firing, #67 can only close on Harvey's judgement or
+on upstream's answer. The upstream request is correspondingly the most valuable
+open thread here, not the least.
+
 ## References
 
 - `specs/trigger-reliability/quirks.md` — Q1 (the suppression class), Q4 (why no

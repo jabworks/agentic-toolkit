@@ -36,6 +36,24 @@ content** (never summarize the artifact — see Q3); **demote the substitute**
 — see Q2). Recipients: session-handoff now; afterwards only skills a
 measurement verdicts as suppressed-class.
 
+**RETIRED 2026-08-28 — owner's decision, before any measurement.** Harvey
+declined to carry a second SessionStart hook for one skill. session-handoff
+2.0.0 removes the hook, its payload, its dual-host manifests and its test; D2's
+rules stand as written but have **no live instance**, so the convention is now
+untested rather than validated. The removal is a preference call, not a
+falsification: the nudge was never measured, and #64 established that no harness
+can measure it (Q4).
+
+Two consequences the rules themselves do not carry:
+
+- **The mechanism was the only remedy on our side.** D3 bars modifying the
+  suppressor; with the nudge gone, the upstream request (see
+  `upstream-request.md`) is the only live remedy for the suppression class.
+- **The convention outlives its instance.** `toolkit-skill-standards` documents
+  the nudge pattern as house doctrine. Whether that survives with zero instances
+  is a separate decision — docket #69, not this one. Do not treat D2 as
+  authorising a new nudge in the meantime.
+
 ## D3 — Our-side only (2026-08-27)
 
 The injected digest comes from the third-party

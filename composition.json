@@ -1,9 +1,6 @@
 {
   "plugins": {
     "session-handoff": {
-      "pluginDirs": {
-        "skills/session-handoff/hooks": "hooks"
-      },
       "marketplace": {
         "description": "Creates and resumes handoff documents for seamless Claude Code session transitions. Use when context window approaches capacity or a work session is ending."
       }
