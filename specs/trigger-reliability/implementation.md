@@ -14,7 +14,7 @@
 | `tests/condux-hooks.test.mjs` | precedent for hook gates: per-host root variables, wire formats, fail-open |
 | `skills/session-handoff/` (+ its dist/plugin trees) | the suppressed skill; resume trigger surface `.session-handoff/`, legacy `handoffs/`. Was the first and only nudge recipient — hook removed in 2.0.0, so the skill now carries no countermeasure |
 | `skills/toolkit-change-control/`, `skills/toolkit-research-frontier/`, `skills/toolkit-debugging-playbook/`, `skills/remember/` | pending period-1 rewrites #1, #2, #3, #8 (D6) |
-| `skills/toolkit-skill-standards/SKILL.md` | carries the nudge-pattern rules — house doctrine with **zero live instances** since 2.0.0; whether it survives is docket #69 |
+| `skills/toolkit-skill-standards/SKILL.md` | carries the suppressed-class **diagnosis** (recognise it; do not fatten the description) and the directive-never-content finding. The nudge remedy is declined doctrine as of #69 — D2's rules live here in the spec, not there |
 | `specs/friction-audit-2026-07-29/trigger-matrix.md` | period-1 methodology — period 2 mirrors it for comparability |
 | `scripts/eval-triggers.mjs` + `scripts/trigger-eval-score.mjs` | the trigger harness; docket #64 added the optional per-case `context` preamble and its separate metric (Q4) |
 | `composition.json` → `scripts/sync.sh` → `node --test` | registration and drift gates for every shipped change |

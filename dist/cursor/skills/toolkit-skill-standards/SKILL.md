@@ -216,48 +216,57 @@ the ladder says the skill still works a rung down.
 
 Ratified 2026-08-06 (docket #1).
 
-## Routing-nudge convention
+## Suppressed-class misses
 
-The named remedy for a **suppressed-class** trigger miss: the skill's declared
-vocabulary matches the user's turn near-verbatim, the skill still doesn't
-fire, and the cause is content already injected into context (a memory
+A trigger miss where **the description is not the problem**: the skill's
+declared vocabulary matches the user's turn near-verbatim, the skill still
+doesn't fire, and the cause is content already injected into context (a memory
 digest, an index) that satisfies the information need before the trigger is
-consulted. Measured in `specs/trigger-reliability/` — vocabulary rewrites
-demonstrably cannot fix this class, so do not respond to it by fattening the
-description. The remedy is a SessionStart hook injecting a short routing
-directive; condux's `workflow/hooks/routing.md` is the only shipped instance.
+consulted. Measured in `specs/trigger-reliability/` — `session-handoff` fired on
+~9% of resume-shaped turns against ~64% of wrap-up turns, same skill, same
+declared vocabulary, same sessions.
 
-**Status (2026-08-28): this convention has no recipient.** session-handoff
-carried the one nudge and 2.0.0 removed it — a second SessionStart hook for a
-single skill was not judged worth its cost. The rules below stand as analysis
-and are unfalsified rather than validated: the nudge was never measured, and
-`specs/trigger-reliability/` Q4 shows no harness can measure one. Whether the
-convention survives at all is docket #69. Until that lands, treat it as a
-documented option, not the standard answer — and do not add a nudge to a skill
-on the strength of this section alone.
+**Recognising it is the whole value of this section.** The reflex on any miss is
+to rewrite the description, and on this class that reflex is measurably wasted:
+you cannot fix being pre-empted by rewording the thing that was never consulted.
+A skill whose phrases are already declared and still missing is not a
+description defect — stop, and look for what answered the turn first.
 
-Non-negotiables, in priority order:
+One finding here generalises past nudges and is worth keeping in mind whenever
+anything injects into context: **directive, never content**. Injected text that
+*answers* a question suppresses the routing decision for it; text that only says
+where something routes does not. That is the mechanism behind the whole class
+(`specs/trigger-reliability/` Q1, Q3).
 
-- **Conditional.** Inject only when the skill's trigger surface is live on
-  disk (a handoff exists, the artifact is present). Nothing to route to →
-  zero tokens injected. An unconditional nudge is catalog-shouting, and a
-  toolkit of shouting plugins is worse than the miss.
-- **Directive, never content.** The nudge says where a phrase routes; it
-  never summarizes the artifact. A nudge that answers the question *is* the
-  suppression it counters.
-- **Demote the substitute.** Name the competing injected context as
-  background, not the workflow.
-- **Tiny.** ≤ 3 lines of prose in a payload `.md` beside the script, never
-  inlined. condux's ~390-token routing payload is the ceiling, not the norm.
-- **Fail open, both hosts.** Exit 0 on any error; per-host wire formats
-  (`--claude` envelope, `--codex` raw stdout); only the host's own root
-  variable in each manifest. A plugin gaining Codex `hooks` must not ship a
-  root Agent Plugins `plugin.json` — the generator excludes it, the tests
-  assert it.
-- **Evidence first.** A nudge ships only against a measured suppressed-class
-  verdict, never on the hunch that a skill "deserves more visibility."
+### The nudge remedy is declined, not recommended (2026-08-28)
 
-Ratified 2026-08-28 (trigger-reliability D2).
+The named remedy used to be a conditional SessionStart hook injecting a short
+routing directive — D2's routing-nudge convention. **It is no longer house
+doctrine.** session-handoff carried the only instance and 2.0.0 removed it:
+carrying a second SessionStart hook per suppressed skill was not judged worth
+its permanent cost, which is paid on every session of every install.
+
+Two things this is *not*. It is not a falsification — the nudge was never
+measured, and Q4 shows no harness can measure one, so the rules were never
+tested. And condux's `workflow/hooks/routing.md` is **not** a surviving instance:
+it is unconditional and bundle-wide, which the convention's own first rule
+forbids. It is the precedent for SessionStart injection as a mechanism, nothing
+more.
+
+The rules themselves are archived intact in `specs/trigger-reliability/`
+(D2, retired) — read them there if a nudge is ever back on the table.
+
+**Bar for shipping one again**, both required, never this section alone:
+
+1. a measured suppressed-class verdict for the specific skill, and
+2. explicit owner sign-off on the ongoing token cost.
+
+Absent both, a suppressed-class verdict is a finding to report, not a defect to
+patch. Reporting it honestly — "this skill cannot win these phrases, here is
+why" — beats shipping machinery nobody asked for.
+
+Class ratified 2026-08-28 (trigger-reliability D1/D2); nudge remedy declined the
+same day (docket #69, D2 retired).
 
 ## Evidence required
 

@@ -12,9 +12,13 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## toolkit-ops 1.7.15 — 2026-08-28
+
+- chore(toolkit-ops): version 1.7.15
+
 ## toolkit-ops 1.7.14 — 2026-08-28
 
-- chore(toolkit-ops): version 1.7.14
+- feat(session-handoff)!: retire the SessionStart routing nudge (#137)
 
 ## toolkit-ops 1.7.13 — 2026-08-28
 
@@ -22,7 +26,7 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## session-handoff 2.0.0 — 2026-08-28
 
-- chore(session-handoff): version 2.0.0
+- feat(session-handoff)!: retire the SessionStart routing nudge (#137)
 
 ## session-handoff 1.10.1 — 2026-08-28
 
