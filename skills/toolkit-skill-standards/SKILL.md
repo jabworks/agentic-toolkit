@@ -216,6 +216,41 @@ the ladder says the skill still works a rung down.
 
 Ratified 2026-08-06 (docket #1).
 
+## Routing-nudge convention
+
+The named remedy for a **suppressed-class** trigger miss: the skill's declared
+vocabulary matches the user's turn near-verbatim, the skill still doesn't
+fire, and the cause is content already injected into context (a memory
+digest, an index) that satisfies the information need before the trigger is
+consulted. Measured in `specs/trigger-reliability/` — vocabulary rewrites
+demonstrably cannot fix this class, so do not respond to it by fattening the
+description. The remedy is a SessionStart hook injecting a short routing
+directive; `session-handoff/hooks/` is the reference implementation, condux's
+`workflow/hooks/routing.md` the precedent.
+
+Non-negotiables, in priority order:
+
+- **Conditional.** Inject only when the skill's trigger surface is live on
+  disk (a handoff exists, the artifact is present). Nothing to route to →
+  zero tokens injected. An unconditional nudge is catalog-shouting, and a
+  toolkit of shouting plugins is worse than the miss.
+- **Directive, never content.** The nudge says where a phrase routes; it
+  never summarizes the artifact. A nudge that answers the question *is* the
+  suppression it counters.
+- **Demote the substitute.** Name the competing injected context as
+  background, not the workflow.
+- **Tiny.** ≤ 3 lines of prose in a payload `.md` beside the script, never
+  inlined. condux's ~390-token routing payload is the ceiling, not the norm.
+- **Fail open, both hosts.** Exit 0 on any error; per-host wire formats
+  (`--claude` envelope, `--codex` raw stdout); only the host's own root
+  variable in each manifest. A plugin gaining Codex `hooks` must not ship a
+  root Agent Plugins `plugin.json` — the generator excludes it, the tests
+  assert it.
+- **Evidence first.** A nudge ships only against a measured suppressed-class
+  verdict, never on the hunch that a skill "deserves more visibility."
+
+Ratified 2026-08-28 (trigger-reliability D2).
+
 ## Evidence required
 
 For "the description is fine": show budget numbers and the collision scan result

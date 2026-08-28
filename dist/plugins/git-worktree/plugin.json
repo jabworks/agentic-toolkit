@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "git-worktree",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Decision router for git worktrees: create an isolated workspace, list and switch trees, move work between them, prune and remove, recover a broken one. Native-first — prefer the host's own worktree tooling over `git worktree add`. Sibling to git-operations.",
   "author": {
     "name": "jabworks"

@@ -1,6 +1,6 @@
 ---
 name: git-worktree
-description: Use when working with git worktrees — creating an isolated workspace or parallel checkout for a task or agent, listing or switching trees, moving work between them, pruning stale ones, recovering a broken one. Native-first — prefer the host's own worktree tooling, fall back to `git worktree` only when there is none. Not for undo/discard/stash/merge/push (git-operations). Not for fanning agents across trees (subagent-deployment).
+description: Use when working with git worktrees — creating an isolated workspace or parallel checkout for a task or agent, listing or switching trees, moving work between them, pruning stale ones, recovering a broken one. Triggers include "create a worktree", "new worktree for this fix". Native-first — prefer the host's own worktree tooling, fall back to `git worktree` only when there is none. Not for undo/discard/stash/merge/push (git-operations). Not for fanning agents across trees (subagent-deployment).
 ---
 
 # git-worktree
