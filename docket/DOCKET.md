@@ -120,14 +120,6 @@ If the subset also lifts, the contract work is real and the standing claim holds
 generally. If it sits near 88%, the standing claim is about corpus composition and
 should be restated that way.
 
-### 64. Extend trigger-eval harness with optional injected-context preamble per case (2026-08-28)
-
-`scripts/eval-triggers.mjs` cases are `(query, expected_skill)` with no context
-field, so suppressed-class conditions (digest injected before the turn) cannot
-be replayed — `specs/trigger-reliability/quirks.md` Q4. Adding an optional
-per-case preamble would let the harness reproduce the eval-pass/live-fail
-suppression signature instead of only its vocabulary half.
-
 ### 65. toolkit-debugging-playbook applied-but-cold — evaluate for a routing nudge next period (2026-08-28)
 
 Its period-1 rewrite shipped 2026-08-06 (`400f346`); on 2026-08-20 a user turn
@@ -151,5 +143,17 @@ The suppressor in `specs/trigger-reliability/` Q1 is
 it without touching it; owning the memory stack (concord already owns Codex)
 would let digest and skills cooperate instead. Deliberately deferred at design
 time — decision, not implementation, is the next step.
+
+### 68. Invocation-observing trigger harness — measure whether a skill fires, not which skill a router names (2026-08-28)
+
+Fell out of #64. The `context` preamble shipped and its first measurement was 6/6 fires (haiku-4-5, 3 trials, both session-handoff seeds) — injecting a synthetic memory digest ahead of "continue from last session" did not suppress the route.
+
+The reason is structural. `scripts/eval-triggers.mjs` poses an explicit routing question ("pick the SINGLE catalog skill best suited to HANDLE it"), so the trigger is consulted on every case by construction. Live suppression (quirks Q1) is the model *never reaching* that question: the digest satisfies the information need and the turn is answered directly. So the preamble measures whether injected context changes a routing answer — real, but weaker — and cannot measure whether the routing decision gets made at all.
+
+Reaching the real question needs a different harness shape: pose an ordinary user turn to an agent with the skills actually installed, and observe whether a skill was *invoked*. That is an agent run per case, not a `claude -p` classification — much more expensive, and it needs an invocation signal to read (transcript skill-invocation lines, as the period-1/2 mines already parse).
+
+Open questions before anyone builds it: is per-case cost acceptable at corpus scale, or does this only run on a suppressed-class subset? Does it replace the router eval or sit beside it as a third metric? The band's comparability rules (see #53, #55) say beside.
+
+See `specs/trigger-reliability/quirks.md` Q4 for the full statement of the limit.
 
 ## Loose threads

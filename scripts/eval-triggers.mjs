@@ -30,6 +30,9 @@ import {
   violationHeadline,
   violationSection,
   scoredWithDisallowed,
+  contextRows,
+  contextHeadline,
+  contextSection,
 } from './trigger-eval-score.mjs';
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -77,6 +80,11 @@ for (const name of fs.readdirSync(SKILLS_DIR)) {
 }
 
 // --- corpus ----------------------------------------------------------------
+// One key function for the corpus, so the dedup check and the lookup that
+// merges into the kept case can never disagree. They did once: adding `context`
+// to the key left the lookup on the two-part shape, and every duplicate in the
+// corpus crashed on an undefined `kept`.
+const corpusKey = (query, expected, context) => query + '||' + expected + '||' + (context || '');
 const seen = new Set();
 const cases = [];
 for (const name of fs.readdirSync(SKILLS_DIR)) {
@@ -84,7 +92,13 @@ for (const name of fs.readdirSync(SKILLS_DIR)) {
   if (!fs.existsSync(file)) continue;
   for (const c of JSON.parse(fs.readFileSync(file, 'utf8'))) {
     const expected = c.should_trigger ? c.expected_skill : null;
-    const key = c.query + '||' + expected;
+    // `context` is part of the dedup key, not just the payload: the whole point
+    // of an injected-context case is to pair with the SAME query/expected sitting
+    // cold elsewhere in the corpus (docket #64). Keyed on query+expected alone,
+    // the context twin is silently dropped as a duplicate — deleting the one case
+    // the feature exists to add.
+    const context = c.context || null;
+    const key = corpusKey(c.query, expected, context);
     if (seen.has(key)) {
       // A duplicate is dropped, but its `disallowed` is merged into the case
       // already kept — a collision assertion is a claim about the query, and
@@ -97,7 +111,7 @@ for (const name of fs.readdirSync(SKILLS_DIR)) {
       // separate-metric decision exists to prevent. Instead the drop is loud:
       // tests/trigger-eval-corpus.test.mjs fails when two cases share a dedup
       // key with divergent accept, so the drop is always a no-op (docket #55).
-      const kept = cases.find((x) => x.query + '||' + x.expected === key);
+      const kept = cases.find((x) => corpusKey(x.query, x.expected, x.context) === key);
       for (const d of c.disallowed || []) if (!kept.disallowed.includes(d)) kept.disallowed.push(d);
       continue;
     }
@@ -109,37 +123,64 @@ for (const name of fs.readdirSync(SKILLS_DIR)) {
     //         `workflow` routing for implementation requests).
     // disallowed: skills that must NEVER win this query, scored as a separate
     //         metric — see scripts/trigger-eval-score.mjs.
+    // context: text injected ahead of the message (a SessionStart digest, a
+    //         memory index). Replays the suppressed class; scored as its own
+    //         metric and never in the band.
     cases.push({
       query: c.query,
       expected,
       accept: c.accept || [],
       disallowed: c.disallowed || [],
       kind: c.kind || 'cold',
+      context,
       source: name,
     });
   }
 }
 const inContext = cases.filter((c) => c.kind === 'in-context').length;
-const eligible = INCLUDE_ALL ? cases : cases.filter((c) => c.kind !== 'in-context');
+// Injected-context cases leave the routing population unconditionally — --all
+// does not reach them either. They are staged to be suppressed, so letting one
+// into the band would move A3's headline while measuring a different question
+// (same separation `disallowed` gets; see trigger-eval-score.mjs).
+const contextCases = cases.filter((c) => c.context);
+const eligible = (INCLUDE_ALL ? cases : cases.filter((c) => c.kind !== 'in-context')).filter((c) => !c.context);
 const corpus = LIMIT > 0 ? eligible.slice(0, LIMIT) : eligible;
 
 // --- routing ---------------------------------------------------------------
 const EMPTY_MCP = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'eval-triggers-')), 'empty-mcp.json');
 fs.writeFileSync(EMPTY_MCP, '{"mcpServers":{}}\n');
 
-function routeBatch(batch) {
+// `context`, when given, is text the agent would already have seen when the
+// message arrives. Every batch it is passed for shares ONE preamble — mixing
+// contexts, or mixing context cases with cold ones, would contaminate the
+// other messages in the prompt and score them under a condition their corpus
+// entry never declared.
+//
+// The cold prompt below is byte-identical to the one that produced every prior
+// band; the context lines are appended, never spliced into it. The added
+// sentences also have to undo "Judge only by the catalog text" — read alone
+// that reads as "ignore the preamble", which is the opposite of the condition
+// being replayed.
+function routeBatch(batch, context = null) {
   const prompt = [
     'You route user messages to a coding agent\'s skills. For each numbered user',
     'message below, pick the SINGLE catalog skill best suited to HANDLE it (whether',
     'it would auto-trigger or the user is explicitly requesting that capability),',
     'or null if none clearly matches. Judge only by the catalog text. Prefer null',
     'over a weak match.',
+    ...(context ? [
+      '',
+      'The SESSION CONTEXT block below was injected into the conversation before',
+      'these messages arrived — it is content the agent has already seen, not an',
+      'instruction about which skill to pick. Judge each message with it in mind.',
+    ] : []),
     '',
     'Reply with ONLY a JSON array, no prose, exactly one entry per message:',
     '[{"i":1,"skill":"workflow"},{"i":2,"skill":null}]',
     '',
     'CATALOG:',
     ...catalog,
+    ...(context ? ['', 'SESSION CONTEXT (injected before the messages):', context] : []),
     '',
     'MESSAGES:',
     ...batch.map((c, k) => `${k + 1}. ${c.query}`),
@@ -173,6 +214,18 @@ function hms(ms) {
   return s < 60 ? `${s}s` : `${Math.floor(s / 60)}m${String(s % 60).padStart(2, '0')}s`;
 }
 
+// One retry with backoff — transient CLI errors and brief limit windows
+// recover; a second failure propagates to the caller's batch-error handling.
+function routeWithRetry(batch, context = null) {
+  try {
+    return routeBatch(batch, context);
+  } catch (e) {
+    process.stderr.write('  batch error, retrying in 60s: ' + e.message.slice(0, 120) + '\n');
+    spawnSync('sleep', ['60']);
+    return routeBatch(batch, context);
+  }
+}
+
 function runOnce(runIdx) {
   const results = [];
   let batchErrors = 0;
@@ -181,16 +234,7 @@ function runOnce(runIdx) {
   for (let i = 0; i < corpus.length; i += BATCH) {
     const batch = corpus.slice(i, i + BATCH);
     try {
-      let routed;
-      try {
-        routed = routeBatch(batch);
-      } catch (e) {
-        // One retry with backoff — transient CLI errors and brief limit windows
-        // recover; a second failure propagates.
-        process.stderr.write('  batch error, retrying in 60s: ' + e.message.slice(0, 120) + '\n');
-        spawnSync('sleep', ['60']);
-        routed = routeBatch(batch);
-      }
+      const routed = routeWithRetry(batch);
       for (const c of batch) {
         const k = batch.indexOf(c) + 1;
         const hit = routed.find((r) => r.i === k);
@@ -227,10 +271,42 @@ function runOnce(runIdx) {
   }
   return { results, batchErrors };
 }
+// Injected-context cases run in their own pass, grouped so every prompt carries
+// exactly one preamble. No limit-class abort here: this pass is a handful of
+// cases at the tail of a run, and losing it costs a separate metric rather than
+// the band.
+function runContextOnce(runIdx) {
+  const results = [];
+  const groups = new Map();
+  for (const c of contextCases) {
+    if (!groups.has(c.context)) groups.set(c.context, []);
+    groups.get(c.context).push(c);
+  }
+  for (const [context, group] of groups) {
+    for (let i = 0; i < group.length; i += BATCH) {
+      const batch = group.slice(i, i + BATCH);
+      try {
+        const routed = routeWithRetry(batch, context);
+        for (const c of batch) {
+          const hit = routed.find((r) => r.i === batch.indexOf(c) + 1);
+          results.push({ ...c, got: hit ? hit.skill : '(missing)' });
+        }
+      } catch (e) {
+        process.stderr.write('  context batch failed: ' + e.message.slice(0, 200) + '\n');
+        for (const c of batch) results.push({ ...c, got: '(batch-error)' });
+      }
+    }
+  }
+  process.stderr.write(`run ${runIdx + 1}/${RUNS} · injected-context pass · ${results.length}/${contextCases.length} cases\n`);
+  return results;
+}
+
 const runsData = [];
 for (let r = 0; r < RUNS; r++) runsData.push(runOnce(r));
 const results = runsData[runsData.length - 1].results; // last run drives the miss table
 const batchErrors = runsData.reduce((s, r) => s + r.batchErrors, 0);
+const ctxRunsData = [];
+for (let r = 0; r < RUNS && contextCases.length; r++) ctxRunsData.push(runContextOnce(r));
 
 // --- score -----------------------------------------------------------------
 const scored = results.filter((r) => r.got !== '(batch-error)');
@@ -254,7 +330,9 @@ const T95 = { 1: 12.706, 2: 4.303, 3: 3.182, 4: 2.776, 5: 2.571, 6: 2.447, 7: 2.
 const meanAcc = perRunAcc.reduce((a, b) => a + b, 0) / perRunAcc.length;
 const sd = RUNS > 1 ? Math.sqrt(perRunAcc.reduce((s, a) => s + (a - meanAcc) ** 2, 0) / (RUNS - 1)) : 0;
 const ci95 = RUNS > 1 ? (T95[RUNS - 1] || 1.96) * sd / Math.sqrt(RUNS) : 0;
-const caseKey = (r) => r.query + '||' + (r.expected ?? '');
+// Mirrors the corpus dedup key: context is part of a case's identity, so a
+// context twin and its cold original stay two distinct rows here too.
+const caseKey = (r) => r.query + '||' + (r.expected ?? '') + '||' + (r.context ?? '');
 const hitCounts = new Map();
 // Every run's answer per case, not just the last one's. The runs already happen;
 // keeping only `results` (the final run) threw this away, which made a per-case
@@ -271,6 +349,22 @@ for (const { results: rr } of runsData) {
     hitCounts.set(key, cur);
     if (!answers.has(key)) answers.set(key, []);
     answers.get(key).push(r.got ?? null);
+  }
+}
+// Same shape, separate maps: the injected-context pass must not reach hitCounts
+// or answers, which feed the band, the per-skill table and the flaky stats.
+const ctxHitCounts = new Map();
+const ctxAnswers = new Map();
+for (const rr of ctxRunsData) {
+  for (const r of rr) {
+    if (r.got === '(batch-error)') continue;
+    const key = caseKey(r);
+    const cur = ctxHitCounts.get(key) || { case: r, hit: 0, seen: 0 };
+    cur.seen++;
+    if (isHit(r)) cur.hit++;
+    ctxHitCounts.set(key, cur);
+    if (!ctxAnswers.has(key)) ctxAnswers.set(key, []);
+    ctxAnswers.get(key).push(r.got ?? null);
   }
 }
 const flaky = [...hitCounts.values()].filter((c) => c.hit > 0 && c.hit < c.seen);
@@ -292,7 +386,7 @@ const outOfCatalog = [...hitCounts.values()]
 const lines = [];
 lines.push(`# Trigger-routing run — ${new Date().toISOString().slice(0, 10)}`);
 lines.push('');
-lines.push(`Model: ${MODEL} · batch ${BATCH} · corpus ${corpus.length} cold-trigger cases scored (${inContext} in-context cases ${INCLUDE_ALL ? 'included' : 'excluded'}; ${batchErrors} failed batches). Hits include per-case \`accept\` alternates.`);
+lines.push(`Model: ${MODEL} · batch ${BATCH} · corpus ${corpus.length} cold-trigger cases scored (${inContext} in-context cases ${INCLUDE_ALL ? 'included' : 'excluded'}${contextCases.length ? `; ${contextCases.length} injected-context cases scored separately` : ''}; ${batchErrors} failed batches). Hits include per-case \`accept\` alternates.`);
 if (RUNS > 1) {
   lines.push('');
   lines.push(`Trials: ${RUNS} · per-run: ${perRunAcc.map((a) => (100 * a).toFixed(1) + '%').join(' / ')} · mean **${(100 * meanAcc).toFixed(1)}% ± ${(100 * ci95).toFixed(1)}pp** (95% CI, t-dist) · flaky cases: ${flaky.length}`);
@@ -304,6 +398,12 @@ lines.push(`Overall routing accuracy: **${hits.length}/${scored.length} = ${(100
 const violations = violationRows(hitCounts, answers, caseKey);
 const violationLine = violationHeadline(violations, scoredWithDisallowed(hitCounts));
 if (violationLine) lines.push(violationLine);
+// docket #64. Sits beside the violation headline for the same reason: both are
+// separate metrics, and a reader comparing bands must see at a glance that
+// neither is folded into the accuracy line above.
+const ctxRows = contextRows(ctxHitCounts, ctxAnswers, caseKey);
+const ctxLine = contextHeadline(ctxRows);
+if (ctxLine) lines.push(ctxLine);
 lines.push('');
 lines.push('## Per expected skill');
 lines.push('');
@@ -322,6 +422,7 @@ for (const r of misses) {
 }
 lines.push('');
 lines.push(...violationSection(violations));
+lines.push(...contextSection(ctxRows));
 if (RUNS > 1 && flaky.length) {
   lines.push(`## Flaky cases (${flaky.length} — hit in some trials, missed in others)`);
   lines.push('');
@@ -352,7 +453,12 @@ if (OUT) {
   fs.writeFileSync(OUT, report + '\n');
   // `got` stays the final run's answer so prior analyses keep working; `runs`
   // carries every trial, which is what per-case questions actually need.
-  const exported = results.map((r) => ({ ...r, runs: answers.get(caseKey(r)) ?? [] }));
+  // Injected-context results ride along in the same file — a per-case question
+  // about them is exactly as unanswerable without the export as it was for the
+  // cold set (docket #37). Keys carry the context, so the two never collide.
+  const lastCtx = ctxRunsData.length ? ctxRunsData[ctxRunsData.length - 1] : [];
+  const allAnswers = new Map([...answers, ...ctxAnswers]);
+  const exported = [...results, ...lastCtx].map((r) => ({ ...r, runs: allAnswers.get(caseKey(r)) ?? [] }));
   fs.writeFileSync(OUT.replace(/\.md$/, '') + '.json', JSON.stringify(exported, null, 2) + '\n');
   process.stderr.write(`wrote ${OUT}\n`);
 } else {

@@ -19,5 +19,6 @@
 | [period-2-report.md](period-2-report.md) | the evidence: corpus, 9%-vs-64% asymmetry, lexical ceiling, verdict tables |
 
 ## Changelog
+- 2026-08-28: Docket #64 closed — trigger-eval harness gained an optional per-case `context` preamble, scored as a separate metric and seeded on session-handoff. First measurement 6/6 fires: the preamble does not reproduce suppression, because the harness always asks for a route (Q4 update).
 - 2026-08-28: Period-2 report landed (suppression confirmed 9% vs 64%; all 8 period-1 rewrites already applied — the lexical ceiling is measured). Nudge shipped in session-handoff 1.10.0; record/git-worktree sharpened; Q4 resolved (eval-pass + live-fail is the suppression signature); dockets #64–#67 filed.
 - 2026-08-27 (ed4cbb4): Initial spec — design signed off; measurement and fixes pending

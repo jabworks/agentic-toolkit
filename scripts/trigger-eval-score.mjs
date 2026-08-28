@@ -80,6 +80,83 @@ export function violationHeadline(rows, casesWithDisallowed) {
     + ' Reported separately — not included in the accuracy above.';
 }
 
+// docket #64: a case carrying `context` is replayed with that text injected
+// before the message — the condition a cold `(query, expected)` pair cannot
+// reproduce (specs/trigger-reliability/quirks.md Q4). Scored as its own metric
+// for the same reason `disallowed` is: A3's operating band is a like-for-like
+// series, and a case deliberately staged to be suppressed would drag it down
+// while measuring something else entirely.
+//
+// "Fired" is plain isHit under the preamble. A case that does not fire is the
+// suppression signature — eval-pass cold, eval-fail under context.
+export function contextRows(hitCounts, answers, caseKey) {
+  const rows = [];
+  for (const { case: c, hit, seen } of hitCounts.values()) {
+    const got = answers.get(caseKey(c)) || [];
+    rows.push({
+      case: c,
+      fired: hit,
+      seen,
+      // Where it went instead, across every trial — the same question the
+      // flaky table answers for cold cases. A suppressed case usually routes
+      // to null, and knowing that is the difference between "the nudge is
+      // needed" and "a sibling skill is winning".
+      missed: [...new Set(got.filter((g) => !isHit({ ...c, got: g })).map((g) => g ?? 'null'))],
+    });
+  }
+  return rows;
+}
+
+// Occurrence-level, not case-level: with --runs 3 a case that fires once in
+// three is the interesting result, and a case-level count would round it to
+// either "fired" or "suppressed" and lose exactly that.
+export function contextHeadline(rows) {
+  if (!rows.length) return null;
+  const fired = rows.reduce((s, r) => s + r.fired, 0);
+  const seen = rows.reduce((s, r) => s + r.seen, 0);
+  return `Injected-context fires: **${fired}/${seen}** across ${rows.length} case${rows.length === 1 ? '' : 's'}`
+    + ' replayed under a context preamble.'
+    + ' Reported separately — not included in the accuracy above.';
+}
+
+export function contextSection(rows) {
+  if (!rows.length) return [];
+  // Distinct preambles get short labels and are printed in full below the
+  // table. A digest is many lines; inlining one into a markdown cell would
+  // wreck the table, and referring to a preamble the report doesn't contain
+  // would make the result unreadable six months from now.
+  const labels = new Map();
+  for (const r of rows) if (!labels.has(r.case.context)) labels.set(r.case.context, `ctx-${labels.size + 1}`);
+
+  const lines = [];
+  lines.push(`## Injected-context cases (${rows.length})`);
+  lines.push('');
+  lines.push('Each case is replayed with a preamble injected ahead of the message — the');
+  lines.push('condition a cold `(query, expected)` pair cannot reproduce (quirks Q4). A');
+  lines.push('case that fires routed correctly despite the injected context; one that');
+  lines.push('does not is the suppression signature. Scored separately from routing');
+  lines.push('accuracy — these cases never enter the band.');
+  lines.push('');
+  lines.push('| query | expected | context | fired | routed to instead | corpus file |');
+  lines.push('|---|---|---|---|---|---|');
+  for (const r of rows) {
+    lines.push(
+      `| ${esc(r.case.query)} | ${r.case.expected ?? 'null'} | ${labels.get(r.case.context)}`
+      + ` | ${r.fired}/${r.seen} | ${r.missed.join(', ') || '—'} | ${r.case.source} |`,
+    );
+  }
+  lines.push('');
+  for (const [text, label] of labels) {
+    lines.push(`**${label}**`);
+    lines.push('');
+    lines.push('```');
+    lines.push(text);
+    lines.push('```');
+    lines.push('');
+  }
+  return lines;
+}
+
 export function violationSection(rows) {
   if (!rows.length) return [];
   const lines = [];

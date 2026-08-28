@@ -135,14 +135,46 @@ test('no case disallows its own expected_skill or one of its accept alternates',
 test('a disallowed assertion is never parked on an unscored case', () => {
   // kind:"in-context" cases are filtered out of the corpus unless --all
   // (eval-triggers.mjs), so a disallowed entry on one is silently never
-  // evaluated — the exact silence this metric is vulnerable to.
+  // evaluated — the exact silence this metric is vulnerable to. A `context`
+  // case leaves the routing population unconditionally (docket #64), so it is
+  // the same silence with no --all escape hatch at all.
   const bad = [];
   for (const c of allCases()) {
-    if ((c.disallowed || []).length && c.kind === 'in-context') {
+    if (!(c.disallowed || []).length) continue;
+    if (c.kind === 'in-context') {
       bad.push(`${c._at}: disallowed on a kind:"in-context" case, which default runs never score`);
+    }
+    if (c.context) {
+      bad.push(`${c._at}: disallowed on a context case, which the routing pass never scores`);
     }
   }
   assert.deepEqual(bad, [], 'disallowed on unscored cases');
+});
+
+test('context is a non-empty string when present, and never combined with kind:"in-context"', () => {
+  // Two different phenomena that both involve "context", which is exactly why
+  // they must not be conflated: kind:"in-context" is a follow-up asked while a
+  // skill is already loaded; `context` is text injected BEFORE the message
+  // arrives (quirks Q4). Overloading one onto the other would silently change
+  // what --all scores.
+  const bad = [];
+  for (const c of allCases()) {
+    if (c.context === undefined) continue;
+    if (typeof c.context !== 'string' || !c.context.trim()) bad.push(`${c._at}: context is not a non-empty string`);
+    if (c.kind === 'in-context') bad.push(`${c._at}: carries both context and kind:"in-context"`);
+  }
+  assert.deepEqual(bad, [], 'malformed context');
+});
+
+test('the context field is actually in use', () => {
+  // Same guard as `disallowed` below: the injected-context metric reports
+  // nothing when no case declares a preamble, which is indistinguishable from
+  // a harness that never runs the pass at all.
+  const withContext = allCases().filter((c) => c.context);
+  assert.ok(
+    withContext.length > 0,
+    'no case declares `context` — the injected-context pass is wired up but measures nothing',
+  );
 });
 
 test('kind is either omitted, "cold", or "in-context"', () => {
@@ -156,7 +188,7 @@ test('kind is either omitted, "cold", or "in-context"', () => {
 });
 
 test('cases sharing a dedup key agree on accept', () => {
-  // eval-triggers.mjs dedups the corpus on `query + "||" + expected`. A
+  // eval-triggers.mjs dedups the corpus on `query + "||" + expected + "||" + context`. A
   // duplicate's `disallowed` is merged into the kept case; its `accept` is
   // dropped — deliberately, because accept feeds isHit and a silent merge
   // could widen the kept case's accept set and move A3's operating band
@@ -167,7 +199,10 @@ test('cases sharing a dedup key agree on accept', () => {
   const byKey = new Map();
   for (const c of allCases()) {
     const expected = c.should_trigger ? c.expected_skill : null;
-    const key = c.query + '||' + expected;
+    // Mirrors the harness key exactly, context included — otherwise a context
+    // twin and its cold original group together here and this test starts
+    // policing an agreement the harness never asks for.
+    const key = c.query + '||' + expected + '||' + (c.context || '');
     if (!byKey.has(key)) byKey.set(key, []);
     byKey.get(key).push(c);
   }
