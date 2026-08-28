@@ -201,26 +201,4 @@ Open questions before anyone builds it: is per-case cost acceptable at corpus sc
 
 See `specs/trigger-reliability/quirks.md` Q4 for the full statement of the limit.
 
-### 70. toolkit-change-control has no row for retiring a hook or a plugin-level dir (2026-08-28)
-
-Found while versioning session-handoff 2.0.0. The classification table in
-`skills/toolkit-change-control/SKILL.md` covers new skills, skill edits,
-manifest fixes, marketplace fixes, doc fixes, dist resyncs and **retired
-skills** — nothing for removing a hook, a `pluginDirs` entry, or any other
-plugin-level surface that is not a skill.
-
-The gap is not academic: retiring the session-handoff hook changed the install
-surface on both hosts (the Codex `hooks` registration disappeared, and a root
-Agent Plugins `plugin.json` appeared in its place via the Q2 exclusion flipping
-off), which is a larger blast radius than the "skill edit → patch" row would
-suggest. It was versioned **major** by analogy with the retired-skill row
-("an installed skill disappearing is a breaking change to the install surface")
-and the one precedent in `CHANGELOG.md` — condux 2.0.0, a skill rename, the same
-shape of surface change. That reasoning belongs in the table rather than in a
-commit message someone has to find.
-
-Scope: add a row (or rows) for retired plugin-level surfaces, name the Q2
-coupling as a consequence to check, and say explicitly that a version can be
-major without any skill changing.
-
 ## Loose threads

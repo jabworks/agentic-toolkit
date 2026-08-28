@@ -1,6 +1,6 @@
 ---
 name: toolkit-change-control
-description: "Use when deciding whether a change to jabworks/agentic-toolkit is done and safe to ship — classifying the change (including retiring a skill), picking the version bump, and gating on the publish checklist (mirror synced, manifests paired, marketplace entry, node --test green). Triggers include \"is this skill shipped\", \"am I done shipping this skill/plugin\", \"ready to publish\", \"what version do I bump\", \"did I register this plugin\", \"retire this skill\". Also fires on the imperative form, not just the question — \"bump the condux version\", \"sync dist and bump\". Self-trigger right after any edit to a plugin.json, marketplace.json, or a shipped SKILL.md, before the user asks. Run this gate before `release`, which ships the version this one picks."
+description: "Use when deciding whether a change to jabworks/agentic-toolkit is done and safe to ship — classifying the change (including retiring a skill or a hook), picking the version bump, and gating on the publish checklist (mirror synced, manifests paired, marketplace entry, node --test green). Triggers include \"is this skill shipped\", \"am I done shipping this skill/plugin\", \"ready to publish\", \"what version do I bump\", \"did I register this plugin\", \"retire this skill\", \"remove this hook\". Also fires on the imperative form, not just the question — \"bump the condux version\", \"sync dist and bump\". Self-trigger right after any edit to a plugin.json, marketplace.json, or a shipped SKILL.md, before the user asks. Run this gate before `release`, which ships the version this one picks."
 ---
 
 # Toolkit Change Control
@@ -42,6 +42,27 @@ Gate every change to this toolkit through classification → checklist → evide
 | Doc-only fix | README.md / CLAUDE.md / skill README.md | none, unless the doc ships inside a plugin (then patch) |
 | Dist-only resync | `dist/` via `scripts/sync.sh` | none — but ask WHY it drifted first |
 | Retired skill | remove `skills/<n>/`, its dist tree (standalone: whole `dist/plugins/<n>/`; bundle-member: its subdir), its marketplace entry (standalone only), then `bash scripts/sync.sh` to regenerate the OpenCode, Cursor, and package trees | standalone: entry gone, no bump target; bundle-member: bundle **major** (an installed skill disappearing is a breaking change to the install surface) |
+| New plugin-level surface (hooks, `agents/`, `server/`, MCP config) | the source dir under `skills/<owner>/`, its `pluginDirs` entry in `composition.json`, any manifest wiring (Codex `hooks`), then sync | owning plugin **minor** (new capability) |
+| **Retired plugin-level surface** (hooks, `agents/`, `server/`, MCP config) | delete the source dir **and** its dist copy (sync stops copying it, it does not delete it), drop the `pluginDirs` entry, drop the manifest wiring, drop the `supply-chain-allowlist.json` entry, delete its test, then sync | owning plugin **major** — see below |
+
+A retired plugin-level surface is **major even though no skill changed**, and
+that is the trap: the diff can look like a deletion of four small files while the
+install surface changes on both hosts. The retired-skill row's reasoning applies
+unchanged — something an installed user had is gone after an update — and the
+one precedent is condux 2.0.0, a skill *rename*, the same shape. Do not reach
+for "skill edit → patch" because no `SKILL.md` moved.
+
+**Check the Q2 coupling before you sync.** Dropping Codex `hooks` from a
+manifest flips the Agent Plugins exclusion *off*, so sync starts generating a
+root `plugin.json` for that plugin — it rejoins a distribution channel it was
+excluded from. Adding hooks does the reverse and silently kills them if a root
+manifest already exists. Either direction, sync's own line is the check: watch
+the `generated N root plugin.json manifests … skipped M` count move.
+(`specs/agent-plugins-conformance/quirks.md` Q2; `tests/agent-plugins.test.mjs`
+asserts the coupling but cannot tell you it was intended.)
+
+Worked example: session-handoff 2.0.0 (2026-08-28, docket #70) retired its
+SessionStart hook — 10/3 became 11/2, and the plugin rejoined Agent Plugins.
 
 **Rules that override everything:** `skills/` is the only editable skill source;
 `dist/` skill trees are generated (edit manifests only). Version bumps go in **both**
