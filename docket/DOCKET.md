@@ -129,11 +129,14 @@ left. Per the routing-nudge convention (toolkit-skill-standards), a nudge needs
 a measured suppressed-class verdict and a live trigger surface to condition on —
 period 3 should decide whether "being inside the toolkit repo" qualifies.
 
-**2026-08-28 — gated on #69, not just period 3.** The nudge mechanism this item
-would use was retired the day it was measured-pending (session-handoff 2.0.0;
-D2 retired). There is nothing to extend to a second skill until #69 decides
-whether the routing-nudge convention survives with zero instances. Do not act
-on this item before #69.
+**2026-08-28 — the measurement stands; the default remedy is gone (#69 closed).**
+The nudge mechanism this item would have used was retired (session-handoff
+2.0.0; D2 retired), and #69 declined it as house doctrine. So this item is
+*not* blocked and *not* dead: period 3 still evaluates whether
+toolkit-debugging-playbook is suppressed-class. What changed is the disposal —
+a verdict is now a finding to report, and shipping a nudge against it needs
+both a measured verdict and Harvey's explicit sign-off on the ongoing token
+cost. Do not treat a verdict here as authorising a hook.
 
 ### 66. Classify vedge/axon/lightweight-bff Codex transcripts (92 sessions excluded from period-2 corpus) (2026-08-28)
 
@@ -197,34 +200,6 @@ Reaching the real question needs a different harness shape: pose an ordinary use
 Open questions before anyone builds it: is per-case cost acceptable at corpus scale, or does this only run on a suppressed-class subset? Does it replace the router eval or sit beside it as a third metric? The band's comparability rules (see #53, #55) say beside.
 
 See `specs/trigger-reliability/quirks.md` Q4 for the full statement of the limit.
-
-### 69. Retire or keep the routing-nudge convention now that it has zero instances (2026-08-28)
-
-`skills/toolkit-skill-standards/SKILL.md` documents the routing-nudge pattern as
-house doctrine: a conditional SessionStart hook that routes phrases to a skill,
-with D2's six rules (conditional, directive-never-content, demote-the-substitute,
-tiny, fail-open, dual-host safe). It was written when session-handoff was about
-to become its first recipient.
-
-That recipient is gone (2.0.0, 2026-08-28 — Harvey declined to carry a second
-SessionStart hook for one skill), so the convention now documents a mechanism the
-toolkit ships nowhere and has never measured. #64 established that no harness can
-measure it either (Q4), so it cannot be validated in the abstract.
-
-Three ways this can go, and the choice is a real one:
-
-1. **Delete the convention.** Honest: we do not do this. Cost: the next
-   suppressed-class verdict has no named remedy and the reasoning gets
-   re-derived from scratch.
-2. **Keep it, demoted to a documented option** with the retirement and its
-   reason attached — "available, deliberately unused, here is why". Keeps the
-   analysis, drops the implication that it is the standard answer.
-3. **Keep it as-is.** Only defensible if we expect to ship one again.
-
-Whichever wins, `toolkit-skill-standards` needs an edit and a toolkit-ops bump,
-and #65 unblocks or dies with it. Note the standards skill also carries the
-Q3-derived "directive, not content" rule, which is a genuinely useful finding
-independent of nudges — do not delete that with the rest.
 
 ### 70. toolkit-change-control has no row for retiring a hook or a plugin-level dir (2026-08-28)
 
