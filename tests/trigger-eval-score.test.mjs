@@ -7,6 +7,9 @@ import {
   violationHeadline,
   violationSection,
   scoredWithDisallowed,
+  contextRows,
+  contextHeadline,
+  contextSection,
 } from '../scripts/trigger-eval-score.mjs';
 
 // Docket #53. The predicates live in their own module precisely so they can be
@@ -162,6 +165,119 @@ test('a null-expected case renders as null rather than blank', () => {
   const c = fixture({ expected: null, disallowed: ['discovery'] });
   const rows = [{ case: c, named: ['discovery'], hits: 1, seen: 1 }];
   assert.match(violationSection(rows).join('\n'), /\| null \| discovery \|/);
+});
+
+// --- injected-context metric (docket #64) ----------------------------------
+
+const ctxKey = (r) => r.query + '||' + (r.expected ?? '') + '||' + (r.context ?? '');
+
+function ctxFixture(over = {}) {
+  return {
+    query: 'continue from last session',
+    expected: 'session-handoff',
+    accept: [],
+    disallowed: [],
+    kind: 'cold',
+    context: '=== MEMORY ===\nyesterday: shipped the export button.',
+    source: 'session-handoff',
+    ...over,
+  };
+}
+
+test('a case that routes correctly under its preamble counts as fired', () => {
+  const c = ctxFixture();
+  const rows = contextRows(
+    new Map([[ctxKey(c), { case: c, hit: 2, seen: 2 }]]),
+    new Map([[ctxKey(c), ['session-handoff', 'session-handoff']]]),
+    ctxKey,
+  );
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0].fired, 2);
+  assert.deepEqual(rows[0].missed, [], 'nothing to report when every trial fired');
+});
+
+test('suppression is recorded with where the case went instead', () => {
+  // The signature Q4 names: the same phrase passes cold and fails under an
+  // injected digest. Routing to null is the common shape — a metric that only
+  // said "missed" would not distinguish it from a sibling skill winning.
+  const c = ctxFixture();
+  const rows = contextRows(
+    new Map([[ctxKey(c), { case: c, hit: 1, seen: 3 }]]),
+    new Map([[ctxKey(c), ['session-handoff', null, 'discovery']]]),
+    ctxKey,
+  );
+  assert.equal(rows[0].fired, 1);
+  assert.equal(rows[0].seen, 3);
+  assert.deepEqual(rows[0].missed, ['null', 'discovery']);
+});
+
+test('a context case and its cold twin are two rows, not one', () => {
+  // The corpus deliberately pairs the same query/expected cold and under a
+  // preamble; keyed without context they collapse and the pairing — the whole
+  // measurement — disappears.
+  const cold = ctxFixture({ context: null });
+  const warm = ctxFixture();
+  assert.notEqual(ctxKey(cold), ctxKey(warm));
+});
+
+test('accept alternates count as a fire', () => {
+  const c = ctxFixture({ accept: ['workflow'] });
+  const rows = contextRows(
+    new Map([[ctxKey(c), { case: c, hit: 1, seen: 1 }]]),
+    new Map([[ctxKey(c), ['workflow']]]),
+    ctxKey,
+  );
+  assert.deepEqual(rows[0].missed, [], 'an accepted alternate is not a miss target');
+});
+
+test('the context headline is occurrence-level and states the separation', () => {
+  const c = ctxFixture();
+  const line = contextHeadline([{ case: c, fired: 1, seen: 3, missed: ['null'] }]);
+  assert.match(line, /\*\*1\/3\*\*/, 'fires over trials, not cases over cases');
+  assert.match(line, /across 1 case /, 'singular case is not pluralised');
+  assert.match(line, /not included in the accuracy/i);
+  // No context cases must produce no line at all — a "0/0" headline would read
+  // as a measured result rather than an unused field.
+  assert.equal(contextHeadline([]), null);
+});
+
+test('the context section labels each distinct preamble and prints it once', () => {
+  const a = ctxFixture();
+  const b = ctxFixture({ query: 'resume | pick up', context: a.context });
+  const c = ctxFixture({ query: 'resume', context: a.context + '\n\nSessionStart hook additional context: routes to session-handoff.' });
+  const body = contextSection([
+    { case: a, fired: 0, seen: 2, missed: ['null'] },
+    { case: b, fired: 2, seen: 2, missed: [] },
+    { case: c, fired: 2, seen: 2, missed: [] },
+  ]).join('\n');
+
+  assert.match(body, /^## Injected-context cases \(3\)$/m);
+  // Two distinct preambles across three cases — shared text gets one label.
+  assert.match(body, /\| ctx-1 \| 0\/2 \| null \|/);
+  assert.match(body, /\| ctx-1 \| 2\/2 \| — \|/, 'no miss targets renders as a dash, not blank');
+  assert.match(body, /\| ctx-2 \| 2\/2 \|/);
+  assert.equal(body.match(/^\*\*ctx-1\*\*$/gm).length, 1, 'the preamble is printed once, not per case');
+  assert.equal(body.match(/^\*\*ctx-2\*\*$/gm).length, 1);
+  assert.match(body, /resume \\\| pick up/, 'pipes in a query cannot break the table');
+  assert.deepEqual(contextSection([]), []);
+});
+
+test('the injected-context metric has no path into isHit or the violation metric', () => {
+  // The band is the number A3 is judged on. A case staged to be suppressed
+  // would drag it down while measuring a different question entirely, which is
+  // why these cases never enter the routing population (eval-triggers.mjs) and
+  // why nothing here feeds isHit.
+  const c = ctxFixture();
+  assert.equal(isHit({ ...c, got: 'session-handoff' }), true, 'isHit ignores context entirely');
+  assert.equal(isHit({ ...c, got: null }), false);
+  assert.equal(isViolation({ ...c, got: 'discovery' }), false, 'a context case declares no disallowed');
+  const rows = contextRows(
+    new Map([[ctxKey(c), { case: c, hit: 0, seen: 1 }]]),
+    new Map([[ctxKey(c), [null]]]),
+    ctxKey,
+  );
+  assert.equal(violationSection(violationRows(new Map(), new Map(), ctxKey)).length, 0);
+  assert.equal(rows[0].fired, 0, 'suppression is reported, never scored into the band');
 });
 
 test('isHit is unchanged by any of this', () => {

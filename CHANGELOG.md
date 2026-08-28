@@ -14,19 +14,23 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## toolkit-ops 1.7.13 — 2026-08-28
 
-- chore(toolkit-ops): version 1.7.13
+- feat(session-handoff,toolkit-ops,docket,git-worktree): class-routed trigger-reliability fixes (#134)
+
+## session-handoff 1.10.1 — 2026-08-28
+
+- feat(session-handoff): optional injected-context preamble for the trigger eval
 
 ## session-handoff 1.10.0 — 2026-08-28
 
-- chore(session-handoff): version 1.10.0
+- feat(session-handoff,toolkit-ops,docket,git-worktree): class-routed trigger-reliability fixes (#134)
 
 ## git-worktree 1.0.2 — 2026-08-28
 
-- chore(git-worktree): version 1.0.2
+- feat(session-handoff,toolkit-ops,docket,git-worktree): class-routed trigger-reliability fixes (#134)
 
 ## docket 0.11.1 — 2026-08-28
 
-- chore(docket): version 0.11.1
+- feat(session-handoff,toolkit-ops,docket,git-worktree): class-routed trigger-reliability fixes (#134)
 
 ## condux 2.27.0 — 2026-08-27
 

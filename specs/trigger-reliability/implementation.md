@@ -10,6 +10,7 @@
 | `skills/toolkit-change-control/`, `skills/toolkit-research-frontier/`, `skills/toolkit-debugging-playbook/`, `skills/remember/` | pending period-1 rewrites #1, #2, #3, #8 (D6) |
 | `skills/toolkit-skill-standards/SKILL.md` | gains the nudge-pattern rules so future suppressed-class verdicts have a named remedy |
 | `specs/friction-audit-2026-07-29/trigger-matrix.md` | period-1 methodology — period 2 mirrors it for comparability |
+| `scripts/eval-triggers.mjs` + `scripts/trigger-eval-score.mjs` | the trigger harness; docket #64 added the optional per-case `context` preamble and its separate metric (Q4) |
 | `composition.json` → `scripts/sync.sh` → `node --test` | registration and drift gates for every shipped change |
 
 ## Measurement (period 2)

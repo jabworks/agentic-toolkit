@@ -43,6 +43,29 @@ vocabulary routing. The split is informative, not a gap: session-handoff's
 resume phrases ("continue from last session") already sit in
 `skills/session-handoff/evals/trigger_eval.json` and pass at the ~93% band —
 the same phrases that failed ~91% of the time live in period 2.
-**Eval-pass + live-fail is the suppression signature.** Extending the harness
-with an optional injected-context preamble per case is docketed, not shipped
-here.
+**Eval-pass + live-fail is the suppression signature.**
+
+**Update 2026-08-28 (docket #64):** the harness now takes an optional per-case
+`context` string and replays it as a preamble injected ahead of the message.
+Cases carrying `context` are scored as their own metric — they never enter the
+routing band, for the reason `disallowed` doesn't either: a case staged to be
+suppressed would move A3's headline while measuring a different question, and
+prior bands would stop being comparable. `context` is part of the corpus dedup
+key, because the measurement *is* the pairing — the same query cold and under a
+preamble — and a key of `query + expected` alone drops the twin silently.
+Seeded in `skills/session-handoff/evals/trigger_eval.json` with two cases: a
+synthetic memory digest, and that digest plus the shipped 1.10.0 routing nudge.
+
+**First measurement: 6/6 fires (haiku-4-5, 3 trials, both seeds).** The
+preamble did **not** reproduce suppression, and the reason is structural rather
+than a corpus-tuning problem: the harness *asks* the router "which skill handles
+this message?", so the trigger is always consulted. Live suppression is the
+model never reaching that question — the digest satisfies the information need
+and the turn is answered directly. A preamble can therefore measure whether
+injected context *changes a routing answer* (a real, weaker question), but not
+whether the routing decision gets made at all. **Q4's split stands:** end-to-end
+suppressed-class coverage remains with `tests/session-handoff-hooks.test.mjs`
+and live observation; the eval measures vocabulary, now with an optional context
+dimension. Reproducing the skip itself would need a harness that poses an
+ordinary turn and observes whether a skill is invoked, not one that asks for a
+route.
