@@ -144,6 +144,19 @@ it without touching it; owning the memory stack (concord already owns Codex)
 would let digest and skills cooperate instead. Deliberately deferred at design
 time — decision, not implementation, is the next step.
 
+**2026-08-28 — brief written, awaiting ratification:**
+`specs/trigger-reliability/memory-stack-decision.md`. Four options (keep /
+replace / defer-with-criterion / upstream request) with the parity cost of a
+replacement itemized. Recommends **defer against a pre-registered period-3
+fire-rate criterion**: ≥40% keeps the third-party stack and closes this item,
+<15% triggers the port. Two findings the brief rests on — the plugin exposes
+**no config knob** that makes its digest conditional or demotable (the cheap
+path is closed on evidence), and docket #64's harness extension proved **no
+remedy can be pre-verified in-eval**, so live period-3 data is the only
+instrument either option has. Filing an upstream request for a demotable digest
+is recommended in parallel regardless of the verdict. Three questions need
+Harvey's answer before ratification — see the brief's closing section.
+
 ### 68. Invocation-observing trigger harness — measure whether a skill fires, not which skill a router names (2026-08-28)
 
 Fell out of #64. The `context` preamble shipped and its first measurement was 6/6 fires (haiku-4-5, 3 trials, both session-handoff seeds) — injecting a synthetic memory digest ahead of "continue from last session" did not suppress the route.
