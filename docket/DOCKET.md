@@ -157,6 +157,18 @@ instrument either option has. Filing an upstream request for a demotable digest
 is recommended in parallel regardless of the verdict. Three questions need
 Harvey's answer before ratification — see the brief's closing section.
 
+**2026-08-28 — ratified; stays open.** All three questions answered (recorded in
+the brief's Ratification section). (1) Losing model-summarized prose is **not**
+acceptable, so a port must carry summarization concord does not have — Option B
+is strictly more expensive than the scope table priced, and the `< 15%` branch
+is a bigger commitment than it read. Recommendation unchanged: defer. (2) The
+criterion is evaluated at **period 3 by accumulated sessions**, not a fixed
+date, keeping the series like-for-like with periods 1 and 2 (D5). (3) The
+upstream request is approved and drafted at
+`specs/trigger-reliability/upstream-request.md` — **not yet filed**, pending
+Harvey's read. This item closes when the period-3 criterion fires, or earlier if
+upstream accepts.
+
 ### 68. Invocation-observing trigger harness — measure whether a skill fires, not which skill a router names (2026-08-28)
 
 Fell out of #64. The `context` preamble shipped and its first measurement was 6/6 fires (haiku-4-5, 3 trials, both session-handoff seeds) — injecting a synthetic memory digest ahead of "continue from last session" did not suppress the route.

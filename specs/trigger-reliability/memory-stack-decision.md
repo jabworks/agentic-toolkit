@@ -5,7 +5,7 @@
 > external, the countermeasure landed on our side, and the replacement question
 > was left open. This brief is the decision machinery, not the decision.
 
-**Status:** awaiting ratification
+**Status:** ratified 2026-08-28 — criterion armed for period 3
 **Prepared:** 2026-08-28
 **Recommends:** defer, against a pre-registered period-3 criterion (Option C)
 
@@ -132,6 +132,37 @@ resolves it without a port.
 2. **Is period 3 the right horizon**, or should the criterion be evaluated on a
    fixed date instead of an accumulated session count?
 3. **File the upstream issue now?** It is cheap, parallel, and blocks nothing.
+
+## Ratification (2026-08-28)
+
+Answered by Harvey. The body above is left as proposed — this section is the
+decision, not a rewrite of the argument that produced it.
+
+| # | Question | Answer |
+|---|---|---|
+| 1 | Is losing model-summarized prose acceptable? | **No — a port must summarize.** |
+| 2 | Period 3 or a fixed date? | **Period 3**, accumulated sessions, per D5's corpus rules. |
+| 3 | File the upstream request now? | **Yes**, drafted for review before posting. |
+
+**Answer 1 makes Option B strictly more expensive than the table above
+estimated.** The "port or drop — the real decision" row is now settled as
+*port*: a Claude Code concord would have to grow a model-summarization step it
+does not have today, on a stack whose whole capture path is currently
+mechanical and model-free. That adds a per-session API call, its cost, and its
+failure modes — a summarizer that times out or returns nothing has to degrade
+to the mechanical record rather than lose the session.
+
+This does not change the recommendation, and it is worth being precise about
+why. Option C was already recommended on the grounds that no remedy is
+pre-verifiable; a more expensive Option B does not make deferring more correct,
+it makes the `< 15%` branch a larger commitment than the scope table priced.
+The criterion stands unchanged — what changed is what the port verdict buys us
+into. Options C and D are correspondingly stronger, which is the second reason
+the upstream request should not wait for period 3.
+
+**Nothing about #67 closes on this ratification.** The item stays open: it
+closes when the criterion fires at period 3, or earlier if the upstream request
+is accepted.
 
 ## References
 
