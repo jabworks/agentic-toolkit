@@ -18,7 +18,7 @@
 | [implementation.md](implementation.md) | key files, period-2 method, verification chain, ship shape |
 | [period-2-report.md](period-2-report.md) | the evidence: corpus, 9%-vs-64% asymmetry, lexical ceiling, verdict tables |
 | [memory-stack-decision.md](memory-stack-decision.md) | docket #67: replace the third-party memory stack on Claude Code? Options, parity cost, pre-registered period-3 criterion, ratification |
-| [upstream-request.md](upstream-request.md) | Option D: the demotable-digest request drafted for `anthropics/claude-plugins-official` — text, what it deliberately does not ask for, filing status |
+| [upstream-request.md](upstream-request.md) | Option D: the demotable-digest request drafted for `Digital-Process-Tools/claude-remember`, the repo that ships `remember` — text, what it deliberately does not ask for, filing status |
 
 ## Changelog
 - 2026-08-28: Docket #69 closed — the routing-nudge remedy is **declined doctrine**, the suppressed-class diagnosis stays. `toolkit-skill-standards` keeps how to recognise the class and the directive-never-content finding; D2's six rules are archived here rather than restated there. Re-entry bar for ever shipping a nudge: a measured verdict **and** owner sign-off, never the doctrine alone. Corrected a mischaracterisation from 1.7.14 — condux's `routing.md` is unconditional, so it is the precedent for SessionStart injection, never an instance of the convention. toolkit-ops 1.7.15; #70 unblocked; #65 re-annotated (measurement stands, disposal changed).
