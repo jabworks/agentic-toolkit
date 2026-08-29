@@ -138,13 +138,6 @@ a verdict is now a finding to report, and shipping a nudge against it needs
 both a measured verdict and Harvey's explicit sign-off on the ongoing token
 cost. Do not treat a verdict here as authorising a hook.
 
-### 66. Classify vedge/axon/lightweight-bff Codex transcripts (92 sessions excluded from period-2 corpus) (2026-08-28)
-
-Excluded conservatively from the period-2 mine on naming (possible corporate).
-If Harvey classifies them personal, re-run the mine with them included — the
-headline asymmetry doesn't depend on them, but toolkit-skill fire rates in
-sibling repos go unmeasured while they're out.
-
 ### 67. Replace third-party remember plugin with our own memory stack on Claude Code? (2026-08-28)
 
 The suppressor in `specs/trigger-reliability/` Q1 is
@@ -188,6 +181,25 @@ written. Period 3 now measures whether suppression persists unremediated
 evidence rather than a threshold firing. With our own remedy withdrawn, the
 upstream request is the only live path that can close this item without a port —
 it is now the highest-value open thread here, and it is still unfiled.
+
+**2026-08-29 — the upstream path is closed too; this item has no automatic
+closing condition left.** Harvey declined to file the request: *"I don't really
+want to make them change anything."* Ratified as **D7** — `remember` is not
+malfunctioning, and D3's boundary (we do not modify a third party's plugin)
+extends to not asking them to modify it either. The draft stays in
+`specs/trigger-reliability/upstream-request.md`, restatused as declined and
+never filed; `memory-stack-decision.md` carries the reversal of its answer 3.
+
+Both closing conditions the ratification named are now void — the criterion
+(voided 2026-08-28) and upstream acceptance (declined 2026-08-29). #67 closes
+only on Harvey's judgement at period 3, weighing the measured suppression rate
+against a port that must carry summarization concord does not have. Option B is
+the entire remaining decision space.
+
+Standing position, so no future session re-derives it: the toolkit ships **no**
+countermeasure for the suppression class, deliberately, and will not acquire one
+by asking. Explicit invocation is the supported path. Do not reopen the upstream
+option without Harvey — see D7's "what would reopen this".
 
 ### 68. Invocation-observing trigger harness — measure whether a skill fires, not which skill a router names (2026-08-28)
 

@@ -15,7 +15,7 @@ resume behind a later wrap-up fire in the same session.
 | Included | 113 (101 Claude, 12 Codex) — 1,063 organic turns | agentic-toolkit, terminus, + worktree/scratch offshoots |
 | Excluded: eval harness | 1,767 Claude `-tmp` + 15 Codex `foundry-codex-eval-*` | router-eval sessions (first turn: "You route user messages to a coding agent's skills…") |
 | Excluded: corporate | all `maestro-api-gateway` cwds | never read (D5) |
-| Excluded: unclassified | 92 Codex (`vedge-ui-v2` 70, `axon-*`, `lightweight-bff` 3) | naming suggests corporate; excluded conservatively — reclassify and re-mine if Harvey says personal |
+| Excluded: corporate | 92 Codex (`vedge-ui-v2` 70, `axon-*`, `lightweight-bff` 3) | classified corporate by Harvey 2026-08-29 (docket #66); the naming-based exclusion was right. Permanently out of reach under D5 — never re-mine |
 | Zero in-range | crucible, style-guide, project-haven | no period-2 sessions |
 
 ## Headline: the suppression hypothesis is confirmed
@@ -91,6 +91,8 @@ band (93.1% ± 0.2pp). Touched skills' own cases: record 18/18, git-worktree
   asymmetry's order of magnitude.
 - Codex skill detection relies on `SKILL.md` read paths in tool payloads —
   undercounts Codex fires; the headline numbers are Claude-dominated.
-- The 92 unclassified Codex sessions are a real hole if they're personal —
-  the asymmetry conclusion does not depend on them (agentic-toolkit +
-  terminus alone carry it).
+- The 92 excluded Codex sessions are corporate (classified 2026-08-29, docket
+  #66), so they are not a recoverable hole — they are permanently out of reach
+  under D5. Toolkit-skill fire rates in those sibling repos go unmeasured for
+  good. The asymmetry conclusion never depended on them (agentic-toolkit +
+  terminus alone carry it), and period 3 inherits the same ceiling.
