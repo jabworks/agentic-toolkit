@@ -182,6 +182,25 @@ evidence rather than a threshold firing. With our own remedy withdrawn, the
 upstream request is the only live path that can close this item without a port —
 it is now the highest-value open thread here, and it is still unfiled.
 
+**2026-08-29 — the upstream path is closed too; this item has no automatic
+closing condition left.** Harvey declined to file the request: *"I don't really
+want to make them change anything."* Ratified as **D7** — `remember` is not
+malfunctioning, and D3's boundary (we do not modify a third party's plugin)
+extends to not asking them to modify it either. The draft stays in
+`specs/trigger-reliability/upstream-request.md`, restatused as declined and
+never filed; `memory-stack-decision.md` carries the reversal of its answer 3.
+
+Both closing conditions the ratification named are now void — the criterion
+(voided 2026-08-28) and upstream acceptance (declined 2026-08-29). #67 closes
+only on Harvey's judgement at period 3, weighing the measured suppression rate
+against a port that must carry summarization concord does not have. Option B is
+the entire remaining decision space.
+
+Standing position, so no future session re-derives it: the toolkit ships **no**
+countermeasure for the suppression class, deliberately, and will not acquire one
+by asking. Explicit invocation is the supported path. Do not reopen the upstream
+option without Harvey — see D7's "what would reopen this".
+
 ### 68. Invocation-observing trigger harness — measure whether a skill fires, not which skill a router names (2026-08-28)
 
 Fell out of #64. The `context` preamble shipped and its first measurement was 6/6 fires (haiku-4-5, 3 trials, both session-handoff seeds) — injecting a synthetic memory digest ahead of "continue from last session" did not suppress the route.

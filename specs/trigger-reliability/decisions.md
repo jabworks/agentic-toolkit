@@ -8,6 +8,7 @@
 | D4 | Condux skills read-only this pass | the healthy population (most-reached skills, period-1 rewrites applied); defects found there are docketed, not edited | ratified 2026-08-27 |
 | D5 | Corpus reach: audit-comparable | period 2 mines the same sources as period 1 (all `~/.claude/projects/*` + `~/.codex`), corporate repos excluded | ratified 2026-08-27 |
 | D6 | Verdict-table-first sweep | 2026-08 eval work already applied some period-1 rewrites; blind re-apply could regress them | ratified 2026-08-27 |
+| D7 | No upstream ask; we absorb the collision | the plugin is not malfunctioning, and we do not ask a third party to change working software to suit our skill | ratified 2026-08-29 |
 
 ## D1 — Evidence-routed dual mechanism (2026-08-27)
 
@@ -48,7 +49,9 @@ Two consequences the rules themselves do not carry:
 
 - **The mechanism was the only remedy on our side.** D3 bars modifying the
   suppressor; with the nudge gone, the upstream request (see
-  `upstream-request.md`) is the only live remedy for the suppression class.
+  `upstream-request.md`) was the only live remedy for the suppression class.
+  **That path closed too on 2026-08-29 — see D7.** No remedy remains short of
+  the #67 port; the collision is absorbed deliberately.
 - **The convention outlives its instance.** `toolkit-skill-standards` documents
   the nudge pattern as house doctrine. Whether that survives with zero instances
   is a separate decision — docket #69, not this one. Do not treat D2 as
@@ -85,3 +88,42 @@ Each period-1 ranked rewrite (8 total) is diffed against the current
 provisional reading (#1/#2/#3/#8 pending) was stale, and D6 is what caught
 it before four no-op edits shipped. The period-2 `apply` set became the two
 fresh lexical verdicts instead: `record` and `git-worktree`.
+
+## D7 — No upstream ask; we absorb the collision (2026-08-29)
+
+Harvey's call, on the drafted Option D request: *"I don't really want to make
+them change anything."* The request is declined and will not be filed. The
+draft stays in the repo as the record of what was considered — see
+`upstream-request.md`, whose status line now says so.
+
+The reasoning is a boundary, not a cost estimate. `remember` is not
+malfunctioning; it does exactly what it advertises, and the suppression is an
+emergent interaction neither side designed. D3 already said we do not modify
+someone else's plugin. D7 extends the same principle one step further: we do
+not ask them to modify it either. A working third-party tool does not owe our
+skill an accommodation, and "it costs them one string" is our estimate of their
+cost to spend, not ours.
+
+**What this closes.** Every remedy for the suppression class is now spent:
+
+| Remedy | Status |
+|---|---|
+| Configure the digest down | closed on evidence — no such knob (`memory_inject_max_bytes`, `prompt_stamp` govern other things) |
+| Fork or patch the plugin | barred by D3 |
+| Our own SessionStart counter-nudge | shipped 1.10.0, retired 2.0.0 — a second hook per suppressed skill is a permanent per-install cost |
+| Ask upstream | **declined here** |
+| Port to our own memory stack (#67 Option B) | open, expensive, and now the only structural fix left |
+
+The toolkit ships no countermeasure and will not acquire one by asking. That is
+a deliberate position, and the honest description of the trade is that we accept
+a ~9% resume-phrase fire rate rather than spend a hook on every session or a
+request on a maintainer who did nothing wrong.
+
+**What stays available.** Explicit invocation always works — `/session-handoff`,
+or naming the skill — and costs the user a few words when they want the
+structured resume. That is now the supported path, not a workaround for one.
+
+**What would reopen this.** Upstream adding such a line on their own initiative;
+the plugin gaining a demotability knob for unrelated reasons; or the collision
+widening past `session-handoff` to a class of skills large enough that the
+calculus is no longer one skill's convenience. None is expected.

@@ -1,14 +1,24 @@
-# Upstream request — a demotable SessionStart digest (docket #67, Option D)
+# Upstream request — a demotable SessionStart digest (docket #67, Option D) — DECLINED, NEVER FILED
 
-> The text we intend to file against `Digital-Process-Tools/claude-remember`,
-> the repo that actually ships the `remember` plugin. Drafted per the #67
-> ratification (2026-08-28, answer 3).
+> The text we drafted for `Digital-Process-Tools/claude-remember`, the repo
+> that actually ships the `remember` plugin, per the #67 ratification
+> (2026-08-28, answer 3) — and then decided not to send. Read the whole of this
+> document in the past tense.
 
-**Status:** drafted, awaiting Harvey's review — **not yet filed**
-**Destination:** `Digital-Process-Tools/claude-remember` (issues enabled, active)
-**Ratified:** 2026-08-28 (`memory-stack-decision.md`)
+**Status: DECLINED 2026-08-29 — will never be filed.** See D7 in
+`decisions.md`. Harvey's call, in his words: *"I don't really want to make them
+change anything."* `remember` is not malfunctioning, and we do not ask a
+third-party maintainer to change working software to accommodate our skill —
+D3's boundary extended one step. This file is kept as the record of what was
+drafted and why it was not sent; it is **not** a to-do.
 
-> **Destination corrected 2026-08-29.** This draft previously named
+**Would-have-been destination:** `Digital-Process-Tools/claude-remember`
+**Ratified then reversed:** approved 2026-08-28 (`memory-stack-decision.md`,
+answer 3), declined 2026-08-29 before anything was posted. Nothing was ever
+sent to any repo, under any account.
+
+> **Destination corrected 2026-08-29** (before the decline, and left here
+> because the error is worth remembering). This draft previously named
 > `anthropics/claude-plugins-official`. That is where `remember` is *listed*,
 > not where it lives: the marketplace entry is a pointer whose `source.url` is
 > `https://github.com/Digital-Process-Tools/claude-remember.git`. Anthropic
@@ -18,16 +28,25 @@
 > `claude-plugins-official/remember`, used throughout
 > `memory-stack-decision.md`, as an address. It is a name, not a destination.
 
-Once posted, replace this status line with the issue URL. That is the whole
-reason this draft lives in the spec rather than a scratch file: the record of
-what we asked, and when, should survive the session that wrote it.
+This draft lives in the spec rather than a scratch file so the record of what we
+considered — and, as it turned out, chose not to send — survives the session
+that wrote it. The instruction that used to sit here said to replace the status
+line with the issue URL once posted. There will be no URL.
 
-## Why we are asking rather than patching
+## Why we were asking rather than patching — and why we stopped
 
 D3 (`decisions.md`) bars us from modifying the third-party plugin — we observe
-it, we do not fork it. It does not bar us from asking. We hold the two things an
+it, we do not fork it. It does not bar us from asking. We held the two things an
 upstream request needs and rarely has: a measured effect, and a verified absence
 of any configuration that addresses it.
+
+**That was the case for asking, and it was sound as far as it went.** What it
+left out is the question D7 answered: whether a working tool's maintainer owes
+our skill an accommodation at all. The argument above prices *their* change as
+cheap ("one string") — but that is our estimate of someone else's cost, and the
+plugin is not broken. D7 extends D3's boundary rather than contradicting it: we
+neither modify their software nor lobby them to. Everything below this line is
+preserved as drafted, and none of it was sent.
 
 ## Drafting notes (not part of the issue text)
 

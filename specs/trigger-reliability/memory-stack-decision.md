@@ -209,3 +209,38 @@ open thread here, not the least.
 - `specs/trigger-reliability/period-2-report.md` — the 9%-vs-64% asymmetry and
   the re-runnable method
 - PR #135 — the injected-context harness and its 6/6 finding
+
+## Answer 3 reversed — the upstream request is declined (2026-08-29)
+
+The ratification table above records answer 3 as **"Yes, drafted for review
+before posting."** The review happened on 2026-08-29 and the answer became
+**no**. Harvey: *"I don't really want to make them change anything."*
+
+The table is left as written, for the same reason the voided criterion is left
+as written: it is the record of what was decided on the day, not a live
+instruction. Read it with this section attached.
+
+**Why the reversal is not a cost recalculation.** Nothing about the request got
+more expensive between approval and decline. What changed is the frame. The
+brief priced Option D at "one issue" and argued it was cheap, parallel, and
+blocking nothing — all true, and all about *our* costs. It never asked whether
+a maintainer whose plugin works as advertised should be asked to change it so
+our skill routes better. D7 answers that: no. The judgement that their change
+is cheap was ours to make about their software, which is precisely the judgement
+D3 exists to keep us out of.
+
+**What it does to #67.** The ratification said this item "closes when the
+criterion fires at period 3, or earlier if the upstream request is accepted."
+Both halves are now gone — the criterion was voided the same day it was set
+(see the section above), and the upstream path is closed by D7. #67 stays open
+with **no automatic closing condition at all**: it closes on Harvey's judgement
+at period 3, weighing a measured suppression rate against the cost of a port
+that must carry summarization (answer 1).
+
+**What it does to the options table.** Option D is struck. Option A (keep) is
+the status quo and remains in force by default. Option C (defer) is what we are
+actually doing. Option B (port) is the only remaining structural fix and is
+correspondingly the whole of #67's remaining decision space — which makes
+answer 1's finding, that a port must grow a summarizer it does not have, the
+single most important number in this brief rather than a footnote to a branch
+nobody expected to take.
