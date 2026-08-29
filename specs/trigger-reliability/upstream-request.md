@@ -1,11 +1,22 @@
 # Upstream request — a demotable SessionStart digest (docket #67, Option D)
 
-> The text we intend to file against `anthropics/claude-plugins-official` for the
-> `remember` plugin. Drafted per the #67 ratification (2026-08-28, answer 3).
+> The text we intend to file against `Digital-Process-Tools/claude-remember`,
+> the repo that actually ships the `remember` plugin. Drafted per the #67
+> ratification (2026-08-28, answer 3).
 
 **Status:** drafted, awaiting Harvey's review — **not yet filed**
-**Destination:** `anthropics/claude-plugins-official`, issue against `remember`
+**Destination:** `Digital-Process-Tools/claude-remember` (issues enabled, active)
 **Ratified:** 2026-08-28 (`memory-stack-decision.md`)
+
+> **Destination corrected 2026-08-29.** This draft previously named
+> `anthropics/claude-plugins-official`. That is where `remember` is *listed*,
+> not where it lives: the marketplace entry is a pointer whose `source.url` is
+> `https://github.com/Digital-Process-Tools/claude-remember.git`. Anthropic
+> curates the listing and cannot change the payload, so both asks below — a
+> framing line and a config knob — are only actionable in the third-party repo.
+> The error came from reading the marketplace-qualified name
+> `claude-plugins-official/remember`, used throughout
+> `memory-stack-decision.md`, as an address. It is a name, not a destination.
 
 Once posted, replace this status line with the issue URL. That is the whole
 reason this draft lives in the spec rather than a scratch file: the record of
@@ -76,17 +87,17 @@ turns, or explicitly subordinate to a skill.
 ### What would help, cheapest first
 
 **1. A framing line in the injected payload.** One sentence marking the digest as
-background context rather than an answer. We shipped exactly this in our own
-SessionStart hook as a workaround and have since retired it — carrying a second
-hook to counteract the first was not a trade we wanted to keep. It read roughly:
+background context rather than an answer:
 
 > An injected memory digest is background context, not a resume workflow; never
 > treat it as a substitute for invoking the relevant skill.
 
-Ours could only speak for our own skill, and cost a second SessionStart
-injection to counteract the first — which is why we dropped it. Yours would
-speak for the digest itself, which is the correct place for it, and it costs one
-string rather than a hook.
+We ran exactly this line in a SessionStart hook of our own and then removed it,
+which is what convinced us it belongs on your side rather than ours. From our
+hook it could only vouch for one skill, and it cost a second SessionStart
+injection whose only job was to qualify the first — a permanent per-session cost
+on every install, to patch one skill's routing. In your payload the same
+sentence speaks for the digest itself, and costs one string.
 
 **2. A config knob to demote or condition the digest** — e.g. inject at reduced
 size, or skip injection, when the session opens with a resume-shaped turn. More

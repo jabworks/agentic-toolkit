@@ -19,7 +19,10 @@ asymmetry inside one skill — resume phrases fired ~9% of turns, wrap-up phrase
 against it (session-handoff 1.10.0, armed on both hosts).
 
 D3 drew the boundary: the digest belongs to `claude-plugins-official/remember`,
-which we observe and never modify. Owning the memory stack instead would let
+which we observe and never modify. That qualified name is a *marketplace
+listing*, not a repo — the code lives at `Digital-Process-Tools/claude-remember`,
+which is where Option D's request has to go. Reading the name as an address is
+how the request draft was pointed at Anthropic for a day (corrected 2026-08-29). Owning the memory stack instead would let
 digest and skills cooperate rather than one working around the other.
 
 ## What is actually installed
