@@ -9,6 +9,10 @@
 //
 // Usage:
 //   node scripts/eval-triggers.mjs [--model <id>] [--batch <n>] [--limit <n>] [--out <report.md>]
+//                                  [--corpus <cases.json>]
+//
+// --corpus replaces the skills/*/evals/ sweep with a fixed case list (a prior
+// run's JSON report), for re-scoring a frozen corpus against today's catalog.
 //
 // Requires the `claude` CLI on PATH (runs headless via `claude -p` with your
 // logged-in session; no API key handling here). Node stdlib only.
@@ -49,6 +53,7 @@ const LIMIT = Number(flag('--limit', '0')); // 0 = all
 const OUT = flag('--out', '');
 const INCLUDE_ALL = args.includes('--all'); // also score kind:"in-context" cases
 const RUNS = Math.max(1, Number(flag('--runs', '1'))); // trials; >1 reports mean ± 95% CI
+const CORPUS_FILE = flag('--corpus', ''); // '' = sweep skills/*/evals/ (the default)
 
 // --- catalog ---------------------------------------------------------------
 // Decodes a frontmatter scalar the way a YAML parser would. Stripping only the
@@ -87,11 +92,29 @@ for (const name of fs.readdirSync(SKILLS_DIR)) {
 const corpusKey = (query, expected, context) => query + '||' + expected + '||' + (context || '');
 const seen = new Set();
 const cases = [];
-for (const name of fs.readdirSync(SKILLS_DIR)) {
-  const file = path.join(SKILLS_DIR, name, 'evals', 'trigger_eval.json');
-  if (!fs.existsSync(file)) continue;
-  for (const c of JSON.parse(fs.readFileSync(file, 'utf8'))) {
-    const expected = c.should_trigger ? c.expected_skill : null;
+// `--corpus <file>` swaps the live skills/*/evals/ sweep for a fixed case list:
+// the rows a prior run's JSON report already recorded. It exists to re-score a
+// *frozen* corpus against the current catalog — docket #58 replays the 394
+// cases of 2026-07-11 to separate contract lift from corpus composition.
+//
+// The recorded `accept` lists travel with the cases deliberately. They are the
+// yardstick the old score was computed against, and accepts have been widened
+// since (98dc2f2 widened adapting-skills'), so scoring a replay against today's
+// would manufacture a lift out of bookkeeping.
+//
+// The two shapes differ: report rows carry `expected` already resolved (null =
+// should-not-trigger), while the live corpus files carry should_trigger +
+// expected_skill. `source: null` on a group marks the fixed-list shape.
+const groups = CORPUS_FILE
+  ? [{ source: null, records: JSON.parse(fs.readFileSync(CORPUS_FILE, 'utf8')) }]
+  : fs.readdirSync(SKILLS_DIR).flatMap((name) => {
+      const file = path.join(SKILLS_DIR, name, 'evals', 'trigger_eval.json');
+      if (!fs.existsSync(file)) return [];
+      return [{ source: name, records: JSON.parse(fs.readFileSync(file, 'utf8')) }];
+    });
+for (const { source: groupSource, records } of groups) {
+  for (const c of records) {
+    const expected = groupSource === null ? c.expected ?? null : c.should_trigger ? c.expected_skill : null;
     // `context` is part of the dedup key, not just the payload: the whole point
     // of an injected-context case is to pair with the SAME query/expected sitting
     // cold elsewhere in the corpus (docket #64). Keyed on query+expected alone,
@@ -133,8 +156,23 @@ for (const name of fs.readdirSync(SKILLS_DIR)) {
       disallowed: c.disallowed || [],
       kind: c.kind || 'cold',
       context,
-      source: name,
+      source: groupSource ?? c.source ?? path.basename(CORPUS_FILE),
     });
+  }
+}
+// A frozen corpus must arrive intact. The dedup above silently drops a repeat
+// query+expected+context, which is correct for the live sweep (the same case can
+// legitimately sit in two skills' files) but is corruption for a replay: a
+// shrunken subset scores against a baseline computed on the full one. Fail loud
+// rather than report a number nobody can compare.
+if (CORPUS_FILE) {
+  const loaded = groups[0].records.length;
+  if (cases.length !== loaded) {
+    console.error(
+      `--corpus: ${loaded} rows in ${CORPUS_FILE} collapsed to ${cases.length} after dedup — ` +
+        'a replay must keep every row, so the comparison would be against a different corpus.',
+    );
+    process.exit(1);
   }
 }
 const inContext = cases.filter((c) => c.kind === 'in-context').length;

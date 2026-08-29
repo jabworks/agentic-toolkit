@@ -1,7 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -226,4 +228,78 @@ test('the disallowed field is actually in use', () => {
     withDisallowed.length > 0,
     'no case declares `disallowed` — the metric is wired up but measures nothing',
   );
+});
+
+// --- the frozen replay corpus (--corpus, docket #58) ------------------------
+//
+// `--corpus <file>` re-scores a *frozen* case list against today's catalog, so
+// a lift can be attributed to contract work rather than corpus composition.
+// The replay input is a prior run's JSON report, and its value is entirely in
+// staying byte-comparable to the score it produced. These tests guard the one
+// artifact #58 replays; without them it can rot silently and the comparison
+// becomes meaningless without anything failing.
+
+const REPLAY = path.join(
+  REPO_ROOT,
+  'skills/toolkit-research-frontier/references/eval-trials-2026-07-11.json',
+);
+
+test('the 2026-07-11 replay corpus is intact — 394 cold cases, uniform shape', () => {
+  const rows = JSON.parse(fs.readFileSync(REPLAY, 'utf8'));
+  assert.equal(rows.length, 394, 'the baseline is 88.4% over exactly 394 cases');
+  for (const [i, r] of rows.entries()) {
+    assert.equal(typeof r.query, 'string', `row ${i} has no query`);
+    assert.ok(r.query.length > 0, `row ${i} has an empty query`);
+    assert.equal(r.kind, 'cold', `row ${i} is not cold — the baseline scored cold cases only`);
+    assert.ok('expected' in r, `row ${i} has no expected key (null is the should-not-trigger value)`);
+    assert.ok(Array.isArray(r.accept || []), `row ${i} has a non-array accept`);
+  }
+});
+
+test('every skill the replay corpus names still exists', () => {
+  // A rename since 2026-07-11 would make those cases unroutable today and the
+  // replay would score a loss that is really a bookkeeping artifact. Nothing
+  // has been renamed so far; this fails the day one is, before compute is spent.
+  const known = knownSkills();
+  const rows = JSON.parse(fs.readFileSync(REPLAY, 'utf8'));
+  const missing = new Set();
+  for (const r of rows) {
+    for (const name of [r.expected, ...(r.accept || [])]) {
+      if (name && !known.has(name)) missing.add(name);
+    }
+  }
+  assert.deepEqual(
+    [...missing].sort(),
+    [],
+    'replay corpus names a skill that no longer exists — map the rename before re-running',
+  );
+});
+
+test('the replay corpus survives the harness dedup without shrinking', () => {
+  // eval-triggers.mjs drops a repeat query+expected+context. That is correct
+  // for the live sweep (one case can sit in two skills' files) and is
+  // corruption for a replay — a shrunken subset would be scored against a
+  // baseline computed on the full one. The harness exits 1 rather than allow
+  // it; this catches the same thing without spending a run.
+  const rows = JSON.parse(fs.readFileSync(REPLAY, 'utf8'));
+  const keys = new Set(rows.map((r) => r.query + '||' + (r.expected ?? null) + '||' + (r.context || '')));
+  assert.equal(keys.size, rows.length, 'replay rows collide under the harness dedup key');
+});
+
+test('--corpus refuses a case list that shrinks under dedup', () => {
+  // The guard runs at module load, before the first `claude` spawn, so this
+  // costs a process start and no API calls. Without the assertion the harness
+  // would happily score 393 of 394 cases and report a comparable-looking mean.
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'replay-dedup-'));
+  const file = path.join(dir, 'cases.json');
+  const row = { query: 'wrap up this session', expected: 'session-handoff', accept: [], kind: 'cold' };
+  fs.writeFileSync(file, JSON.stringify([row, { ...row }]));
+  const res = spawnSync(
+    process.execPath,
+    [path.join(REPO_ROOT, 'scripts/eval-triggers.mjs'), '--corpus', file],
+    { encoding: 'utf8' },
+  );
+  fs.rmSync(dir, { recursive: true, force: true });
+  assert.equal(res.status, 1, 'a shrinking replay corpus must fail, not run');
+  assert.match(res.stderr, /collapsed to 1 after dedup/);
 });
