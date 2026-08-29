@@ -334,6 +334,70 @@ this`, `is argument-hint a real frontmatter field`) were aligned by copying the
 kept case's `accept` onto the dropped copy — band-neutral, since dropped copies
 never run.
 
+#### Addendum — the lift was composition, not the older contracts (2026-08-29, docket #58)
+
+A3d flagged its own comparison as not-like-for-like and named the fix: re-run
+the 2026-07-11 corpus subset. Done — `eval-subset-2026-08-29.{md,json}`, the
+394 frozen cases replayed against today's catalog and contracts, same model and
+batch size, 0 failed batches, scored against the **2026-07-11 `accept` lists**
+(today's have been widened since; re-deriving them would have manufactured a
+lift out of bookkeeping).
+
+**Result: 87.3 / 89.3 / 88.6 → mean 88.4% ± 2.5pp, against the baseline's
+88.4% ± 0.7pp. Identical to the decimal, same 349/394 overall.**
+
+So **the +5pp is composition.** The standing ~92–95% describes the *current
+corpus*, and cannot be claimed for the older skills — on their own cases they
+sit where they sat in July. Restate it that way when it is quoted.
+
+**The catalog-growth confound is measured, not assumed.** The corpus was frozen
+while the catalog grew 27 → 37 skills, which can only cost accuracy: a skill
+added since is absent from the old `accept` lists, so its wins score as misses.
+Two channels, both checked, neither material —
+
+| channel | test | result |
+|---|---|---|
+| theft (a new skill takes the case) | destination of every regression | **2 of 23** went to a post-July skill |
+| hesitation (a bigger menu induces null) | null-answer rate, same cases | **fell** 75 → 62 despite +37% catalog |
+
+Both mechanisms by which growth could have masked a lift are small or absent, so
+the flat result is a real flat. **That is why the pre-registered second arm — a
+catalog restricted to the July membership — was not run: it exists to answer a
+question this evidence already answers, and 17 minutes of compute cannot
+un-answer it.**
+
+**Underneath the flat aggregate, the board moved a great deal**, and it moved
+along a clean seam. Per-skill, on identical cases:
+
+| moved up | | moved down | |
+|---|---|---|---|
+| `workflow` | 25/33 → 28/33 | `toolkit-research-frontier` | 12/16 → **8/16** |
+| `discovery` | 11/15 → 14/15 | `release` | 16/16 → 14/16 |
+| `subagent-execution` | 11/15 → 14/15 | `(null)` | 47/48 → 44/48 |
+| `technical-spec` | 10/13 → 12/13 | `toolkit-*` (four skills) | −1 each |
+
+Every gain is a condux skill whose contract was rewritten in the interval; the
+losses are concentrated in toolkit-ops. **Contract work does move routing — it
+just moved two fronts in opposite directions and netted out.** Discovery landing
+exactly on the 11/15 this campaign recorded in July is also a faithfulness check
+on the replay itself.
+
+Of 46 flipped cases only 21 are stable across all three trials (15 up, 6 down),
+so **roughly half the churn is trial noise** — consistent with variance nearly
+quadrupling (±0.7pp → ±2.5pp, flaky 39 → 69) on a corpus whose accuracy did not
+change. A larger catalog appears to buy instability rather than error.
+
+And three of those six stable regressions are the frozen corpus being stale
+rather than routing getting worse — `add a task to my todo list` → `record`,
+`the plan is fully implemented, verify it` → `live-verification`, and a gantt
+query → `dataviz`. Each is a defensible answer from a skill that did not exist
+when the expectation was written. A frozen corpus cannot know that, which is a
+standing limit on every replay of this kind, not a defect in this one.
+
+**Left open:** `toolkit-research-frontier` losing a quarter of its cases
+(12/16 → 8/16) is the single largest movement in the run and has no explanation
+here. Filed as docket #71.
+
 ---
 
 ## Front B — Claude↔Codex manifest parity

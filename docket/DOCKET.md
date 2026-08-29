@@ -93,33 +93,6 @@ Close as confirmed-or-corrected either way — A3b currently states the
 Haiku-only limitation in its own text, so the record is honest as it stands;
 this only tightens it.
 
-### 58. Re-run the 2026-07-11 corpus subset to separate contract lift from composition lift (2026-08-25)
-
-A3d measured **93.4% ± 1.9pp**, up from **88.4% ± 0.7pp** on 2026-07-11, and updated
-the standing claim to ~92-95%. The comparison is **not like-for-like** and A3d says so.
-
-The corpus grew **394 -> 598 cold cases** between those runs. The skills added since
-(session-handoff, docket, coding-directive, blueprint, release, git-worktree) were all
-authored against the toolkit's authoring standards, and newer contracts have
-historically routed well on first measurement — A3's own record notes `release` hitting
-15/15 with zero tuning, and `toolkit-foundry` 4/4 after its rename.
-
-So the +5pp is some mix of:
-1. genuine trigger-contract improvements to the older skills, and
-2. composition — a larger share of the corpus being easy, well-authored cases.
-
-Nothing in the current data separates them, which means "~92-95%" cannot yet be
-claimed *about the older skills specifically*.
-
-Scope: reconstruct the 2026-07-11 corpus subset (the 394 cold cases as of that commit
-— recoverable from git history of `skills/*/evals/trigger_eval.json`), run 3 trials on
-it with the current contracts, and compare against 88.4% ± 0.7pp directly. ~25 min per
-trial at the measured rate, so ~75 min and roughly $0.08.
-
-If the subset also lifts, the contract work is real and the standing claim holds
-generally. If it sits near 88%, the standing claim is about corpus composition and
-should be restated that way.
-
 ### 65. toolkit-debugging-playbook applied-but-cold — evaluate for a routing nudge next period (2026-08-28)
 
 Its period-1 rewrite shipped 2026-08-06 (`400f346`); on 2026-08-20 a user turn
@@ -212,5 +185,40 @@ Reaching the real question needs a different harness shape: pose an ordinary use
 Open questions before anyone builds it: is per-case cost acceptable at corpus scale, or does this only run on a suppressed-class subset? Does it replace the router eval or sit beside it as a third metric? The band's comparability rules (see #53, #55) say beside.
 
 See `specs/trigger-reliability/quirks.md` Q4 for the full statement of the limit.
+
+### 71. toolkit-research-frontier lost a quarter of its routing cases between July and August (2026-08-29)
+
+Found by #58's frozen-corpus replay (`eval-subset-2026-08-29.{md,json}`), which
+held the 394 cases of 2026-07-11 fixed and varied only the catalog and the
+contracts.
+
+**12/16 → 8/16 on identical cases.** The single largest per-skill movement in
+the run, up or down, and the addendum under A3d in `health-campaign.md` has no
+explanation for it.
+
+What is already ruled out, from the same run's data:
+
+- **Not catalog theft.** Across all 23 regressions only 2 went to a skill added
+  since July, and neither was one of these.
+- **Not hesitation from a bigger menu.** The corpus-wide null-answer rate *fell*
+  75 → 62 while the catalog grew 27 → 37.
+- **Not the corpus.** These are the same 16 cases with the same `expected` and
+  the same `accept` lists that scored 12/16 in July.
+
+So the cause is on the contract side — either `toolkit-research-frontier`'s own
+description/`when_to_use` changed for the worse in the interval, or a sibling's
+did and now out-competes it on these queries. The July→August diff of
+`skills/toolkit-research-frontier/SKILL.md` is the first place to look, then the
+answers the 8 misses actually gave (they are in the run's JSON, per-case, with
+all three trials).
+
+Worth noting for whoever picks this up: this is the *frontier* skill — the one
+that documents the health campaign measuring all the others. A routing
+regression here is close to self-referential, and it is the kind of drift the
+campaign exists to catch.
+
+Not urgent — it is one skill in a band that did not move — but it is a concrete,
+measured, reproducible defect with the evidence already captured, which is rarer
+than it sounds.
 
 ## Loose threads
