@@ -69,6 +69,13 @@ period 1 so the periods compare cleanly. Corporate repos are never read —
 `maestro-api-gateway` named explicitly. Digests are regenerated; period 1's
 were session-scoped scratch and no longer exist.
 
+**Extended 2026-08-29 (docket #66):** `vedge-ui-v2`, `axon-*`, and
+`lightweight-bff` are corporate too — Harvey's classification of the 92 Codex
+sessions period 2 had excluded on naming alone. The conservative call was
+correct. These four repo families are the standing corporate set: never read,
+in this period or any later one. Every future mine inherits the exclusion
+without re-asking.
+
 ## D6 — Verdict-table-first sweep (2026-08-27)
 
 Each period-1 ranked rewrite (8 total) is diffed against the current

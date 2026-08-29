@@ -138,13 +138,6 @@ a verdict is now a finding to report, and shipping a nudge against it needs
 both a measured verdict and Harvey's explicit sign-off on the ongoing token
 cost. Do not treat a verdict here as authorising a hook.
 
-### 66. Classify vedge/axon/lightweight-bff Codex transcripts (92 sessions excluded from period-2 corpus) (2026-08-28)
-
-Excluded conservatively from the period-2 mine on naming (possible corporate).
-If Harvey classifies them personal, re-run the mine with them included — the
-headline asymmetry doesn't depend on them, but toolkit-skill fire rates in
-sibling repos go unmeasured while they're out.
-
 ### 67. Replace third-party remember plugin with our own memory stack on Claude Code? (2026-08-28)
 
 The suppressor in `specs/trigger-reliability/` Q1 is
