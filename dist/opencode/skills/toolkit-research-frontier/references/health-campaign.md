@@ -366,26 +366,51 @@ catalog restricted to the July membership — was not run: it exists to answer a
 question this evidence already answers, and 17 minutes of compute cannot
 un-answer it.**
 
-**Underneath the flat aggregate, the board moved a great deal**, and it moved
-along a clean seam. Per-skill, on identical cases:
+**Underneath the flat aggregate, the gains are real and they are all condux.**
+Per-skill, on identical cases — August as mean of three trials, with the spread:
 
-| moved up | | moved down | |
+| skill | Jul | Aug per-trial | reading |
 |---|---|---|---|
-| `workflow` | 25/33 → 28/33 | `toolkit-research-frontier` | 12/16 → **8/16** |
-| `discovery` | 11/15 → 14/15 | `release` | 16/16 → 14/16 |
-| `subagent-execution` | 11/15 → 14/15 | `(null)` | 47/48 → 44/48 |
-| `technical-spec` | 10/13 → 12/13 | `toolkit-*` (four skills) | −1 each |
+| `discovery` | 11/15 | **14 / 14 / 14** | gain, zero spread |
+| `subagent-execution` | 11/15 | 12 / 13 / 14 | gain, every trial above |
+| `technical-spec` | 10/13 | 13 / 12 / 12 | gain, every trial above |
+| `workflow` | 25/33 | 23 / 27 / 28 | mean 26.0, but one trial below |
 
-Every gain is a condux skill whose contract was rewritten in the interval; the
-losses are concentrated in toolkit-ops. **Contract work does move routing — it
-just moved two fronts in opposite directions and netted out.** Discovery landing
-exactly on the 11/15 this campaign recorded in July is also a faithfulness check
-on the replay itself.
+Each of the first three beats its July figure in *every* trial, which is a
+stronger claim than a mean. Discovery landing exactly on the 11/15 this campaign
+recorded in July is also a faithfulness check on the replay itself.
+
+**The corresponding "losses" were noise, and this addendum originally reported
+them as findings.** Corrected 2026-08-30, docket #71 — the per-skill table in
+every report until then showed the **final run only** while the headline beside
+it was a 3-trial mean, and nothing said so. Read that way,
+`toolkit-research-frontier` appeared to fall 12/16 → 8/16. Its actual August
+trials were **13 / 11 / 8** — one *above* the July figure, which was itself a
+single trial — for a mean of 10.7 across 8 flaky cases. Likewise
+`root-cause-analysis`, filed as −1, ran 11 / 16 / 15.
+
+Only three skills show a drop in every trial, and each is about one case:
+`toolkit-failure-archaeology` (15 → 13/14/14), `toolkit-orientation`
+(11 → 11/10/10), `release` (16 → 15/15/14). "The losses concentrate in
+toolkit-ops" does not survive; the seam runs one way, not two.
+
+**The methodological lesson is the durable part.** A single-trial number and a
+multi-trial number rendered side by side, unlabelled, in a document whose whole
+purpose is measurement, produced a false regression that was filed as a docket
+item and cited in this file. `eval-triggers.mjs` now aggregates the per-skill
+table across runs, prints the per-trial spread beside it, and labels the
+final-run tables (misses, overall accuracy) as such —
+`bySkillRows`/`bySkillSection` in `trigger-eval-score.mjs`, with the 13/11/8
+shape pinned as a regression fixture. **A cross-report per-skill comparison
+before 2026-08-30 is trial-to-trial and should not be trusted**; the July
+report's table cannot be corrected, because its JSON predates the per-trial
+export.
 
 Of 46 flipped cases only 21 are stable across all three trials (15 up, 6 down),
 so **roughly half the churn is trial noise** — consistent with variance nearly
 quadrupling (±0.7pp → ±2.5pp, flaky 39 → 69) on a corpus whose accuracy did not
-change. A larger catalog appears to buy instability rather than error.
+change. A larger catalog appears to buy instability rather than error, and that
+instability is precisely what the single-trial table was rendering as signal.
 
 And three of those six stable regressions are the frozen corpus being stale
 rather than routing getting worse — `add a task to my todo list` → `record`,
@@ -394,9 +419,12 @@ query → `dataviz`. Each is a defensible answer from a skill that did not exist
 when the expectation was written. A frozen corpus cannot know that, which is a
 standing limit on every replay of this kind, not a defect in this one.
 
-**Left open:** `toolkit-research-frontier` losing a quarter of its cases
-(12/16 → 8/16) is the single largest movement in the run and has no explanation
-here. Filed as docket #71.
+**Resolved, not left open.** This section originally ended by filing
+`toolkit-research-frontier`'s apparent 12/16 → 8/16 as docket #71, "the single
+largest movement in the run", unexplained. #71 investigated it and found no
+routing regression at all — the drop was the single-trial per-skill table
+described above. The item closed 2026-08-30 as a reporting defect, and the fix
+is in the harness rather than in any skill's contract.
 
 ---
 

@@ -177,3 +177,62 @@ export function violationSection(rows) {
   lines.push('');
   return lines;
 }
+
+// Per-skill accuracy, aggregated across every run.
+//
+// This lived in eval-triggers.mjs and was built from the final run alone, so
+// each row was one trial sitting under a three-trial headline with nothing
+// saying so. It manufactures regressions: docket #71 was filed on
+// toolkit-research-frontier "losing a quarter of its cases" (12/16 -> 8/16)
+// between two reports, when the August trials were 13 / 11 / 8 — one of them
+// above the July figure — and the table printed the worst. Comparing two
+// reports per-skill was comparing two single trials.
+//
+// It lives here now because that is the difference between a bug caught by a
+// test and a bug caught by reading a committed claim two days later.
+//
+// `runsData` is one entry per trial: { results: [...] }. Batch errors are
+// excluded, and because a run that errored can be short, `cases` is the widest
+// trial rather than an average.
+export function bySkillRows(runsData) {
+  const bySkill = {};
+  runsData.forEach(({ results }, runIdx) => {
+    for (const r of results) {
+      if (r.got === '(batch-error)') continue;
+      const key = r.expected ?? '(null)';
+      const e = (bySkill[key] = bySkill[key] || { perRunHit: [], perRunTotal: [] });
+      while (e.perRunHit.length <= runIdx) {
+        e.perRunHit.push(0);
+        e.perRunTotal.push(0);
+      }
+      e.perRunTotal[runIdx]++;
+      if (isHit(r)) e.perRunHit[runIdx]++;
+    }
+  });
+  for (const e of Object.values(bySkill)) {
+    e.meanHit = e.perRunHit.reduce((a, b) => a + b, 0) / (e.perRunHit.length || 1);
+    e.cases = e.perRunTotal.length ? Math.max(...e.perRunTotal) : 0;
+    e.rate = e.cases ? e.meanHit / e.cases : 0;
+  }
+  return bySkill;
+}
+
+// The table itself, so the "which run is this?" labelling can be tested rather
+// than eyeballed — the ambiguity was the whole defect.
+export function bySkillSection(bySkill, runs) {
+  const lines = ['## Per expected skill', ''];
+  if (runs > 1) {
+    lines.push(
+      `Mean hits per trial across ${runs} runs. **Compare these across reports only ` +
+        'with the spread in view** — a one-trial move on a small case set is usually noise.',
+      '',
+    );
+  }
+  lines.push(runs > 1 ? '| expected | accuracy | per-trial |' : '| expected | accuracy |');
+  lines.push(runs > 1 ? '|---|---|---|' : '|---|---|');
+  for (const [k, v] of Object.entries(bySkill).sort((a, b) => a[1].rate - b[1].rate)) {
+    const acc = runs > 1 ? `${v.meanHit.toFixed(1)}/${v.cases}` : `${v.meanHit}/${v.cases}`;
+    lines.push(runs > 1 ? `| ${esc(k)} | ${acc} | ${v.perRunHit.join(' / ')} |` : `| ${esc(k)} | ${acc} |`);
+  }
+  return lines;
+}

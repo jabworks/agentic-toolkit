@@ -12,9 +12,13 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
-## toolkit-ops 1.7.17 — 2026-08-29
+## toolkit-ops 1.7.18 — 2026-08-30
 
-- chore(toolkit-ops): version 1.7.17
+- chore(toolkit-ops): version 1.7.18
+
+## toolkit-ops 1.7.17 — 2026-08-30
+
+- docs(toolkit-ops): close #58 — the +5pp was composition, not the older contracts (#141)
 
 ## toolkit-ops 1.7.16 — 2026-08-29
 

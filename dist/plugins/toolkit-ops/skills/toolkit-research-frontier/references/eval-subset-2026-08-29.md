@@ -7,34 +7,44 @@ Overall routing accuracy: **349/394 = 88.6%**
 
 ## Per expected skill
 
-| expected | accuracy |
-|---|---|
-| toolkit-research-frontier | 8/16 |
-| git-operations | 3/5 |
-| preflight | 14/18 |
-| subagent-deployment | 11/14 |
-| root-cause-analysis | 15/19 |
-| workflow | 28/33 |
-| release | 14/16 |
-| toolkit-failure-archaeology | 14/16 |
-| finalize | 8/9 |
-| toolkit-change-control | 16/18 |
-| toolkit-plugin-reference | 17/19 |
-| toolkit-debugging-playbook | 19/21 |
-| toolkit-orientation | 10/11 |
-| (null) | 44/48 |
-| technical-spec | 12/13 |
-| discovery | 14/15 |
-| subagent-execution | 14/15 |
-| code-review | 17/17 |
-| plan-review | 16/16 |
-| draft-plan | 13/13 |
-| git-commit | 3/3 |
-| spec-browser | 4/4 |
-| test-first-development | 12/12 |
-| toolkit-foundry | 4/4 |
-| toolkit-skill-standards | 17/17 |
-| adapting-skills | 2/2 |
+> **Corrected 2026-08-30 (docket #71).** As first written this table showed the
+> FINAL run only, while the headline above is a 3-trial mean — the shape that
+> made `toolkit-research-frontier` look like it had lost a quarter of its cases
+> (it printed 8, the worst of 13 / 11 / 8). Recomputed from this run's own JSON,
+> which carried every trial all along; no case was re-judged and the headline is
+> unchanged. `eval-triggers.mjs` now emits this shape directly.
+
+Mean hits per trial across 3 runs. **Compare these across reports only with the
+spread in view** — a one-trial move on a small case set is usually noise.
+
+| expected | accuracy | per-trial |
+|---|---|---|
+| toolkit-research-frontier | 10.7/16 | 13 / 11 / 8 |
+| git-operations | 3.3/5 | 4 / 3 / 3 |
+| root-cause-analysis | 14.0/19 | 11 / 16 / 15 |
+| workflow | 26.0/33 | 23 / 27 / 28 |
+| preflight | 15.3/18 | 16 / 16 / 14 |
+| (null) | 41.0/48 | 40 / 39 / 44 |
+| toolkit-failure-archaeology | 13.7/16 | 13 / 14 / 14 |
+| subagent-deployment | 12.0/14 | 12 / 13 / 11 |
+| subagent-execution | 13.0/15 | 12 / 13 / 14 |
+| toolkit-plugin-reference | 16.7/19 | 15 / 18 / 17 |
+| finalize | 8.0/9 | 8 / 8 / 8 |
+| toolkit-change-control | 16.3/18 | 17 / 16 / 16 |
+| release | 14.7/16 | 15 / 15 / 14 |
+| discovery | 14.0/15 | 14 / 14 / 14 |
+| toolkit-orientation | 10.3/11 | 11 / 10 / 10 |
+| technical-spec | 12.3/13 | 13 / 12 / 12 |
+| toolkit-debugging-playbook | 20.0/21 | 21 / 20 / 19 |
+| test-first-development | 11.7/12 | 11 / 12 / 12 |
+| code-review | 16.7/17 | 17 / 16 / 17 |
+| toolkit-skill-standards | 16.7/17 | 16 / 17 / 17 |
+| adapting-skills | 2.0/2 | 2 / 2 / 2 |
+| draft-plan | 13.0/13 | 13 / 13 / 13 |
+| git-commit | 3.0/3 | 3 / 3 / 3 |
+| plan-review | 16.0/16 | 16 / 16 / 16 |
+| spec-browser | 4.0/4 | 4 / 4 / 4 |
+| toolkit-foundry | 4.0/4 | 4 / 4 / 4 |
 
 ## Misses (45)
 

@@ -37,6 +37,8 @@ import {
   contextRows,
   contextHeadline,
   contextSection,
+  bySkillRows,
+  bySkillSection,
 } from './trigger-eval-score.mjs';
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -350,13 +352,10 @@ for (let r = 0; r < RUNS && contextCases.length; r++) ctxRunsData.push(runContex
 const scored = results.filter((r) => r.got !== '(batch-error)');
 const hits = scored.filter(isHit);
 const misses = scored.filter((r) => !isHit(r));
-const bySkill = {};
-for (const r of scored) {
-  const key = r.expected ?? '(null)';
-  bySkill[key] = bySkill[key] || { total: 0, hit: 0 };
-  bySkill[key].total++;
-  if (isHit(r)) bySkill[key].hit++;
-}
+// Aggregated across every run, like the headline mean and CI always were —
+// see bySkillRows in trigger-eval-score.mjs for why this table is not built
+// from the final run any more (docket #71).
+const bySkill = bySkillRows(runsData);
 
 // Multi-run statistics: per-run accuracy, mean ± 95% CI (t-distribution), and
 // flaky cases (hit in some runs, missed in others).
@@ -429,7 +428,13 @@ if (RUNS > 1) {
   lines.push('');
   lines.push(`Trials: ${RUNS} · per-run: ${perRunAcc.map((a) => (100 * a).toFixed(1) + '%').join(' / ')} · mean **${(100 * meanAcc).toFixed(1)}% ± ${(100 * ci95).toFixed(1)}pp** (95% CI, t-dist) · flaky cases: ${flaky.length}`);
 }
-lines.push(`Overall routing accuracy: **${hits.length}/${scored.length} = ${(100 * hits.length / scored.length).toFixed(1)}%**`);
+// Final-run figure, said so explicitly when there is more than one run. The
+// mean above is the number to quote; this one is here because the miss table
+// below is drawn from the same single run and the two must agree.
+lines.push(
+  `Overall routing accuracy${RUNS > 1 ? ` (final run of ${RUNS})` : ''}: ` +
+    `**${hits.length}/${scored.length} = ${(100 * hits.length / scored.length).toFixed(1)}%**`,
+);
 // docket #53. Computed from the same per-trial answers the flaky table uses, so
 // a collision that fires in one trial of three still shows. Kept off the
 // accuracy line on purpose — see trigger-eval-score.mjs.
@@ -443,15 +448,19 @@ const ctxRows = contextRows(ctxHitCounts, ctxAnswers, caseKey);
 const ctxLine = contextHeadline(ctxRows);
 if (ctxLine) lines.push(ctxLine);
 lines.push('');
-lines.push('## Per expected skill');
-lines.push('');
-lines.push('| expected | accuracy |');
-lines.push('|---|---|');
-for (const [k, v] of Object.entries(bySkill).sort((a, b) => a[1].hit / a[1].total - b[1].hit / b[1].total)) {
-  lines.push(`| ${k} | ${v.hit}/${v.total} |`);
-}
+// Says the shape out loud when RUNS > 1. A bare `8/16` beside a 3-trial
+// headline reads as a fact about the skill; `10.7/16` over `13 / 11 / 8` reads
+// as what it is.
+lines.push(...bySkillSection(bySkill, RUNS));
 lines.push('');
 lines.push(`## Misses (${misses.length})`);
+// Same trap as the per-skill table had: this list is the FINAL run, because a
+// miss table needs one concrete answer per row. The flaky section below is the
+// multi-run view — a row here that is absent there missed every trial.
+if (RUNS > 1) {
+  lines.push('');
+  lines.push(`_Final run of ${RUNS}. See the flaky section for cases that vary between trials._`);
+}
 lines.push('');
 lines.push('| query | expected | got | corpus file |');
 lines.push('|---|---|---|---|');

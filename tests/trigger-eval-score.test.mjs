@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import {
   isHit,
   isViolation,
+  bySkillRows,
+  bySkillSection,
   violationRows,
   violationHeadline,
   violationSection,
@@ -291,4 +293,64 @@ test('isHit is unchanged by any of this', () => {
   assert.equal(isHit({ expected: null, got: null, accept: [] }), true);
   // A disallowed entry must not reach isHit by any route.
   assert.equal(isHit({ expected: 'session-handoff', got: 'session-handoff', disallowed: ['session-handoff'] }), true);
+});
+
+// --- per-skill aggregation (docket #71) ------------------------------------
+
+const runsOf = (...trials) => trials.map((got) => ({
+  results: got.map((g, i) => ({ query: `q${i}`, expected: 'trf', got: g })),
+}));
+
+test('per-skill accuracy aggregates across every run, not just the last', () => {
+  // The defect this replaces: bySkill was built from the final run alone, so a
+  // row sat under a three-trial headline showing one trial's number.
+  const bySkill = bySkillRows(runsOf(['trf', 'trf'], ['trf', null], [null, null]));
+  assert.deepEqual(bySkill.trf.perRunHit, [2, 1, 0]);
+  assert.equal(bySkill.trf.meanHit, 1, 'mean across trials, not the final trial (0)');
+  assert.equal(bySkill.trf.cases, 2);
+});
+
+test('the #71 numbers no longer read as a regression', () => {
+  // The real shape that produced the false docket item: toolkit-research-frontier
+  // ran 13 / 11 / 8 of 16 in August and the report printed 8, against a July
+  // figure of 12 that was itself a single trial. Read as 12 -> 8 that is "a
+  // quarter of its cases"; read correctly it is a mean of 10.7 with one trial
+  // ABOVE July.
+  const trial = (hits) => Array.from({ length: 16 }, (_, i) => (i < hits ? 'trf' : null));
+  const bySkill = bySkillRows(runsOf(trial(13), trial(11), trial(8)));
+  assert.deepEqual(bySkill.trf.perRunHit, [13, 11, 8]);
+  assert.equal(Number(bySkill.trf.meanHit.toFixed(1)), 10.7);
+  assert.ok(Math.max(...bySkill.trf.perRunHit) > 12, 'a trial beat the July figure');
+  const table = bySkillSection(bySkill, 3).join('\n');
+  assert.match(table, /10\.7\/16/, 'the mean is what the accuracy column shows');
+  assert.match(table, /13 \/ 11 \/ 8/, 'the spread is visible without opening the JSON');
+});
+
+test('a multi-run table says it is a mean; a single-run table stays plain', () => {
+  // The labelling IS the fix — an unlabelled 8/16 beside a 3-trial headline is
+  // what invited the misreading in the first place.
+  const multi = bySkillSection(bySkillRows(runsOf(['trf'], [null])), 2).join('\n');
+  assert.match(multi, /Mean hits per trial across 2 runs/);
+  assert.match(multi, /\| expected \| accuracy \| per-trial \|/);
+
+  const single = bySkillSection(bySkillRows(runsOf(['trf'])), 1).join('\n');
+  assert.doesNotMatch(single, /Mean hits per trial/, 'one run has no spread to caveat');
+  assert.match(single, /\| expected \| accuracy \|\n\|---\|---\|/, 'no per-trial column');
+});
+
+test('batch errors are excluded and a short run does not shrink the case count', () => {
+  // A run that lost a batch has fewer rows. Averaging the denominator would
+  // report a skill as having fewer cases than it has, so `cases` is the widest
+  // trial.
+  const bySkill = bySkillRows([
+    { results: [{ expected: 'trf', got: 'trf' }, { expected: 'trf', got: 'trf' }] },
+    { results: [{ expected: 'trf', got: 'trf' }, { expected: 'trf', got: '(batch-error)' }] },
+  ]);
+  assert.equal(bySkill.trf.cases, 2, 'the widest trial defines the case count');
+  assert.deepEqual(bySkill.trf.perRunHit, [2, 1]);
+});
+
+test('null-expected cases get their own row, as before', () => {
+  const bySkill = bySkillRows([{ results: [{ expected: null, got: null }] }]);
+  assert.equal(bySkill['(null)'].meanHit, 1);
 });
