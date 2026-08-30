@@ -186,39 +186,4 @@ Open questions before anyone builds it: is per-case cost acceptable at corpus sc
 
 See `specs/trigger-reliability/quirks.md` Q4 for the full statement of the limit.
 
-### 71. toolkit-research-frontier lost a quarter of its routing cases between July and August (2026-08-29)
-
-Found by #58's frozen-corpus replay (`eval-subset-2026-08-29.{md,json}`), which
-held the 394 cases of 2026-07-11 fixed and varied only the catalog and the
-contracts.
-
-**12/16 → 8/16 on identical cases.** The single largest per-skill movement in
-the run, up or down, and the addendum under A3d in `health-campaign.md` has no
-explanation for it.
-
-What is already ruled out, from the same run's data:
-
-- **Not catalog theft.** Across all 23 regressions only 2 went to a skill added
-  since July, and neither was one of these.
-- **Not hesitation from a bigger menu.** The corpus-wide null-answer rate *fell*
-  75 → 62 while the catalog grew 27 → 37.
-- **Not the corpus.** These are the same 16 cases with the same `expected` and
-  the same `accept` lists that scored 12/16 in July.
-
-So the cause is on the contract side — either `toolkit-research-frontier`'s own
-description/`when_to_use` changed for the worse in the interval, or a sibling's
-did and now out-competes it on these queries. The July→August diff of
-`skills/toolkit-research-frontier/SKILL.md` is the first place to look, then the
-answers the 8 misses actually gave (they are in the run's JSON, per-case, with
-all three trials).
-
-Worth noting for whoever picks this up: this is the *frontier* skill — the one
-that documents the health campaign measuring all the others. A routing
-regression here is close to self-referential, and it is the kind of drift the
-campaign exists to catch.
-
-Not urgent — it is one skill in a band that did not move — but it is a concrete,
-measured, reproducible defect with the evidence already captured, which is rarer
-than it sounds.
-
 ## Loose threads
