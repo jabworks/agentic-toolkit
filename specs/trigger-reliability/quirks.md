@@ -69,3 +69,56 @@ and live observation; the eval measures vocabulary, now with an optional context
 dimension. Reproducing the skip itself would need a harness that poses an
 ordinary turn and observes whether a skill is invoked, not one that asks for a
 route.
+
+**Update 2026-08-31 (docket #68): that harness now exists.**
+`scripts/eval-invocations.mjs` poses each corpus query as an ordinary
+headless turn (`claude -p --output-format stream-json`) to an agent with the
+skills actually installed, in a fresh temp cwd per case, and reads a fire as
+a `Skill` tool_use naming the expected skill (or an `accept` alternate). A
+`Read` of a SKILL.md is not a fire. Fire rate is a **third metric beside the
+router eval**, never merged into A3's band (the #53/#55 rule), and the pure
+half (`scripts/invocation-observe.mjs`) is unit-tested so a zero is a
+measurement, not a parser that never matched. A selector is required — the
+full corpus is ~$23 and ~2.3 h per trial on haiku-4-5 — so it runs on a
+subset by design (`--skills`, `--limit`, or an explicit `--all`).
+
+Three things the first probes (2026-08-31, haiku-4-5, `--max-turns 3`)
+established before any band was run:
+
+1. **The harness observes the skip.** `save state before I close this`
+   missed with three turns and no `Skill` call; the agent's last line was
+   *"State saved to memory. Ready to resume whenever you need."* It wrote to
+   Claude Code's **built-in auto-memory** instead of running session-handoff —
+   Q1's shape exactly, and the router eval scores the same phrase as a hit.
+   `workflow` fired on `add an export button to the invoice table` and
+   `record` on `add this to the docket: …`, so the signal reads both ways.
+2. **`remember` is not the only suppressor.** The plugin is not installed on
+   the probing machine; the built-in memory prompt substituted for the skill
+   on its own. Q1 is a class, not one plugin — D7's "explicit invocation is
+   the supported path" covers the built-in too.
+3. **Some phrases need an environment.** `wrap up this session` answered
+   *"Nothing's been done yet — this session just started"* in one turn: in an
+   empty cwd there is no session to wrap up, which is docket #14's
+   phrase-not-task finding, now visible per case. That is what `--cwd` is
+   for — a fixture directory with real state (a `.session-handoff/` handoff,
+   a memory file) turns the stimulus into a task, and is the period-3 lever
+   for measuring suppression under a real environment rather than a preamble.
+   The report's miss table carries the agent's last line so the two miss
+   kinds (substituted vs. nothing-to-do) can be told apart without a rerun.
+
+**First band (2026-08-31, session-handoff, 21 cases × 3 trials, haiku-4-5,
+fresh empty cwd per case): fire rate 22.2% ± 6.8pp (14/63; trials 19.0 /
+23.8 / 23.8%; $1.85).** The router eval scores the same phrases at ~93%. Read
+the gap carefully: it is **not** the period-2 live rate (9% resume / 64%
+wrap-up), because the environment was empty by construction. Of the 17 cases
+that missed, 16 missed 3/3 and every one answered in prose with no `Skill`
+call; the last lines split into *nothing-to-do* ("no state to save", "Done.
+Session is clean with no pending work") and *memory-first* ("The memory
+directory is empty, so there are no notes from a previous session") — the
+second is the built-in auto-memory being consulted before any trigger. The
+one partial fire, `hand this off to a fresh session` (2/3), is the phrase
+that names the artifact rather than the situation. So 22% is the floor an
+empty directory produces; the next measurement is the same 21 cases under a
+`--cwd` fixture carrying a `.session-handoff/` handoff and a populated memory
+file, which is the period-3 instrument. Regenerate with
+`node scripts/eval-invocations.mjs --skills session-handoff --runs 3`.

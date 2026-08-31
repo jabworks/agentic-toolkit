@@ -7,6 +7,8 @@ docket is the tracker). When an item ships: stamp it ✅ with the date and
 verification status, then move the entry to the archive in the same action.
 Stale open markers cost real sessions — closing means moving.
 
+## Committed
+
 ## Someday
 
 ### 7. Spec MCP server — revisit when specs gain write-side invariants (2026-08-05)
@@ -173,17 +175,5 @@ Standing position, so no future session re-derives it: the toolkit ships **no**
 countermeasure for the suppression class, deliberately, and will not acquire one
 by asking. Explicit invocation is the supported path. Do not reopen the upstream
 option without Harvey — see D7's "what would reopen this".
-
-### 68. Invocation-observing trigger harness — measure whether a skill fires, not which skill a router names (2026-08-28)
-
-Fell out of #64. The `context` preamble shipped and its first measurement was 6/6 fires (haiku-4-5, 3 trials, both session-handoff seeds) — injecting a synthetic memory digest ahead of "continue from last session" did not suppress the route.
-
-The reason is structural. `scripts/eval-triggers.mjs` poses an explicit routing question ("pick the SINGLE catalog skill best suited to HANDLE it"), so the trigger is consulted on every case by construction. Live suppression (quirks Q1) is the model *never reaching* that question: the digest satisfies the information need and the turn is answered directly. So the preamble measures whether injected context changes a routing answer — real, but weaker — and cannot measure whether the routing decision gets made at all.
-
-Reaching the real question needs a different harness shape: pose an ordinary user turn to an agent with the skills actually installed, and observe whether a skill was *invoked*. That is an agent run per case, not a `claude -p` classification — much more expensive, and it needs an invocation signal to read (transcript skill-invocation lines, as the period-1/2 mines already parse).
-
-Open questions before anyone builds it: is per-case cost acceptable at corpus scale, or does this only run on a suppressed-class subset? Does it replace the router eval or sit beside it as a third metric? The band's comparability rules (see #53, #55) say beside.
-
-See `specs/trigger-reliability/quirks.md` Q4 for the full statement of the limit.
 
 ## Loose threads
