@@ -9,55 +9,6 @@ Stale open markers cost real sessions — closing means moving.
 
 ## Committed
 
-### 10. Reopen A4 collision detection — the falsification was lexical-only (2026-08-09)
-
-A4 (collision automation) is recorded as CLOSED in
-`skills/toolkit-research-frontier/references/health-campaign.md`: the
-preregistered criterion was "static n-gram overlap reproduces >=80% of observed
-collisions with <20% false alarms", and `scripts/collision-scan.mjs --check`
-returned **max 5% recall at every threshold 0.08-0.18**.
-
-The verified reason for that result is method-specific, and reads as a general
-closure today: our collisions are *semantic* adjacencies whose contracts share
-almost no vocabulary, because the 2026-07-08 disambiguation passes had already
-de-overlapped them lexically. That falsifies n-grams. It says nothing about a
-semantic detector.
-
-Upstream precedent: `github/awesome-copilot`, `.github/workflows/duplicate-resource-detector.md`
-(MIT) — a weekly scheduled agentic workflow with three ideas we never tried:
-
-| idea | what it does |
-|---|---|
-| semantic compare | name + description + first ~20 body lines, judged by meaning, with worked negatives in the prompt (two same-style code-review resources = duplicates; general-React vs React-testing = not) |
-| durable accept-list | searches *closed* issues labelled `duplicate-review` for "intentionally separate" / "keep both" / checked boxes, excludes those pairs, annotates re-flags with "(previously reviewed — see #N)" |
-| containment | `safe-outputs: create-issue: {max: 1, close-older-issues: true}` + `noop` when clean — the agent can never hold more than one open issue |
-
-Why it fits here specifically: A3's dominant error mode is one-hop adjacency
-pairs (discovery<->session-handoff on "resume", draft-plan<->technical-spec on
-doc-creation) — exactly the signal a semantic detector reads and a lexical one
-cannot. And we already own the accept-list ingredient: the curated
-empirical-pair registry inside `scripts/collision-scan.mjs`, currently updated
-by hand per eval round.
-
-Decide before building: whether the accept-list lives in GitHub issues (their
-model, needs the workflow to have issue read access) or stays in the repo as
-the existing registry (our model, no egress, but needs a review ritual).
-
-Whatever the outcome, this needs an A4 addendum in `health-campaign.md`
-recording that the falsification was method-specific — the entry currently
-reads as though collision automation is a dead end in general.
-
-Found 2026-08-09 surveying awesome-copilot's maintenance machinery.
-
-#### Status 2026-08-31 — promoted to Committed
-
-Groomed with #54 after #68 shipped. Oldest actionable item on the board,
-and it carries a debt independent of the build decision: the A4 entry in
-`health-campaign.md` reads as though collision automation is dead when only
-the n-gram method was falsified. Minimum done: the A4 addendum plus a
-recorded decision on where the accept-list lives; the semantic detector
-itself is optional and priced separately when this is picked up.
-
 ## Someday
 
 ### 7. Spec MCP server — revisit when specs gain write-side invariants (2026-08-05)

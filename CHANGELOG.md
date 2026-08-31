@@ -12,9 +12,13 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## toolkit-ops 1.7.20 — 2026-08-31
+
+- chore(toolkit-ops): version 1.7.20
+
 ## toolkit-ops 1.7.19 — 2026-08-31
 
-- chore(toolkit-ops): version 1.7.19
+- docs(toolkit-ops): close #54 — Sonnet softens #14's portability finding, does not overturn it (1.7.19) (#144)
 
 ## toolkit-ops 1.7.18 — 2026-08-30
 

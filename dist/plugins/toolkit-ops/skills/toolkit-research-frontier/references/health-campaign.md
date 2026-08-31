@@ -236,6 +236,35 @@ the finding holds across the two models that matter for the corpus's price.
   `scripts/collision-scan.mjs` (update it per eval round); the script stays as
   the falsification record and an exploratory lens (`--top`).
 
+#### Addendum — the falsification was method-specific, not general (2026-08-31, docket #10)
+
+The closure above falsified **n-gram overlap**, not collision automation. The
+verified reason for the 5% recall is itself the argument: our collisions are
+semantic adjacencies whose contracts share almost no vocabulary *because* the
+2026-07-08 disambiguation passes had already de-overlapped them lexically. That
+kills a lexical detector and says nothing about a semantic one — and A3's
+dominant error mode (one-hop adjacency pairs: discovery↔session-handoff on
+"resume", draft-plan↔technical-spec on doc-creation) is exactly the signal a
+semantic comparison reads. Upstream precedent exists:
+`github/awesome-copilot`'s `duplicate-resource-detector.md` (MIT) runs a
+weekly semantic compare with a durable accept-list and single-open-issue
+containment. Read this entry as "lexical method dead, semantic method
+untried", never as "automation is a dead end".
+
+**Accept-list location — decided 2026-08-31 (docket #10): in-repo.** The
+curated empirical-pair registry inside `scripts/collision-scan.mjs` stays the
+single accept-list; we do not move it into GitHub issues. Rationale: no
+egress and no issue-read access for any workflow, the registry already exists
+and is versioned with the code it describes, and the toolkit's standing
+posture (D7, trigger-reliability) is to not take dependencies on external
+mutation surfaces. The accepted cost is a manual review ritual — the registry
+is updated per eval round by hand, with no automation re-flagging previously
+reviewed pairs. A semantic detector, if ever built, reads and annotates this
+registry rather than a labelled-issue history.
+
+The semantic detector itself remains **unbuilt and optional** — if picked up,
+it gets priced as its own docket item against this addendum.
+
 ### A3c. `disallowed` assertions — SHIPPED 2026-08-25 (docket #53)
 
 The one primitive worth stealing from `@microsoft/vally`, salvaged from A3b's
