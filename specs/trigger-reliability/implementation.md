@@ -17,6 +17,7 @@
 | `skills/toolkit-skill-standards/SKILL.md` | carries the suppressed-class **diagnosis** (recognise it; do not fatten the description) and the directive-never-content finding. The nudge remedy is declined doctrine as of #69 — D2's rules live here in the spec, not there |
 | `specs/friction-audit-2026-07-29/trigger-matrix.md` | period-1 methodology — period 2 mirrors it for comparability |
 | `scripts/eval-triggers.mjs` + `scripts/trigger-eval-score.mjs` | the trigger harness; docket #64 added the optional per-case `context` preamble and its separate metric (Q4) |
+| `scripts/eval-invocations.mjs` + `scripts/invocation-observe.mjs` (+ `tests/invocation-observe.test.mjs`) | the invocation-observing harness (docket #68): poses each case as an ordinary headless turn with the installed skills and reads a `Skill` tool_use as a fire. Third metric, beside the router eval, never in the band; `--cwd` is the period-3 fixture lever (Q4) |
 | `composition.json` → `scripts/sync.sh` → `node --test` | registration and drift gates for every shipped change |
 
 ## Measurement (period 2)

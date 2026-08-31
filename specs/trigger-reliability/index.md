@@ -5,7 +5,7 @@
 > routing-nudge countermeasure, and the period-2 measurement that routes each
 > fix. Period 1 is `specs/friction-audit-2026-07-29/`.
 
-**Last updated:** 2026-08-28
+**Last updated:** 2026-08-31
 **Commit:** ed4cbb4
 **Status:** current
 
@@ -14,13 +14,14 @@
 | File | Answers |
 |---|---|
 | [decisions.md](decisions.md) | D1–D6: dual mechanism, nudge rules, our-side boundary, condux read-only, corpus reach, verdict-table-first |
-| [quirks.md](quirks.md) | Q1–Q4: suppression class, Codex root-manifest trap, content-carrying nudges, eval-simulation limit |
+| [quirks.md](quirks.md) | Q1–Q4: suppression class, Codex root-manifest trap, content-carrying nudges, eval-simulation limit — and the invocation-observing harness that closes it (docket #68) |
 | [implementation.md](implementation.md) | key files, period-2 method, verification chain, ship shape |
 | [period-2-report.md](period-2-report.md) | the evidence: corpus, 9%-vs-64% asymmetry, lexical ceiling, verdict tables |
 | [memory-stack-decision.md](memory-stack-decision.md) | docket #67: replace the third-party memory stack on Claude Code? Options, parity cost, pre-registered period-3 criterion, ratification |
 | [upstream-request.md](upstream-request.md) | Option D: the demotable-digest request drafted for `Digital-Process-Tools/claude-remember`, the repo that ships `remember` — **declined 2026-08-29 (D7) and never filed**, kept as the record of what was considered |
 
 ## Changelog
+- 2026-08-31: **The invocation-observing harness shipped (docket #68)** — `scripts/eval-invocations.mjs` poses corpus queries as ordinary headless turns with the installed skills and reads a `Skill` tool_use as a fire; third metric beside the router eval, never in the band. First probes: the harness observes the skip (`save state before I close this` → the agent wrote to Claude Code's built-in auto-memory, *"State saved to memory"*, no `Skill` call), the built-in memory prompt is a suppressor even with `remember` uninstalled (Q1 is a class), and empty-cwd misses (`wrap up this session` → *"Nothing's been done yet"*) are docket #14's phrase-not-task shape, now visible per case — `--cwd` fixtures are the period-3 lever. Q4 updated with the first band: session-handoff **22.2% ± 6.8pp** (14/63, 3 trials, empty cwd) against ~93% on the router eval — an empty-directory floor, not a period-2 comparison; the `--cwd` fixture run is next.
 - 2026-08-29: **The upstream request is declined and will never be filed** — ratified as **D7**. `remember` is not malfunctioning, and D3's boundary extends from "we do not modify a third party's plugin" to "we do not ask them to modify it either"; pricing their change as cheap was our judgement about someone else's software. With the nudge retired (2026-08-28) and this path closed, **the toolkit ships no countermeasure for the suppression class at all, deliberately** — explicit invocation is the supported path, and we accept the ~9% resume-phrase fire rate. #67 loses its last automatic closing condition (the criterion was already void): it now closes only on Harvey's judgement at period 3, and Option B — a port that must grow a summarizer — is the entire remaining decision space. Also: docket #66 closed, the 92 `vedge`/`axon`/`lightweight-bff` Codex sessions classified **corporate**, so D5's standing exclusion set grows to four repo families and those sibling fire rates go permanently unmeasured. Also corrected: the request draft had named `anthropics/claude-plugins-official` as its destination — that is where `remember` is *listed*, not where it lives (`Digital-Process-Tools/claude-remember`); a marketplace-qualified name is not an address.
 - 2026-08-28: Docket #69 closed — the routing-nudge remedy is **declined doctrine**, the suppressed-class diagnosis stays. `toolkit-skill-standards` keeps how to recognise the class and the directive-never-content finding; D2's six rules are archived here rather than restated there. Re-entry bar for ever shipping a nudge: a measured verdict **and** owner sign-off, never the doctrine alone. Corrected a mischaracterisation from 1.7.14 — condux's `routing.md` is unconditional, so it is the precedent for SessionStart injection, never an instance of the convention. toolkit-ops 1.7.15; #70 unblocked; #65 re-annotated (measurement stands, disposal changed).
 - 2026-08-28: **The nudge was retired** — session-handoff 2.0.0 removes the SessionStart hook, its payload, its dual-host manifests and its test (owner's decision: not worth a second hook for one skill). D2 keeps its rules but has zero live instances, so the convention is untested rather than validated. #67's criterion is void because it measured that nudge; period 3 now measures whether suppression persists unremediated, and the port has no automatic trigger. The upstream request is the only remaining live remedy. Dockets #69 (convention's fate) and #70 (change-control gap) filed; #65 gated on #69.

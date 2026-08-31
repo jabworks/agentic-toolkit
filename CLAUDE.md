@@ -213,6 +213,11 @@ committing — it fails the build otherwise. The suite now needs
   Ranges expand (#51's citation *was* a range), a spec-name qualifier resolves
   cross-spec (`surface-kit Q9` in docket's decisions), a spec whose quirks.md
   uses prose headings makes no claim, and `Q1 2026` is a quarter
+- `invocation-observe.test.mjs` — the pure half of the invocation-observing
+  trigger harness (docket #68): stream-json parsing, plugin-qualified skill
+  names, fire/uninstalled/violation scoring, corpus dedup, and the report
+  builders. `scripts/eval-invocations.mjs` spawns a real agent per case, so
+  every predicate is tested here against a recorded transcript instead
 
 Plugin releases are automated. Merging to `main` runs
 `.github/workflows/plugin-release.yml` → `scripts/release-plugins.mjs --since
