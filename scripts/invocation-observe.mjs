@@ -165,11 +165,26 @@ export function loadCorpus(skillsDir, { skills = null } = {}) {
 // cases carry a preamble to inject — here context comes from the real
 // environment (--cwd), not a string, so they are reported as skipped rather
 // than posed with their preamble silently dropped.
-export function selectCases(cases) {
-  const eligible = cases.filter((c) => c.kind !== 'in-context' && !c.context);
-  const skipped = cases.length - eligible.length;
+//
+// `queries`, when given, names the exact stimuli to pose (docket #54's
+// stratified probe). Matching is on the query text, and the case keeps its
+// corpus `accept`/`disallowed`/`source` — a probe list is a selection, not a
+// second corpus. A query that matches nothing is returned in `unmatched` so a
+// typo cannot silently shrink a 12-case probe to 11.
+export function selectCases(cases, { queries = null } = {}) {
+  let pool = cases;
+  let unmatched = [];
 
-  return { eligible, skipped };
+  if (queries) {
+    const wanted = new Set(queries);
+    pool = cases.filter((c) => wanted.has(c.query));
+    unmatched = queries.filter((q) => !cases.some((c) => c.query === q));
+  }
+
+  const eligible = pool.filter((c) => c.kind !== 'in-context' && !c.context);
+  const skipped = pool.length - eligible.length;
+
+  return { eligible, skipped, unmatched };
 }
 
 // --- aggregates --------------------------------------------------------------

@@ -12,9 +12,12 @@
 // specs/trigger-reliability/quirks.md Q1/Q4, which the router eval cannot see.
 //
 // Usage:
-//   node scripts/eval-invocations.mjs (--skills a,b | --limit n | --all)
+//   node scripts/eval-invocations.mjs (--skills a,b | --limit n | --cases <file> | --all)
 //         [--model <id>] [--runs <n>] [--max-turns <n>] [--cwd <dir>]
 //         [--out <report.md>] [--timeout <ms>]
+//
+// --cases <file> is a JSON array of exact query strings to pose (a named probe,
+// e.g. docket #54's stratified 12); each keeps its corpus accept/disallowed.
 //
 // A selector is REQUIRED. The full corpus is ~645 cases at ~$0.035 and ~13s
 // each on haiku-4-5 (2026-08-31 probe) — ~$23 and ~2.3h per trial — so a bare
@@ -50,6 +53,7 @@ const RUNS = Math.max(1, Number(flag('--runs', '1')));
 const MAX_TURNS = Math.max(1, Number(flag('--max-turns', '3')));
 const LIMIT = Number(flag('--limit', '0'));
 const SKILLS = flag('--skills', '') ? flag('--skills', '').split(',').map((s) => s.trim()).filter(Boolean) : null;
+const CASES_FILE = flag('--cases', '');
 const CWD = flag('--cwd', '');
 const OUT = flag('--out', '');
 const ALL = args.includes('--all');
@@ -60,8 +64,8 @@ const TIMEOUT_MS = Number(flag('--timeout', '300000'));
 const EST_COST = 0.035;
 const EST_SECONDS = 13;
 
-if (!SKILLS && !LIMIT && !ALL) {
-  console.error('eval-invocations: pick a selector — --skills a,b | --limit n | --all (a full run is ~$23 and ~2.3h per trial).');
+if (!SKILLS && !LIMIT && !ALL && !CASES_FILE) {
+  console.error('eval-invocations: pick a selector — --skills a,b | --limit n | --cases <file> | --all (a full run is ~$23 and ~2.3h per trial).');
   process.exit(2);
 }
 
@@ -79,7 +83,18 @@ if (CWD && !fs.existsSync(CWD)) {
 }
 
 // --- corpus ------------------------------------------------------------------
-const { eligible, skipped } = selectCases(loadCorpus(SKILLS_DIR, { skills: SKILLS }));
+const QUERIES = CASES_FILE ? JSON.parse(fs.readFileSync(CASES_FILE, 'utf8')) : null;
+if (QUERIES && (!Array.isArray(QUERIES) || QUERIES.some((q) => typeof q !== 'string'))) {
+  console.error(`eval-invocations: --cases ${CASES_FILE} must be a JSON array of query strings`);
+  process.exit(2);
+}
+const { eligible, skipped, unmatched } = selectCases(loadCorpus(SKILLS_DIR, { skills: SKILLS }), { queries: QUERIES });
+if (unmatched.length) {
+  // A named probe must arrive intact — a silently shrunken list is a different
+  // probe, and its number would be compared against the one that was planned.
+  console.error(`eval-invocations: --cases names ${unmatched.length} query(ies) not in the corpus:\n  ${unmatched.join('\n  ')}`);
+  process.exit(2);
+}
 const corpus = LIMIT > 0 ? eligible.slice(0, LIMIT) : eligible;
 
 if (!corpus.length) {

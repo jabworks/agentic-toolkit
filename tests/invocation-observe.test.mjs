@@ -156,6 +156,14 @@ test('loadCorpus mirrors the router eval: expected resolution, dedup, disallowed
   assert.equal(skipped, 2);
 
   assert.deepEqual(loadCorpus(dir, { skills: ['beta'] }).map((c) => c.source), ['beta']);
+
+  // --cases: exact queries, corpus metadata kept, unmatched surfaced (docket #54).
+  const named = selectCases(all, { queries: ['not alpha', 'do alpha', 'nope', 'resume'] });
+  assert.deepEqual(named.eligible.map((c) => c.query), ['do alpha', 'not alpha']);
+  assert.deepEqual(named.eligible[0].disallowed, ['beta', 'gamma'], 'a named case keeps its merged corpus metadata');
+  assert.equal(named.skipped, 1, 'the context twin is selected then skipped, and counted');
+  assert.deepEqual(named.unmatched, ['nope']);
+  assert.deepEqual(selectCases(all).unmatched, []);
 });
 
 test('aggregates pool every trial and keep uninstalled and errors out of the denominator', () => {

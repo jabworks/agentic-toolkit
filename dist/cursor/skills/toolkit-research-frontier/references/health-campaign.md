@@ -181,6 +181,46 @@ the condux `SessionStart` routing hook was expected to dominate dev-task cases
 and force `condux:workflow` everywhere. It forced nothing — 0/6 — because those
 cases never became tasks.
 
+**Addendum 2026-08-31 (docket #54) — re-checked on a stronger model: softened,
+not overturned.** The original 12 stimuli were never recorded (the probe was a
+throwaway `/tmp/probe.mjs`), so a like-for-like re-run posed a fresh stratified
+12 (6 dev-task, 6 non-dev, all `should_trigger: true`, including `"write the
+implementation plan"`) to **both** haiku-4-5 and claude-sonnet-5, 3 trials each,
+empty cwd per case, via `scripts/eval-invocations.mjs --cases` (docket #68's
+harness, which is the "~30 lines of our own code" above, grown a scorer).
+
+| | haiku-4-5 | claude-sonnet-5 |
+|---|---|---|
+| fire rate (12 × 3) | **27.8% ± 12.0pp** (10/36) | **41.7% ± 20.7pp** (15/36) |
+| dev-task half (6 × 3) | 6/18 | 8/18 |
+| non-dev half (6 × 3) | 4/18 | 7/18 |
+| cost per run | $0.036 | $0.112 |
+
+What Sonnet changed: it commits on **artifact-naming phrases** where Haiku asks
+— `"run the quality gate"` fired `finalize` 3/3 (Haiku 0/3, *"I don't see a
+project here to run gates on"*), `"hand this off to a fresh session"` 3/3
+(Haiku 1/3), `"verify it live"` 1/3 (Haiku 0/3). The CIs overlap (three trials,
+twelve cases), so this is a direction, not a measured lift.
+
+What Sonnet did not change: the **phrase-not-task** stimuli stayed at 0/6 on
+both models with the same reply shape — `"write the implementation plan"` →
+*"The working directory is empty — there's no project, spec, or prior task"*,
+`"tdd this feature"` → *"there's no feature, spec, or code"*. Every Sonnet miss
+names the empty directory. #14's conclusion stands: the corpus is not portable
+to trajectory scoring without task-shaped prompts **and a fixture**, and the
+economics only worsen upward (3× per run at Sonnet).
+
+One sentence above is corrected by this data: *"every dev-task case activated
+nothing at all"* was true of the original six, but it is a property of
+phrase-shaped stimuli, not of dev tasks. Content-bearing dev-task prompts from
+the corpus — `"add an export button to the invoice table"`, `"build a new auth
+flow with SSO"` — fired `condux:workflow` 6/6 on Haiku and 5/6 on Sonnet in an
+empty directory, and `"checkout crashes on empty cart"` invoked `workflow` (a
+miss against `root-cause-analysis` with no `accept`, but an activation). The
+routing hook does force `workflow` once the stimulus is a task; the 2026-08-25
+prediction failed on stimulus shape alone. The Haiku-only caveat is closed:
+the finding holds across the two models that matter for the corpus's price.
+
 ### A4. Collision automation — CLOSED 2026-07-09: lexical approach falsified
 - Preregistered criterion: static n-gram overlap reproduces ≥80% of observed
   collisions with <20% false alarms.
