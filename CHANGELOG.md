@@ -12,9 +12,13 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## toolkit-ops 1.7.19 — 2026-08-31
+
+- chore(toolkit-ops): version 1.7.19
+
 ## toolkit-ops 1.7.18 — 2026-08-30
 
-- chore(toolkit-ops): version 1.7.18
+- fix(eval): per-skill accuracy is a 3-trial mean, not the last run (docket #71) (#142)
 
 ## toolkit-ops 1.7.17 — 2026-08-30
 

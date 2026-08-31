@@ -9,22 +9,6 @@ Stale open markers cost real sessions — closing means moving.
 
 ## Committed
 
-## Someday
-
-### 7. Spec MCP server — revisit when specs gain write-side invariants (2026-08-05)
-
-Declined for now (2026-08-05): specs are read-mostly markdown — router lookup is ls + fuzzy match, agents read files natively, and a server would duplicate the file path every skill must keep anyway. Reconsider docket-style (thin MCP over a CLI) only if specs grow mutations worth guarding: enforced changelog stamps on drift decisions, cross-spec link integrity, or a host-enforced spec-before-plan gate.
-
-2026-08-18: re-checked against all three trigger conditions — none have fired.
-The `specs/` tree grew to 10 dirs (composition-manifest, cursor-channel,
-concord, docket, etc.) since 2026-08-05, but every mention of "changelog
-stamp" or "drift decision" found in the repo is a per-spec bookkeeping note
-inside a plan file, not a host-enforced mechanism. No cross-spec link
-integrity check exists (`tests/spec-index.test.mjs` checks the catalog
-index, not inter-spec links). `draft-plan`'s "signed-off design" requirement
-remains a soft, agent-discipline gate, not host-enforced. Still declined;
-next re-check on the same trigger, not on a schedule.
-
 ### 10. Reopen A4 collision detection — the falsification was lexical-only (2026-08-09)
 
 A4 (collision automation) is recorded as CLOSED in
@@ -65,35 +49,30 @@ reads as though collision automation is a dead end in general.
 
 Found 2026-08-09 surveying awesome-copilot's maintenance machinery.
 
-### 54. Re-check #14's corpus-portability finding on a stronger model (2026-08-25)
+#### Status 2026-08-31 — promoted to Committed
 
-Docket #14 (priced and declined 2026-08-25) concluded that the trigger-eval
-corpus is not portable to trajectory-based scoring, because its stimuli are
-routing phrases rather than tasks: a 12-case probe produced 3 activations out
-of 12, and every dev-task case activated nothing. `"write the implementation
-plan"` returns a clarifying question — correctly, since there is no task in
-that string.
+Groomed with #54 after #68 shipped. Oldest actionable item on the board,
+and it carries a debt independent of the build decision: the A4 entry in
+`health-campaign.md` reads as though collision automation is dead when only
+the n-gram method was falsified. Minimum done: the A4 addendum plus a
+recorded decision on where the accept-list lives; the semantic detector
+itself is optional and priced separately when this is picked up.
 
-**Every run in that probe used `claude-haiku-4-5-20251001`.** A stronger model
-may commit to a skill where Haiku asks for clarification, which would soften
-the portability finding. It would not touch #14's other two conclusions —
-vally is unnecessary, and corpus-authoring cost dominates the ~$17 of API
-calls — and a Sonnet/Opus corpus run would price *higher* than $17, so the
-economics only get worse, not better.
+## Someday
 
-Scope: re-run the same 12 cases (or the 6 dev-task ones) on Sonnet, same
-method — `claude -p --output-format stream-json`, count `Skill` tool_use
-blocks. ~$0.30 at Haiku rates, more at Sonnet. The probe harness was
-throwaway (`/tmp/probe.mjs`); rebuild it from A3b's description or write a
-small one — it is ~25 lines.
+### 7. Spec MCP server — revisit when specs gain write-side invariants (2026-08-05)
 
-Second untested variable, cheaper to note than to fix: all runs happened in
-`/tmp` with no project context. A real repo might change activation behaviour,
-though there is still no *task* in the stimulus, so a flip is not expected.
+Declined for now (2026-08-05): specs are read-mostly markdown — router lookup is ls + fuzzy match, agents read files natively, and a server would duplicate the file path every skill must keep anyway. Reconsider docket-style (thin MCP over a CLI) only if specs grow mutations worth guarding: enforced changelog stamps on drift decisions, cross-spec link integrity, or a host-enforced spec-before-plan gate.
 
-Close as confirmed-or-corrected either way — A3b currently states the
-Haiku-only limitation in its own text, so the record is honest as it stands;
-this only tightens it.
+2026-08-18: re-checked against all three trigger conditions — none have fired.
+The `specs/` tree grew to 10 dirs (composition-manifest, cursor-channel,
+concord, docket, etc.) since 2026-08-05, but every mention of "changelog
+stamp" or "drift decision" found in the repo is a per-spec bookkeeping note
+inside a plan file, not a host-enforced mechanism. No cross-spec link
+integrity check exists (`tests/spec-index.test.mjs` checks the catalog
+index, not inter-spec links). `draft-plan`'s "signed-off design" requirement
+remains a soft, agent-discipline gate, not host-enforced. Still declined;
+next re-check on the same trigger, not on a schedule.
 
 ### 65. toolkit-debugging-playbook applied-but-cold — evaluate for a routing nudge next period (2026-08-28)
 
