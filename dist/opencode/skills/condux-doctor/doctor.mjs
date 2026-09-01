@@ -338,12 +338,29 @@ function probeOpencode(hosts) {
     return {
       host: 'opencode',
       status: 'broken',
-      detail: 'the installed package ships no workflow/hooks/routing.md — /workflow routing enforcement is missing',
+      detail: 'the installed package ships no workflow/hooks/routing.md — the plugin has no routing reminder to inject',
       fix: `reinstall ${PACKAGE}`,
     };
   }
 
-  return { host: 'opencode', status: 'done', detail: 'registered, and the installed package ships its agents, skills, and /workflow routing enforcement' };
+  // Since @jabworks/condux 0.21.0 the payload is rewritten for OpenCode:
+  // `/condux:workflow` is a Claude Code command the host cannot run, and a
+  // payload still naming it is the docket #72 under-firing shape — installed,
+  // but asking for a verb the model has to translate on its own.
+  if (!fs.readFileSync(routing, 'utf8').includes('skill(name="workflow")')) {
+    return {
+      host: 'opencode',
+      status: 'broken',
+      detail: 'the installed routing payload names /condux:workflow, which OpenCode cannot run — the reminder under-fires',
+      fix: `upgrade ${PACKAGE} to 0.21.0 or later`,
+    };
+  }
+
+  return {
+    host: 'opencode',
+    status: 'done',
+    detail: 'registered, and the installed package ships its agents, skills, and a routing reminder that names the OpenCode verb',
+  };
 }
 
 // The four specialist agents are plugin-level and reached by their own sync

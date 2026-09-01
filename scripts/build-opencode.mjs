@@ -18,6 +18,13 @@
 // `description` (and drops the field). Everything else — remaining frontmatter
 // lines, body, auxiliary files — is copied byte-for-byte.
 //
+// One more exception: workflow's hooks/routing.md, the SessionStart payload on
+// Claude Code and Codex. The OpenCode plugin injects it itself (see
+// packages/condux-opencode/index.js), so the OpenCode copies get the verb
+// rewritten — `/condux:workflow` is a Claude Code command OpenCode does not
+// have; the move that loads a skill there is the `skill` tool (docket #72).
+// Cursor's tree keeps the file verbatim: it never reads it.
+//
 // Agent translation: OpenCode agents carry `description` + `mode` frontmatter
 // and use the markdown body as the system prompt. Claude-only fields (model,
 // color, memory) are dropped; the <example> blocks are stripped from the
@@ -152,22 +159,54 @@ export function translateAgent(text, label) {
 }
 
 // --------------------------------------------------------------------------
+// Routing payload transform: OpenCode has no `/condux:workflow` command — the
+// move that loads a skill there is the `skill` tool. Rewrite the verb and add
+// the general `/name` → skill(name) mapping so the folded SKILL.md bodies' own
+// `/workflow` mentions resolve as well (docket #72). Fails loudly if the payload
+// stops carrying the anchors this transform depends on, rather than shipping a
+// payload that silently kept the Claude Code verb.
+// --------------------------------------------------------------------------
+
+const CLAUDE_ROUTING_VERB = '`/condux:workflow`';
+export const OPENCODE_ROUTING_VERB = 'the `workflow` skill — `skill(name="workflow")`';
+const ROUTING_CLOSE = '</EXTREMELY_IMPORTANT>';
+const OPENCODE_ROUTING_MAPPING =
+  '\n**On OpenCode, a `/name` mention of any condux skill means the `skill` tool:** ' +
+  '`/workflow` → `skill(name="workflow")`, `/finalize` → `skill(name="finalize")`, and so on. ' +
+  'None of them is a slash command here.\n';
+
+export function transformRouting(text, label) {
+  if (!text.includes(CLAUDE_ROUTING_VERB)) throw new Error(`${label}: routing payload no longer names ${CLAUDE_ROUTING_VERB}`);
+  if (!text.includes(ROUTING_CLOSE)) throw new Error(`${label}: routing payload has no ${ROUTING_CLOSE} anchor`);
+  // Function-form replacements for the same reason as transformSkill.
+  return text
+    .replaceAll(CLAUDE_ROUTING_VERB, () => OPENCODE_ROUTING_VERB)
+    .replace(ROUTING_CLOSE, () => OPENCODE_ROUTING_MAPPING + ROUTING_CLOSE);
+}
+
+// --------------------------------------------------------------------------
 // Generation
 // --------------------------------------------------------------------------
 
-// Only the skill's own top-level SKILL.md is transformed (depth 0) — a nested
-// SKILL.md (e.g. an eval fixture under references/ or evals/) is data and must
-// copy byte-for-byte. Exported for build-cursor.mjs, which applies the same
-// fold to its own output tree.
-export function copyTransformed(srcDir, dstDir, label, depth = 0) {
+// Per-file transforms, keyed by path relative to the skill root. Only the
+// skill's own top-level SKILL.md is folded — a nested SKILL.md (e.g. an eval
+// fixture under references/ or evals/) is data and must copy byte-for-byte.
+// The OpenCode set also rewrites workflow's routing payload; build-cursor.mjs
+// imports copyTransformed and takes the fold-only default, because Cursor never
+// reads hooks/routing.md.
+export const FOLD_ONLY = Object.freeze({ 'SKILL.md': transformSkill });
+export const OPENCODE_TRANSFORMS = Object.freeze({ ...FOLD_ONLY, 'hooks/routing.md': transformRouting });
+
+export function copyTransformed(srcDir, dstDir, label, transforms = FOLD_ONLY, rel = '') {
   fs.mkdirSync(dstDir, { recursive: true });
   for (const entry of fs.readdirSync(srcDir, { withFileTypes: true })) {
     const src = path.join(srcDir, entry.name);
     const dst = path.join(dstDir, entry.name);
+    const entryRel = rel ? `${rel}/${entry.name}` : entry.name;
     if (entry.isDirectory()) {
-      copyTransformed(src, dst, label, depth + 1);
-    } else if (entry.name === 'SKILL.md' && depth === 0) {
-      fs.writeFileSync(dst, transformSkill(fs.readFileSync(src, 'utf8'), label));
+      copyTransformed(src, dst, label, transforms, entryRel);
+    } else if (Object.hasOwn(transforms, entryRel)) {
+      fs.writeFileSync(dst, transforms[entryRel](fs.readFileSync(src, 'utf8'), label));
     } else {
       fs.copyFileSync(src, dst);
     }
@@ -179,7 +218,12 @@ export function build() {
   let skillCount = 0;
   for (const entry of fs.readdirSync(SKILLS_DIR, { withFileTypes: true })) {
     if (!entry.isDirectory()) continue;
-    copyTransformed(path.join(SKILLS_DIR, entry.name), path.join(OPENCODE_SKILLS_DIR, entry.name), `skills/${entry.name}`);
+    copyTransformed(
+      path.join(SKILLS_DIR, entry.name),
+      path.join(OPENCODE_SKILLS_DIR, entry.name),
+      `skills/${entry.name}`,
+      OPENCODE_TRANSFORMS,
+    );
     skillCount++;
   }
 
@@ -199,7 +243,7 @@ export function build() {
   fs.rmSync(CONDUX_OPENCODE_SKILLS_DIR, { recursive: true, force: true });
   let conduxSkillCount = 0;
   for (const name of conduxSkillNames()) {
-    copyTransformed(path.join(SKILLS_DIR, name), path.join(CONDUX_OPENCODE_SKILLS_DIR, name), `skills/${name}`);
+    copyTransformed(path.join(SKILLS_DIR, name), path.join(CONDUX_OPENCODE_SKILLS_DIR, name), `skills/${name}`, OPENCODE_TRANSFORMS);
     conduxSkillCount++;
   }
 

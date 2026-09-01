@@ -7,6 +7,25 @@ Research note, 2026-09-01. Sources: shallow clones taken today of
 `@opencode-ai/plugin@1.18.25` type definitions. Nothing here was run live; every
 claim is "observed in source" unless marked otherwise.
 
+**Status (2026-09-01, later the same day): C0 + C1 shipped** as condux 2.28.0 /
+`@jabworks/condux` 0.21.0 (`scripts/build-opencode.mjs` `transformRouting`,
+`packages/condux-opencode/index.js` `chat.message`). Both live gates passed on
+OpenCode 1.18.25 (isolated `XDG_CONFIG_HOME`, `opencode run`, model
+`opencode/big-pickle` — see quirks Q5–Q6 for the two traps met on the way):
+(a) a `synthetic:true` text part pushed from `chat.message` is persisted on the
+user message (`opencode export` shows it; the hook runs before `updateMessage`/
+`updatePart`, and `output.parts` is the array that gets written) **and reaches
+the model** — its reasoning quoted the reminder back. (b) The pruning worry
+dissolves in source: `session/compaction.ts` `prune` erases only *completed tool
+outputs*, never text parts; compaction itself does drop the part (the model's
+view becomes summary + retained tail), and the plugin re-injects on the next
+user message after `session.compacted` clears its process memory, and re-checks
+stored history via `client.session.messages` on first sight of any session, so
+a resumed session is not injected twice. Also observed live: `chat.message`
+carries `agent: undefined` on a top-level session and `agent: "general"` plus a
+`parentID` (via `client.session.get`) on a `task`-spawned child — the subagent
+discriminator is bundled-name-or-parent. C2 remains a follow-up.
+
 **Assumed symptom** (Harvey: "the injected instruction isn't enough"): the OpenCode
 agent does not reliably load the `workflow` skill first on implementation requests,
 the way Claude Code / Codex sessions do with the SessionStart injection. Findings are

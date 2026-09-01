@@ -12,9 +12,13 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## condux 2.28.0 — 2026-09-01
+
+- feat(condux): OpenCode routing rides a synthetic chat.message reminder and names the skill tool — close #72 (2.28.0)
+
 ## toolkit-ops 1.7.20 — 2026-08-31
 
-- chore(toolkit-ops): version 1.7.20
+- docs(toolkit-ops): close #10 — A4 falsification was method-specific; accept-list stays in-repo (1.7.20) (#145)
 
 ## toolkit-ops 1.7.19 — 2026-08-31
 
