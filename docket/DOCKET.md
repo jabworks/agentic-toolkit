@@ -92,4 +92,62 @@ countermeasure for the suppression class, deliberately, and will not acquire one
 by asking. Explicit invocation is the supported path. Do not reopen the upstream
 option without Harvey — see D7's "what would reopen this".
 
+### 72. condux on OpenCode — routing payload names a verb the host can't run, leaks into subagents, and sits in the weakest seat; ship C0 (verb fix) + C1 (SessionStart-parity injection) (2026-09-01)
+
+Symptom (Harvey, 2026-09-01): with `@jabworks/condux` loaded, OpenCode does not
+reliably load `workflow` first on implementation requests — "the injected
+instruction isn't enough". Research against source (oh-my-openagent 4.19.4,
+kdcokenny/opencode-workspace, kdcokenny/ocx, anomalyco/opencode 1ead9e3,
+`@opencode-ai/plugin` 1.18.25) is in
+`specs/trigger-reliability/opencode-routing-research.md`. Three defects, all
+observed in source, none yet reproduced live:
+
+1. **Wrong verb.** `routing.md` ships verbatim to the OpenCode tree
+   (`build-opencode.mjs` never transforms it) and says run `/condux:workflow`.
+   OpenCode has no such command; the executable move is `skill(name="workflow")`.
+   The folded `workflow/SKILL.md` says "run `/workflow`" too.
+2. **Subagent leak.** `config.instructions` is global, so coder/explorer/
+   researcher sessions also receive "every implementation request starts at
+   /condux:workflow" — contradictory for coder.
+3. **Weakest seat.** `session/llm/request.ts` joins agent prompt + env +
+   AGENTS.md + our instructions + skills into ONE system string. On Claude Code
+   the same payload is a user-turn `<system-reminder>` at session start.
+   OpenCode's own plan-mode enforcement (`session/reminders.ts`) uses that
+   shape too: a `synthetic:true` text part on the last user message.
+
+Docket #38 shipped the `instructions` mechanism knowingly; this does not
+reverse it, it relocates the payload. The other harnesses that get compliance
+combine the recency channel (`chat.message` part mutation / synthetic parts),
+main-agent scoping, and tool-event nudges; OMO additionally owns the default
+agent (not for us).
+
+**Ship (one changeset, condux minor + `@jabworks/condux` npm changeset):**
+
+- **C0 — fix the verb.** Transform `routing.md` and the folded SKILL.md bodies
+  for the OpenCode tree so `/condux:workflow` → load the `workflow` skill via
+  `skill(name="workflow")`. Optional: OMO's auto-slash-command trick so a typed
+  `/workflow` expands to the skill body (`chat.message`, stable hook).
+- **C1 — SessionStart parity.** On the first non-synthetic user message of a
+  *main* session (skip our subagents / child sessions), push a `synthetic:true`
+  `<system-reminder>` part carrying the routing payload; re-inject on
+  `experimental.session.compacting` (`output.context`) and whenever the marker
+  is absent from current history (`overflow.ts` can prune without compaction).
+  Then drop `routing.md` from `config.instructions`. Cost-neutral in the main
+  session (~390 tokens rides in history every turn, same as today); saving is
+  subagents stop paying it; seat is strictly better.
+
+**Verify live before shipping C1** (docket #38 precedent: timing verified, not
+reasoned): (a) a synthetic part pushed in `chat.message` is persisted and
+reaches the model — `opencode run --format json` transcript or debug config;
+(b) it survives pruning / is re-injected; (c) condux-doctor's OpenCode probe
+updated from "routing.md registered on instructions" to the new contract.
+
+**Follow-up, separate item once C1 is measured:** C2 — edge-triggered miss
+catcher (edit/write/bash in a main session where `skill` never loaded
+`workflow` → one synthetic reminder; stable fallback appends to the next tool
+result, OCW-style). Soft, matching the soft-gate doctrine.
+
+Measurement gap: `scripts/eval-invocations.mjs` spawns `claude -p` only; the
+93% band says nothing about OpenCode. Not in scope here — note it.
+
 ## Loose threads
