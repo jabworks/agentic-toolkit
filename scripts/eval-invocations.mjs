@@ -13,8 +13,26 @@
 //
 // Usage:
 //   node scripts/eval-invocations.mjs (--skills a,b | --limit n | --cases <file> | --all)
+//         [--host claude|opencode] [--plugin <spec>] [--stall <ms>]
 //         [--model <id>] [--runs <n>] [--max-turns <n>] [--cwd <dir>]
 //         [--out <report.md>] [--timeout <ms>]
+//
+// --host opencode (docket #73) poses each case with `opencode run --format json`
+// instead of `claude -p`, in a clean room: a scratch HOME whose only config is
+// `{plugin: [<--plugin spec>]}`, with XDG_DATA_HOME left real so credentials
+// resolve. That is the isolation quirks Q5 asks for — XDG_CONFIG_HOME alone
+// still loads ~/.opencode and the global instruction files, which are
+// routing-adjacent content and would contaminate a fire-rate number. The
+// resolved plugin / instructions / skills arrays are printed before the run so
+// the report says which arm was measured: `--plugin @jabworks/condux@0.20.0`
+// is the config.instructions channel, a `file:///…/packages/condux-opencode/
+// index.js` path is the local chat.message reminder. Fires are read from the
+// JSON event stream (a `skill` tool call); the model defaults to the free
+// `opencode/big-pickle`; there is no max-turns on this host, so a run goes to
+// completion or to --timeout. A run that produces no event at all is the Q6
+// stall — it is retried (--stall is the first-event watchdog, default 45s),
+// never scored. Skills installed = whatever the plugin's skills.paths carry,
+// so a case for a skill outside that set scores `uninstalled`, not miss.
 //
 // --cases <file> is a JSON array of exact query strings to pose (a named probe,
 // e.g. docket #54's stratified 12); each keeps its corpus accept/disallowed.
@@ -36,9 +54,18 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { spawnSync } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { loadCorpus, selectCases, parseStream, scoreCase, fireStats, reportLines, caseKey } from './invocation-observe.mjs';
+import {
+  loadCorpus,
+  selectCases,
+  parseStream,
+  parseOpenCodeStream,
+  scoreCase,
+  fireStats,
+  reportLines,
+  caseKey,
+} from './invocation-observe.mjs';
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SKILLS_DIR = path.join(REPO_ROOT, 'skills');
@@ -48,7 +75,15 @@ function flag(name, fallback) {
   const i = args.indexOf(name);
   return i >= 0 && args[i + 1] !== undefined ? args[i + 1] : fallback;
 }
-const MODEL = flag('--model', 'claude-haiku-4-5-20251001');
+const HOST = flag('--host', 'claude');
+if (!['claude', 'opencode'].includes(HOST)) {
+  console.error(`eval-invocations: --host must be claude or opencode, not ${HOST}`);
+  process.exit(2);
+}
+const OPENCODE = HOST === 'opencode';
+const PLUGIN = flag('--plugin', '@jabworks/condux');
+const STALL_MS = Number(flag('--stall', '45000'));
+const MODEL = flag('--model', OPENCODE ? 'opencode/big-pickle' : 'claude-haiku-4-5-20251001');
 const RUNS = Math.max(1, Number(flag('--runs', '1')));
 const MAX_TURNS = Math.max(1, Number(flag('--max-turns', '3')));
 const LIMIT = Number(flag('--limit', '0'));
@@ -59,10 +94,11 @@ const OUT = flag('--out', '');
 const ALL = args.includes('--all');
 const TIMEOUT_MS = Number(flag('--timeout', '300000'));
 
-// Probe constants for the pre-run estimate (2026-08-31, haiku-4-5, 3 turns).
+// Probe constants for the pre-run estimate (2026-08-31, haiku-4-5, 3 turns;
+// 2026-09-01, opencode/big-pickle — free, ~15s a run, plus Q6 stalls).
 // Estimates only — the report carries the measured cost.
-const EST_COST = 0.035;
-const EST_SECONDS = 13;
+const EST_COST = OPENCODE ? 0 : 0.035;
+const EST_SECONDS = OPENCODE ? 25 : 13;
 
 if (!SKILLS && !LIMIT && !ALL && !CASES_FILE) {
   console.error('eval-invocations: pick a selector — --skills a,b | --limit n | --cases <file> | --all (a full run is ~$23 and ~2.3h per trial).');
@@ -152,6 +188,148 @@ function poseWithRetry(query, cwd) {
   }
 }
 
+// --- OpenCode host (docket #73) ----------------------------------------------
+// The clean room: a scratch HOME whose only OpenCode config names the plugin
+// under test. XDG_DATA_HOME stays real so ~/.local/share/opencode/auth.json
+// still resolves. Everything else OpenCode would read from the real home —
+// ~/.config/opencode, ~/.opencode, global AGENTS.md / instruction files, loose
+// skill dirs under ~/.claude and ~/.agents — is absent by construction.
+const DATA_HOME = process.env.XDG_DATA_HOME || path.join(os.homedir(), '.local', 'share');
+
+function opencodeCleanRoom() {
+  const home = path.join(SCRATCH, 'home');
+  const configDir = path.join(home, '.config', 'opencode');
+  fs.mkdirSync(configDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(configDir, 'opencode.json'),
+    JSON.stringify({ $schema: 'https://opencode.ai/config.json', autoupdate: false, plugin: [PLUGIN] }, null, 2) + '\n',
+  );
+
+  return { ...process.env, HOME: home, XDG_CONFIG_HOME: path.join(home, '.config'), XDG_DATA_HOME: DATA_HOME };
+}
+
+// Resolve the config once, in the clean room: this installs an npm plugin
+// spec into the scratch cache (so the first case does not pay for it), proves
+// the arm — which plugin, which instructions — and yields the installed skill
+// set from skills.paths, the OpenCode equivalent of Claude's init skill list.
+function opencodeResolve(env) {
+  const res = spawnSync('opencode', ['debug', 'config'], {
+    encoding: 'utf8',
+    cwd: SCRATCH,
+    env: { ...env, PWD: SCRATCH }, // quirks Q7 — see opencodeRun
+    timeout: TIMEOUT_MS,
+    maxBuffer: 64 * 1024 * 1024,
+  });
+  const out = res.stdout || '';
+  const start = out.indexOf('{');
+  if (start < 0) throw new Error('opencode debug config produced no JSON: ' + ((res.stderr || '').trim().slice(0, 300) || `exit ${res.status}`));
+  const cfg = JSON.parse(out.slice(start));
+  const installed = new Set();
+  for (const dir of cfg.skills?.paths || []) {
+    if (!fs.existsSync(dir)) continue;
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (entry.isDirectory() && fs.existsSync(path.join(dir, entry.name, 'SKILL.md'))) installed.add(entry.name);
+    }
+  }
+
+  return { installed: [...installed].sort(), plugins: cfg.plugin || [], instructions: cfg.instructions || [] };
+}
+
+// One `opencode run`. Async because the Q6 stall needs a first-event watchdog:
+// a stalled process prints nothing for as long as it lives, and waiting the
+// full --timeout three times over would turn one stall into fifteen minutes.
+// The stream is read as it arrives; the first `sessionID` disarms the watchdog.
+function opencodeRun(query, cwd, env) {
+  return new Promise((resolve) => {
+    // OpenCode binds a session's directory to $PWD, not to the process cwd
+    // (quirks Q7). A spawn with `cwd` inherits the parent's PWD, which for this
+    // harness is the toolkit repo — every case would have run against it.
+    const child = spawn('opencode', ['run', '--format', 'json', '-m', MODEL, query], { cwd, env: { ...env, PWD: cwd }, stdio: ['ignore', 'pipe', 'pipe'] });
+    let stdout = '';
+    let stderr = '';
+    let sawEvent = false;
+    let stalled = false;
+    let timedOut = false;
+    const stall = setTimeout(() => {
+      if (sawEvent) return;
+      stalled = true;
+      child.kill('SIGKILL');
+    }, STALL_MS);
+    const hard = setTimeout(() => {
+      timedOut = true;
+      child.kill('SIGKILL');
+    }, TIMEOUT_MS);
+    child.stdout.on('data', (chunk) => {
+      stdout += chunk;
+      if (!sawEvent && stdout.includes('"sessionID"')) sawEvent = true;
+    });
+    child.stderr.on('data', (chunk) => {
+      stderr += chunk;
+    });
+    child.on('error', (error) => {
+      clearTimeout(stall);
+      clearTimeout(hard);
+      resolve({ stdout, stderr, status: null, stalled, timedOut, error });
+    });
+    child.on('close', (status) => {
+      clearTimeout(stall);
+      clearTimeout(hard);
+      resolve({ stdout, stderr, status, stalled, timedOut, error: null });
+    });
+  });
+}
+
+async function poseOnceOpenCode(query, cwd) {
+  const res = await opencodeRun(query, cwd, OPENCODE_ENV);
+  if (res.error) throw new Error('opencode could not be spawned: ' + (res.error.code || res.error.message));
+  const obs = parseOpenCodeStream(res.stdout, { exited: !res.timedOut && !res.stalled, installed: OPENCODE_ARM.installed });
+
+  // No event at all: the Q6 stall (killed by the watchdog) or a run that died
+  // before creating a session. Nothing is known about what the model would
+  // have done, so this is never a miss.
+  if (!obs.ok) {
+    const why = res.stderr.trim().slice(0, 300);
+    throw new Error(res.stalled ? 'opencode run stalled with no events (quirks Q6)' : 'opencode run produced no events: ' + (why || `exit ${res.status}`));
+  }
+
+  // Killed by --timeout before any skill call: a truncated run, not an
+  // observed miss. Killed after one: the routing decision was observed.
+  if (!obs.resultSubtype) throw new Error(`opencode run exceeded --timeout ${TIMEOUT_MS}ms before any skill call — truncated, not scored`);
+
+  if (res.status !== 0 && !res.timedOut && !obs.invoked.length && !obs.said) {
+    throw new Error(`opencode run exited ${res.status} with nothing observed: ` + res.stderr.trim().slice(0, 300));
+  }
+
+  return obs;
+}
+
+async function poseWithRetryOpenCode(query, cwd) {
+  let last;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      return await poseOnceOpenCode(query, cwd);
+    } catch (e) {
+      last = e;
+      if (!/stalled|limit|overloaded|429/i.test(e.message)) throw e;
+      process.stderr.write(`  ${e.message.slice(0, 80)} — attempt ${attempt}/3\n`);
+    }
+  }
+  throw last;
+}
+
+const OPENCODE_ENV = OPENCODE ? opencodeCleanRoom() : null;
+const OPENCODE_ARM = OPENCODE ? opencodeResolve(OPENCODE_ENV) : null;
+if (OPENCODE) {
+  if (!OPENCODE_ARM.installed.length) {
+    console.error(`eval-invocations: plugin ${PLUGIN} registered no skills.paths — nothing can fire`);
+    process.exit(2);
+  }
+  process.stderr.write(
+    `opencode clean room · plugin ${JSON.stringify(OPENCODE_ARM.plugins)} · instructions ${JSON.stringify(OPENCODE_ARM.instructions)}` +
+      ` · ${OPENCODE_ARM.installed.length} skills installed\n`,
+  );
+}
+
 function caseCwd(idx) {
   if (CWD) return CWD;
   const dir = path.join(SCRATCH, 'case-' + idx);
@@ -176,7 +354,8 @@ for (let run = 0; run < RUNS; run++) {
     const c = corpus[i];
     let row;
     try {
-      const obs = poseWithRetry(c.query, caseCwd(run * corpus.length + i));
+      const cwd = caseCwd(run * corpus.length + i);
+      const obs = OPENCODE ? await poseWithRetryOpenCode(c.query, cwd) : poseWithRetry(c.query, cwd);
       totalCost += obs.cost;
       row = { ...c, ...scoreCase(c, obs), turns: obs.turns, hooks: obs.hooks, resultSubtype: obs.resultSubtype, error: obs.error, said: obs.said };
     } catch (e) {
@@ -208,6 +387,8 @@ for (let run = 0; run < RUNS; run++) {
 
 // --- report ------------------------------------------------------------------
 const report = reportLines({
+  host: HOST,
+  plugin: OPENCODE ? PLUGIN : null,
   model: MODEL,
   maxTurns: MAX_TURNS,
   cwdMode: CWD || 'fresh temp dir per case',

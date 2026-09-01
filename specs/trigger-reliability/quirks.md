@@ -141,6 +141,14 @@ debug config` before trusting any probe — that check, not the env var, is the
 evidence. Observed on 1.18.25 while verifying docket #72; the #38
 verification predates the config merge order and did not hit it.
 
+**The clean room that does hold (docket #73):** point `HOME` itself at a
+scratch dir (with `XDG_CONFIG_HOME=$HOME/.config`) and leave `XDG_DATA_HOME`
+at the real data dir. Then only the scratch `opencode.json` loads — no
+`~/.opencode`, no global instruction files, no loose skill dirs under
+`~/.claude` or `~/.agents` — and every provider still resolves because
+`auth.json` lives under the data dir. `scripts/eval-invocations.mjs --host
+opencode` builds exactly this and prints the resolved arrays before the run.
+
 ## Q6 — `opencode run` intermittently stalls at `init` before any plugin hook fires
 
 A good share of non-interactive runs on 1.18.25 (`opencode run -m
@@ -155,3 +163,18 @@ either way. A live check that scripts `opencode run` must wrap it in a retry
 (`timeout` + repeated attempts, and be ready to try again later), and a
 silent run is not evidence that a hook failed to fire; read the stored
 session (`opencode export <id>`) rather than the transcript alone.
+
+## Q7 — `opencode run` binds the session directory to `$PWD`, not to the process cwd
+
+A run spawned from Node with `child_process.spawn(…, { cwd })` inherits the
+parent's `PWD`, and OpenCode 1.18.25 takes its directory from that variable:
+the session's `directory` came out as the harness's own repo, and the model
+read the repo's git log and globbed its files to answer "fix the label on the
+settings page" — while the same command typed in a shell (where `cd` rewrites
+`PWD`) bound to the temp dir, git-initialised or not, `--dir` or not. Found on
+the first `--host opencode` smoke run of docket #73 because the model's last
+line called an empty temp dir "this toolkit repo". Any spawner must set
+`PWD` to the intended cwd explicitly; `scripts/eval-invocations.mjs` does,
+for the run and for the `debug config` resolve alike. A fire rate measured
+before this fix would have been a number about *this repository*, not about
+an empty project.
