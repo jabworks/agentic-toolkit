@@ -47,7 +47,10 @@ else on the machine competes with it. Only `broken` affects the exit code.
 - **plan-review's Codex Stop hook** — resolved, never executed. It blocks a
   turn for up to four days waiting on a human by design.
 - **OpenCode** — `@jabworks/condux` in the plugin array, and when a local
-  copy exists, that it ships its bundled `agents/` and `skills/`.
+  copy exists, that it ships its bundled `agents/` and `skills/` and that the
+  routing reminder it injects names the OpenCode verb, `skill(name="workflow")`
+  — a payload still saying `/condux:workflow` is the docket #72 under-firing
+  shape, reported broken with an upgrade as the fix.
 - **The four specialist agents** — `coder`, `explorer`, `planner`,
   `researcher`. They live in a plugin-level directory reached by its own sync
   step, which is exactly the mirror that drifted once before.

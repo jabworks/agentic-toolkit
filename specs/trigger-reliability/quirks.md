@@ -122,3 +122,36 @@ empty directory produces; the next measurement is the same 21 cases under a
 `--cwd` fixture carrying a `.session-handoff/` handoff and a populated memory
 file, which is the period-3 instrument. Regenerate with
 `node scripts/eval-invocations.mjs --skills session-handoff --runs 3`.
+
+## Q5 — `OPENCODE_CONFIG_DIR` does not isolate a live check from the user's global config
+
+Setting `OPENCODE_CONFIG_DIR` to a scratch directory still loads
+`~/.config/opencode/opencode.json[c]` first (`config/config.ts` merges the
+global file, then `OPENCODE_CONFIG`, then project files, and only *adds* the
+`OPENCODE_CONFIG_DIR` files) — so a probe of a local `@jabworks/condux` checkout
+also loads the npm copy and every other global plugin, and `opencode debug
+config` shows two `plugin` entries and two `skills.paths`. `XDG_CONFIG_HOME`
+pointed at a scratch dir replaces `~/.config/opencode` — but it is not a
+clean room: `~/.opencode/opencode.json[c]` and the global instruction files
+still load (the DEBUG log lists them), and credentials still resolve from the
+data dir (`~/.local/share/opencode/auth.json`). Isolation held here only
+because `~/.opencode/opencode.json` declares no plugins, so confirm the
+resolved `plugin`, `instructions` and `skills.paths` arrays with `opencode
+debug config` before trusting any probe — that check, not the env var, is the
+evidence. Observed on 1.18.25 while verifying docket #72; the #38
+verification predates the config merge order and did not hit it.
+
+## Q6 — `opencode run` intermittently stalls at `init` before any plugin hook fires
+
+A good share of non-interactive runs on 1.18.25 (`opencode run -m
+opencode/big-pickle …`, isolated config; 1-in-3 in one series, 6-of-6 in
+another, then three clean runs in a row) log `message=init` and then nothing
+for 60 s until the `cleanup prune=7.days` housekeeping line, with no session
+created, no `chat.message` in the plugin log and no model call. The same
+command re-run succeeds. The stall sits between `init` and session creation,
+before any plugin hook runs, and it happened identically with a one-file probe
+plugin and with the real package — so it is not evidence about the plugin
+either way. A live check that scripts `opencode run` must wrap it in a retry
+(`timeout` + repeated attempts, and be ready to try again later), and a
+silent run is not evidence that a hook failed to fire; read the stored
+session (`opencode export <id>`) rather than the transcript alone.
