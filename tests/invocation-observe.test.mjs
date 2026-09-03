@@ -6,6 +6,7 @@ import path from 'node:path';
 import {
   normalizeSkill,
   parseStream,
+  parseOpenCodeStream,
   scoreCase,
   loadCorpus,
   selectCases,
@@ -46,6 +47,105 @@ const SUPPRESSED = [
 ].join('\n');
 
 const FIRED = [INIT, tool('Skill', { skill: 'session-handoff:session-handoff' }), result('success')].join('\n');
+
+// Docket #73. Trimmed from the 2026-09-01 probe (`opencode run --format json
+// "add an export button to the invoice table"`, OpenCode 1.18.25,
+// opencode/big-pickle, clean room with the local 0.21.0 plugin): every event
+// kind the OpenCode parser reads, paths sanitised. There is no init and no
+// result event on this host — completion is the process exiting.
+const SES = 'ses_fa3192ec7ffeERUzKkJgV7hEv9';
+const oc = (type, part, timestamp) => ev({ type, timestamp, sessionID: SES, part: { sessionID: SES, messageID: 'msg_05ce6d786001Jn2LNhXEvT0JTx', ...part } });
+const OC_BANNER = '> build · big-pickle';
+const OC_STEP_START = oc('step_start', { id: 'prt_1', type: 'step-start', snapshot: '4b825dc6', text: '' }, 1788265030022);
+const OC_SKILL = oc(
+  'tool_use',
+  { id: 'prt_2', type: 'tool', tool: 'skill', callID: 'call_8528da13', state: { status: 'completed', input: { name: 'workflow' }, output: '<skill_content name="workflow">…', title: 'Loaded skill: workflow' }, text: '' },
+  1788265030320,
+);
+const OC_STEP_FINISH = oc('step_finish', { id: 'prt_3', type: 'step-finish', reason: 'tool-calls', tokens: { total: 11578, input: 9665, output: 57, reasoning: 0, cache: { write: 0, read: 1856 } }, cost: 0, text: '' }, 1788265030340);
+const OC_TEXT = oc('text', { id: 'prt_4', type: 'text', text: 'Let me explore the codebase to understand the invoice table and check for specs.' }, 1788265033419);
+const OC_READ = oc('tool_use', { id: 'prt_5', type: 'tool', tool: 'read', callID: 'call_7ab073c7', state: { status: 'completed', input: { filePath: '/tmp/case-0' }, output: '<path>/tmp/case-0</path>' }, text: '' }, 1788265032753);
+const OC_FIRED = [OC_BANNER, OC_STEP_START, OC_SKILL, OC_STEP_FINISH, OC_STEP_START, OC_TEXT, OC_READ, OC_STEP_FINISH].join('\n');
+const OC_MISSED = [OC_BANNER, OC_STEP_START, OC_TEXT, OC_READ, OC_STEP_FINISH].join('\n');
+const OC_INSTALLED = ['blueprint', 'code-review', 'finalize', 'workflow'];
+
+test('parseOpenCodeStream reads a skill fire, turns, cost, the session and the last text', () => {
+  const obs = parseOpenCodeStream(OC_FIRED, { installed: OC_INSTALLED });
+  assert.equal(obs.ok, true);
+  assert.equal(obs.sessionID, SES);
+  assert.equal(obs.events, 7, 'the banner line is noise, every JSON event counts');
+  assert.deepEqual(obs.invoked, [{ raw: 'workflow', skill: 'workflow', turn: 1 }]);
+  assert.equal(obs.turns, 2, 'one turn per step_start');
+  assert.equal(obs.cost, 0, 'big-pickle is free; step_finish cost is summed');
+  assert.equal(obs.durationMs, 1788265033419 - 1788265030022);
+  assert.equal(obs.said, 'Let me explore the codebase to understand the invoice table and check for specs.');
+  assert.equal(obs.resultSubtype, 'success', 'a run that exited is complete');
+  assert.deepEqual(obs.installed, OC_INSTALLED, 'installed comes from the caller — the stream has no init');
+  assert.equal(obs.error, null);
+});
+
+test('parseOpenCodeStream: only the skill tool counts — a read of a SKILL.md is not a fire', () => {
+  const read = oc('tool_use', { type: 'tool', tool: 'read', state: { status: 'completed', input: { filePath: '/x/skills/workflow/SKILL.md' } } }, 1);
+  const obs = parseOpenCodeStream([OC_STEP_START, read, OC_STEP_FINISH].join('\n'));
+  assert.deepEqual(obs.invoked, []);
+  assert.equal(obs.ok, true);
+});
+
+test('parseOpenCodeStream: no events is not ok (the quirks-Q6 stall); noise and torn lines are skipped', () => {
+  assert.equal(parseOpenCodeStream('').ok, false);
+  assert.equal(parseOpenCodeStream(OC_BANNER + '\n').ok, false);
+  assert.equal(parseOpenCodeStream('{"type":"step_start"}\n').ok, false, 'an event without a session id proves nothing');
+  const obs = parseOpenCodeStream(['garbage', OC_STEP_START, OC_SKILL, '{trunc'].join('\n'));
+  assert.equal(obs.ok, true);
+  assert.deepEqual(obs.invoked.map((i) => i.skill), ['workflow']);
+});
+
+test('parseOpenCodeStream: a run killed after a fire is a fire, one killed before any fire has no result', () => {
+  const afterFire = parseOpenCodeStream(OC_FIRED, { exited: false });
+  assert.equal(afterFire.resultSubtype, 'timeout_after_fire');
+  assert.equal(scoreCase({ query: 'q', expected: 'workflow', accept: [], disallowed: [] }, afterFire).fired, true);
+
+  const beforeFire = parseOpenCodeStream(OC_MISSED, { exited: false });
+  assert.equal(beforeFire.ok, true);
+  assert.equal(beforeFire.resultSubtype, null, 'truncated before any skill call — the harness must not score it as a miss');
+});
+
+test('parseOpenCodeStream feeds scoreCase like the Claude parser: fires, misses, uninstalled', () => {
+  const c = { query: 'q', expected: 'workflow', accept: [], disallowed: [] };
+  assert.equal(scoreCase(c, parseOpenCodeStream(OC_FIRED, { installed: OC_INSTALLED })).fired, true);
+  assert.equal(scoreCase(c, parseOpenCodeStream(OC_MISSED, { installed: OC_INSTALLED })).fired, false);
+  // `record` is not in a condux-only clean room: uninstalled, never a miss.
+  const s = scoreCase({ ...c, expected: 'record' }, parseOpenCodeStream(OC_MISSED, { installed: OC_INSTALLED }));
+  assert.equal(s.uninstalled, true);
+  assert.equal(s.fired, false);
+  // With no installed list the parser makes no claim, same as an old Claude CLI.
+  assert.equal(scoreCase({ ...c, expected: 'record' }, parseOpenCodeStream(OC_MISSED)).uninstalled, false);
+});
+
+test('reportLines names the OpenCode host, the plugin arm and the skill-tool fire definition', () => {
+  const c = { query: 'add an export button to the invoice table', expected: 'workflow', accept: [], disallowed: [], source: 'workflow' };
+  const obs = parseOpenCodeStream(OC_FIRED, { installed: OC_INSTALLED });
+  const row = { ...c, ...scoreCase(c, obs), turns: obs.turns };
+  const lines = reportLines({
+    host: 'opencode',
+    plugin: '@jabworks/condux@0.20.0',
+    model: 'opencode/big-pickle',
+    maxTurns: 3,
+    cwdMode: 'fresh temp dir per case',
+    runsData: [[row]],
+    skipped: 0,
+    totalCost: 0,
+    elapsedMs: 1000,
+  });
+  const text = lines.join('\n');
+  assert.ok(text.includes('- host: `opencode run` · plugin: `@jabworks/condux@0.20.0`'), 'the report must say which arm was measured');
+  assert.ok(text.includes('max turns: n/a'), 'OpenCode has no max-turns');
+  assert.ok(text.includes('A fire is a `skill` tool call'), 'fire definition must match the host');
+  assert.ok(text.includes('## Fire rate: 100.0%'));
+
+  const claude = reportLines({ model: 'm', maxTurns: 3, cwdMode: 'x', runsData: [[row]], skipped: 0, totalCost: 0, elapsedMs: 1 }).join('\n');
+  assert.ok(claude.includes('- host: `claude -p`') && claude.includes('A fire is a `Skill` tool_use'), 'the Claude report is unchanged in meaning');
+});
 
 test('normalizeSkill strips the plugin qualifier and leaves bare names alone', () => {
   assert.equal(normalizeSkill('session-handoff:session-handoff'), 'session-handoff');

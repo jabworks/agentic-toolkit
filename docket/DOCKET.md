@@ -92,4 +92,22 @@ countermeasure for the suppression class, deliberately, and will not acquire one
 by asking. Explicit invocation is the supported path. Do not reopen the upstream
 option without Harvey — see D7's "what would reopen this".
 
+### 73. Measure condux routing on OpenCode — `eval-invocations.mjs` needs an `opencode run` adapter before C2 can be judged (2026-09-01)
+
+Docket #72 shipped C0 + C1 (condux 2.28.0 / `@jabworks/condux` 0.21.0) with no before/after number: `scripts/eval-invocations.mjs` spawns `claude -p` only, so the ~93% router band and the 22% session-handoff fire band say nothing about the OpenCode channel. #72's own wording gates C2 on "once C1 is measured", which makes this the prerequisite.
+
+**Shape.** A `--host opencode` adapter in the invocation harness: pose each corpus query as `opencode run --format json -m <model>` in a fresh temp cwd with an isolated config (`XDG_CONFIG_HOME`, quirks Q5 — confirm the resolved `plugin`/`instructions` arrays with `opencode debug config` before the run), read a fire as a `skill` tool call naming the expected skill from the stored session (`opencode export <id>`, not the transcript — Q6), and wrap every run in a retry because of the `init` stall (Q6). Keep it the third metric beside the router eval, never in the band (the #53/#55 rule); the pure half stays in `scripts/invocation-observe.mjs` and gets a recorded OpenCode transcript as a fixture so a zero is a measurement.
+
+**Measurement to run once it exists.** The `workflow` corpus (the routing question) plus `record` as a control, 3 trials, on the free `opencode/big-pickle` and one paid model, twice: with `@jabworks/condux` 0.20.0 (instructions channel, old verb) and 0.21.0 (synthetic reminder). That is the number #72 lacks, and the input C2 waits on.
+
+**Not in scope.** Changing what the harness scores; any Cursor or Codex adapter.
+
+### 74. C2 — edge-triggered "you skipped the router" reminder for condux on OpenCode (follow-up to #72, gated on its measurement) (2026-09-01)
+
+The enforcement half of the #72 research (`specs/trigger-reliability/opencode-routing-research.md` §4 C2), deliberately left out of the C0 + C1 ship: it catches the actual miss — an edit starting in a main session where `workflow` was never loaded — instead of hoping the session-start reminder stuck.
+
+**Shape (oh-my-openagent's category-skill-reminder, with condux semantics).** `tool.execute.after` on the `skill` tool marks the session *routed* when `workflow` loads; `tool.execute.before` on `edit` / `write` / `patch` / `bash` in an unrouted main session sets a one-shot pending flag; `experimental.chat.messages.transform` splices one synthetic `<system-reminder>` ("an edit is starting and `workflow` was never loaded — load it now, or say the user asked to skip") before the latest user text. Fires at most once per session, never on subagents (reuse #72's name-or-parent discriminator), ~80 tokens when it fires, zero otherwise. Soft — it reminds, it does not block: a hard variant (throw in `tool.execute.before`) would fight users who legitimately said "just do it", and condux's doctrine is soft gates. Stable fallback if `messages.transform` misbehaves: append the reminder to `output.output` of the *next* tool result (opencode-workspace's pattern).
+
+**Gate.** Do not build until the OpenCode measurement docket has a C1 number; if C1 alone lands the `workflow` fire rate near the Claude Code band, C2 is not worth a second experimental hook. Condux minor + npm changeset when it ships; condux-doctor learns the new contract.
+
 ## Loose threads

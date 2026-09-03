@@ -17,6 +17,12 @@
 // skills actually installed can observe that — this harness measures whether a
 // skill FIRES, the router eval measures whether the vocabulary ROUTES. They are
 // reported side by side and never merged (the #53/#55 comparability rule).
+//
+// Docket #73 added a second host: `opencode run --format json` transcripts go
+// through parseOpenCodeStream and come out in the same observation shape, so
+// scoring, aggregation and the report are shared. What "installed" means
+// differs per host — Claude's init event lists skills, OpenCode's stream does
+// not, so the OpenCode caller fills the list from the resolved config.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -88,6 +94,81 @@ export function parseStream(text) {
       if (e.is_error && e.subtype !== 'error_max_turns') obs.error = e.subtype ?? 'error';
     }
   }
+
+  return obs;
+}
+
+// --- OpenCode transcript -----------------------------------------------------
+// One parsed `opencode run --format json` stream (docket #73). OpenCode emits
+// no init and no result event: the stream is a flat sequence of `step_start`
+// / `tool_use` / `text` / `step_finish` records, each carrying the session id,
+// and completion is the process exiting. So `ok` means at least one event with
+// a session id was read (a quirks-Q6 stall produces none); `installed` is the
+// caller's to fill from the resolved config; and the caller says whether the
+// process finished. A run the harness killed *after* a fire is still a fire
+// (`timeout_after_fire`) — the routing decision was observed. One killed before
+// any fire has no result, which is a truncated run, not an observed miss.
+//
+// Recorded 2026-09-01 (OpenCode 1.18.25, opencode/big-pickle, "add an export
+// button to the invoice table"): a fire is a `tool_use` event whose part is
+// `{tool: "skill", state: {input: {name: "workflow"}}}`. Only the `skill` tool
+// counts, for the same reason only `Skill` counts on Claude — a `read` of a
+// SKILL.md found the file, it did not run the workflow.
+export function parseOpenCodeStream(text, { exited = true, installed = [] } = {}) {
+  const obs = {
+    ok: false,
+    installed: [...installed],
+    invoked: [],
+    hooks: [],
+    turns: 0,
+    cost: 0,
+    durationMs: 0,
+    model: null,
+    resultSubtype: null,
+    error: null,
+    said: '',
+    sessionID: null,
+    events: 0,
+  };
+  let first = null;
+  let last = null;
+
+  for (const line of String(text).split('\n')) {
+    if (!line.trim()) continue;
+
+    let e;
+    try {
+      e = JSON.parse(line);
+    } catch {
+      continue; // the "> build · model" banner, progress noise, a torn line
+    }
+    if (!e || typeof e !== 'object' || typeof e.type !== 'string') continue;
+
+    obs.events++;
+    if (typeof e.sessionID === 'string') {
+      obs.ok = true;
+      obs.sessionID ??= e.sessionID;
+    }
+    if (typeof e.timestamp === 'number') {
+      first = first === null ? e.timestamp : Math.min(first, e.timestamp);
+      last = last === null ? e.timestamp : Math.max(last, e.timestamp);
+    }
+
+    const part = e.part || {};
+    if (e.type === 'step_start') {
+      obs.turns++;
+    } else if (e.type === 'tool_use' && part.tool === 'skill') {
+      const name = part.state?.input?.name;
+      if (typeof name === 'string' && name) obs.invoked.push({ raw: name, skill: normalizeSkill(name), turn: obs.turns });
+    } else if (e.type === 'text' && typeof part.text === 'string' && part.text.trim()) {
+      obs.said = part.text.trim();
+    } else if (e.type === 'step_finish') {
+      obs.cost += Number(part.cost) || 0;
+    }
+  }
+
+  if (first !== null && last !== null) obs.durationMs = last - first;
+  if (obs.ok) obs.resultSubtype = exited ? 'success' : obs.invoked.length ? 'timeout_after_fire' : null;
 
   return obs;
 }
@@ -259,7 +340,7 @@ export function bySkillRows(runsData) {
 const cell = (s) => String(s ?? '').replace(/\|/g, '\\|').replace(/\n/g, ' ');
 const pct = (n, d) => (d ? (100 * n / d).toFixed(1) + '%' : '—');
 
-export function reportLines({ model, maxTurns, cwdMode, runsData, skipped, totalCost, elapsedMs }) {
+export function reportLines({ model, maxTurns, cwdMode, runsData, skipped, totalCost, elapsedMs, host = 'claude', plugin = null }) {
   const rows = fireRows(runsData);
   const stats = fireStats(runsData);
   const scoredRows = rows.filter((r) => r.seen > 0);
@@ -272,11 +353,13 @@ export function reportLines({ model, maxTurns, cwdMode, runsData, skipped, total
 
   lines.push('# Invocation-observing trigger eval (fire rate)');
   lines.push('');
-  lines.push(`- model: \`${model}\` · max turns: ${maxTurns} · cwd: ${cwdMode} · trials: ${runs}`);
+  const opencode = host === 'opencode';
+  lines.push(`- host: ${opencode ? '`opencode run`' : '`claude -p`'}` + (plugin ? ` · plugin: \`${plugin}\`` : ''));
+  lines.push(`- model: \`${model}\` · ${opencode ? 'max turns: n/a (OpenCode runs to completion)' : `max turns: ${maxTurns}`} · cwd: ${cwdMode} · trials: ${runs}`);
   lines.push(`- cases: ${scoredRows.length} scored · ${uninstalled.length} uninstalled · ${errored.length} errored · ${skipped} skipped (in-context / preamble cases)`);
   lines.push(`- cost: $${totalCost.toFixed(2)} · wall: ${Math.round(elapsedMs / 1000)}s`);
   lines.push('');
-  lines.push('A fire is a `Skill` tool_use naming the expected skill (or an `accept` alternate)');
+  lines.push(`A fire is a ${opencode ? '`skill` tool call' : '`Skill` tool_use'} naming the expected skill (or an \`accept\` alternate)`);
   lines.push('in an ordinary headless turn with the skills actually installed. This is a');
   lines.push('separate metric from the router eval (`scripts/eval-triggers.mjs`) and never');
   lines.push("enters A3's routing band — see specs/trigger-reliability/quirks.md Q4.");

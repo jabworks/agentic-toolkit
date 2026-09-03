@@ -14,7 +14,7 @@
 | File | Answers |
 |---|---|
 | [decisions.md](decisions.md) | D1–D6: dual mechanism, nudge rules, our-side boundary, condux read-only, corpus reach, verdict-table-first |
-| [quirks.md](quirks.md) | Q1–Q4: suppression class, Codex root-manifest trap, content-carrying nudges, eval-simulation limit — and the invocation-observing harness that closes it (docket #68) |
+| [quirks.md](quirks.md) | Q1–Q7: suppression class, Codex root-manifest trap, content-carrying nudges, eval-simulation limit — and the invocation-observing harness that closes it (docket #68); OpenCode live-check traps — partial `XDG_CONFIG_HOME` isolation and the `HOME` clean room, the `opencode run` init stall, the `$PWD` directory binding (dockets #72, #73) |
 | [implementation.md](implementation.md) | key files, period-2 method, verification chain, ship shape |
 | [period-2-report.md](period-2-report.md) | the evidence: corpus, 9%-vs-64% asymmetry, lexical ceiling, verdict tables |
 | [memory-stack-decision.md](memory-stack-decision.md) | docket #67: replace the third-party memory stack on Claude Code? Options, parity cost, pre-registered period-3 criterion, ratification |
