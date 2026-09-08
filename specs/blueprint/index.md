@@ -5,7 +5,7 @@
 > language (two modes, one skeleton), inline-SVG system diagrams for BE.
 
 **Last updated:** 2026-09-08
-**Commit:** 1d1c39f
+**Commit:** eb8cd83
 **Status:** draft
 
 ## Contents
@@ -15,7 +15,7 @@
 - [quirks.md](quirks.md) — edge cases: headless hosts, non-git repos, citation promotion
 
 ## Changelog
-- 2026-09-08: Layout and routing rules in diagram-kit.md and the `diagram-check.mjs`
+- 2026-09-08 (eb8cd83): Layout and routing rules in diagram-kit.md and the `diagram-check.mjs`
   collision gate before Deliver — see Q8 and decision #8
 - 2026-08-26 (1d1c39f): Grayscale dialect retired — wireframe/render modes on the
   surface-kit token core; see the scoped fidelity decision in decisions.md
