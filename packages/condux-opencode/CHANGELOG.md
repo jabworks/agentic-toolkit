@@ -1,5 +1,11 @@
 # @jabworks/condux
 
+## 0.22.0
+
+### Minor Changes
+
+- [#150](https://github.com/jabworks/agentic-toolkit/pull/150) [`3118965`](https://github.com/jabworks/agentic-toolkit/commit/31189652fe834ed7708a243e6d4cc55431fbafbb) Thanks [@vi-hieu](https://github.com/vi-hieu)! - blueprint diagrams gain layout and routing rules (grid, ports, corridors, haloed labels) and a dependency-free collision checker, `references/diagram-check.mjs`, that the skill runs before delivering — an edge through a box, a label over text, two labels stacked, an unlabeled edge or text off-canvas is a finding, and only a clean run ships. Motivated by an architecture diagram from a Codex session that shipped with the first three.
+
 ## 0.21.0
 
 ### Minor Changes
