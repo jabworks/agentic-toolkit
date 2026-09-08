@@ -110,4 +110,16 @@ The enforcement half of the #72 research (`specs/trigger-reliability/opencode-ro
 
 **Gate.** Do not build until the OpenCode measurement docket has a C1 number; if C1 alone lands the `workflow` fire rate near the Claude Code band, C2 is not worth a second experimental hook. Condux minor + npm changeset when it ships; condux-doctor learns the new contract.
 
+### 75. diagram-check: decorative lines read as unlabeled edges (2026-09-08)
+
+Every stroked `<line>` is an edge to `skills/blueprint/references/diagram-check.mjs`, so a separator (a divider inside an entity, a title rule) reports `unlabeled-edge`. Raised as a Minor in the 2.29.0 code review; not yet bitten. Candidate rule: a line with no marker that lies fully inside one node, or spans a boundary's full width, is decoration. Decide when a real diagram trips it — a rule invented before the case is a guess.
+
+### 76. diagram-check: run against the originating Reporting contract diagram and calibrate (2026-09-08)
+
+The 2.29.0 gate was built from a screenshot of a Codex-produced "Reporting contract boundary" architecture diagram (2026-09-08), not the HTML. The fixture reproduces the defect classes at small scale; the original was never run through the checker because it lives in another repo. When Harvey shares the file: run it, confirm every visible defect is a finding and nothing false fires, and check the 0.6 em/char width estimate against the real label boxes (mono at 11px is closer to 0.6, sans titles nearer 0.55). Adjust the estimate or the tolerances from evidence, not taste.
+
+### 78. blueprint diagrams: redesign the visual language for easier reading — colour coding, node shapes (2026-09-08)
+
+Harvey, 2026-09-08, after the routing gate landed: the diagrams are now correct but still read as a wall of same-shaped grey boxes. Explore a redesign of the diagram look for faster comprehension: colour coding by role (categorical tokens per boundary or per layer — frontend runtime vs API vs persistence vs external), node shapes by kind (service vs store vs external system vs actor, beyond the current rounded-rect / dashed-rect pair), edge styling by protocol (HTTP vs queue vs file), a legend, and perhaps a title strip per boundary. Constraints that stay: house tokens only (decision #3 — render mode is the ceiling, no brand exploration), dependency-free inline SVG (decision #4), the one-accent rule may need to become a categorical palette rule, and `diagram-check.mjs` must still pass — any new shape (ellipse, cylinder, hexagon) needs a checker rule for its footprint before it ships. Start with a discovery: three side-by-side options on the reporting diagram in `specs/blueprint/verification/2026-09-08-routing-gate/routed.html` and pick.
+
 ## Loose threads

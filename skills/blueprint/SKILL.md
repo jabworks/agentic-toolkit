@@ -40,8 +40,11 @@ product family.
 │  Wireframes follow references/wireframe-kit.md — wireframe mode  │
 │  by default; render mode when structure is signed off or the     │
 │  user asks for fidelity. Diagrams follow references/             │
-│  diagram-kit.md. All styling from references/token-core.css.     │
-│  No external assets, no CDN, no font files.                      │
+│  diagram-kit.md. Diagrams are checked with references/           │
+│  diagram-check.mjs before Step 3 and delivered only clean; a     │
+│  skipped check is said, never silent. All styling from           │
+│  references/token-core.css. No external assets, no CDN, no       │
+│  font files.                                                     │
 │                                                                  │
 │  Step 3: DELIVER                                                 │
 │  Standalone: open in the browser (xdg-open / open). If neither   │
@@ -146,4 +149,5 @@ mockup into the spec directory first and cite the committed copy.
   both kits; a box the reader can't disagree with isn't evidence
 ✗ Opening a browser tab while running inside /discovery
 ✗ Editing the mockups after design sign-off without saying so
+✗ Delivering a diagram the checker flags, or skipping the check without saying so
 ```

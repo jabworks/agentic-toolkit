@@ -1,0 +1,26 @@
+label-over-box  line 214  "seven canonical filter definitions" straddles "Frontend catalogs"
+label-over-box  line 219  "returns one effective composition" straddles "Composition resolver"
+label-over-label  line 232  "Result validator" overlaps "HTTP · FilterOptionsRequest"
+label-over-label  line 235  "indexes results by query id" overlaps "HTTP · permitted option sets"
+label-over-label  line 239  "returns stable IDs + data labels" overlaps "HTTP · ReportingBatchResponse"
+label-over-box  line 248  "joins placement + definition + data" straddles "Widget host"
+label-over-box  line 249  "renders independent runtime states" straddles "Widget host"
+label-over-box  line 257  "widget IDs" straddles "Resolved composition"
+label-over-box  line 257  "widget IDs" straddles "Frontend catalogs"
+label-over-box  line 259  "layer docs" straddles "Composition resolver"
+label-over-box  line 259  "layer docs" straddles "Layout store"
+edge-through-box  line 262  path (615,481)→(583,877) crosses "Result validator"
+unlabeled-edge  line 264  path (600,750)→(560,877) has no label within 24px
+edge-through-box  line 266  line (420,645)→(928,645) crosses "Result validator"
+unlabeled-edge  line 266  line (420,645)→(928,645) has no label within 24px
+label-over-box  line 267  "HTTP · FilterOptionsRequest" straddles "Result validator"
+edge-through-box  line 268  line (1260,703)→(420,703) crosses "Result validator"
+edge-through-box  line 268  line (1260,703)→(420,703) crosses "Filter options API"
+label-over-box  line 269  "HTTP · ReportingBatchResponse" straddles "Filter options API"
+edge-through-box  line 270  line (420,745)→(1260,745) crosses "Result validator"
+edge-through-box  line 270  line (420,745)→(1260,745) crosses "Filter options API"
+edge-through-box  line 272  line (928,724)→(420,724) crosses "Result validator"
+unlabeled-edge  line 272  line (928,724)→(420,724) has no label within 24px
+label-over-box  line 273  "HTTP · permitted option sets" straddles "Result validator"
+unlabeled-edge  line 276  path (1065,750)→(1165,877) has no label within 24px
+25 finding(s)

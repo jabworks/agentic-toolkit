@@ -9,6 +9,7 @@
 | 5 | Two output families, chosen by surface | UI → wireframes, data model / topology → diagrams, both → both | accepted |
 | 6 | `mockup-picker.md` and `choice-server.js` stay in discovery | option picking is discovery's UX, and moving them breaks single-skill npx installs | accepted |
 | 7 | Three entry points + trigger-eval cases ship with the skill | the motivating defect was a mockup skill that almost never fired | accepted |
+| 8 | Collision checker + routing rules, not a layout generator | keeps #4 (hand-authored SVG) and gives the agent the render feedback it lacks; rules alone are a hope, a generator is LARGE and reverses #4 | accepted |
 
 ## 1. Condux bundle member, not a standalone plugin
 
@@ -72,3 +73,13 @@
 
 **Decided:** loaded by discovery at propose/sign-off; citable from draft-plan task cards; standalone trigger via condux-style `when_to_use` ("mock this up", "visualize the data model", "sketch the architecture") wired into workflow's table and the `routing.md` hook payload. Trigger-eval cases (routing-oracle corpus) ship with the skill.
 **Because:** the motivating defect was a mockup skill that almost never fired.
+
+## 8. Collision checker + routing rules, not a layout generator — 2026-09-08
+
+**Decided:** diagrams stay hand-authored; the kit gains a "Layout and Routing" section, and a dependency-free checker (`references/diagram-check.mjs`) gates Deliver.
+**Because:** the defect (Q8) is an agent drawing without seeing. Rules alone are a hope — the agent still cannot see its output — so the mechanical half is what closes it, the same shape as Q7's token allowlist. A checker keeps decision #4 intact.
+
+| Alternative | Why not |
+|---|---|
+| Routing rules only | No feedback loop; the agent that drew the defect would read the rules and draw it again |
+| JSON node/edge spec → SVG with automatic orthogonal routing | LARGE; reverses #4; a router that fails on one topology fails silently on all of them, and nobody hand-fixes generated SVG |
