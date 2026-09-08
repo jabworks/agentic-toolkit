@@ -22,6 +22,8 @@
     "skills/condux-doctor/conflicts.mjs": "reads the known-conflicts registry for the doctor and condux's installer. Reads other people's config and skill directories, so it is deliberately the narrowest thing that can: filesystem reads and name matching only, no network and no child processes, asserted by tests/condux-conflicts.test.mjs.",
     "skills/docket-doctor/doctor.mjs": "docket's doctor — same contract.",
 
+    "skills/blueprint/references/diagram-check.mjs": "blueprint's collision gate for hand-authored inline-SVG diagrams — reads one file, prints findings, exits 1 on any. No network, no child processes, no writes, asserted by tests/diagram-check.test.mjs. Declaring it also clears the INVOKES-SCRIPT finding on the `node … diagram-check.mjs` line in SKILL.md and diagram-kit.md.",
+
     "skills/discovery/references/choice-server.js": "local decision server for discovery's picker; binds loopback only.",
     "skills/plan-review/references/annotate-server.js": "local annotation server behind plan-review's browser UI; binds loopback only, and its HTML template is the original no-egress guarantee this checker generalizes.",
     "skills/plan-review/references/install-codex-hook.sh": "registers plan-review's Codex Stop hook; behaviour covered by tests/script-safety.test.mjs.",

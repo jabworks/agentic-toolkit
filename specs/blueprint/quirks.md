@@ -9,6 +9,7 @@
 | Q5 | routing.md payload bloat | adding blueprint to the SessionStart hook | low | yes — one list mention, no prose paragraph |
 | Q6 | Other skills claim mockup requests | hosts carrying `design`, Figma MCP, dataviz, taste skills | medium | yes — not-for boundaries named in both directions |
 | Q7 | Wireframes quietly become styled UI | any wireframe edit | medium | yes — neutral token allowlist asserted by test |
+| Q8 | Hand-routed edges cross boxes, labels land on text | any diagram with cross-lane edges (from ~5 nodes up) | high | yes — kit routing rules (grid, ports, corridors, halos) + `references/diagram-check.mjs` gate before Deliver |
 
 ## Q1 — Headless / SSH hosts
 
@@ -58,3 +59,10 @@
 **Trigger:** any edit to wireframe output or its CSS.
 **Cause:** the natural failure mode of HTML mockups — styling accretes.
 **Mitigation:** yes — since the 2026-08-26 two-mode rework the discipline is mechanical, not just stated: wireframe mode's CSS may only reference the neutral token allowlist, asserted by `tests/blueprint-kit.test.mjs` (chromatic vocabulary belongs to render mode), and the kit's token core is byte-pinned to `scripts/tokens/core.css` by the same test.
+
+## Q8 — Edge routing collisions
+
+**Symptom:** edge labels drawn over node text, edges running straight through boxes they do not connect, two labels stacked in one corridor. First seen 2026-09-08 in a "Reporting contract boundary" architecture diagram produced from a Codex session.
+**Trigger:** any diagram with cross-lane edges — from roughly five nodes upward, the straight line between two boxes has a third box in the way.
+**Cause:** the kit gave styling conventions and no layout rule, so the agent placed boxes on a grid and drew centre-to-centre straight lines; and the agent never sees its render (Codex cannot view its own output), so nothing fed the defect back.
+**Mitigation:** yes — two halves. The kit's "Layout and Routing" section makes corridors, ports, orthogonal paths and haloed labels the rule; `references/diagram-check.mjs` is the feedback loop — it parses the inline SVG, reports `edge-through-box`, `label-over-label`, `label-over-box`, `edge-through-label`, `unlabeled-edge` and `text-outside-canvas`, and blueprint delivers only a clean run (a skipped check is said, never silent). Known approximation: text width is estimated at 0.6 em per character and curves are reduced to their endpoints, so tolerances sit at 1–2 px and lean toward catching; a free label sitting fully inside a box's empty area reads as owned by the box and passes. `tests/diagram-check.test.mjs` pins the motivating diagram's defects as a fixture.

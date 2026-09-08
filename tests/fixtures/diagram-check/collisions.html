@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>collisions fixture — reproduces the motivating diagram-check defects</title>
+<style>
+  body { margin: 0; }
+  text { font-family: sans-serif; font-size: 13px; fill: #1b1f23; }
+</style>
+</head>
+<body>
+<svg viewBox="0 0 620 300" style="max-width:100%">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#8a8f98" />
+    </marker>
+  </defs>
+
+  <!-- boundaries: dashed rects, each fully containing its member nodes -->
+  <rect x="10" y="10" width="220" height="280" fill="none" stroke="#8a8f98" stroke-dasharray="4 3" />
+  <text x="16" y="24" font-size="11" fill="#6b7280">FRONTEND REPORTING RUNTIME</text>
+
+  <rect x="350" y="10" width="220" height="280" fill="none" stroke="#8a8f98" stroke-dasharray="4 3" />
+  <text x="356" y="24" font-size="11" fill="#6b7280">BACKEND REPORTING API</text>
+
+  <!-- left column nodes -->
+  <g transform="translate(120,40)">
+    <rect width="90" height="30" fill="#fff" stroke="#1b1f23" />
+    <text x="45" y="19" text-anchor="middle">Catalogs</text>
+  </g>
+
+  <g transform="translate(30,110)">
+    <rect width="80" height="30" fill="#fff" stroke="#1b1f23" />
+    <text x="40" y="19" text-anchor="middle">Planner</text>
+  </g>
+
+  <g transform="translate(120,110)">
+    <rect width="90" height="30" fill="#fff" stroke="#1b1f23" />
+    <text x="45" y="19" text-anchor="middle">Validator</text>
+  </g>
+
+  <g transform="translate(120,220)">
+    <rect width="90" height="30" fill="#fff" stroke="#1b1f23" />
+    <text x="45" y="19" text-anchor="middle">Widget host</text>
+  </g>
+
+  <!-- right column nodes -->
+  <g transform="translate(400,110)">
+    <rect width="90" height="30" fill="#fff" stroke="#1b1f23" />
+    <text x="45" y="19" text-anchor="middle">Filter API</text>
+  </g>
+
+  <g transform="translate(400,220)">
+    <rect width="90" height="30" fill="#fff" stroke="#1b1f23" />
+    <text x="45" y="19" text-anchor="middle">Query API</text>
+  </g>
+
+  <!-- (a) vertical edge from Catalogs to Widget host, straight through Validator -->
+  <line x1="165" y1="70" x2="165" y2="220" stroke="#8a8f98" marker-end="url(#arrow)" />
+
+  <!-- (b) horizontal edge from Planner to Filter API, straight through Validator -->
+  <line x1="110" y1="125" x2="400" y2="125" stroke="#8a8f98" marker-end="url(#arrow)" />
+
+  <!-- (c) a free label re-stating "HTTP · FilterOptionsRequest" centred on Validator's own title text -->
+  <text x="165" y="129" text-anchor="middle">HTTP &#183; FilterOptionsRequest</text>
+
+  <!-- (d) a free label whose box straddles Query API's left border -->
+  <text x="385" y="224">svcFlag</text>
+
+  <!-- (e) two edges in one corridor, each with its own label, whose label boxes overlap -->
+  <line x1="210" y1="228" x2="400" y2="228" stroke="#8a8f98" marker-end="url(#arrow)" />
+  <line x1="210" y1="236" x2="400" y2="236" stroke="#8a8f98" marker-end="url(#arrow)" />
+  <text x="300" y="235" text-anchor="middle">queue: export.ready</text>
+  <text x="300" y="236" text-anchor="middle">queue: export.failed</text>
+
+  <!-- (f) an edge with no label within 24px -->
+  <line x1="445" y1="250" x2="445" y2="270" stroke="#8a8f98" />
+
+  <!-- (g) a label placed below the viewBox height -->
+  <text x="300" y="340" text-anchor="middle">orphan label</text>
+</svg>
+</body>
+</html>

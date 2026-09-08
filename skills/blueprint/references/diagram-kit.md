@@ -28,11 +28,71 @@ of the `<style>` block, verbatim.
     <path d="M0,0 L10,5 L0,10 z" fill="var(--subtle)"/>
   </marker>
 </defs>
-<!-- usage: <line ... stroke="var(--subtle)" marker-end="url(#arrow)"/> -->
+<!-- usage: <line ... stroke="var(--subtle)" marker-end="url(#arrow)"/> or
+     <path ... stroke="var(--subtle)" marker-end="url(#arrow)"/> — the marker
+     works the same on both elements. -->
 ```
 
 - Every relationship line gets a label. An unlabeled arrow is a guess the
   reader has to make.
+
+## Layout and Routing
+
+1. *Grid first.* Assign every node a column and a row before drawing anything.
+   Column pitch is box width plus a gutter of at least 72; row pitch is box
+   height plus a gutter of at least 72. Gutters are edge corridors — wide
+   enough for a label with its halo and two staggered edges. Boundaries wrap
+   whole column/row spans and are drawn behind their members.
+2. *Edges are orthogonal paths.* `<path d="M … H … V … H …">` with the shared
+   arrow marker (it works on `<path>` exactly as on `<line>`). Never a
+   diagonal. An edge leaves the side of its source that faces the target and
+   enters the facing side of the target.
+3. *Ports.* Each side of a box has three ports, at 25%, 50% and 75% of its
+   length. Two edges on the same side take different ports — edges never
+   share a port, so parallel edges never stack.
+4. *Corridors only.* A segment may run only through gutters and across
+   boundaries, never through a box's footprint. If a third box sits in the
+   straight corridor between source and target, either move it to another row
+   or column (preferred — rearranging is free before the drawing exists) or
+   dog-leg through the adjacent gutter.
+5. *Labels.* One label per segment, on the edge's longest free segment,
+   `--mono` 11px: on a horizontal segment it sits 4px above the line, on a
+   vertical segment it is centred on the line over its halo.
+   Every label gets a halo so a crossing edge stays legible: a stroke-less
+   `<rect>` in the fill the label sits on (`var(--background)` on open
+   canvas, `var(--muted)` inside a filled boundary) drawn behind the text —
+   the checker ignores stroke-less rects, so the halo is never mistaken for a
+   node. Two labels never share a corridor position: stagger by 14px or move
+   one to another segment.
+6. *Fan-in is a smell.* More than four edges into one box, or more than three
+   edges in one gutter, means the diagram is answering two questions — split
+   it (same rule as "Choosing the Shape").
+7. *Check before delivering.* Run
+   `node /PATH/TO/blueprint/references/diagram-check.mjs <file>` (the
+   `/PATH/TO/` idiom is the one `plan-review` uses for its scripts — the
+   skill's install location). A finding is a defect in the drawing, never a
+   tolerance to argue with: fix, re-run, deliver only `clean`. If `node` is
+   unavailable, say the check was skipped — never silently.
+
+   | Code | Meaning |
+   |---|---|
+   | `edge-through-box` | an edge segment crosses a node rect it doesn't attach to |
+   | `label-over-label` | two text boxes intersect |
+   | `label-over-box` | a text box straddles a node rect border |
+   | `edge-through-label` | an edge crosses a text box that isn't its own label |
+   | `unlabeled-edge` | no text within 24px of the edge |
+   | `text-outside-canvas` | text escapes the viewBox |
+
+   Two boxes on different rows and columns, joined by a three-segment path
+   with one haloed label and distinct ports:
+
+   ```html
+   <!-- orders → invoices: leave the right side at the 50% port, run the gutter,
+        enter the left side at its 25% port. Label centred on the vertical segment, haloed. -->
+   <path d="M 240 92 H 300 V 180 H 340" fill="none" stroke="var(--subtle)" marker-end="url(#arrow)"/>
+   <rect x="262" y="120" width="76" height="14" fill="var(--background)"/>
+   <text x="300" y="131" text-anchor="middle" font-size="11" fill="var(--muted-foreground)">1..* invoices</text>
+   ```
 
 ## The Specificity Rule
 

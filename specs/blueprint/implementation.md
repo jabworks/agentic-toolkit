@@ -8,6 +8,8 @@ skills/blueprint/
   references/
     wireframe-kit.md          # two-mode discipline + copyable mode CSS blocks
     diagram-kit.md            # inline-SVG patterns: ER, flow, architecture, state
+    diagram-check.mjs         # collision gate for inline-SVG diagrams — run before
+                              # Deliver (tests/diagram-check.test.mjs + fixtures)
     token-core.css            # byte-pinned copy of scripts/tokens/core.css
                               # (guarded by tests/blueprint-kit.test.mjs)
 ```
