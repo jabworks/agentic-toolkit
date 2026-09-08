@@ -13,6 +13,7 @@
 - [decisions.md](decisions.md) — approach choice, name, fidelity bar, rejected alternatives
 - [implementation.md](implementation.md) — skill layout, kits, integration edits, dist ripple
 - [quirks.md](quirks.md) — edge cases: headless hosts, non-git repos, citation promotion
+- [verification/2026-09-08-routing-gate/report.md](verification/2026-09-08-routing-gate/report.md) — live verification of the routing gate: the motivating diagram as drawn vs re-routed
 
 ## Changelog
 - 2026-09-08 (eb8cd83): Layout and routing rules in diagram-kit.md and the `diagram-check.mjs`
