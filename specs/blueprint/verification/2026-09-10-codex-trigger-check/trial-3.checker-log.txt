@@ -1,0 +1,12 @@
+[agent_message] I’m using the `condux:blueprint` skill because you explicitly requested a standalone architecture diagram. I’ll follow its system-diagram path and generate the artifact directly from the service topology in `AGENTS.md`.
+#1 [cmd] exit 0: "sed -n '1,240p' <condux 2.30.0>/skills/blueprint/SKILL.md"
+#2 [cmd] exit 0: "wc -l <condux 2.30.0>/skills/blueprint/references/diagram-kit.md <condux 2.30.0>/skills/blueprint/references/token-core.css <condux 2.30.0>/skills/blueprint/references/diagram-check.mjs && sed -n '1,260p' <condux 2.30.0
+[agent_message] The artifact will be a single architecture diagram (the diagram family has no wireframe/render split). I’m including the nine named services, the four owned Postgres schemas, catalog’s Redis cache, both external providers, and distinct labeled edges for synchronous requests, token verification, events, subscriptions, and storage ownership.
+#3 [cmd] exit 0: "git rev-parse --show-toplevel && if git check-ignore -q .condux/; then echo ignored; else echo not-ignored; fi && rg --files -g 'AGENTS.md' -g '.gitignore' -g '.condux/**' | sort"
+[agent_message] One repository detail surfaced before writing: `.condux/` is not currently git-ignored. I’ll create the requested ephemeral blueprint there without changing repository ignore rules; if you want, I can add `.condux/` to `.gitignore` afterward.
+#4 [cmd] exit 0: "sed -n '1,220p' AGENTS.md"
+#5 [CHECK] exit 0: 'node <condux 2.30.0>/skills/blueprint/references/diagram-check.mjs .condux/designs/2026-09-10-ledgerly-architecture/mockups/ledgerly-system-architecture.html'
+    clean
+[agent_message] The diagram checker reports `clean`: no edge-through-node, label collision, overflow, missing-label, or canvas-boundary findings. I’m doing the standalone delivery step now by opening the generated HTML locally, then I’ll report its exact path.
+#6 [cmd] exit 0: 'diagram_file="$PWD/.condux/designs/2026-09-10-ledgerly-architecture/mockups/ledgerly-system-architecture.html"; if command -v xdg-open >/dev/null 2>&1; then xdg-open "$diagram_file" >/tmp/ledgerly-blueprint-open.log 2>&
+[agent_message] Created and validated the standalone architecture diagram. The diagram family has one mode—no wireframe/render split.  [Open `ledgerly-system-architecture.html`](<project>/.condux/designs/2026-09-10-ledgerly-architecture/mockups/ledgerly-system-architecture.html)  Note: `.condux/` is not currently git-ignored.

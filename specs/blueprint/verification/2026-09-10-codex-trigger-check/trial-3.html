@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ledgerly system architecture</title>
+  <style>
+/* Shared design core — do not hand-edit; edit scripts/tokens/core.css. */
+:root {
+  --background: #111110;
+  --card: #191918;
+  --card-foreground: #eeeeec;
+  --popover: #222221;
+  --foreground: #eeeeec;
+  --muted: #222221;
+  --muted-foreground: #b5b3ad;
+  --border: #3b3a37;
+  --input: #3b3a37;
+  --primary: #978365;
+  --primary-foreground: #ffffff;
+  --primary-hover: #a39073;
+  --primary-muted: #24231f;
+  --primary-text: #cbb99f;
+  --ring: #978365;
+  --accent: #2a2a28;
+  --success: #71d083;
+  --success-muted: #1b2a1e;
+  --success-border: #2d5736;
+  --warning: #ffca16;
+  --warning-muted: #302008;
+  --warning-border: #5c3d05;
+  --destructive: #ff977d;
+  --destructive-muted: #391714;
+  --destructive-border: #6e2920;
+  --info: #70b8ff;
+  --info-muted: #0d2847;
+  --info-border: #104d87;
+  /* categorical — series identity; neither the accent nor the semantics */
+  --cat-1: #cf686e;
+  --cat-2: #897ed6;
+  --cat-3: #41a265;
+  --cat-4: #3694d4;
+  --cat-5: #94911b;
+  --cat-6: #ba6cae;
+  --cat-7: #c37827;
+  --cat-8: #00a0a4;
+  --cat-other: #686560;
+  --outline: rgba(237, 237, 236, 0.08);
+  --subtle: #686560;
+  --shadow-sm: 0 1px 2px rgba(6, 6, 5, 0.5);
+  --shadow-md: 0 4px 14px rgba(6, 6, 5, 0.55);
+  --shadow-lg: 0 20px 60px rgba(6, 6, 5, 0.62);
+  --mono: "Geist Mono", "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Monaco, "Cascadia Code", monospace;
+  --sans: "Geist", "Inter Tight", ui-sans-serif, system-ui, -apple-system, "Segoe UI Variable Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --text-2xs: 0.6875rem;
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.5rem;
+  --text-4xl: 3.5rem;
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading-normal: 1.55;
+  --leading-relaxed: 1.7;
+  --tracking-tight: -0.022em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.06em;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-8: 3rem;
+  --space-12: 4rem;
+  --radius-sm: 0.1875rem;
+  --radius: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-full: 9999px;
+  --dur-fast: 120ms;
+  --dur: 200ms;
+  --dur-slow: 320ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --background: #f6f5ef;
+    --card: #fcfbf6;
+    --card-foreground: #36302a;
+    --popover: #fcfbf6;
+    --foreground: #36302a;
+    --muted: #f0efe3;
+    --muted-foreground: #726c5e;
+    --border: #ddd6c6;
+    --input: #ddd6c6;
+    --primary: #967e60;
+    --primary-foreground: #ffffff;
+    --primary-hover: #897254;
+    --primary-muted: #efece0;
+    --primary-text: #6f5e44;
+    --ring: #967e60;
+    --accent: #eae7da;
+    --success: #3f7a34;
+    --success-muted: #e6f5e2;
+    --success-border: #c2e1b3;
+    --warning: #93761d;
+    --warning-muted: #fbf4c4;
+    --warning-border: #ebd87f;
+    --destructive: #bf4f3b;
+    --destructive-muted: #fbe8e2;
+    --destructive-border: #f0c9ba;
+    --info: #3f6fa6;
+    --info-muted: #e6f1fc;
+    --info-border: #bed7ef;
+    --cat-1: #b04d54;
+    --cat-2: #6f63b8;
+    --cat-3: #1e874b;
+    --cat-4: #0a78b7;
+    --cat-5: #797600;
+    --cat-6: #9d5192;
+    --cat-7: #a45e00;
+    --cat-8: #008f93;
+    --cat-other: #a8a294;
+    --outline: rgba(54, 48, 42, 0.08);
+    --subtle: #a8a294;
+    --shadow-sm: 0 1px 2px rgba(54, 48, 42, 0.1);
+    --shadow-md: 0 4px 14px rgba(54, 48, 42, 0.13);
+    --shadow-lg: 0 20px 60px rgba(54, 48, 42, 0.18);
+  }
+}
+:root[data-theme="light"] {
+  --background: #f6f5ef;
+  --card: #fcfbf6;
+  --card-foreground: #36302a;
+  --popover: #fcfbf6;
+  --foreground: #36302a;
+  --muted: #f0efe3;
+  --muted-foreground: #726c5e;
+  --border: #ddd6c6;
+  --input: #ddd6c6;
+  --primary: #967e60;
+  --primary-foreground: #ffffff;
+  --primary-hover: #897254;
+  --primary-muted: #efece0;
+  --primary-text: #6f5e44;
+  --ring: #967e60;
+  --accent: #eae7da;
+  --success: #3f7a34;
+  --success-muted: #e6f5e2;
+  --success-border: #c2e1b3;
+  --warning: #93761d;
+  --warning-muted: #fbf4c4;
+  --warning-border: #ebd87f;
+  --destructive: #bf4f3b;
+  --destructive-muted: #fbe8e2;
+  --destructive-border: #f0c9ba;
+  --info: #3f6fa6;
+  --info-muted: #e6f1fc;
+  --info-border: #bed7ef;
+  --cat-1: #b04d54;
+  --cat-2: #6f63b8;
+  --cat-3: #1e874b;
+  --cat-4: #0a78b7;
+  --cat-5: #797600;
+  --cat-6: #9d5192;
+  --cat-7: #a45e00;
+  --cat-8: #008f93;
+  --cat-other: #a8a294;
+  --outline: rgba(54, 48, 42, 0.08);
+  --subtle: #a8a294;
+  --shadow-sm: 0 1px 2px rgba(54, 48, 42, 0.1);
+  --shadow-md: 0 4px 14px rgba(54, 48, 42, 0.13);
+  --shadow-lg: 0 20px 60px rgba(54, 48, 42, 0.18);
+}
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--foreground);
+      font-family: var(--sans);
+      line-height: var(--leading-normal);
+    }
+    main { width: min(1500px, calc(100% - 32px)); margin: 0 auto; padding: 48px 0 64px; }
+    h1 { margin: 0; font-size: var(--text-3xl); letter-spacing: var(--tracking-tight); }
+    .lede { max-width: 900px; margin: 8px 0 24px; color: var(--muted-foreground); }
+    .legend { display: flex; flex-wrap: wrap; gap: 18px; margin-bottom: 28px; font: 12px var(--mono); color: var(--muted-foreground); }
+    .legend span { display: inline-flex; align-items: center; gap: 7px; }
+    .swatch { width: 28px; height: 0; border-top: 2px solid var(--subtle); }
+    .swatch.dashed { border-top-style: dashed; }
+    .frame { margin-top: 18px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); box-shadow: var(--shadow-sm); overflow: hidden; }
+    .frame-head { padding: 18px 20px 12px; border-bottom: 1px solid var(--border); }
+    .frame-head h2 { margin: 0; font-size: var(--text-lg); }
+    .frame-head p { margin: 3px 0 0; color: var(--muted-foreground); font-size: var(--text-sm); }
+    .canvas { padding: 18px; overflow-x: auto; }
+    svg { display: block; width: 100%; min-width: 980px; height: auto; font-family: var(--sans); }
+    svg .mono { font-family: var(--mono); }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Ledgerly system architecture</h1>
+    <p class="lede">Synchronous request paths, asynchronous order events, and storage ownership. Service boundaries and edge labels reflect the contracts stated in <code>AGENTS.md</code>.</p>
+    <div class="legend" aria-label="Diagram legend">
+      <span><i class="swatch"></i> directed interaction or ownership</span>
+      <span><i class="swatch dashed"></i> system or external boundary</span>
+    </div>
+
+    <section class="frame">
+      <div class="frame-head">
+        <h2>1. Service topology and synchronous requests</h2>
+        <p><code>web</code> reaches backend capabilities only through <code>gateway</code>; billing and notification providers remain behind their owning adapters.</p>
+      </div>
+      <div class="canvas">
+        <svg viewBox="0 0 1740 590" font-size="13" style="max-width:100%" role="img" aria-label="Ledgerly synchronous service request topology">
+          <defs>
+            <marker id="arrow-request" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--subtle)"/>
+            </marker>
+          </defs>
+
+          <rect x="20" y="36" width="1400" height="530" rx="10" fill="var(--background)" stroke="var(--border)" stroke-dasharray="7 5"/>
+          <text x="38" y="61" font-size="11" fill="var(--muted-foreground)" class="mono">Ledgerly monorepo · Node/TypeScript services</text>
+          <text x="1480" y="61" font-size="11" fill="var(--muted-foreground)" class="mono">third parties · out of our control</text>
+
+          <g transform="translate(60,250)">
+            <rect width="180" height="80" rx="6" fill="var(--card)" stroke="var(--border)"/>
+            <text x="90" y="31" text-anchor="middle" font-size="14" font-weight="600">web</text>
+            <text x="90" y="54" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">Next.js UI</text>
+          </g>
+          <g transform="translate(340,250)">
+            <rect width="200" height="80" rx="6" fill="var(--primary-muted)" stroke="var(--primary)"/>
+            <text x="100" y="31" text-anchor="middle" font-size="14" font-weight="600" fill="var(--primary-text)">gateway</text>
+            <text x="100" y="54" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">GraphQL API</text>
+          </g>
+          <g transform="translate(700,70)">
+            <rect width="220" height="80" rx="6" fill="var(--card)" stroke="var(--border)"/>
+            <text x="110" y="31" text-anchor="middle" font-size="14" font-weight="600">identity</text>
+            <text x="110" y="54" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">users · roles · sessions</text>
+          </g>
+          <g transform="translate(700,190)">
+            <rect width="220" height="80" rx="6" fill="var(--card)" stroke="var(--border)"/>
+            <text x="110" y="31" text-anchor="middle" font-size="14" font-weight="600">catalog</text>
+            <text x="110" y="54" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">products · price book</text>
+          </g>
+          <g transform="translate(700,310)">
+            <rect width="220" height="80" rx="6" fill="var(--card)" stroke="var(--border)"/>
+            <text x="110" y="31" text-anchor="middle" font-size="14" font-weight="600">orders</text>
+            <text x="110" y="54" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">order lifecycle</text>
+          </g>
+          <g transform="translate(700,430)">
+            <rect width="220" height="80" rx="6" fill="var(--card)" stroke="var(--border)"/>
+            <text x="110" y="31" text-anchor="middle" font-size="14" font-weight="600">billing</text>
+            <text x="110" y="54" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">invoices · card capture</text>
+          </g>
+          <g transform="translate(1080,190)">
+            <rect width="250" height="80" rx="6" fill="var(--card)" stroke="var(--border)"/>
+            <text x="125" y="31" text-anchor="middle" font-size="14" font-weight="600">bus</text>
+            <text x="125" y="54" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">NATS JetStream</text>
+          </g>
+          <g transform="translate(1080,310)">
+            <rect width="250" height="80" rx="6" fill="var(--card)" stroke="var(--border)"/>
+            <text x="125" y="31" text-anchor="middle" font-size="14" font-weight="600">notifier</text>
+            <text x="125" y="54" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">email · SMS</text>
+          </g>
+          <g transform="translate(1080,430)">
+            <rect width="250" height="80" rx="6" fill="var(--card)" stroke="var(--border)"/>
+            <text x="125" y="31" text-anchor="middle" font-size="14" font-weight="600">payments-adapter</text>
+            <text x="125" y="54" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">card processor wrapper</text>
+          </g>
+          <g transform="translate(1480,310)">
+            <rect width="230" height="80" rx="6" fill="var(--card)" stroke="var(--border)" stroke-dasharray="4 3"/>
+            <text x="115" y="31" text-anchor="middle" font-size="14" font-weight="600">messaging provider</text>
+            <text x="115" y="54" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">email · SMS delivery</text>
+          </g>
+          <g transform="translate(1480,430)">
+            <rect width="230" height="80" rx="6" fill="var(--card)" stroke="var(--border)" stroke-dasharray="4 3"/>
+            <text x="115" y="31" text-anchor="middle" font-size="14" font-weight="600">card processor</text>
+            <text x="115" y="54" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">external payment API</text>
+          </g>
+
+          <path d="M 240 290 H 340" fill="none" stroke="var(--subtle)" marker-end="url(#arrow-request)"/>
+          <rect x="252" y="269" width="76" height="15" fill="var(--background)"/>
+          <text x="290" y="281" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">GraphQL</text>
+
+          <path d="M 390 250 V 110 H 700" fill="none" stroke="var(--subtle)" marker-end="url(#arrow-request)"/>
+          <rect x="468" y="89" width="188" height="15" fill="var(--background)"/>
+          <text x="562" y="101" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">HTTP/JSON · verify session</text>
+
+          <path d="M 440 250 V 230 H 700" fill="none" stroke="var(--subtle)" marker-end="url(#arrow-request)"/>
+          <rect x="490" y="209" width="152" height="15" fill="var(--background)"/>
+          <text x="566" y="221" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">HTTP/JSON · catalog</text>
+
+          <path d="M 440 330 V 350 H 700" fill="none" stroke="var(--subtle)" marker-end="url(#arrow-request)"/>
+          <rect x="495" y="329" width="146" height="15" fill="var(--background)"/>
+          <text x="568" y="341" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">HTTP/JSON · orders</text>
+
+          <path d="M 490 330 V 470 H 700" fill="none" stroke="var(--subtle)" marker-end="url(#arrow-request)"/>
+          <rect x="480" y="384" width="146" height="15" fill="var(--background)"/>
+          <text x="484" y="396" font-size="11" fill="var(--muted-foreground)" class="mono">HTTP/JSON · billing</text>
+
+          <path d="M 920 470 H 1080" fill="none" stroke="var(--subtle)" marker-end="url(#arrow-request)"/>
+          <rect x="934" y="449" width="132" height="15" fill="var(--background)"/>
+          <text x="1000" y="461" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">HTTP/JSON · capture</text>
+
+          <path d="M 1330 470 H 1480" fill="none" stroke="var(--subtle)" marker-end="url(#arrow-request)"/>
+          <rect x="1341" y="449" width="128" height="15" fill="var(--background)"/>
+          <text x="1405" y="461" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">processor API · card</text>
+
+          <path d="M 1330 350 H 1480" fill="none" stroke="var(--subtle)" marker-end="url(#arrow-request)"/>
+          <rect x="1347" y="329" width="116" height="15" fill="var(--background)"/>
+          <text x="1405" y="341" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">provider API · notify</text>
+        </svg>
+      </div>
+    </section>
+
+    <section class="frame">
+      <div class="frame-head">
+        <h2>2. Event flows over <code>bus</code></h2>
+        <p><code>orders</code> publishes lifecycle events; <code>billing</code> consumes placement only, while <code>notifier</code> consumes placement and fulfillment.</p>
+      </div>
+      <div class="canvas">
+        <svg viewBox="0 0 1400 420" font-size="13" style="max-width:100%" role="img" aria-label="Ledgerly NATS JetStream event flows">
+          <defs>
+            <marker id="arrow-event" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--subtle)"/>
+            </marker>
+          </defs>
+          <rect x="20" y="36" width="1360" height="350" rx="10" fill="var(--background)" stroke="var(--border)" stroke-dasharray="7 5"/>
+          <text x="38" y="61" font-size="11" fill="var(--muted-foreground)" class="mono">asynchronous boundary · NATS JetStream subjects</text>
+
+          <g transform="translate(80,160)">
+            <rect width="220" height="100" rx="6" fill="var(--card)" stroke="var(--border)"/>
+            <text x="110" y="39" text-anchor="middle" font-size="14" font-weight="600">orders</text>
+            <text x="110" y="65" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">publisher</text>
+          </g>
+          <g transform="translate(500,160)">
+            <rect width="240" height="100" rx="6" fill="var(--primary-muted)" stroke="var(--primary)"/>
+            <text x="120" y="39" text-anchor="middle" font-size="14" font-weight="600" fill="var(--primary-text)">bus</text>
+            <text x="120" y="65" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">NATS JetStream</text>
+          </g>
+          <g transform="translate(1040,70)">
+            <rect width="240" height="100" rx="6" fill="var(--card)" stroke="var(--border)"/>
+            <text x="120" y="39" text-anchor="middle" font-size="14" font-weight="600">billing</text>
+            <text x="120" y="65" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">subscriber</text>
+          </g>
+          <g transform="translate(1040,250)">
+            <rect width="240" height="100" rx="6" fill="var(--card)" stroke="var(--border)"/>
+            <text x="120" y="39" text-anchor="middle" font-size="14" font-weight="600">notifier</text>
+            <text x="120" y="65" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">subscriber</text>
+          </g>
+
+          <path d="M 300 185 H 500" fill="none" stroke="var(--subtle)" marker-end="url(#arrow-event)"/>
+          <rect x="323" y="164" width="154" height="15" fill="var(--background)"/>
+          <text x="400" y="176" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">publish · order.placed</text>
+
+          <path d="M 300 235 H 500" fill="none" stroke="var(--subtle)" marker-end="url(#arrow-event)"/>
+          <rect x="314" y="214" width="172" height="15" fill="var(--background)"/>
+          <text x="400" y="226" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">publish · order.fulfilled</text>
+
+          <path d="M 560 160 V 120 H 1040" fill="none" stroke="var(--subtle)" marker-end="url(#arrow-event)"/>
+          <rect x="706" y="99" width="188" height="15" fill="var(--background)"/>
+          <text x="800" y="111" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">subscribe · order.placed</text>
+
+          <path d="M 680 260 V 300 H 1040" fill="none" stroke="var(--subtle)" marker-end="url(#arrow-event)"/>
+          <rect x="747" y="279" width="226" height="15" fill="var(--background)"/>
+          <text x="860" y="291" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">subscribe · placed + fulfilled</text>
+        </svg>
+      </div>
+    </section>
+
+    <section class="frame">
+      <div class="frame-head">
+        <h2>3. Storage ownership</h2>
+        <p>Each owning service is the only reader/writer of its Postgres schema. <code>catalog</code> separately owns its read cache; <code>notifier</code> has no database.</p>
+      </div>
+      <div class="canvas">
+        <svg viewBox="0 0 1560 470" font-size="13" style="max-width:100%" role="img" aria-label="Ledgerly database and cache ownership">
+          <defs>
+            <marker id="arrow-storage" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--subtle)"/>
+            </marker>
+          </defs>
+
+          <rect x="36" y="240" width="1200" height="190" rx="10" fill="var(--muted)" stroke="var(--border)" stroke-dasharray="7 5"/>
+          <text x="54" y="265" font-size="11" fill="var(--muted-foreground)" class="mono">one Postgres cluster · schema-per-service isolation</text>
+
+          <g transform="translate(80,60)">
+            <rect width="220" height="80" rx="6" fill="var(--card)" stroke="var(--border)"/>
+            <text x="110" y="31" text-anchor="middle" font-size="14" font-weight="600">identity</text>
+            <text x="110" y="54" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">storage owner</text>
+          </g>
+          <g transform="translate(380,60)">
+            <rect width="220" height="80" rx="6" fill="var(--card)" stroke="var(--border)"/>
+            <text x="110" y="31" text-anchor="middle" font-size="14" font-weight="600">catalog</text>
+            <text x="110" y="54" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">storage + cache owner</text>
+          </g>
+          <g transform="translate(680,60)">
+            <rect width="220" height="80" rx="6" fill="var(--card)" stroke="var(--border)"/>
+            <text x="110" y="31" text-anchor="middle" font-size="14" font-weight="600">orders</text>
+            <text x="110" y="54" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">storage owner</text>
+          </g>
+          <g transform="translate(980,60)">
+            <rect width="220" height="80" rx="6" fill="var(--card)" stroke="var(--border)"/>
+            <text x="110" y="31" text-anchor="middle" font-size="14" font-weight="600">billing</text>
+            <text x="110" y="54" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">storage owner</text>
+          </g>
+
+          <g transform="translate(80,300)">
+            <rect width="220" height="80" rx="6" fill="var(--card)" stroke="var(--border)"/>
+            <text x="110" y="31" text-anchor="middle" font-size="14" font-weight="600">identity schema</text>
+            <text x="110" y="54" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">Postgres</text>
+          </g>
+          <g transform="translate(380,300)">
+            <rect width="220" height="80" rx="6" fill="var(--card)" stroke="var(--border)"/>
+            <text x="110" y="31" text-anchor="middle" font-size="14" font-weight="600">catalog schema</text>
+            <text x="110" y="54" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">Postgres</text>
+          </g>
+          <g transform="translate(680,300)">
+            <rect width="220" height="80" rx="6" fill="var(--card)" stroke="var(--border)"/>
+            <text x="110" y="31" text-anchor="middle" font-size="14" font-weight="600">orders schema</text>
+            <text x="110" y="54" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">Postgres</text>
+          </g>
+          <g transform="translate(980,300)">
+            <rect width="220" height="80" rx="6" fill="var(--card)" stroke="var(--border)"/>
+            <text x="110" y="31" text-anchor="middle" font-size="14" font-weight="600">billing schema</text>
+            <text x="110" y="54" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">Postgres</text>
+          </g>
+          <g transform="translate(1320,300)">
+            <rect width="200" height="80" rx="6" fill="var(--card)" stroke="var(--border)"/>
+            <text x="100" y="31" text-anchor="middle" font-size="14" font-weight="600">catalog cache</text>
+            <text x="100" y="54" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">Redis</text>
+          </g>
+
+          <path d="M 190 140 V 300" fill="none" stroke="var(--subtle)" marker-end="url(#arrow-storage)"/>
+          <rect x="178" y="185" width="94" height="15" fill="var(--background)"/>
+          <text x="182" y="197" font-size="11" fill="var(--muted-foreground)" class="mono">owns · R/W</text>
+
+          <path d="M 490 140 V 300" fill="none" stroke="var(--subtle)" marker-end="url(#arrow-storage)"/>
+          <rect x="478" y="185" width="94" height="15" fill="var(--background)"/>
+          <text x="482" y="197" font-size="11" fill="var(--muted-foreground)" class="mono">owns · R/W</text>
+
+          <path d="M 790 140 V 300" fill="none" stroke="var(--subtle)" marker-end="url(#arrow-storage)"/>
+          <rect x="778" y="185" width="94" height="15" fill="var(--background)"/>
+          <text x="782" y="197" font-size="11" fill="var(--muted-foreground)" class="mono">owns · R/W</text>
+
+          <path d="M 1090 140 V 300" fill="none" stroke="var(--subtle)" marker-end="url(#arrow-storage)"/>
+          <rect x="1078" y="185" width="94" height="15" fill="var(--background)"/>
+          <text x="1082" y="197" font-size="11" fill="var(--muted-foreground)" class="mono">owns · R/W</text>
+
+          <path d="M 545 60 V 24 H 1420 V 300" fill="none" stroke="var(--subtle)" marker-end="url(#arrow-storage)"/>
+          <rect x="864" y="3" width="176" height="15" fill="var(--background)"/>
+          <text x="952" y="15" text-anchor="middle" font-size="11" fill="var(--muted-foreground)" class="mono">owns · Redis read cache</text>
+        </svg>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
