@@ -8,8 +8,10 @@ of the `<style>` block, verbatim.
 
 ## Shared Conventions
 
-- Canvas: `<svg viewBox="0 0 W H" style="max-width:100%">` sized to content;
-  the page wraps it in the wireframe kit's `.frame` shell (either mode's).
+- Canvas: `<svg viewBox="0 0 W H" font-size="13" style="max-width:100%">`
+  sized to content; the page wraps it in the wireframe kit's `.frame` shell
+  (either mode's). The `font-size` is the base every text inherits — see
+  Sizing below.
 - Palette is token roles, referenced with `var(--…)` (CSS variables work in
   inline SVG attributes): fills `var(--card)` / `var(--muted)`, strokes
   `var(--border)`, edges `var(--subtle)`, text `var(--foreground)`. The one
@@ -27,9 +29,9 @@ of the `<style>` block, verbatim.
   sees only attributes, a bare `text` rule and `.class` rules; a text it
   cannot size is read at the browser's 16px and reported on stderr. Budget
   width at 0.6 em per character (exact for mono, generous for regular sans,
-  a little tight for semibold titles): a 23-character title needs more than
-  a 210 box, and when it doesn't fit the box grows — the checker reports
-  `text-overflows-box`, never a smaller font.
+  a little tight for semibold titles): at 16px a 23-character title needs
+  more than a 210 box, and when it doesn't fit the box grows — the checker
+  reports `text-overflows-box`, never a smaller font.
 - Arrowheads via one shared `<marker>`:
 
 ```html
