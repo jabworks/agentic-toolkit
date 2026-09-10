@@ -4,17 +4,28 @@
 // diagram-kit.md) and cannot see its own render. It reads one file, finds
 // every inline <svg>…</svg> block, and reports the geometry mistakes a human
 // would catch on sight: an edge that runs through a box it does not connect
-// to, a label sitting on another label or on a node's own title text, an
-// edge nobody labeled, and text that falls outside the canvas.
+// to, a label sitting on another label or on a node's own title text, a
+// title wider than its own box, an edge nobody labeled, and text that falls
+// outside the canvas.
 //
 // This is a regex-level reader, not a DOM. It understands exactly the
 // idioms diagram-kit.md teaches — `<g transform="translate(x,y)">` offsets,
 // `var(--…)` fills/strokes (never resolved — colors play no part in any
 // check), one shared `<marker>` — and two known approximations:
 //
-//   - text width is estimated at 0.6 em per character (no font metrics);
+//   - text width is estimated at 0.6 em per character (no font metrics) —
+//     measured exact for the kit's mono labels, generous for regular sans,
+//     a little narrow for semibold titles on wide fallback fonts;
 //   - Bézier and arc commands (C S Q T A) contribute only their final
 //     endpoint as a straight segment — curvature itself is invisible to it.
+//
+// Font size is resolved the way a browser cascades it, restricted to what a
+// regex can see: a `.class { font-size: Npx }` rule matching the text's
+// `class`, then a bare `text` / `svg text` rule, then the element's own
+// `font-size` attribute, then one inherited from an enclosing `<g>` or the
+// `<svg>` tag, and finally the browser default of 16px — reported on stderr
+// when it has to be assumed, because an unsized diagram is read blind. Any
+// other selector shape, and any unit but px, is invisible to it.
 //
 // No dependencies, no network, no shelling out, no filesystem writes.
 
@@ -24,8 +35,12 @@ import { pathToFileURL } from 'node:url';
 // ---------------------------------------------------------------------------
 // Small geometry helpers. A "box" is always { x0, y0, x1, y1 } in viewBox
 // units; nodes/boundaries are boxes with a `line` and (once assigned) a
-// `title`; texts are boxes with `text`, `line`, `free`, `ownEdge`.
+// `title`; texts are boxes with `text`, `line`, `ax`/`ay` (the anchor
+// point), `free`, `owner`, `ownEdge`.
 // ---------------------------------------------------------------------------
+
+// What a browser uses when nothing in the document sizes the text.
+const DEFAULT_FONT_SIZE = 16;
 
 const shrinkBox = (box, n) => ({ x0: box.x0 + n, y0: box.y0 + n, x1: box.x1 - n, y1: box.y1 - n });
 
@@ -185,6 +200,42 @@ const stripTags = (s) =>
 // idiom.
 // ---------------------------------------------------------------------------
 
+// The two style-rule shapes the checker reads, from every <style> block in
+// the document (comments already blanked): `text { font-size: Npx }` or
+// `svg text { … }` sets the base, `.name { … }` / `text.name { … }` /
+// `svg .name { … }` maps a class. Later rules win, as in a stylesheet.
+// Anything else — element ids, descendant chains, `em`/`rem`/`var()` — is
+// skipped: a size the checker cannot resolve must not become a guess.
+const BASE_SELECTOR = /^(?:svg\s+)?text$/;
+const CLASS_SELECTOR = /^(?:svg\s+)?(?:text)?\.([\w-]+)$/;
+
+const parseStyleFontSizes = (source) => {
+  const styles = { base: null, classes: new Map() };
+  const styleRe = /<style\b[^>]*>([\s\S]*?)<\/style>/gi;
+  const ruleRe = /([^{}]+)\{([^}]*)\}/g;
+  let sm;
+
+  while ((sm = styleRe.exec(source))) {
+    // A CSS comment is not a rule, and left in place it glues itself onto
+    // the selector that follows it.
+    const css = sm[1].replace(/\/\*[\s\S]*?\*\//g, ' ');
+    let rm;
+    while ((rm = ruleRe.exec(css))) {
+      const size = /(?:^|[\s;{])font-size\s*:\s*(\d+(?:\.\d+)?)px\b/.exec(rm[2]);
+      if (!size) continue;
+
+      for (const selector of rm[1].split(',')) {
+        const s = selector.trim();
+        if (BASE_SELECTOR.test(s)) styles.base = parseFloat(size[1]);
+        const cm = CLASS_SELECTOR.exec(s);
+        if (cm) styles.classes.set(cm[1], parseFloat(size[1]));
+      }
+    }
+  }
+
+  return styles;
+};
+
 const CURVE_ARG_COUNTS = { C: 6, S: 4, Q: 4, T: 2, A: 7 };
 
 const parsePathSegments = (d, warnCurve) => {
@@ -300,10 +351,14 @@ const parsePathSegments = (d, warnCurve) => {
 // (and any positioned <tspan> children) without a general text-node model.
 // ---------------------------------------------------------------------------
 
-const walkBlock = (source, blockOffset, blockSource, findLine, notify) => {
+const walkBlock = (source, blockOffset, blockSource, findLine, notify, styles) => {
   const rects = [];
   const texts = [];
   const edges = [];
+  let defaulted = 0;
+  const onDefault = () => {
+    defaulted++;
+  };
 
   const svgOpenMatch = /^<svg\b[^>]*>/.exec(blockSource);
   const svgOpenTag = svgOpenMatch ? svgOpenMatch[0] : '<svg>';
@@ -319,7 +374,9 @@ const walkBlock = (source, blockOffset, blockSource, findLine, notify) => {
 
   let curOffsetX = 0;
   let curOffsetY = 0;
-  let curFontSize = parseFloat(getAttr(svgOpenTag, 'font-size') ?? '') || 13;
+  // null until some enclosing tag carries a font-size — the text element then
+  // decides between its own attribute, the style rules, and the default.
+  let curFontSize = parseFloat(getAttr(svgOpenTag, 'font-size') ?? '') || null;
   let skipDepth = 0;
   const stack = [];
   // The frame a closing tag restores: offsets, inherited font size, and
@@ -364,6 +421,8 @@ const walkBlock = (source, blockOffset, blockSource, findLine, notify) => {
           offX: curOffsetX,
           offY: curOffsetY,
           curFontSize,
+          styles,
+          onDefault,
           texts,
           lineNo,
         });
@@ -428,6 +487,12 @@ const walkBlock = (source, blockOffset, blockSource, findLine, notify) => {
     // stray <a> or <clipPath> would otherwise desync the stack) — push a
     // neutral frame so its closing tag pops correctly.
     if (!selfClosing) stack.push(snapshot());
+  }
+
+  if (defaulted > 0) {
+    notify(
+      `diagram-check: ${defaulted} text element(s) carry no font-size from an attribute, an enclosing tag, or a text/.class style rule — assumed ${DEFAULT_FONT_SIZE}px; set font-size on the <svg> tag so widths are read as drawn`,
+    );
   }
 
   return { rects, texts, edges, viewBox };
@@ -518,15 +583,39 @@ const pushTextBox = (texts, text, absX, absY, anchor, fontSize, lineNo) => {
     x1 = absX + width;
   }
 
-  texts.push({ x0, y0: top, x1, y1: bottom, text, line: lineNo });
+  texts.push({ x0, y0: top, x1, y1: bottom, ax: absX, ay: absY, text, line: lineNo });
 };
 
-const processTextElement = ({ tag, rawContent, contentOffset, findLine, offX, offY, curFontSize, texts, lineNo }) => {
+// The cascade a browser applies to a <text>, restricted to the shapes the
+// style scan understands: a matching class rule beats a bare `text` rule,
+// which beats the element's own attribute, which beats an inherited one.
+// `inherited` is null when no enclosing tag carried a size; `onDefault` is
+// called when the browser default has to stand in.
+const resolveFontSize = (tag, inherited, styles, onDefault) => {
+  const classAttr = getAttr(tag, 'class');
+  if (classAttr) {
+    for (const cls of classAttr.trim().split(/\s+/)) {
+      if (styles.classes.has(cls)) return styles.classes.get(cls);
+    }
+  }
+
+  if (styles.base !== null) return styles.base;
+
+  const attr = getAttr(tag, 'font-size');
+  if (attr) return parseFloat(attr);
+
+  if (inherited !== null) return inherited;
+
+  onDefault();
+
+  return DEFAULT_FONT_SIZE;
+};
+
+const processTextElement = ({ tag, rawContent, contentOffset, findLine, offX, offY, curFontSize, styles, onDefault, texts, lineNo }) => {
   const x = parseFloat(getAttr(tag, 'x') ?? '0');
   const y = parseFloat(getAttr(tag, 'y') ?? '0');
   const anchor = getAttr(tag, 'text-anchor') ?? 'start';
-  const fontSizeAttr = getAttr(tag, 'font-size');
-  const fontSize = fontSizeAttr ? parseFloat(fontSizeAttr) : curFontSize;
+  const fontSize = resolveFontSize(tag, curFontSize, styles, onDefault);
 
   const tspanRe = /<tspan\b([^>]*)>([\s\S]*?)<\/tspan>/g;
   const tspans = [];
@@ -594,9 +683,12 @@ const findingsForBlock = ({ rects, texts, edges, viewBox }) => {
   const nodes = rects.filter((r) => !r.isBoundary);
 
   // Owned vs. free text, and each node's title (first owned text, in
-  // document order).
+  // document order). A text belongs to the node its box sits in — or, when
+  // the box has outgrown the node, the node its anchor point sits in: a
+  // title too wide for its box is still that box's title, and reporting it
+  // as a free label straddling the node would misname the defect.
   for (const text of texts) {
-    const owner = nodes.find((node) => fullyInside(text, node, 1));
+    const owner = nodes.find((node) => fullyInside(text, node, 1) || pointInBox(text.ax, text.ay, node));
     if (owner) {
       text.free = false;
       text.owner = owner;
@@ -666,11 +758,13 @@ const findingsForBlock = ({ rects, texts, edges, viewBox }) => {
     }
   }
 
-  // 3. label-over-box (free text straddling a node's border)
+  // 3. label-over-box (a text box straddling the border of a node it does
+  // not belong to) and text-overflows-box (a node's own text wider or
+  // taller than the node, past the 1-unit tolerance)
   for (const text of texts) {
-    if (!text.free) continue;
-
     for (const node of nodes) {
+      if (node === text.owner) continue;
+
       if (rectIntersect(shrinkBox(text, 1), node)) {
         findings.push({
           code: 'label-over-box',
@@ -678,6 +772,20 @@ const findingsForBlock = ({ rects, texts, edges, viewBox }) => {
           detail: `"${text.text}" straddles ${describeNode(node)}`,
         });
       }
+    }
+
+    if (text.owner && !fullyInside(text, text.owner, 1)) {
+      const { owner } = text;
+      const over = Math.max(owner.x0 - text.x0, text.x1 - owner.x1, owner.y0 - text.y0, text.y1 - owner.y1);
+      const where =
+        owner.title === text.text
+          ? `its own ${fmt(owner.x1 - owner.x0)}×${fmt(owner.y1 - owner.y0)} box`
+          : describeNode(owner);
+      findings.push({
+        code: 'text-overflows-box',
+        line: text.line,
+        detail: `"${text.text}" overflows ${where} by ${fmt(over)}`,
+      });
     }
   }
 
@@ -736,8 +844,9 @@ const findingsForBlock = ({ rects, texts, edges, viewBox }) => {
 // Public API
 // ---------------------------------------------------------------------------
 
-// Finds every <svg>…</svg> block in `source` and runs all six checks against
-// each. Returns Finding[] = { code, line, detail }[], sorted by line then code.
+// Finds every <svg>…</svg> block in `source` and runs all seven checks
+// against each. Returns Finding[] = { code, line, detail }[], sorted by line
+// then code.
 export const checkSvg = (rawSource) => {
   // The kit's own marker block carries `<!-- usage: <line … /> -->`, and the
   // kit says to paste it verbatim — scanned raw, that comment is a phantom
@@ -745,6 +854,7 @@ export const checkSvg = (rawSource) => {
   // comments character-for-character (newlines kept) so line numbers hold.
   const source = rawSource.replace(/<!--[\s\S]*?-->/g, (comment) => comment.replace(/[^\n]/g, ' '));
   const findLine = makeLineFinder(source);
+  const styles = parseStyleFontSizes(source);
   let curveWarned = false;
   const notify = (msg) => process.stderr.write(msg + '\n');
   notify.curve = () => {
@@ -758,7 +868,7 @@ export const checkSvg = (rawSource) => {
   let m;
 
   while ((m = blockRe.exec(source))) {
-    const parsed = walkBlock(source, m.index, m[0], findLine, notify);
+    const parsed = walkBlock(source, m.index, m[0], findLine, notify, styles);
     findings.push(...findingsForBlock(parsed));
   }
 

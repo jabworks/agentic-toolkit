@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>overflow-css-sized fixture — a real diagram's sizing idiom, one overflowing title</title>
+<!--
+  Synthesized twin of an architecture diagram a Codex session produced under the
+  2.29.0 kit (2026-09-10): same geometry, same sizing idiom, generic names. The
+  idiom is what matters — nothing sets a base size, so titles inherit the browser
+  default of 16px, and edge labels get 11px from a class rule. Read at 13px, as
+  the checker did before 2.30.0, every title fit; read as drawn, the accent
+  node's 23-character title is 220.8 wide in a 210 box. That is the one finding
+  this fixture must report. Everything else is routed under the kit's rules and
+  must stay clean.
+-->
+<style>
+  :root{--background:#111110;--card:#191918;--foreground:#eeeeec;--muted-foreground:#b5b3ad;--border:#3b3a37;--primary:#978365;--primary-muted:#24231f;--primary-text:#cbb99f;--subtle:#686560;--mono:ui-monospace,monospace;--sans:ui-sans-serif,system-ui,sans-serif}
+  body{margin:0;background:var(--background);color:var(--foreground);font-family:var(--sans)}
+  main{max-width:1160px;margin:0 auto;padding:32px}
+  .frame{overflow:auto;border:1px solid var(--border);border-radius:8px;background:var(--card);padding:24px}
+  svg text{font-family:var(--sans)}
+  svg .edge-label{font-family:var(--mono);font-size:11px;fill:var(--muted-foreground)}
+</style>
+</head>
+<body>
+<main>
+  <h1>Stock Overview page architecture</h1>
+  <div class="frame">
+    <svg viewBox="0 0 900 400" style="max-width:100%" role="img" aria-labelledby="title">
+      <title id="title">Stock Overview page architecture</title>
+      <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--subtle)"/></marker></defs>
+
+      <!-- the accent node: 23 characters of semibold title in a 210-wide box -->
+      <g transform="translate(40,150)"><rect width="210" height="96" rx="6" fill="var(--primary-muted)" stroke="var(--primary)"/><text x="105" y="30" text-anchor="middle" font-weight="600" fill="var(--primary-text)">InventoryAccessGuardian</text><text x="105" y="56" text-anchor="middle" font-size="12" fill="var(--muted-foreground)">resolving · allowed</text><text x="105" y="76" text-anchor="middle" font-size="12" fill="var(--muted-foreground)">denied · error</text></g>
+      <g transform="translate(350,150)"><rect width="210" height="96" rx="6" fill="var(--card)" stroke="var(--border)"/><text x="105" y="30" text-anchor="middle" font-weight="600">inventory.overview</text><text x="105" y="56" text-anchor="middle" font-size="12" fill="var(--muted-foreground)">5 visible filters</text><text x="105" y="76" text-anchor="middle" font-size="12" fill="var(--muted-foreground)">9 ordered slots</text></g>
+      <g transform="translate(660,40)"><rect width="200" height="96" rx="6" fill="var(--card)" stroke="var(--border)"/><text x="100" y="30" text-anchor="middle" font-weight="600">StockCatalog</text><text x="100" y="56" text-anchor="middle" font-size="12" fill="var(--muted-foreground)">slot + source IDs</text><text x="100" y="76" text-anchor="middle" font-size="12" fill="var(--muted-foreground)">renderer definitions</text></g>
+      <g transform="translate(660,260)"><rect width="200" height="96" rx="6" fill="var(--card)" stroke="var(--border)"/><text x="100" y="30" text-anchor="middle" font-weight="600">levelRuntime</text><text x="100" y="56" text-anchor="middle" font-size="12" fill="var(--muted-foreground)">slotId correlation</text><text x="100" y="76" text-anchor="middle" font-size="12" fill="var(--muted-foreground)">slot-local input</text></g>
+
+      <!-- guardian → overview: right 50% port to left 50% port, label 4px above the line, haloed -->
+      <path d="M250,198 H350" fill="none" stroke="var(--subtle)" marker-end="url(#arrow)"/>
+      <rect x="270" y="183" width="60" height="15" fill="var(--background)"/>
+      <text x="300" y="194" text-anchor="middle" class="edge-label">allowed</text>
+
+      <!-- overview → catalog: leave the right side at 25%, run the gutter, enter the left side at 50% -->
+      <path d="M560,174 H610 V88 H660" fill="none" stroke="var(--subtle)" marker-end="url(#arrow)"/>
+      <rect x="566" y="120" width="88" height="15" fill="var(--background)"/>
+      <text x="610" y="131" text-anchor="middle" class="edge-label">resolve stock</text>
+
+      <!-- overview → runtime: leave the right side at 75%, run the gutter, enter the left side at 50% -->
+      <path d="M560,222 H610 V308 H660" fill="none" stroke="var(--subtle)" marker-end="url(#arrow)"/>
+      <rect x="562" y="254" width="96" height="15" fill="var(--background)"/>
+      <text x="610" y="265" text-anchor="middle" class="edge-label">level identity</text>
+    </svg>
+  </div>
+</main>
+</body>
+</html>
