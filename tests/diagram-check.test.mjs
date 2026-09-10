@@ -17,10 +17,27 @@ const ALL_CODES = [
   'edge-through-box',
   'label-over-label',
   'label-over-box',
+  'text-overflows-box',
   'edge-through-label',
   'unlabeled-edge',
   'text-outside-canvas',
 ];
+
+// Captures what checkSvg writes to stderr while `fn` runs.
+function withStderr(fn) {
+  const chunks = [];
+  const original = process.stderr.write;
+  process.stderr.write = (chunk) => {
+    chunks.push(String(chunk));
+
+    return true;
+  };
+  try {
+    return { result: fn(), stderr: chunks.join('') };
+  } finally {
+    process.stderr.write = original;
+  }
+}
 
 // Runs the CLI and captures stdout/stderr/status without letting a non-zero
 // exit throw — every exit code here is a documented outcome, not a failure.
@@ -98,6 +115,40 @@ test('routed fixture: --json findings is an empty array', () => {
 
   assert.equal(status, 0);
   assert.deepEqual(JSON.parse(stdout), { file, findings: [] });
+});
+
+test('overflow fixture: a real diagram sized by CSS reports exactly its one overflowing title', () => {
+  const file = path.join(FIXTURES, 'overflow-css-sized.html');
+  const { status, stdout } = runCli([file, '--json']);
+
+  assert.equal(status, 1);
+
+  const { findings } = JSON.parse(stdout);
+  assert.equal(findings.length, 1, 'one finding: everything else in the diagram is routed under the kit rules');
+  assert.equal(findings[0].code, 'text-overflows-box');
+  assert.match(findings[0].detail, /"InventoryAccessGuardian" overflows its own 210×96 box by 5\.4/);
+});
+
+test('fixtures carry no identifier from the diagrams they were synthesized from', () => {
+  // The 2026-09-10 fixture mirrors a Codex-produced diagram of a real
+  // project's reporting page. The geometry is the evidence; the names are not
+  // ours to publish.
+  const identifiers = [
+    'ReportingAccessBoundary',
+    'reporting.overview',
+    'ReportingCatalog',
+    'useReportingQuery',
+    'widgetRuntime',
+    'ReportingQueryResult',
+    'Reporting Overview',
+    'tenantId',
+  ];
+  for (const name of fs.readdirSync(FIXTURES)) {
+    const source = fs.readFileSync(path.join(FIXTURES, name), 'utf8');
+    for (const id of identifiers) {
+      assert.ok(!source.includes(id), `${name} carries "${id}"`);
+    }
+  }
 });
 
 test('a file with no <svg> block exits 2', () => {
@@ -221,7 +272,7 @@ test('checkSvg: text-anchor="middle" centers the box on x', () => {
     <rect x="0" y="0" width="10" height="10" stroke="black"/>
   </svg>`;
   const findings = checkSvg(svg);
-  // "hi" is 2 chars * 13 * 0.6 = 15.6 wide, centered on x=100 -> 92.2..107.8.
+  // "hi" is 2 chars * 16 * 0.6 = 19.2 wide, centered on x=100 -> 90.4..109.6.
   // If it were left-anchored it would start at x=100 instead, a visibly
   // different box; assert indirectly via a straddle a middle-anchored box
   // could not produce this far from the origin rect.
@@ -298,6 +349,69 @@ test('checkSvg: a long start-anchored label beside a vertical edge labels that e
     <text x="114" y="150" font-size="11">data sources + filters</text>
   </svg>`;
   assert.deepEqual(checkSvg(svg).map((f) => f.code), [], 'the edge is labeled');
+});
+
+test('checkSvg: font-size cascades as the browser does — class rule, text rule, attribute, inherited', () => {
+  // A 10-character text is 6 units wide per px of font size, so the viewBox
+  // width turns the resolved size into a text-outside-canvas finding or not.
+  // Measured in Chrome 2026-09-10: `text { font-size: 13px }` overrides a
+  // font-size="11" attribute, and `.lbl { font-size: 11px }` overrides both.
+  const styled = `<style>text { font-size: 13px } .lbl { font-size: 11px }</style>
+    <svg viewBox="0 0 70 100">
+      <text x="0" y="20" font-size="11">abcdefghij</text>
+      <text x="0" y="60" class="lbl" font-size="30">abcdefghij</text>
+    </svg>`;
+  const outside = checkSvg(styled).filter((f) => f.code === 'text-outside-canvas');
+  assert.equal(outside.length, 1, 'the text rule (78 wide) beats the attribute (66); the class rule (66) beats both');
+  assert.match(outside[0].detail, /^"abcdefghij" falls outside/);
+
+  // Without a rule, the element's attribute wins over an inherited one, and
+  // an enclosing <g> or the <svg> tag supplies the inherited size.
+  const attributes = `<svg viewBox="0 0 60 100" font-size="20">
+      <g font-size="9"><text x="0" y="20">abcdefghij</text></g>
+      <text x="0" y="60" font-size="8">abcdefghij</text>
+      <text x="0" y="90">abcdefghij</text>
+    </svg>`;
+  const found = checkSvg(attributes).filter((f) => f.code === 'text-outside-canvas');
+  assert.equal(found.length, 1, 'only the text that inherits 20 from <svg> (120 wide) escapes a 60 canvas');
+
+  // A commented-out rule is not a rule, `!important` does not hide the value,
+  // and a class list is searched for the one that has a size.
+  const commented = `<style>/* text { font-size: 40px } */ .lbl { font-size: 11px !important }</style>
+    <svg viewBox="0 0 70 100"><text x="0" y="20" class="x lbl">abcdefghij</text></svg>`;
+  assert.deepEqual(checkSvg(commented), [], 'the class rule resolves to 11 (66 wide) inside a 70 canvas');
+});
+
+test('checkSvg: text nothing sizes is read at 16px and said on stderr', () => {
+  const svg = `<svg viewBox="0 0 90 100"><text x="0" y="20">abcdefghij</text></svg>`;
+  const { result, stderr } = withStderr(() => checkSvg(svg));
+  // 10 * 16 * 0.6 = 96 > 90: the browser default, not the old 13 (78).
+  assert.deepEqual(
+    result.map((f) => f.code),
+    ['text-outside-canvas'],
+  );
+  assert.match(stderr, /1 text element\(s\) carry no font-size .* assumed 16px/);
+
+  const sized = `<svg viewBox="0 0 90 100" font-size="13"><text x="0" y="20">abcdefghij</text></svg>`;
+  const quiet = withStderr(() => checkSvg(sized));
+  assert.deepEqual(quiet.result, []);
+  assert.equal(quiet.stderr, '', 'a base size on the <svg> tag is enough to stay quiet');
+});
+
+test('checkSvg: a title wider than its box is text-overflows-box and stays the box title', () => {
+  // 20 chars * 16 * 0.6 = 192 wide, centred in a 100-wide node. Before
+  // 2.30.0 this text turned "free", was reported as a label straddling the
+  // node, and the node lost its title.
+  const svg = `<svg viewBox="0 0 400 200">
+    <rect x="100" y="60" width="100" height="40" stroke="black"/>
+    <text x="150" y="85" text-anchor="middle">FilterOptionsGateway</text>
+  </svg>`;
+  const findings = checkSvg(svg);
+  assert.deepEqual(
+    findings.map((f) => f.code),
+    ['text-overflows-box'],
+  );
+  assert.match(findings[0].detail, /^"FilterOptionsGateway" overflows its own 100×40 box by 46$/);
 });
 
 test('source hygiene: no network, shell, or filesystem-write primitives', () => {

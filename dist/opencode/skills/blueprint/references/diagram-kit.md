@@ -8,8 +8,10 @@ of the `<style>` block, verbatim.
 
 ## Shared Conventions
 
-- Canvas: `<svg viewBox="0 0 W H" style="max-width:100%">` sized to content;
-  the page wraps it in the wireframe kit's `.frame` shell (either mode's).
+- Canvas: `<svg viewBox="0 0 W H" font-size="13" style="max-width:100%">`
+  sized to content; the page wraps it in the wireframe kit's `.frame` shell
+  (either mode's). The `font-size` is the base every text inherits — see
+  Sizing below.
 - Palette is token roles, referenced with `var(--…)` (CSS variables work in
   inline SVG attributes): fills `var(--card)` / `var(--muted)`, strokes
   `var(--border)`, edges `var(--subtle)`, text `var(--foreground)`. The one
@@ -19,6 +21,17 @@ of the `<style>` block, verbatim.
   rows, cardinalities, edge labels (D2). 13–14px labels, 11px annotations
   in `var(--muted-foreground)`. If a label doesn't fit its box, the box
   grows — never shrink the font below 11px.
+- Sizing: the base size goes on the `<svg>` tag (`font-size="13"`), every
+  other size as a `font-size` attribute on the `<text>` itself. Never a
+  `text { font-size }` rule in `<style>` — in the browser it overrides every
+  `font-size` attribute in the diagram, so the sizes you wrote are not the
+  sizes that render. The checker resolves sizes the way the browser does but
+  sees only attributes, a bare `text` rule and `.class` rules; a text it
+  cannot size is read at the browser's 16px and reported on stderr. Budget
+  width at 0.6 em per character (exact for mono, generous for regular sans,
+  a little tight for semibold titles): at 16px a 23-character title needs
+  more than a 210 box, and when it doesn't fit the box grows — the checker
+  reports `text-overflows-box`, never a smaller font.
 - Arrowheads via one shared `<marker>`:
 
 ```html
@@ -62,8 +75,10 @@ of the `<style>` block, verbatim.
    `<rect>` in the fill the label sits on (`var(--background)` on open
    canvas, `var(--muted)` inside a filled boundary) drawn behind the text —
    the checker ignores stroke-less rects, so the halo is never mistaken for a
-   node. Two labels never share a corridor position: stagger by 14px or move
-   one to another segment.
+   node. Size the halo from the same budget as the label — characters × 11 ×
+   0.6, plus 4px each side — a halo narrower than its label lets the crossing
+   edge show through the ends. Two labels never share a corridor position:
+   stagger by 14px or move one to another segment.
 6. *Fan-in is a smell.* More than four edges into one box, or more than three
    edges in one gutter, means the diagram is answering two questions — split
    it (same rule as "Choosing the Shape").
@@ -78,7 +93,8 @@ of the `<style>` block, verbatim.
    |---|---|
    | `edge-through-box` | an edge segment crosses a node rect it doesn't attach to |
    | `label-over-label` | two text boxes intersect |
-   | `label-over-box` | a text box straddles a node rect border |
+   | `label-over-box` | a text box straddles the border of a node it doesn't belong to |
+   | `text-overflows-box` | a node's own text is wider or taller than the node |
    | `edge-through-label` | an edge crosses a text box that isn't its own label |
    | `unlabeled-edge` | no text within 24px of the edge |
    | `text-outside-canvas` | text escapes the viewBox |
