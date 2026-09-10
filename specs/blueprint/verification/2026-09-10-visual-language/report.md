@@ -6,7 +6,7 @@ The 2026-09-08 routing gate proved the kit's Layout and Routing rules on a real 
 |---|---|
 | Date | 2026-09-10 |
 | Target | `node skills/blueprint/references/diagram-check.mjs specs/blueprint/verification/2026-09-10-visual-language/reporting-visual-language.html`, rendered headless from `file://` at 2300×1200 (the brief's size, which puts the legend below the fold) and again at 2300×1700, where the legend is visible |
-| Diff | branch `feat/diagram-visual-language` at 7e0879b |
+| Diff | branch `feat/diagram-visual-language`, PR #155 |
 | Themes | light ✓ dark ✓ |
 
 | Claim | Evidence | Verdict |
@@ -23,7 +23,7 @@ The 2026-09-08 routing gate proved the kit's Layout and Routing rules on a real 
 Also seen:
 
 - **The task brief said twelve nodes; there are ten.** The routed specimen has exactly ten `rx="6"` node rects, and the generator's own count agrees. Four roles across ten nodes is the true shape — nothing was dropped in the restyle.
-- **A label halo clips a title strip by 2.25px.** The `HTTP · effective composition JSON` halo spans y 285.75–300.75; the frontend boundary's strip ends at y 288. The kit's Boundaries rule says no halo ever lands in the strip band, because a `var(--card)` halo punches a hole through the tint. This one does, and the notch is visible under magnification in both renders — but the geometry is the routing gate's and this round is style-only, so it was left in place rather than moved. It is a real tension between an already-signed-off routing and a newer boundary rule, not a checker miss: nothing in the checker looks at strip bands. Worth a docket item.
+- **A label halo clipped the frontend title strip by 2.25px in the first emission.** The `HTTP · effective composition JSON` corridor ran at y 300 with its halo from 285.75, while the strip ends at 288 — the inherited 2026-09-08 routing, drawn before strips existed. Fixed in this redraw: the corridor moved to y 303 (halo 288.75–303.75, label baseline 299), so the specimen now honours the kit's Boundaries rule. The checker has no notion of a strip band, so the overlap was invisible to it — docket #82 keeps the candidate rule.
 - **`--cat-7` and `--primary` are close in hue.** Both are warm tans. In dark especially, the external node's dashed `--cat-7` border and the accent's solid `--primary` border sit in the same colour family; they stay distinguishable by weight (2.5px vs 1) and by dash, not by hue alone. A diagram that accented an external node would read ambiguously.
 - **Widget host's second row is flush, not overflowing.** `joins placement + definition + data` ends at x 622.91 against a box edge at 623 — 0.09 units of slack. The checker reads it as inside and it renders touching the border. The 2.30.0 font-size work made this measurement exact rather than approximate, so this is now a real "as tight as it can be", not the calibration gap the routing-gate report flagged.
 - Boundary title strips moved to the kit's geometry: 48 tall, title 24px in from the boundary's left edge with its baseline at strip top + 30, in the boundary's role colour rather than `--muted-foreground`. That is the strip's own style; no node, edge or label coordinate changed. Members still start 45px below the strip, exactly the kit's floor.

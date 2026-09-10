@@ -154,10 +154,9 @@ body of the svg is read as an unlabeled edge.
 - Everything from Layout and Routing still holds — the shared arrowhead, one
   haloed `--mono` 11px label per segment, orthogonal paths, distinct ports. A
   two-way edge adds `marker-start`; flow diagrams keep their hop numbers.
-- Halo fill is `var(--card)`, everywhere. Boundaries in this language are
-  unfilled (only the title strip is tinted), so the ground under every label is
-  the frame's card surface: Layout and Routing rule 5's
-  `var(--background)` / `var(--muted)` split does not apply here.
+- Halo fill is `var(--card)`, everywhere (Layout and Routing rule 5).
+  Boundaries in this language are unfilled — only the title strip is tinted —
+  so the ground under every label is the frame's card surface.
 
 ### Boundaries
 
@@ -171,9 +170,10 @@ body of the svg is read as an unlabeled edge.
   letter-spacing="0.04em"` in `var(--cat-N)`, 24px in from the boundary's left
   edge, baseline at strip top + 30. A title strip makes a region scannable
   zoomed out; a bare corner label reads at close range only.
-- Members and labels start **≥ 45px below the strip's bottom edge** — boundary
-  top + 93. No label, and no label halo, ever lands in the strip band: a halo
-  in the strip punches a `var(--card)` hole through the tint.
+- Members start **≥ 45px below the strip's bottom edge** — boundary top + 93.
+  Labels and their halos need only clear the band: halo top ≥ strip bottom.
+  A halo in the strip punches a `var(--card)` hole through the tint, so a
+  corridor that would put one there moves down, never the strip.
 
 ### Legend
 
@@ -269,8 +269,8 @@ this fragment's legend, verbatim.
    `--mono` 11px: on a horizontal segment it sits 4px above the line, on a
    vertical segment it is centred on the line over its halo.
    Every label gets a halo so a crossing edge stays legible: a stroke-less
-   `<rect>` in the fill the label sits on (`var(--background)` on open
-   canvas, `var(--muted)` inside a filled boundary) drawn behind the text —
+   `<rect>` in `var(--card)` — the frame ground every diagram sits on — drawn
+   behind the text —
    the checker ignores stroke-less rects, so the halo is never mistaken for a
    node. Size the halo from the same budget as the label — characters × 11 ×
    0.6, plus 4px each side — a halo narrower than its label lets the crossing
