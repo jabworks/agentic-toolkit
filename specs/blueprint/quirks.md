@@ -73,3 +73,18 @@
 **Trigger:** any diagram that sizes text through CSS rather than attributes. The 2026-09-10 diagrams set nothing on `<svg>` or the titles (so they inherit the browser's 16px) and give edge labels 11px through a `.edge-label` class rule; the checker read every one of them at its 13px default — titles 19% narrow, labels 18% wide.
 **Cause:** the checker resolved `font-size` from attributes only and fell back to 13 — a number that came from the fixtures' own `text { font-size: 13px }` rule, which it equally could not read. Measured in Chrome, a `text { font-size }` rule overrides every `font-size` attribute in the diagram and a `.class` rule overrides both, so even the fixtures rendered their 11px labels at 13. The estimate itself measured exact for mono (0.602 em/char), generous for regular sans (0.51), and a little narrow for semibold titles on the DejaVu Sans fallback (0.63 mean, 0.70 max); at the right size, 0.6 catches the overflow without change. `verification/2026-09-10-font-size-calibration/report.md` has the numbers.
 **Mitigation:** yes — since 2.30.0 the checker cascades sizes as the browser does, restricted to what a regex can see: a `.class` rule, then a bare `text` / `svg text` rule, then the element's attribute, then one inherited from `<g>` or `<svg>`, then 16px with a stderr notice naming how many texts it had to assume. A node's own text that exceeds the node is `text-overflows-box` (before, it silently became a "free" label and the node lost its title), and `label-over-box` now also catches owned text straddling a neighbour. The kit puts the base size on the `<svg>` tag and bans `text { font-size }` rules, and sizes halos from the same 0.6 em budget — 8 of the 16 real labels were 1–19 units wider than their halo. Still blind: `em`/`rem`/`var()` sizes, any other selector shape, and the actual font — Geist is what the token core names, the measurement ran on the fallback stack.
+
+## Q10 — Marks read as edges
+
+**Symptom:** a kind glyph (a small cylinder or window icon beside a node title) drawn as a `<path>` reports `unlabeled-edge`, twice per glyph, in every diagram that carries one — 14 findings on the first visual-language mockups (2026-09-10) with nothing wrong in the drawing.
+**Trigger:** any stroked `<path>` with `fill="none"` (or no fill) anywhere the checker walks, including the legend's mini `<svg>`s in the page.
+**Cause:** `processPath` classifies by fill alone — a fill other than `none` is a shape, everything else is an edge. It has no notion of decoration for paths, only for stroke-less rects.
+**Mitigation:** design-level, by D9's invariant — marks live in `<defs>` as `<g id="mark-…">` groups and are placed via `<use>`, which the checker never walks; until Q11 is fixed the mark paths carry `fill="transparent"` so a leak through the defs skip is still inert. The legend is HTML, outside every svg.
+
+## Q11 — The `<defs>` skip ends at a nested container
+
+**Symptom:** three mark groups declared inside one `<defs>`: the first is skipped, the second and third are scanned and their paths reported as edges.
+**Trigger:** any container (`<symbol>`, `<g>`, `<clipPath>`, `<pattern>`) nested inside `<defs>` or `<marker>`.
+**Cause:** the tag walk pushes a skip entry for `defs`/`marker` and pops on a close tag; a nested container's close tag pops the skip entry, so the rest of the defs block is walked as drawing.
+**Mitigation:** pending 2.31.0 (D9 rollout step 1): the walk tracks nesting depth inside a skipped subtree and only the matching close ends the skip; test + negative fixture. Until then, one mark per `<defs>` block or the `fill="transparent"` guard of Q10.
+

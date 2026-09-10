@@ -18,6 +18,8 @@
 - [verification/2026-09-10-codex-trigger-check/report.md](verification/2026-09-10-codex-trigger-check/report.md) — three Codex trials on the shipped 2.30.0: does the agent run the checker unprompted before delivering, and does the base font size land on the `<svg>` tag
 
 ## Changelog
+- 2026-09-10 (design, unshipped): visual language signed off — role tint, kind marks, protocol dash,
+  legend, boundary title strips across all four families; accent rule rewritten — see D9, Q10, Q11
 - 2026-09-10 (3e31e7f): `diagram-check.mjs` resolves font size as the browser cascades it
   (class rule, `text` rule, attribute, inherited, 16px default) instead of assuming 13px;
   new `text-overflows-box` finding; kit states the sizing rule and halo budget — see Q9

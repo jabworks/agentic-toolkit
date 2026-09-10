@@ -14,6 +14,13 @@ skills/blueprint/
                               # (guarded by tests/blueprint-kit.test.mjs)
 ```
 
+## Visual language (D9, design signed off 2026-09-10 — ships in 2.31.0)
+
+- `references/diagram-kit.md` gains a "Visual Language" section: role slot table, tint recipe, kinds table, the marks `<defs>` block, edge dash table, legend markup + CSS, boundary title strip; Shared Conventions' accent rule rewritten; family sections 1–4 say how each applies it.
+- `references/diagram-check.mjs`: `<defs>` skip survives nested containers (Q11); `<use>` stays ignored.
+- `tests/blueprint-kit.test.mjs` pins the marks block and legend markup verbatim; `tests/diagram-check.test.mjs` gains the defs-nesting test and a negative fixture (a mark as a raw path is still an `unlabeled-edge`).
+- Specimen: the reporting diagram redrawn in the language (generic upstream names) under `verification/2026-09-10-visual-language/`, also a checker fixture asserting `clean`.
+
 ## Artifacts
 
 - Output: `.condux/designs/<date>-<feature>/mockups/<name>.html`
