@@ -79,12 +79,12 @@
 **Symptom:** a kind glyph (a small cylinder or window icon beside a node title) drawn as a `<path>` reports `unlabeled-edge`, twice per glyph, in every diagram that carries one — 14 findings on the first visual-language mockups (2026-09-10) with nothing wrong in the drawing.
 **Trigger:** any stroked `<path>` with `fill="none"` (or no fill) anywhere the checker walks, including the legend's mini `<svg>`s in the page.
 **Cause:** `processPath` classifies by fill alone — a fill other than `none` is a shape, everything else is an edge. It has no notion of decoration for paths, only for stroke-less rects.
-**Mitigation:** design-level, by D9's invariant — marks live in `<defs>` as `<g id="mark-…">` groups and are placed via `<use>`, which the checker never walks; until Q11 is fixed the mark paths carry `fill="transparent"` so a leak through the defs skip is still inert. The legend is HTML, outside every svg.
+**Mitigation:** design-level, by D9's invariant — marks live in `<defs>` as `<g id="mark-…">` groups and are placed via `<use>`, which the checker never walks (Q11 makes the defs skip hold). The legend is HTML, outside every svg. `tests/fixtures/diagram-check/mark-as-path.html` keeps the failing shape on record.
 
 ## Q11 — The `<defs>` skip ends at a nested container
 
 **Symptom:** three mark groups declared inside one `<defs>`: the first is skipped, the second and third are scanned and their paths reported as edges.
 **Trigger:** any container (`<symbol>`, `<g>`, `<clipPath>`, `<pattern>`) nested inside `<defs>` or `<marker>`.
 **Cause:** the tag walk pushes a skip entry for `defs`/`marker` and pops on a close tag; a nested container's close tag pops the skip entry, so the rest of the defs block is walked as drawing.
-**Mitigation:** pending 2.31.0 (D9 rollout step 1): the walk tracks nesting depth inside a skipped subtree and only the matching close ends the skip; test + negative fixture. Until then, one mark per `<defs>` block or the `fill="transparent"` guard of Q10.
+**Mitigation:** yes — since 2.31.0 a frame pushed inside a skipped subtree no longer claims the skip decrement; only the `defs`/`marker` frame itself ends the skip. Tested with `<g>` and `<symbol>` wrappers, and the visual-language fixture's six mark groups.
 

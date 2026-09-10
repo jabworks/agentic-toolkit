@@ -117,6 +117,29 @@ test('routed fixture: --json findings is an empty array', () => {
   assert.deepEqual(JSON.parse(stdout), { file, findings: [] });
 });
 
+test('visual-language fixture: exits 0 and prints clean', () => {
+  const file = path.join(FIXTURES, 'visual-language.html');
+  const { status, stdout } = runCli([file]);
+
+  assert.equal(status, 0);
+  assert.equal(stdout.trim(), 'clean');
+});
+
+test('visual-language fixture: six mark groups in <defs> and no finding from any of them', () => {
+  const file = path.join(FIXTURES, 'visual-language.html');
+  const { status, stdout } = runCli([file, '--json']);
+
+  assert.equal(status, 0);
+  assert.deepEqual(JSON.parse(stdout), { file, findings: [] });
+
+  // The kit's marks are glyphs, not drawing: they live in <defs>, which the
+  // walk skips, so their `fill="none"` paths never read as unlabeled edges.
+  const defs = fs.readFileSync(file, 'utf8').match(/<defs>[\s\S]*?<\/defs>/)[0];
+  for (const id of ['mark-store', 'mark-external', 'mark-ui', 'mark-actor', 'mark-queue', 'mark-batch']) {
+    assert.ok(defs.includes(`<g id="${id}">`), `<defs> is missing ${id}`);
+  }
+});
+
 test('overflow fixture: a real diagram sized by CSS reports exactly its one overflowing title', () => {
   const file = path.join(FIXTURES, 'overflow-css-sized.html');
   const { status, stdout } = runCli([file, '--json']);
@@ -142,6 +165,13 @@ test('fixtures carry no identifier from the diagrams they were synthesized from'
     'ReportingQueryResult',
     'Reporting Overview',
     'tenantId',
+    // The 2026-09-10 visual-language fixture is the same routed diagram
+    // restyled; its "Upstream systems" node named four real systems. The
+    // committed copies carry generic twins instead.
+    'AO',
+    'CloudCheck',
+    'Expresse',
+    'Maestro',
   ];
   for (const name of fs.readdirSync(FIXTURES)) {
     const source = fs.readFileSync(path.join(FIXTURES, name), 'utf8');
@@ -199,6 +229,58 @@ test('checkSvg: a rect nested two <g> deep positions correctly', () => {
     [],
     'an edge beside the box must not fire',
   );
+});
+
+test('checkSvg: the <defs> skip survives a <g> nested inside it', () => {
+  // Before the fix, snapshot() marked every pushed frame with
+  // `skip: skipDepth > 0` — so the first <g> inside <defs> also claimed the
+  // decrement <defs> owns, and its close tag ended the skip early: the
+  // second and third <g>'s paths were walked as drawing and became edges.
+  const svg = `<svg viewBox="0 0 300 200">
+    <defs>
+      <g><path d="M0,0 L10,10" fill="none" stroke="black"/></g>
+      <g><path d="M0,0 L10,10" fill="none" stroke="black"/></g>
+      <g><path d="M0,0 L10,10" fill="none" stroke="black"/></g>
+    </defs>
+    <rect x="20" y="20" width="60" height="40" stroke="black"/>
+    <rect x="200" y="20" width="60" height="40" stroke="black"/>
+    <line x1="80" y1="40" x2="200" y2="40" stroke="black"/>
+    <text x="120" y="30" font-size="11">calls</text>
+  </svg>`;
+  assert.deepEqual(
+    checkSvg(svg).filter((f) => f.code === 'unlabeled-edge'),
+    [],
+    'paths inside <g> groups nested in <defs> must not become edges, however many groups deep',
+  );
+
+  const withSymbol = `<svg viewBox="0 0 300 200">
+    <defs>
+      <symbol><path d="M0,0 L10,10" fill="none" stroke="black"/></symbol>
+      <symbol><path d="M0,0 L10,10" fill="none" stroke="black"/></symbol>
+      <symbol><path d="M0,0 L10,10" fill="none" stroke="black"/></symbol>
+    </defs>
+    <rect x="20" y="20" width="60" height="40" stroke="black"/>
+    <rect x="200" y="20" width="60" height="40" stroke="black"/>
+    <line x1="80" y1="40" x2="200" y2="40" stroke="black"/>
+    <text x="120" y="30" font-size="11">calls</text>
+  </svg>`;
+  assert.deepEqual(
+    checkSvg(withSymbol).filter((f) => f.code === 'unlabeled-edge'),
+    [],
+    'the same holds for <symbol> wrappers',
+  );
+});
+
+test('mark-as-path fixture: a kind glyph drawn as a raw path outside <defs> still reads as an unlabeled edge', () => {
+  const file = path.join(FIXTURES, 'mark-as-path.html');
+  const { status, stdout } = runCli([file, '--json']);
+
+  assert.equal(status, 1);
+
+  const { findings } = JSON.parse(stdout);
+  assert.equal(findings.length, 1, 'the misdrawn mark is the only defect — the rest of the diagram is routed clean');
+  assert.equal(findings[0].code, 'unlabeled-edge');
+  assert.equal(findings[0].line, 30, 'the finding must land on the raw path, not the node or its title');
 });
 
 test('checkSvg: a boundary rect containing nodes is never an obstacle', () => {

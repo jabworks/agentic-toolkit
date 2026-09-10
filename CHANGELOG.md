@@ -12,9 +12,13 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## condux 2.31.0 — 2026-09-10
+
+- feat(blueprint): diagram visual language — role tint, kind marks, protocol dash — close #78 (2.31.0)
+
 ## condux 2.30.0 — 2026-09-10
 
-- feat(blueprint): diagram-check resolves font size as the browser does; text-overflows-box — close #76 (2.30.0)
+- feat(blueprint): diagram-check resolves font size as the browser does; text-overflows-box — close #76 (2.30.0) (#153)
 
 ## condux 2.29.0 — 2026-09-08
 
