@@ -5,7 +5,7 @@
 > language (two modes, one skeleton), inline-SVG system diagrams for BE.
 
 **Last updated:** 2026-09-10
-**Commit:** pending
+**Commit:** 3e31e7f
 **Status:** draft
 
 ## Contents
@@ -17,7 +17,7 @@
 - [verification/2026-09-10-font-size-calibration/report.md](verification/2026-09-10-font-size-calibration/report.md) — the checker's width estimate measured against three real diagrams rendered in Chrome; the font-size cascade it must mirror
 
 ## Changelog
-- 2026-09-10 (pending): `diagram-check.mjs` resolves font size as the browser cascades it
+- 2026-09-10 (3e31e7f): `diagram-check.mjs` resolves font size as the browser cascades it
   (class rule, `text` rule, attribute, inherited, 16px default) instead of assuming 13px;
   new `text-overflows-box` finding; kit states the sizing rule and halo budget — see Q9
 - 2026-09-08 (eb8cd83): Layout and routing rules in diagram-kit.md and the `diagram-check.mjs`

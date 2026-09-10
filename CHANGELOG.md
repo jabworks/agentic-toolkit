@@ -14,7 +14,7 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## condux 2.30.0 — 2026-09-10
 
-- chore(condux): version 2.30.0
+- feat(blueprint): diagram-check resolves font size as the browser does; text-overflows-box — close #76 (2.30.0)
 
 ## condux 2.29.0 — 2026-09-08
 
