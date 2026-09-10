@@ -347,8 +347,10 @@ const parsePathSegments = (d, warnCurve) => {
 // ---------------------------------------------------------------------------
 // Per-<svg>-block walk. A single left-to-right tag scan tracks a stack of
 // <g> offsets (and font-size inheritance), skips <defs>/<marker> subtrees
-// entirely, and special-cases <text>…</text> to pull out its raw content
-// (and any positioned <tspan> children) without a general text-node model.
+// entirely — the skip survives any container nested inside them (<g>,
+// <symbol>, …), since only the defs/marker frame itself may end it — and
+// special-cases <text>…</text> to pull out its raw content (and any
+// positioned <tspan> children) without a general text-node model.
 // ---------------------------------------------------------------------------
 
 const walkBlock = (source, blockOffset, blockSource, findLine, notify, styles) => {
@@ -379,9 +381,11 @@ const walkBlock = (source, blockOffset, blockSource, findLine, notify, styles) =
   let curFontSize = parseFloat(getAttr(svgOpenTag, 'font-size') ?? '') || null;
   let skipDepth = 0;
   const stack = [];
-  // The frame a closing tag restores: offsets, inherited font size, and
-  // whether the subtree was inside <defs>/<marker>.
-  const snapshot = () => ({ prevX: curOffsetX, prevY: curOffsetY, prevFontSize: curFontSize, skip: skipDepth > 0 });
+  // The frame a closing tag restores: offsets and inherited font size.
+  // `skip` means "this frame incremented skipDepth", which only the
+  // defs/marker branch below ever does — a container opened inside a
+  // skipped subtree restores offsets on close, nothing more.
+  const snapshot = () => ({ prevX: curOffsetX, prevY: curOffsetY, prevFontSize: curFontSize, skip: false });
 
   const tagRe = /<\/?[a-zA-Z][^>]*>/g;
   let m;

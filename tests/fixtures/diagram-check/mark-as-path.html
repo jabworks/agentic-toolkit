@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>mark-as-path fixture — a kind glyph drawn as a raw path outside &lt;defs&gt;</title>
+<style>
+  body { margin: 0; }
+  text { font-family: sans-serif; fill: #1b1f23; }
+</style>
+</head>
+<body>
+<!-- Negative fixture for the defs-skip fix (docket #78 step 1): the kit says
+     a kind mark belongs in <defs> as a <g id="mark-…"> group, placed with
+     <use>. Drawn instead as a raw stroked fill="none" path beside a node's
+     title, it reads exactly like an edge nobody labeled — the checker must
+     still catch it. Everything else here is routed clean under the kit's
+     rules, so the one unlabeled-edge is the store glyph and nothing else. -->
+<svg viewBox="0 0 480 220" font-size="13" style="max-width:100%">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#8a8f98" />
+    </marker>
+  </defs>
+
+  <rect x="40" y="90" width="140" height="60" fill="#fff" stroke="#1b1f23" />
+  <text x="110" y="125" text-anchor="middle">orders</text>
+
+  <!-- the store glyph, misdrawn: a raw stroked fill="none" path beside the
+       node's own title instead of a <use>d <defs> mark -->
+  <path d="M50,102 a9,4 0 1,0 18,0 a9,4 0 1,0 -18,0 V114 a9,4 0 0,0 18,0 V102 Z" fill="none" stroke="#1b1f23" />
+
+  <rect x="300" y="90" width="140" height="60" fill="#fff" stroke="#1b1f23" />
+  <text x="370" y="125" text-anchor="middle">invoices</text>
+
+  <path d="M180,120 H300" fill="none" stroke="#8a8f98" marker-end="url(#arrow)" />
+  <rect x="210" y="104" width="60" height="16" fill="#fff" />
+  <text x="215" y="116" font-size="11">creates</text>
+</svg>
+</body>
+</html>
