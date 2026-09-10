@@ -117,6 +117,29 @@ test('routed fixture: --json findings is an empty array', () => {
   assert.deepEqual(JSON.parse(stdout), { file, findings: [] });
 });
 
+test('visual-language fixture: exits 0 and prints clean', () => {
+  const file = path.join(FIXTURES, 'visual-language.html');
+  const { status, stdout } = runCli([file]);
+
+  assert.equal(status, 0);
+  assert.equal(stdout.trim(), 'clean');
+});
+
+test('visual-language fixture: six mark groups in <defs> and no finding from any of them', () => {
+  const file = path.join(FIXTURES, 'visual-language.html');
+  const { status, stdout } = runCli([file, '--json']);
+
+  assert.equal(status, 0);
+  assert.deepEqual(JSON.parse(stdout), { file, findings: [] });
+
+  // The kit's marks are glyphs, not drawing: they live in <defs>, which the
+  // walk skips, so their `fill="none"` paths never read as unlabeled edges.
+  const defs = fs.readFileSync(file, 'utf8').match(/<defs>[\s\S]*?<\/defs>/)[0];
+  for (const id of ['mark-store', 'mark-external', 'mark-ui', 'mark-actor', 'mark-queue', 'mark-batch']) {
+    assert.ok(defs.includes(`<g id="${id}">`), `<defs> is missing ${id}`);
+  }
+});
+
 test('overflow fixture: a real diagram sized by CSS reports exactly its one overflowing title', () => {
   const file = path.join(FIXTURES, 'overflow-css-sized.html');
   const { status, stdout } = runCli([file, '--json']);
@@ -142,6 +165,13 @@ test('fixtures carry no identifier from the diagrams they were synthesized from'
     'ReportingQueryResult',
     'Reporting Overview',
     'tenantId',
+    // The 2026-09-10 visual-language fixture is the same routed diagram
+    // restyled; its "Upstream systems" node named four real systems. The
+    // committed copies carry generic twins instead.
+    'AO',
+    'CloudCheck',
+    'Expresse',
+    'Maestro',
   ];
   for (const name of fs.readdirSync(FIXTURES)) {
     const source = fs.readFileSync(path.join(FIXTURES, name), 'utf8');

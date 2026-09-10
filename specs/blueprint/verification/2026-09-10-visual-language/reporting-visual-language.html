@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Reporting contract boundary — visual language</title>
+<style>
+/* Shared design core — do not hand-edit; edit scripts/tokens/core.css. */
+:root {
+  --background: #111110;
+  --card: #191918;
+  --card-foreground: #eeeeec;
+  --popover: #222221;
+  --foreground: #eeeeec;
+  --muted: #222221;
+  --muted-foreground: #b5b3ad;
+  --border: #3b3a37;
+  --input: #3b3a37;
+  --primary: #978365;
+  --primary-foreground: #ffffff;
+  --primary-hover: #a39073;
+  --primary-muted: #24231f;
+  --primary-text: #cbb99f;
+  --ring: #978365;
+  --accent: #2a2a28;
+  --success: #71d083;
+  --success-muted: #1b2a1e;
+  --success-border: #2d5736;
+  --warning: #ffca16;
+  --warning-muted: #302008;
+  --warning-border: #5c3d05;
+  --destructive: #ff977d;
+  --destructive-muted: #391714;
+  --destructive-border: #6e2920;
+  --info: #70b8ff;
+  --info-muted: #0d2847;
+  --info-border: #104d87;
+  /* categorical — series identity; neither the accent nor the semantics */
+  --cat-1: #cf686e;
+  --cat-2: #897ed6;
+  --cat-3: #41a265;
+  --cat-4: #3694d4;
+  --cat-5: #94911b;
+  --cat-6: #ba6cae;
+  --cat-7: #c37827;
+  --cat-8: #00a0a4;
+  --cat-other: #686560;
+  --outline: rgba(237, 237, 236, 0.08);
+  --subtle: #686560;
+  --shadow-sm: 0 1px 2px rgba(6, 6, 5, 0.5);
+  --shadow-md: 0 4px 14px rgba(6, 6, 5, 0.55);
+  --shadow-lg: 0 20px 60px rgba(6, 6, 5, 0.62);
+  --mono: "Geist Mono", "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Monaco, "Cascadia Code", monospace;
+  --sans: "Geist", "Inter Tight", ui-sans-serif, system-ui, -apple-system, "Segoe UI Variable Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --text-2xs: 0.6875rem;
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.5rem;
+  --text-4xl: 3.5rem;
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading-normal: 1.55;
+  --leading-relaxed: 1.7;
+  --tracking-tight: -0.022em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.06em;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-8: 3rem;
+  --space-12: 4rem;
+  --radius-sm: 0.1875rem;
+  --radius: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-full: 9999px;
+  --dur-fast: 120ms;
+  --dur: 200ms;
+  --dur-slow: 320ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --background: #f6f5ef;
+    --card: #fcfbf6;
+    --card-foreground: #36302a;
+    --popover: #fcfbf6;
+    --foreground: #36302a;
+    --muted: #f0efe3;
+    --muted-foreground: #726c5e;
+    --border: #ddd6c6;
+    --input: #ddd6c6;
+    --primary: #967e60;
+    --primary-foreground: #ffffff;
+    --primary-hover: #897254;
+    --primary-muted: #efece0;
+    --primary-text: #6f5e44;
+    --ring: #967e60;
+    --accent: #eae7da;
+    --success: #3f7a34;
+    --success-muted: #e6f5e2;
+    --success-border: #c2e1b3;
+    --warning: #93761d;
+    --warning-muted: #fbf4c4;
+    --warning-border: #ebd87f;
+    --destructive: #bf4f3b;
+    --destructive-muted: #fbe8e2;
+    --destructive-border: #f0c9ba;
+    --info: #3f6fa6;
+    --info-muted: #e6f1fc;
+    --info-border: #bed7ef;
+    --cat-1: #b04d54;
+    --cat-2: #6f63b8;
+    --cat-3: #1e874b;
+    --cat-4: #0a78b7;
+    --cat-5: #797600;
+    --cat-6: #9d5192;
+    --cat-7: #a45e00;
+    --cat-8: #008f93;
+    --cat-other: #a8a294;
+    --outline: rgba(54, 48, 42, 0.08);
+    --subtle: #a8a294;
+    --shadow-sm: 0 1px 2px rgba(54, 48, 42, 0.1);
+    --shadow-md: 0 4px 14px rgba(54, 48, 42, 0.13);
+    --shadow-lg: 0 20px 60px rgba(54, 48, 42, 0.18);
+  }
+}
+:root[data-theme="light"] {
+  --background: #f6f5ef;
+  --card: #fcfbf6;
+  --card-foreground: #36302a;
+  --popover: #fcfbf6;
+  --foreground: #36302a;
+  --muted: #f0efe3;
+  --muted-foreground: #726c5e;
+  --border: #ddd6c6;
+  --input: #ddd6c6;
+  --primary: #967e60;
+  --primary-foreground: #ffffff;
+  --primary-hover: #897254;
+  --primary-muted: #efece0;
+  --primary-text: #6f5e44;
+  --ring: #967e60;
+  --accent: #eae7da;
+  --success: #3f7a34;
+  --success-muted: #e6f5e2;
+  --success-border: #c2e1b3;
+  --warning: #93761d;
+  --warning-muted: #fbf4c4;
+  --warning-border: #ebd87f;
+  --destructive: #bf4f3b;
+  --destructive-muted: #fbe8e2;
+  --destructive-border: #f0c9ba;
+  --info: #3f6fa6;
+  --info-muted: #e6f1fc;
+  --info-border: #bed7ef;
+  --cat-1: #b04d54;
+  --cat-2: #6f63b8;
+  --cat-3: #1e874b;
+  --cat-4: #0a78b7;
+  --cat-5: #797600;
+  --cat-6: #9d5192;
+  --cat-7: #a45e00;
+  --cat-8: #008f93;
+  --cat-other: #a8a294;
+  --outline: rgba(54, 48, 42, 0.08);
+  --subtle: #a8a294;
+  --shadow-sm: 0 1px 2px rgba(54, 48, 42, 0.1);
+  --shadow-md: 0 4px 14px rgba(54, 48, 42, 0.13);
+  --shadow-lg: 0 20px 60px rgba(54, 48, 42, 0.18);
+}
+
+body { background: var(--background); color: var(--foreground); font-family: var(--sans); margin: 0; padding: var(--space-6); }
+.frame { background: var(--card); border: 1px dashed var(--muted-foreground); border-radius: var(--radius-sm); max-width: 1700px; margin: 0 auto; padding: var(--space-6); }
+.topbar { display: flex; justify-content: space-between; align-items: baseline; padding-bottom: var(--space-4); border-bottom: 1px solid var(--border); margin-bottom: var(--space-5); }
+.topbar strong { font-size: var(--text-xl); letter-spacing: var(--tracking-tight); }
+.topbar span { font-family: var(--mono); font-size: var(--text-sm); color: var(--muted-foreground); }
+.caption { font-family: var(--mono); font-size: var(--text-sm); color: var(--muted-foreground); margin-top: var(--space-6); }
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="topbar"><strong>Reporting contract boundary</strong><span>architecture · visual language</span></div>
+<svg viewBox="0 0 1700 1100" font-size="13" style="max-width:100%">
+<defs>
+<g id="mark-store"><path d="M1,4 a8,3 0 1,0 16,0 a8,3 0 1,0 -16,0 M1,4 V13 a8,3 0 0,0 16,0 V4" fill="none" stroke="currentColor" stroke-width="1.3"/></g>
+<g id="mark-external"><path d="M3,12 L15,3 M7,3 h8 v8" fill="none" stroke="currentColor" stroke-width="1.3"/></g>
+<g id="mark-ui"><path d="M1,1 h16 v13 h-16 z M1,5 h16" fill="none" stroke="currentColor" stroke-width="1.3"/></g>
+<g id="mark-actor"><path d="M9,2 a3,3 0 1,0 0.01,0 M2,15 a7,5 0 0,1 14,0" fill="none" stroke="currentColor" stroke-width="1.3"/></g>
+<g id="mark-queue"><path d="M1,3 h12 M3,8 h12 M5,13 h12" fill="none" stroke="currentColor" stroke-width="1.3"/></g>
+<g id="mark-batch"><path d="M2,8 a7,7 0 1,0 14,0 a7,7 0 1,0 -14,0 M9,4 V8 h4" fill="none" stroke="currentColor" stroke-width="1.3"/></g>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5"
+          markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="var(--subtle)"/>
+  </marker>
+</defs>
+<!-- usage: <line ... stroke="var(--subtle)" marker-end="url(#arrow)"/> or
+     <path ... stroke="var(--subtle)" marker-end="url(#arrow)"/> — the marker
+     works the same on both elements. -->
+<rect x="95" y="240" width="745" height="825" rx="4" fill="none" stroke="var(--cat-4)" stroke-dasharray="6 4"/>
+<rect x="95" y="240" width="745" height="48" rx="4" fill="var(--cat-4)" fill-opacity="0.10"/>
+  <text x="119" y="270" font-family="var(--sans)" font-size="14" font-weight="600" letter-spacing="0.04em" fill="var(--cat-4)">FRONTEND REPORTING RUNTIME</text>
+<rect x="900" y="240" width="740" height="825" rx="4" fill="none" stroke="var(--cat-2)" stroke-dasharray="6 4"/>
+<rect x="900" y="240" width="740" height="48" rx="4" fill="var(--cat-2)" fill-opacity="0.10"/>
+  <text x="924" y="270" font-family="var(--sans)" font-size="14" font-weight="600" letter-spacing="0.04em" fill="var(--cat-2)">BACKEND REPORTING API + PERSISTENCE</text>
+<rect x="145" y="333" width="290" height="148" rx="6" fill="var(--cat-4)" fill-opacity="0.10" stroke="var(--cat-4)"/>
+  <text x="290" y="363" text-anchor="middle" font-family="var(--sans)" font-size="16" font-weight="600" fill="var(--foreground)">Resolved composition</text>
+  <text x="161" y="399" font-family="var(--mono)" font-size="13" fill="var(--muted-foreground)">sections + widget IDs</text>
+  <text x="161" y="424" font-family="var(--mono)" font-size="13" fill="var(--muted-foreground)">grid spans + logical positions</text>
+  <text x="161" y="449" font-family="var(--mono)" font-size="13" fill="var(--muted-foreground)">revision + applied layers</text>
+<rect x="522" y="333" width="290" height="148" rx="6" fill="var(--cat-4)" fill-opacity="0.10" stroke="var(--cat-4)"/>
+<use href="#mark-store" x="536" y="345" width="18" height="16" style="color:var(--cat-4)"/>
+  <text x="667" y="363" text-anchor="middle" font-family="var(--sans)" font-size="16" font-weight="600" fill="var(--foreground)">Frontend catalogs</text>
+  <text x="538" y="399" font-family="var(--mono)" font-size="13" fill="var(--muted-foreground)">widget + renderer registry</text>
+  <text x="538" y="424" font-family="var(--mono)" font-size="13" fill="var(--muted-foreground)">seven canonical filter definitions</text>
+  <text x="538" y="449" font-family="var(--mono)" font-size="13" fill="var(--muted-foreground)">bindings + presentation config</text>
+<rect x="940" y="333" width="290" height="148" rx="6" fill="var(--cat-2)" fill-opacity="0.10" stroke="var(--primary)" stroke-width="2.5"/>
+  <text x="1085" y="363" text-anchor="middle" font-family="var(--sans)" font-size="16" font-weight="600" fill="var(--primary-text)">Composition resolver</text>
+  <text x="956" y="399" font-family="var(--mono)" font-size="13" fill="var(--muted-foreground)">system → tenant → user</text>
+  <text x="956" y="424" font-family="var(--mono)" font-size="13" fill="var(--muted-foreground)">returns one effective composition</text>
+  <text x="956" y="449" font-family="var(--mono)" font-size="13" fill="var(--muted-foreground)">guards writes with baseRevision</text>
+<rect x="1317" y="333" width="290" height="148" rx="6" fill="var(--cat-3)" fill-opacity="0.10" stroke="var(--cat-3)"/>
+<use href="#mark-store" x="1331" y="345" width="18" height="16" style="color:var(--cat-3)"/>
+  <text x="1462" y="363" text-anchor="middle" font-family="var(--sans)" font-size="16" font-weight="600" fill="var(--foreground)">Layout store</text>
+  <text x="1333" y="399" font-family="var(--mono)" font-size="13" fill="var(--muted-foreground)">complete system baseline</text>
+  <text x="1333" y="424" font-family="var(--mono)" font-size="13" fill="var(--muted-foreground)">sparse tenant overrides</text>
+  <text x="1333" y="449" font-family="var(--mono)" font-size="13" fill="var(--muted-foreground)">sparse user overrides</text>
+<rect x="145" y="602" width="290" height="148" rx="6" fill="var(--cat-4)" fill-opacity="0.10" stroke="var(--cat-4)"/>
+  <text x="290" y="632" text-anchor="middle" font-family="var(--sans)" font-size="16" font-weight="600" fill="var(--foreground)">Filter + query planner</text>
+  <text x="161" y="668" font-family="var(--mono)" font-size="13" fill="var(--muted-foreground)">decodes canonical URL selections</text>
+  <text x="161" y="693" font-family="var(--mono)" font-size="13" fill="var(--muted-foreground)">loads + intersects valid filters</text>
+  <text x="161" y="718" font-family="var(--mono)" font-size="13" fill="var(--muted-foreground)">deduplicates normalized queries</text>
+<rect x="522" y="602" width="290" height="148" rx="6" fill="var(--cat-4)" fill-opacity="0.10" stroke="var(--cat-4)"/>
+  <text x="667" y="632" text-anchor="middle" font-family="var(--sans)" font-size="16" font-weight="600" fill="var(--foreground)">Result validator</text>
+  <text x="538" y="668" font-family="var(--mono)" font-size="13" fill="var(--muted-foreground)">checks schema + result kind</text>
+  <text x="538" y="693" font-family="var(--mono)" font-size="13" fill="var(--muted-foreground)">isolates malformed siblings</text>
+  <text x="538" y="718" font-family="var(--mono)" font-size="13" fill="var(--muted-foreground)">indexes results by query id</text>
+<rect x="940" y="602" width="290" height="148" rx="6" fill="var(--cat-2)" fill-opacity="0.10" stroke="var(--cat-2)"/>
+  <text x="1085" y="632" text-anchor="middle" font-family="var(--sans)" font-size="16" font-weight="600" fill="var(--foreground)">Filter options API</text>
+  <text x="956" y="668" font-family="var(--mono)" font-size="13" fill="var(--muted-foreground)">authorizes tenant + dimensions</text>
+  <text x="956" y="693" font-family="var(--mono)" font-size="13" fill="var(--muted-foreground)">returns stable IDs + data labels</text>
+  <text x="956" y="718" font-family="var(--mono)" font-size="13" fill="var(--muted-foreground)">isolates option-set statuses</text>
+<rect x="1317" y="602" width="290" height="148" rx="6" fill="var(--cat-2)" fill-opacity="0.10" stroke="var(--cat-2)"/>
+  <text x="1462" y="632" text-anchor="middle" font-family="var(--sans)" font-size="16" font-weight="600" fill="var(--foreground)">Reporting query API</text>
+  <text x="1333" y="668" font-family="var(--mono)" font-size="13" fill="var(--muted-foreground)">authorizes tenant + sources</text>
+  <text x="1333" y="693" font-family="var(--mono)" font-size="13" fill="var(--muted-foreground)">accepts page-agnostic batch</text>
+  <text x="1333" y="718" font-family="var(--mono)" font-size="13" fill="var(--muted-foreground)">normalizes values + coverage</text>
+<rect x="333" y="877" width="290" height="133" rx="6" fill="var(--cat-4)" fill-opacity="0.10" stroke="var(--cat-4)"/>
+<use href="#mark-ui" x="347" y="889" width="18" height="16" style="color:var(--cat-4)"/>
+  <text x="478" y="907" text-anchor="middle" font-family="var(--sans)" font-size="16" font-weight="600" fill="var(--foreground)">Widget host</text>
+  <text x="349" y="943" font-family="var(--mono)" font-size="13" fill="var(--muted-foreground)">joins placement + definition + data</text>
+  <text x="349" y="968" font-family="var(--mono)" font-size="13" fill="var(--muted-foreground)">renders independent runtime states</text>
+<rect x="1128" y="877" width="290" height="133" rx="6" fill="var(--cat-7)" fill-opacity="0.10" stroke="var(--cat-7)" stroke-dasharray="6 4"/>
+<use href="#mark-external" x="1142" y="889" width="18" height="16" style="color:var(--cat-7)"/>
+  <text x="1273" y="907" text-anchor="middle" font-family="var(--sans)" font-size="16" font-weight="600" fill="var(--foreground)">Upstream systems</text>
+  <text x="1144" y="943" font-family="var(--mono)" font-size="13" fill="var(--muted-foreground)">Billing · Inventory · CRM</text>
+  <text x="1144" y="968" font-family="var(--mono)" font-size="13" fill="var(--muted-foreground)">Payroll · future reporting sources</text>
+<path d="M940,370 H876 V300 H290 V333" fill="none" stroke="var(--subtle)" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="471.1" y="285.75" width="223.79999999999998" height="15" fill="var(--card)"/>
+  <text x="583" y="296" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--muted-foreground)">HTTP · effective composition JSON</text>
+<path d="M435,407 H522" fill="none" stroke="var(--subtle)" stroke-width="1" marker-end="url(#arrow)"/>
+<rect x="442.5" y="386.75" width="72" height="15" fill="var(--card)"/>
+  <text x="478.5" y="397" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--muted-foreground)">widget IDs</text>
+<path d="M1317,407 H1230" fill="none" stroke="var(--subtle)" stroke-width="1" marker-end="url(#arrow)"/>
+<rect x="1237.5" y="386.75" width="72" height="15" fill="var(--card)"/>
+  <text x="1273.5" y="397" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--muted-foreground)">layer docs</text>
+<path d="M290,481 V602" fill="none" stroke="var(--subtle)" stroke-width="1" marker-end="url(#arrow)"/>
+<rect x="214.4" y="489.75" width="151.2" height="15" fill="var(--card)"/>
+  <text x="290" y="500" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--muted-foreground)">data sources + filters</text>
+<path d="M594.5,481 V545 H478.5 V877" fill="none" stroke="var(--subtle)" stroke-width="1" marker-end="url(#arrow)"/>
+<rect x="490.8" y="530.75" width="131.39999999999998" height="15" fill="var(--card)"/>
+  <text x="556.5" y="541" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--muted-foreground)">renderer + bindings</text>
+<path d="M594.5,750 V845 H550.5 V877" fill="none" stroke="var(--subtle)" stroke-width="1" marker-end="url(#arrow)"/>
+<rect x="538.7" y="789.75" width="111.6" height="15" fill="var(--card)"/>
+  <text x="594.5" y="800" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--muted-foreground)">validated result</text>
+<path d="M362.5,602 V575 H880 V639 H940" fill="none" stroke="var(--subtle)" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="529.15" y="560.75" width="184.2" height="15" fill="var(--card)"/>
+  <text x="621.25" y="571" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--muted-foreground)">HTTP · FilterOptionsRequest</text>
+<path d="M1389.5,750 V810 H362.5 V750" fill="none" stroke="var(--subtle)" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="776.3" y="795.75" width="197.4" height="15" fill="var(--card)"/>
+  <text x="875" y="806" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--muted-foreground)">HTTP · ReportingBatchResponse</text>
+<path d="M217.5,602 V520 H1389.5 V602" fill="none" stroke="var(--subtle)" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="707.6" y="505.75" width="190.79999999999998" height="15" fill="var(--card)"/>
+  <text x="803" y="516" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--muted-foreground)">HTTP · ReportingBatchRequest</text>
+<path d="M1012.5,750 V780 H290 V750" fill="none" stroke="var(--subtle)" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="704.6" y="765.75" width="190.79999999999998" height="15" fill="var(--card)"/>
+  <text x="800" y="776" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--muted-foreground)">HTTP · permitted option sets</text>
+<path d="M217.5,750 V910.25 H333" fill="none" stroke="var(--subtle)" stroke-width="1" marker-end="url(#arrow)"/>
+<rect x="148.5" y="829.75" width="138" height="15" fill="var(--card)"/>
+  <text x="217.5" y="840" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--muted-foreground)">sections + placement</text>
+<path d="M1085,750 V820 H1200.5 V877" fill="none" stroke="var(--subtle)" stroke-width="1" marker-end="url(#arrow)"/>
+<rect x="1022.5999999999999" y="779.75" width="124.8" height="15" fill="var(--card)"/>
+  <text x="1085" y="790" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--muted-foreground)">dimension metadata</text>
+<path d="M1534.5,750 V820 H1345.5 V877" fill="none" stroke="var(--subtle)" stroke-width="1.5" stroke-dasharray="2 3" marker-end="url(#arrow)"/>
+<rect x="1455.6" y="779.75" width="157.79999999999998" height="15" fill="var(--card)"/>
+  <text x="1534.5" y="790" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--muted-foreground)">source adapter protocol</text>
+</svg>
+<div class="legend">
+  <div><b>role</b><span><span class="sw" style="background:var(--cat-4);opacity:.35;border:1px solid var(--cat-4)"></span> frontend runtime</span><span><span class="sw" style="background:var(--cat-2);opacity:.35;border:1px solid var(--cat-2)"></span> API / service</span><span><span class="sw" style="background:var(--cat-3);opacity:.35;border:1px solid var(--cat-3)"></span> persistence</span><span><span class="sw" style="background:var(--cat-7);opacity:.35;border:1px solid var(--cat-7)"></span> external system</span></div>
+  <div><b>kind</b><span><span class="sw" style="border:1px solid var(--border);border-radius:4px"></span> service</span><span><svg width="18" height="16"><use href="#mark-store" width="18" height="16"/></svg> store</span><span><svg width="18" height="16"><use href="#mark-ui" width="18" height="16"/></svg> UI surface</span><span><svg width="18" height="16"><use href="#mark-external" width="18" height="16"/></svg> external system (dashed border)</span></div>
+  <div><b>edge</b><span><i class="ln" style="border-top:1.5px solid var(--subtle)"></i> sync call (HTTP)</span><span><i class="ln" style="border-top:1px solid var(--subtle)"></i> in-process hand-off</span><span><i class="ln" style="border-top:1.5px dotted var(--subtle)"></i> adapter protocol</span></div>
+  <div><b>accent</b><span><span class="sw" style="border:2.5px solid var(--primary);border-radius:4px"></span> the one thing this diagram is about</span></div>
+</div>
+<style>
+.legend { display: grid; gap: var(--space-2); font-family: var(--mono); font-size: var(--text-xs); color: var(--muted-foreground); margin-top: var(--space-4); }
+.legend b { color: var(--foreground); margin-right: var(--space-3); display: inline-block; width: 6ch; }
+.legend span { margin-right: var(--space-4); display: inline-flex; align-items: center; gap: 6px; }
+.legend .sw { display: inline-block; width: 14px; height: 14px; }
+.legend .ln { display: inline-block; width: 28px; height: 0; }
+</style>
+</div>
+</body>
+</html>

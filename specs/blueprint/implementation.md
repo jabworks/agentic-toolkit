@@ -9,17 +9,18 @@ skills/blueprint/
     wireframe-kit.md          # two-mode discipline + copyable mode CSS blocks
     diagram-kit.md            # inline-SVG patterns: ER, flow, architecture, state
     diagram-check.mjs         # collision gate for inline-SVG diagrams — run before
-                              # Deliver (tests/diagram-check.test.mjs + fixtures)
+                              # Deliver (tests/diagram-check.test.mjs + fixtures);
+                              # never walks <defs>, however nested (Q11)
     token-core.css            # byte-pinned copy of scripts/tokens/core.css
                               # (guarded by tests/blueprint-kit.test.mjs)
 ```
 
-## Visual language (D9, design signed off 2026-09-10 — ships in 2.31.0)
+## Visual language (D9, 2.31.0)
 
-- `references/diagram-kit.md` gains a "Visual Language" section: role slot table, tint recipe, kinds table, the marks `<defs>` block, edge dash table, legend markup + CSS, boundary title strip; Shared Conventions' accent rule rewritten; family sections 1–4 say how each applies it.
-- `references/diagram-check.mjs`: `<defs>` skip survives nested containers (Q11); `<use>` stays ignored.
+- `references/diagram-kit.md` → `## Visual Language` (Roles · Kinds · Marks · Edges · Boundaries · Legend · A worked fragment): role slot table, tint recipe, kinds table, six mark groups as a fence to paste into `<defs>`, edge dash table, legend markup + CSS, boundary title strip; Shared Conventions' accent rule rewritten; family sections 1–4 say how each applies it.
+- `references/diagram-check.mjs`: `walkBlock`'s frame snapshot no longer claims the skip decrement, so the `<defs>` skip survives nested containers (Q11); `<use>` stays ignored.
 - `tests/blueprint-kit.test.mjs` pins the marks block and legend markup verbatim; `tests/diagram-check.test.mjs` gains the defs-nesting test and a negative fixture (a mark as a raw path is still an `unlabeled-edge`).
-- Specimen: the reporting diagram redrawn in the language (generic upstream names) under `verification/2026-09-10-visual-language/`, also a checker fixture asserting `clean`.
+- Specimen: the reporting diagram redrawn in the language (generic upstream names) under `verification/2026-09-10-visual-language/`, also `tests/fixtures/diagram-check/visual-language.html` asserting `clean`; `mark-as-path.html` is the negative twin.
 
 ## Artifacts
 

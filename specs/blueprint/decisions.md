@@ -10,7 +10,7 @@
 | 6 | `mockup-picker.md` and `choice-server.js` stay in discovery | option picking is discovery's UX, and moving them breaks single-skill npx installs | accepted |
 | 7 | Three entry points + trigger-eval cases ship with the skill | the motivating defect was a mockup skill that almost never fired | accepted |
 | 8 | Collision checker + routing rules, not a layout generator | keeps #4 (hand-authored SVG) and gives the agent the render feedback it lacks; rules alone are a hope, a generator is LARGE and reverses #4 | accepted |
-| 9 | Visual language: role tint, kind marks, protocol dash | the routed diagrams were correct but read as a wall of same-shaped grey boxes; colour as fixed role slots, kind as footprint-free marks on one rect body, protocol as dash — the checker needs no new geometry rule | accepted (design signed off 2026-09-10; ships in 2.31.0) |
+| 9 | Visual language: role tint, kind marks, protocol dash | the routed diagrams were correct but read as a wall of same-shaped grey boxes; colour as fixed role slots, kind as footprint-free marks on one rect body, protocol as dash — the checker needs no new geometry rule | accepted |
 
 ## 1. Condux bundle member, not a standalone plugin
 
@@ -101,5 +101,5 @@
 **Consequences**
 - A node's body is exactly one stroked `<rect>`; everything else on it is decoration (a stroke-less rect or a `<use>`). Boundary classification is untouched.
 - The kit ships the marks `<defs>` block and the legend markup verbatim, pinned by `blueprint-kit.test.mjs` like the token core.
-- The checker's `<defs>` skip must survive nested containers (Q11) so marks can be `fill="none"`; until then a mark path carries `fill="transparent"`.
+- The checker's `<defs>` skip survives nested containers (Q11, fixed in 2.31.0), so mark paths are plain `fill="none"` — six groups for eight kinds, since a service has no mark and a boundary uses its title strip.
 - Footprint-changing shapes are a later docket, opened only when a diagram needs one.
