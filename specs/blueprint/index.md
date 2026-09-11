@@ -5,7 +5,7 @@
 > language (two modes, one skeleton), inline-SVG system diagrams for BE.
 
 **Last updated:** 2026-09-10
-**Commit:** 3e31e7f
+**Commit:** PR #153
 **Status:** draft
 
 ## Contents
@@ -22,10 +22,10 @@
 - 2026-09-10 (2.31.0): visual language — role tint, kind marks, protocol dash, legend, boundary
   title strips across all four families; accent rule rewritten; the checker's defs skip survives
   nesting — see D9, Q10, Q11
-- 2026-09-10 (3e31e7f): `diagram-check.mjs` resolves font size as the browser cascades it
+- 2026-09-10 (PR #153): `diagram-check.mjs` resolves font size as the browser cascades it
   (class rule, `text` rule, attribute, inherited, 16px default) instead of assuming 13px;
   new `text-overflows-box` finding; kit states the sizing rule and halo budget — see Q9
-- 2026-09-08 (eb8cd83): Layout and routing rules in diagram-kit.md and the `diagram-check.mjs`
+- 2026-09-08 (PR #150): Layout and routing rules in diagram-kit.md and the `diagram-check.mjs`
   collision gate before Deliver — see Q8 and decision #8
 - 2026-08-26 (1d1c39f): Grayscale dialect retired — wireframe/render modes on the
   surface-kit token core; see the scoped fidelity decision in decisions.md

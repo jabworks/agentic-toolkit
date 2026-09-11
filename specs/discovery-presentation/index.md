@@ -5,7 +5,7 @@
 > the live preview that carries the whole thread.
 
 **Last updated:** 2026-08-26
-**Commit:** a8b07b7
+**Commit:** PR #120
 **Status:** draft
 
 ## Contents
@@ -16,5 +16,5 @@
 - [section-loop.html](section-loop.html) — the per-section loop as a numbered flow diagram
 
 ## Changelog
-- 2026-08-26 (a8b07b7): Initial spec — design signed off, pass one of two
+- 2026-08-26 (PR #120): Initial spec — design signed off, pass one of two
   (live terminal read). Pass two covers the written spec artifact.

@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -261,4 +262,130 @@ test('the quirk-citation reader expands ranges, follows qualifiers, and spares q
   // Quarters are not quirks.
   assert.deepEqual(read('specs/surface-kit/index.md', 'shipped in Q1 2026'), []);
   assert.deepEqual(read('specs/surface-kit/index.md', 'Q3 2027 at the earliest'), []);
+});
+
+// Docket #80: `**Commit:**` stamps in `specs/*/index.md` cited feature-branch
+// hashes. Every PR here squash-merges, so main only ever carries the squash;
+// a branch hash resolves in clones that had the branch and nowhere else
+// (blueprint's 3e31e7f and discovery-presentation's a8b07b7 were orphaned
+// that way, and blueprint's 2.29.0 changelog hash was already unresolvable in
+// a fresh clone). The stamp is written before the PR exists, so the hash it
+// names is wrong by construction. The convention is now `**Commit:** PR #N`:
+// knowable once the PR is open, stable after the squash; the scaffold writes
+// `PR #pending` until then, and this test keeps the PR red until it is filled.
+//
+// Three rules over every spec index — the stamp line and the changelog prose
+// alike, since several stamps carry prose after the value:
+// - a `**Commit:**` line, where one exists, opens with `PR #N` or a 7-hex
+//   hash — a placeholder is neither. Not every spec stamps; none is forced to;
+// - every hash is an ancestor of main — on the stamp line any 7-hex value, in
+//   prose only a token with a letter and a digit, so words and years are
+//   spared. Grandfathers the valid stamps and rejects the next branch hash on
+//   the branch that writes it;
+// - every `PR #N` is a merged PR (its squash subject ends in `(#N)` on main),
+//   or is newer than every merged PR — the offline stand-in for "this branch's
+//   own open PR". A stamp naming a PR that never merged is caught as soon as a
+//   later one does.
+const HASH = /\b(?=[0-9a-f]*[0-9])(?=[0-9a-f]*[a-f])[0-9a-f]{7}\b/g;
+const PR_STAMP = /\bPR #(\d+)\b/g;
+const COMMIT_LINE = /^\*\*Commit:\*\* (.*)$/;
+
+function git(...args) {
+  return execFileSync('git', args, { cwd: REPO_ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+}
+
+// `origin/main` is what is published, and the only main a PR build has;
+// a clone without a remote falls back to its local main.
+function mainRef() {
+  for (const ref of ['origin/main', 'main']) {
+    try {
+      git('rev-parse', '--verify', '-q', `${ref}^{commit}`);
+      return ref;
+    } catch {
+      // try the next ref
+    }
+  }
+  throw new Error('neither origin/main nor main resolves — this test needs the repository history');
+}
+
+function onMain(hash, ref) {
+  try {
+    execFileSync('git', ['merge-base', '--is-ancestor', hash, ref], { cwd: REPO_ROOT, stdio: 'ignore' });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function mergedPrs(ref) {
+  const numbers = git('log', '--format=%s', ref)
+    .split('\n')
+    .map((subject) => subject.match(/\(#(\d+)\)$/))
+    .filter(Boolean)
+    .map((m) => Number(m[1]));
+  return { set: new Set(numbers), max: Math.max(0, ...numbers) };
+}
+
+// What a `**Commit:**` value names: a PR, a hash, or nothing usable.
+export function readStamp(value) {
+  const pr = value.match(/^PR #(\d+)\b/);
+  if (pr) return { pr: Number(pr[1]) };
+  const hash = value.match(/^[0-9a-f]{7}\b/);
+  if (hash) return { hash: hash[0] };
+  return null;
+}
+
+export function prProblem(n, merged) {
+  if (merged.set.has(n) || n > merged.max) return null;
+  return `PR #${n} never merged`;
+}
+
+test('the stamp reader catches hashes and PR numbers, spares words, years, and placeholders', () => {
+  const hashes = (line) => [...line.matchAll(HASH)].map((m) => m[0]);
+  assert.deepEqual(hashes('2026-09-10 (3e31e7f): shipped as ed4cbb4, decoded 1234567 times'), ['3e31e7f', 'ed4cbb4']);
+  assert.deepEqual(hashes('**Commit:** cd70976 (design stage — pre-implementation)'), ['cd70976']);
+  assert.deepEqual(hashes('PR #153 at 0011ac6 + condux'), ['0011ac6']);
+
+  assert.deepEqual(readStamp('PR #153'), { pr: 153 });
+  assert.deepEqual(readStamp('3a872c6 (initial spec; later entries in the changelog below)'), { hash: '3a872c6' });
+  assert.deepEqual(readStamp('8914577'), { hash: '8914577' }, 'on the stamp line an all-digit hash is still a hash');
+  assert.equal(readStamp('PR #pending'), null);
+  assert.equal(readStamp('no-git'), null);
+
+  const merged = { set: new Set([120, 150, 153]), max: 153 };
+  assert.equal(prProblem(153, merged), null);
+  assert.equal(prProblem(154, merged), null, "a number above every merged PR is the branch's own open PR");
+  assert.match(prProblem(149, merged), /never merged/);
+});
+
+test('every spec index stamps a merged PR or a commit on main, never an orphaned branch hash (docket #80)', () => {
+  const ref = mainRef();
+  const merged = mergedPrs(ref);
+  const indexes = markdownUnder('specs').filter((rel) => path.basename(rel) === 'index.md' && rel !== 'specs/index.md');
+  const problems = [];
+  const orphaned = (hash) => `${hash} is not on ${ref} (a branch hash squash-merge orphans — stamp the PR instead)`;
+
+  for (const rel of indexes) {
+    const lines = fs.readFileSync(path.join(REPO_ROOT, rel), 'utf8').split('\n');
+    lines.forEach((line, i) => {
+      const where = `${rel}:${i + 1}`;
+      const stamp = line.match(COMMIT_LINE);
+      if (stamp) {
+        const read = readStamp(stamp[1]);
+        if (!read) problems.push(`${where} → **Commit:** ${stamp[1]} — stamp the PR that carries the change (\`PR #N\`) once it is open`);
+        else if (read.hash && !onMain(read.hash, ref)) problems.push(`${where} → ${orphaned(read.hash)}`);
+        else if (read.pr !== undefined && prProblem(read.pr, merged)) problems.push(`${where} → ${prProblem(read.pr, merged)} to ${ref}`);
+        return;
+      }
+      for (const m of line.matchAll(HASH)) {
+        if (!onMain(m[0], ref)) problems.push(`${where} → ${orphaned(m[0])}`);
+      }
+      for (const m of line.matchAll(PR_STAMP)) {
+        const problem = prProblem(Number(m[1]), merged);
+        if (problem) problems.push(`${where} → ${problem} to ${ref}`);
+      }
+    });
+  }
+
+  assert.deepEqual(problems, [], 'spec stamps must survive a fresh clone:\n  ' + problems.join('\n  '));
 });
