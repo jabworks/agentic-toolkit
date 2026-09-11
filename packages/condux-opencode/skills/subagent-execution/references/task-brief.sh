@@ -21,11 +21,14 @@ mkdir -p "$SCRATCH_DIR"
 SLUG=$(basename "$PLAN_FILE" .md)
 BRIEF_FILE="$SCRATCH_DIR/${SLUG}-task-${TASK_N}-brief.md"
 
+# A card is a `## Task N:` heading (draft-plan's plan-template.md) or the older
+# `### Task N:`. The card ends at the next card of either shape, or at any
+# other `## ` section — a trailing "## Verification" is not part of the brief.
 awk -v n="$TASK_N" '
   BEGIN { found = 0 }
-  /^### Task [0-9]+:/ {
+  /^##+ Task [0-9]+:/ || /^## / {
     if (found) exit
-    if ($0 ~ ("^### Task " n ":")) { found = 1 }
+    if ($0 ~ ("^##+ Task " n ":")) { found = 1 }
   }
   found { print }
 ' "$PLAN_FILE" > "$BRIEF_FILE"
