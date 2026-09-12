@@ -1,5 +1,11 @@
 # @jabworks/condux
 
+## 0.24.1
+
+### Patch Changes
+
+- [#157](https://github.com/jabworks/agentic-toolkit/pull/157) [`0c9d0e6`](https://github.com/jabworks/agentic-toolkit/commit/0c9d0e6a343b6d5e3453ab3a0e37db2a65b4138c) Thanks [@vi-hieu](https://github.com/vi-hieu)! - subagent-execution's `task-brief.sh` extracts a card from a template-compliant plan again: it matched `### Task N:` while draft-plan's template mandates `## Task N:`, so every current plan printed "Task N not found" and the file-handoff path was dead. Both heading shapes are read now, and a trailing `## ` section no longer leaks into the last card's brief. technical-spec stamps the PR that carries a spec (`PR #N`; the scaffold writes `PR #pending`) instead of a commit hash, which the squash-merge that lands the PR orphans.
+
 ## 0.24.0
 
 ### Minor Changes
