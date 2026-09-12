@@ -12,9 +12,15 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## condux 2.31.1 — 2026-09-11
+
+- chore(condux): version 2.31.1 — task-brief heading shape, PR stamps in technical-spec
+- feat(technical-spec,specs): stamp the PR that carries a spec, never a branch hash — close #80
+- fix(subagent-execution): task-brief.sh reads the `## Task N:` cards draft-plan mandates — close #81
+
 ## condux 2.31.0 — 2026-09-10
 
-- feat(blueprint): diagram visual language — role tint, kind marks, protocol dash — close #78 (2.31.0)
+- feat(blueprint): diagram visual language — role tint, kind marks, protocol dash — close #78 (2.31.0) (#155)
 
 ## condux 2.30.0 — 2026-09-10
 

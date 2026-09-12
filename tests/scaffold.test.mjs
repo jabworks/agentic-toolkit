@@ -14,7 +14,9 @@ test('scaffold.sh: creates a spec dir with index.md, then reports exists on re-r
   execFileSync('git', ['init', '-q'], { cwd: tmpRepo });
 
   const firstRun = execFileSync('bash', [SCRIPT, 'CiSmokeFeature'], { cwd: tmpRepo }).toString().trim();
-  assert.match(firstRun, /^created:.*\/specs\/ci-smoke-feature commit:\S+ date:\d{4}-\d{2}-\d{2}$/);
+  // The stamp is a placeholder, never a hash: a branch hash is orphaned by the
+  // squash-merge that lands the PR (docket #80).
+  assert.match(firstRun, /^created:.*\/specs\/ci-smoke-feature date:\d{4}-\d{2}-\d{2} commit:PR #pending$/);
 
   const specPath = firstRun.match(/^created:(\S+) /)[1];
   const indexContent = fs.readFileSync(path.join(specPath, 'index.md'), 'utf8');

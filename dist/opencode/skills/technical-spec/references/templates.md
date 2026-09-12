@@ -20,7 +20,7 @@ follow. Write each table row as a claim someone could check, not a label.
 > shows for the spec — without it the spec is listed with no description.
 
 **Last updated:** {YYYY-MM-DD}
-**Commit:** {short-hash}
+**Commit:** PR #{N}
 **Status:** draft | review | stable
 
 ## Contents
@@ -31,8 +31,13 @@ follow. Write each table row as a claim someone could check, not a label.
 | [Quirks](quirks.md) | what will bite you, and whether it is mitigated |
 
 ## Changelog
-- {YYYY-MM-DD} ({short-hash}): Initial spec
+- {YYYY-MM-DD} (PR #{N}): Initial spec
 ```
+
+The stamp names the PR that carries the change, never a commit hash: a hash
+written on a feature branch is orphaned by the squash-merge that lands it.
+The scaffold writes `PR #pending`; replace it once the PR is open, and use the
+same form in changelog lines.
 
 The Contents table answers *which file do I open* — one row per concern file
 that actually exists, each `Answers` cell saying what a reader comes to it

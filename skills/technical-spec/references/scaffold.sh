@@ -38,7 +38,12 @@ if [[ -z "$SLUG" || ! "$SLUG" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]]; then
 fi
 
 DATE=$(date +%Y-%m-%d)
-COMMIT=$(git rev-parse --short HEAD 2>/dev/null || echo "no-git")
+# The stamp names the PR that carries the spec, not a commit. A hash taken
+# here is HEAD on a feature branch, and a squash-merge orphans it the moment
+# the PR lands — it resolves only in clones that had the branch. The PR number
+# is not known until the PR is open, so the scaffold writes a placeholder for
+# the author to replace; a spec still stamped `PR #pending` is unfinished.
+COMMIT="PR #pending"
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 [[ -z "$REPO_ROOT" ]] && REPO_ROOT="${PWD}"
 
@@ -76,7 +81,7 @@ case "$SPEC_DIR" in
 esac
 
 if [[ -d "$SPEC_DIR" ]]; then
-  echo "exists:$SPEC_DIR commit:$COMMIT date:$DATE"
+  echo "exists:$SPEC_DIR date:$DATE commit:$COMMIT"
   exit 0
 fi
 
@@ -110,4 +115,4 @@ cat > "$SPEC_DIR/index.md" <<EOF
 - $DATE ($COMMIT): Initial spec
 EOF
 
-echo "created:$SPEC_DIR commit:$COMMIT date:$DATE"
+echo "created:$SPEC_DIR date:$DATE commit:$COMMIT"

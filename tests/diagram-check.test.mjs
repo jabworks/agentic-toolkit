@@ -1,5 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -152,32 +153,64 @@ test('overflow fixture: a real diagram sized by CSS reports exactly its one over
   assert.match(findings[0].detail, /"InventoryAccessGuardian" overflows its own 210×96 box by 5\.4/);
 });
 
-test('fixtures carry no identifier from the diagrams they were synthesized from', () => {
-  // The 2026-09-10 fixture mirrors a Codex-produced diagram of a real
-  // project's reporting page. The geometry is the evidence; the names are not
-  // ours to publish.
-  const identifiers = [
-    'ReportingAccessBoundary',
-    'reporting.overview',
-    'ReportingCatalog',
-    'useReportingQuery',
-    'widgetRuntime',
-    'ReportingQueryResult',
-    'Reporting Overview',
-    'tenantId',
-    // The 2026-09-10 visual-language fixture is the same routed diagram
-    // restyled; its "Upstream systems" node named four real systems. The
-    // committed copies carry generic twins instead.
-    'AO',
-    'CloudCheck',
-    'Expresse',
-    'Maestro',
-  ];
-  for (const name of fs.readdirSync(FIXTURES)) {
-    const source = fs.readFileSync(path.join(FIXTURES, name), 'utf8');
-    for (const id of identifiers) {
-      assert.ok(!source.includes(id), `${name} carries "${id}"`);
-    }
+// The fixtures here and the specimens under specs/blueprint/verification/
+// mirror Codex-produced diagrams of a real project's reporting page (the
+// 2026-09-08 routing specimen, and the 2026-09-10 fixture that restyles it).
+// The geometry is the evidence; the names are not ours to publish — and a
+// guard that lists them in plaintext publishes them itself. So the guard holds
+// SHA-256 digests: eight identifiers from the page, and the four upstream
+// systems the "Upstream systems" node once named (the committed copies carry
+// generic twins). Three canaries are digested alongside so the scanner's
+// three shapes — a bare token, a dotted token, an adjacent-word pair — are
+// each proven to fire.
+const SPECIMEN_ROOTS = [FIXTURES, path.join(REPO_ROOT, 'specs', 'blueprint', 'verification')];
+const CANARIES = ['SpecimenCanaryToken', 'canary.dotted', 'Canary Pair'];
+const digest = (s) => crypto.createHash('sha256').update(s).digest('hex');
+const FORBIDDEN = new Set([
+  '33b7e216376b07d2f87b6efd5c99867140acbba633d4355ff29f41c2df72485a',
+  '2448a01fb556980737c86728a363179ead55381d6ad1b3a062a5f36484c58049',
+  '845182bad5403789a76167c33e8618b70a0649a4ff8a45298baeac9f4e7f3a50',
+  'e4ea3b86c1ea6950fd448bf875f53b05f69dd576cb4865acd84e71590fa8e5ab',
+  '8ef2925c1680673b47d0743f02d6c294ed85c2e0137c750844a3db41eceff45b',
+  '6b1d18e9e79297ed9cc4ece71e7de5c806733861896e4c1dd30c3a482425c326',
+  '08a15f808ee2703cbcf92cadf87d0077d9cbc3ee8ba5260029f8f4d94bbc8acd',
+  'aad71cd4f8e2f3abc30cdad7bfd837689554ed59128eefb9f1c1948ce23489ae',
+  'f786874742181e8c921c12e7ed5329c5587cbfa9fca8a1cde922c390b40caa45',
+  'd9a589649de8e94e17a907f29557c89a751df18583c70c7e1b06e816abe18f08',
+  '43a59ea266b5d3e766b2628db6ebf724200b56996d4df302b7fb4149e8cd13be',
+  'ef2977bc573ad2d2d63971b9fb83a419335bc8677bf51e105389d63198b2493a',
+  ...CANARIES.map(digest),
+]);
+
+function phrases(source) {
+  const tokens = (source.match(/[A-Za-z][A-Za-z0-9_.]*/g) ?? []).map((t) => t.replace(/\.+$/, ''));
+  const out = [];
+  tokens.forEach((t, i) => {
+    out.push(t);
+    if (i + 1 < tokens.length) out.push(`${t} ${tokens[i + 1]}`);
+  });
+  return out;
+}
+
+const forbiddenIn = (source) => phrases(source).filter((p) => FORBIDDEN.has(digest(p)));
+
+function filesUnder(dir) {
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const abs = path.join(dir, entry.name);
+    return entry.isDirectory() ? filesUnder(abs) : [abs];
+  });
+}
+
+test('the identifier guard catches a bare token, a dotted token, and a two-word phrase', () => {
+  const source = '<text>SpecimenCanaryToken</text> <text>canary.dotted.</text>\n<text>Canary\n  Pair</text>';
+  assert.deepEqual(forbiddenIn(source), CANARIES);
+  assert.deepEqual(forbiddenIn('<text>Canary</text><text>Pair Token</text>'), []);
+});
+
+test('fixtures and committed specimens carry no identifier from the diagrams they were synthesized from', () => {
+  for (const file of SPECIMEN_ROOTS.flatMap(filesUnder)) {
+    const hits = forbiddenIn(fs.readFileSync(file, 'utf8'));
+    assert.deepEqual(hits, [], `${path.relative(REPO_ROOT, file)} carries ${JSON.stringify(hits)}`);
   }
 });
 

@@ -23,7 +23,7 @@ to place the spec.
   {feature-slug}/           # cross-cutting, or scaffolded from the repo root
   apps/web/
     {feature-slug}/         # scaffolded while working in apps/web
-      index.md              # purpose, TOC, last updated, commit hash, changelog  ← scaffold creates this
+      index.md              # purpose, TOC, last updated, PR stamp, changelog  ← scaffold creates this
       decisions.md          # Design decisions with context + rationale
       api.md                # Endpoints, types, external APIs consumed
       fields.md             # Field mappings: BE/3rd-party → UI, or forwarding chains
@@ -86,10 +86,16 @@ bash path/to/skill/references/scaffold.sh "WanConfig"
 ```
 
 The script outputs one line:
-- `created:/abs/path/to/specs/wan-config commit:abc1234 date:2026-06-24` — new spec, `index.md` written
-- `exists:/abs/path/to/specs/wan-config commit:abc1234 date:2026-06-24` — spec already exists
+- `created:/abs/path/to/specs/wan-config date:2026-06-24 commit:PR #pending` — new spec, `index.md` written
+- `exists:/abs/path/to/specs/wan-config date:2026-06-24 commit:PR #pending` — spec already exists
 
-Parse `commit`, `date`, and the **absolute spec path** from the output — use the absolute path when writing content files and launching the preview server.
+Parse `date` and the **absolute spec path** from the output — use the absolute path when writing content files and launching the preview server.
+
+The `**Commit:**` stamp names the PR that carries the change (`PR #153`), never
+a commit hash: a hash written on a feature branch is orphaned by the
+squash-merge that lands it, so it resolves only in clones that had the branch.
+The scaffold writes `PR #pending`; replace it with the number once the PR is
+open, and use the same form in changelog lines.
 
 ## After Scaffold: Writing Content Files
 
@@ -131,7 +137,7 @@ path that resolves nowhere.
 When scaffold output is `exists:`:
 1. Read `index.md` to see current state and which files exist
 2. Update only files with new or changed content
-3. Bump `Last updated` and `Commit` in `index.md` using values from scaffold output
+3. Bump `Last updated` in `index.md` from scaffold output; set `Commit` to the PR carrying this change (`PR #pending` until it is open)
 4. Append to the `## Changelog` in `index.md`
 
 ## Live HTML Preview & Review (Optional)
@@ -188,7 +194,8 @@ feedback file, if a decision is submitted).
 | Mistake | Fix |
 |---------|-----|
 | Skipping the notification/confirmation | Always announce before writing, wait for approval |
-| Not using scaffold output for date/commit | Parse them from the script — don't run git separately |
+| Not using scaffold output for the date | Parse it from the script — don't run git separately |
+| Stamping a commit hash | The stamp is `PR #N` — a branch hash is orphaned by squash-merge; `PR #pending` until the PR is open |
 | Rewriting all files on update | Read `index.md` first, only touch files with new content |
 | Vague decisions | Each decision needs context + rationale + consequences |
 | Creating empty placeholder files | Only create a file when it has real content |
