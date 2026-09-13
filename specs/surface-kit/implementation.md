@@ -58,7 +58,8 @@ Four independent PRs, one plugin each, in ascending risk order:
 
 1. **session-handoff** — **shipped 2026-08-22 (D8)**, PR #101; specimen
    [handoff-direction-b.html](handoff-direction-b.html)
-2. **docket board** — **shipped** out of order, PR #93/#95, docket 0.10.0
+2. **docket board** — **shipped** out of order, PR #95 (a re-land of #93, which
+   merged into the stacked #91 branch and never reached main itself), docket 0.10.0
    (`specs/docket/board-direction-a.html`)
 3. **session-report** (2452 lines; 11 flex rules, 3 dist trees, no changeset) —
    **shipped 2026-08-23 (D9)**, session-report 1.11.0; specimen

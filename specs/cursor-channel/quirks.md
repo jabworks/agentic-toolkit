@@ -14,7 +14,7 @@
 
 **Symptom:** a globally installed skill that Cursor never loads.
 **Trigger:** installing globally via the CLI.
-**Cause:** the CLI's README documents Cursor global installs to `~/.cursor/skills/`, but the shipped behavior writes `~/.agents/skills/` — and whether Cursor loads global skills from there is disputed (issue #421 says no; Cursor docs list the dir; a lone forum reply claims fixed by Cursor 2.6.19). Fix PR #464 unmerged as of 2026-08-14.
+**Cause:** the CLI's README documents Cursor global installs to `~/.cursor/skills/`, but the shipped behavior writes `~/.agents/skills/` — and whether Cursor loads global skills from there is disputed (vercel-labs/skills#421 says no; Cursor docs list the dir; a lone forum reply claims fixed by Cursor 2.6.19). The fix, vercel-labs/skills#464, was unmerged as of 2026-08-14.
 **Mitigation:** partial — live-verify on a real install and caveat the README row with whatever is observed. Do not build a workaround.
 
 ## Q2 — Skills misfiled as Rules

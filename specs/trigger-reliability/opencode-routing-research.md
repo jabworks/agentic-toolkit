@@ -1,10 +1,11 @@
 # condux on OpenCode — why `config.instructions` isn't enough, and what the other harnesses do
 
 Research note, 2026-09-01. Sources: shallow clones taken today of
-`code-yeongyu/oh-my-openagent` (ffefeb2, 2026-09-01), `kdcokenny/opencode-workspace`
-(46f57b4, 2026-08-18), `kdcokenny/ocx` (636dc2d, 2026-08-18), `anomalyco/opencode`
-(1ead9e3, 2026-08-31, sparse: `session/ config/ agent/ plugin/ skill/`), and
-`@opencode-ai/plugin@1.18.25` type definitions. Nothing here was run live; every
+`code-yeongyu/oh-my-openagent@ffefeb2` (2026-09-01), `kdcokenny/opencode-workspace@46f57b4`
+(2026-08-18), `kdcokenny/ocx@636dc2d` (2026-08-18), `anomalyco/opencode@1ead9e3`
+(2026-08-31, sparse: `session/ config/ agent/ plugin/ skill/`), and
+`@opencode-ai/plugin@1.18.25` type definitions. The pinned commits live in those
+repositories, not this one. Nothing here was run live; every
 claim is "observed in source" unless marked otherwise.
 
 **Status (2026-09-01, later the same day): C0 + C1 shipped** as condux 2.28.0 /

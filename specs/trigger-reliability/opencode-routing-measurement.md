@@ -1,7 +1,7 @@
 # OpenCode routing measurement — `@jabworks/condux` 0.20.0 vs 0.21.0 (docket #73)
 
 Measured 2026-09-02 with `scripts/eval-invocations.mjs --host opencode` (shipped
-earlier the same branch, commit 299ddf5). The question: docket #72 relocated the
+earlier on the same branch, the tip that PR #149 squash-merged). The question: docket #72 relocated the
 condux routing payload out of `config.instructions` (global, mid-system-prompt,
 Claude-verb) into a `synthetic:true` `<system-reminder>` part on the first
 main-session user message with the OpenCode verb — did the fire rate move?
@@ -19,7 +19,7 @@ main-session user message with the OpenCode verb — did the fire rate move?
   against whatever repo the harness was launched from). The resolved
   `plugin` / `instructions` / `skills.paths` arrays are logged per arm.
 - **Arms:** `@jabworks/condux@0.20.0` from npm (`instructions` channel,
-  payload names `/condux:workflow`) vs the local package at 299ddf5
+  payload names `/condux:workflow`) vs the local package at PR #149's branch tip
   (`chat.message` reminder, payload names `skill(name="workflow")` — the
   0.21.0 candidate, since PR #148 had not published to npm yet).
 - **Corpora:** `workflow` (28 cases, 27 scored, × 3 trials) and `finalize`
@@ -88,7 +88,8 @@ Treat single-arm differences smaller than that as noise on this model.
 - The agent can inspect the real filesystem through the bash tool (one run
   listed the machine's `~/projects` while reasoning about its empty cwd);
   the clean room isolates *configuration*, not the disk.
-- The 0.21.0 arm is the local package at 299ddf5, not the npm artifact —
+- The 0.21.0 arm is the local package at PR #149's branch tip (squash-merged as
+  97b0f89), not the npm artifact —
   rerun `--plugin @jabworks/condux@0.21.0` after PR #148 publishes if an
   npm-exact number is ever needed.
 
