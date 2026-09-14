@@ -274,19 +274,24 @@ test('the quirk-citation reader expands ranges, follows qualifiers, and spares q
 // knowable once the PR is open, stable after the squash; the scaffold writes
 // `PR #pending` until then, and this test keeps the PR red until it is filled.
 //
-// Three rules over every spec index — the stamp line and the changelog prose
-// alike, since several stamps carry prose after the value:
+// Three rules over every spec file — the stamp line and the prose alike,
+// since several stamps carry prose after the value and research notes cite
+// commits in their body (the #73 close orphan sat in a measurement report,
+// not an index):
 // - a `**Commit:**` line, where one exists, opens with `PR #N` or a 7-hex
 //   hash — a placeholder is neither. Not every spec stamps; none is forced to;
 // - every hash is an ancestor of main — on the stamp line any 7-hex value, in
 //   prose only a token with a letter and a digit, so words and years are
 //   spared. Grandfathers the valid stamps and rejects the next branch hash on
-//   the branch that writes it;
+//   the branch that writes it. A commit in another repository is pinned as
+//   `owner/repo@hash`; the `@` marks it foreign and the rule skips it;
 // - every `PR #N` is a merged PR (its squash subject ends in `(#N)` on main),
 //   or is newer than every merged PR — the offline stand-in for "this branch's
 //   own open PR". A stamp naming a PR that never merged is caught as soon as a
-//   later one does.
-const HASH = /\b(?=[0-9a-f]*[0-9])(?=[0-9a-f]*[a-f])[0-9a-f]{7}\b/g;
+//   later one does (surface-kit cited PR #93, which merged into a stacked
+//   branch and reached main only as its re-land, #95). A PR in another
+//   repository is written `owner/repo#N`, which the rule never reads.
+const HASH = /(?<!@)\b(?=[0-9a-f]*[0-9])(?=[0-9a-f]*[a-f])[0-9a-f]{7}\b/g;
 const PR_STAMP = /\bPR #(\d+)\b/g;
 const COMMIT_LINE = /^\*\*Commit:\*\* (.*)$/;
 
@@ -345,6 +350,8 @@ test('the stamp reader catches hashes and PR numbers, spares words, years, and p
   assert.deepEqual(hashes('2026-09-10 (3e31e7f): shipped as ed4cbb4, decoded 1234567 times'), ['3e31e7f', 'ed4cbb4']);
   assert.deepEqual(hashes('**Commit:** cd70976 (design stage — pre-implementation)'), ['cd70976']);
   assert.deepEqual(hashes('PR #153 at 0011ac6 + condux'), ['0011ac6']);
+  // A pin into another repository is not a claim about this one.
+  assert.deepEqual(hashes('clones of `kdcokenny/ocx@636dc2d` (2026-08-18) and 3e31e7f'), ['3e31e7f']);
 
   assert.deepEqual(readStamp('PR #153'), { pr: 153 });
   assert.deepEqual(readStamp('3a872c6 (initial spec; later entries in the changelog below)'), { hash: '3a872c6' });
@@ -352,20 +359,22 @@ test('the stamp reader catches hashes and PR numbers, spares words, years, and p
   assert.equal(readStamp('PR #pending'), null);
   assert.equal(readStamp('no-git'), null);
 
+  const prs = (line) => [...line.matchAll(PR_STAMP)].map((m) => Number(m[1]));
+  assert.deepEqual(prs('re-landed as PR #95; the fix, vercel-labs/skills#464, was unmerged'), [95]);
+
   const merged = { set: new Set([120, 150, 153]), max: 153 };
   assert.equal(prProblem(153, merged), null);
   assert.equal(prProblem(154, merged), null, "a number above every merged PR is the branch's own open PR");
   assert.match(prProblem(149, merged), /never merged/);
 });
 
-test('every spec index stamps a merged PR or a commit on main, never an orphaned branch hash (docket #80)', () => {
+test('every spec file cites a merged PR or a commit on main, never an orphaned branch hash (docket #80)', () => {
   const ref = mainRef();
   const merged = mergedPrs(ref);
-  const indexes = markdownUnder('specs').filter((rel) => path.basename(rel) === 'index.md' && rel !== 'specs/index.md');
   const problems = [];
-  const orphaned = (hash) => `${hash} is not on ${ref} (a branch hash squash-merge orphans — stamp the PR instead)`;
+  const orphaned = (hash) => `${hash} is not on ${ref} (a branch hash squash-merge orphans — cite the PR, or pin a foreign commit as owner/repo@hash)`;
 
-  for (const rel of indexes) {
+  for (const rel of markdownUnder('specs')) {
     const lines = fs.readFileSync(path.join(REPO_ROOT, rel), 'utf8').split('\n');
     lines.forEach((line, i) => {
       const where = `${rel}:${i + 1}`;
