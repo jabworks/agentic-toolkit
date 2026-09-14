@@ -92,6 +92,20 @@ countermeasure for the suppression class, deliberately, and will not acquire one
 by asking. Explicit invocation is the supported path. Do not reopen the upstream
 option without Harvey — see D7's "what would reopen this".
 
+#### Status 2026-09-14 — period 3 is not yet mineable like-for-like
+
+Accumulation check since the period-2 cut (2026-08-27), under D5's corpus
+rules: 30 in-scope Claude Code sessions (agentic-toolkit 14, terminus 16;
+the 261 `-tmp` sessions are eval harness) and **0** in-scope Codex sessions
+(58 rollouts: 54 corporate — vedge-ui-v2 42, maestro-api-gateway 9,
+lightweight-bff 3, never read — and 4 synthetic blueprint trial dirs). Period
+2 ran on 113 sessions with 66 resume-shaped turns; 30 sessions projects to
+~17 resume-shaped turns, too few for a rate that compares to ~9%. The period-2
+miner (`.condux/scratch/period2-digests/mine.mjs`, local) re-runs by editing
+its `FROM`/`TO` window. No verdict and no port decision until the corpus is
+comparable; a thin interim read is possible but would have to be labelled
+non-comparable.
+
 ### 74. C2 — edge-triggered "you skipped the router" reminder for condux on OpenCode (follow-up to #72, gated on its measurement) (2026-09-01)
 
 The enforcement half of the #72 research (`specs/trigger-reliability/opencode-routing-research.md` §4 C2), deliberately left out of the C0 + C1 ship: it catches the actual miss — an edit starting in a main session where `workflow` was never loaded — instead of hoping the session-start reminder stuck.
