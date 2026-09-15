@@ -101,7 +101,7 @@ the 261 `-tmp` sessions are eval harness) and **0** in-scope Codex sessions
 lightweight-bff 3, never read — and 4 synthetic blueprint trial dirs). Period
 2 ran on 113 sessions with 66 resume-shaped turns; 30 sessions projects to
 ~17 resume-shaped turns, too few for a rate that compares to ~9%. The period-2
-miner (`.condux/scratch/period2-digests/mine.mjs`, local) re-runs by editing
+miner (local scratch under `.condux/scratch/`, never committed) re-runs by editing
 its `FROM`/`TO` window. No verdict and no port decision until the corpus is
 comparable; a thin interim read is possible but would have to be labelled
 non-comparable.
