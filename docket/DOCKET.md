@@ -128,4 +128,20 @@ Seen while calibrating for #76 (2026-09-10): 8 of the 16 edge labels across thre
 
 Found redrawing the reporting specimen in the D9 language (2026-09-10, specs/blueprint/verification/2026-09-10-visual-language/report.md, "Also seen"): the `HTTP · effective composition JSON` halo spans y 285.75–300.75 while the frontend boundary's title strip ends at y 288 — a 2.25-unit overlap. The kit's Boundaries rule says no label or halo ever lands in the strip band (a halo punches a `var(--card)` hole through the tint), but the checker has no notion of a strip: it is a stroke-less rect, which the checker treats as decoration and ignores. The overlap is inherited from the 2026-09-08 routing geometry and invisible at render scale, so it shipped as-is. Candidate rule: a stroke-less rect whose top edge coincides with a boundary rect's top edge and whose width equals the boundary's is that boundary's strip; any text box or halo intersecting it reports `label-in-title-strip`. Wait for a case where the overlap is visible before adding the rule — same doctrine as #75 and #79.
 
+### 84. Build PRD authoring into condux — prd.md concern file, authored by discovery (follow-up to #83) (2026-09-17)
+
+**Why.** #83 evaluated the spec-related skills and signed off a shape on 2026-09-17: the PRD is a `prd.md` concern file in the technical-spec tree, authored by discovery's goal round as a §0 requirements card, written at sign-off, and read by the workflow router and preflight's drift check. No new skill. The whole design, its rejected alternatives, the touch list and five edge-case rules are in `specs/prd-authoring/` — start from `index.md`; do not re-derive.
+
+**The build, one PR** (`specs/prd-authoring/implementation.md` has the file table):
+
+1. technical-spec — `prd.md` template in `references/templates.md` (six sections, summary table first: problem · users · goals and non-goals · success metrics · scope · open questions), the SKILL.md layout block, `when_to_use` gains "save this PRD", "write up the requirements". `scaffold.sh` stays untouched.
+2. discovery — Step 1 ingests an external PRD, the existing-design check reads an in-tree one, Step 2 covers the six sections, Step 3 opens with the §0 card, Step 7's write-back adds `prd.md`; `references/design-template.md` and `references/spec-integration.md` follow; `when_to_use` gains "write a PRD", "product requirements", "what are we building and why".
+3. workflow router load list and preflight drift table — one row each.
+4. Trigger eval cases in the discovery and technical-spec `evals/trigger_eval.json`: positives for the new phrases, a negative that a PRD ask on a trivial change stays out of discovery.
+5. condux minor bump, bump commit last, `--write-changelog`, and a **minor** changeset for `@jabworks/condux`.
+
+**Done when.** The suite is green, the five quirks in `specs/prd-authoring/quirks.md` are flipped from `no` to their shipped state, and one real discovery run on this repo produces a `prd.md` that the drift check then reads.
+
+**Section.** Someday, not Committed: Harvey asked for the evaluation (#83), not yet for the build. Promote when he says go.
+
 ## Loose threads
