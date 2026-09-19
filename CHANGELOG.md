@@ -12,6 +12,11 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## toolkit-ops 1.7.21 — 2026-09-19
+
+- chore(toolkit-ops): version 1.7.21
+- docs(toolkit-ops): trigger eval after PRD authoring — 92.8% ± 1.9pp, in band
+
 ## condux 2.32.0 — 2026-09-19
 
 - chore(condux): version 2.32.0
