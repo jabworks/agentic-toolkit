@@ -19,6 +19,10 @@
   { "query": "review the plan in the browser", "should_trigger": true, "expected_skill": "plan-review" },
   { "query": "save what we decided as a spec", "should_trigger": true, "expected_skill": "technical-spec" },
   { "query": "why does checkout 500 on submit", "should_trigger": true, "expected_skill": "root-cause-analysis" },
+  { "query": "write a PRD for the notifications feature", "should_trigger": true, "expected_skill": "discovery", "accept": ["workflow"] },
+  { "query": "what are we building and why — pin the product requirements before any design", "should_trigger": true, "expected_skill": "discovery", "accept": ["workflow"] },
+  { "query": "write a PRD for fixing the footer typo", "should_trigger": true, "expected_skill": "workflow", "disallowed": ["discovery"], "note": "A PRD ask on a trivial change goes to the router, which picks SMALL; discovery must not claim it (specs/prd-authoring quirk Q5)." },
+  { "query": "save this PRD", "should_trigger": true, "expected_skill": "technical-spec" },
   { "query": "help me write my resume", "should_trigger": false, "expected_skill": null },
   { "query": "design a logo for the app", "should_trigger": false, "expected_skill": null }
 ]

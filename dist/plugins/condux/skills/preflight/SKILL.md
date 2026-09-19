@@ -69,6 +69,7 @@ missing or scaffold-only file makes no claim, skip it:
 
 | Concern file | Check the implementation against |
 |---|---|
+| `prd.md` | requirements — work that lands in the **Scope** table's *Out* column, or inside a row of the **Non-goal** table, is drift: both are explicit exclusions. Work the *In* column merely does not mention is not. Goals are compared only when the task claims to complete the feature; a task that serves a subset of them is not drift |
 | `api.md` | contracts touched — shapes, error forms, external calls |
 | `fields.md` | source-to-UI mappings and transformations |
 | `quirks.md` | edge cases and failure modes the spec says are handled |

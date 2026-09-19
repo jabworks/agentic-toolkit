@@ -4,8 +4,8 @@
 > before finalize and surface both directions of drift as soft-gate findings,
 > so a spec and its code cannot silently diverge.
 
-**Last updated:** 2026-07-11
-**Commit:** 6cfa3a1
+**Last updated:** 2026-09-19
+**Commit:** PR #162
 **Status:** draft
 
 ## Contents
@@ -16,4 +16,5 @@
 - [implementation.md](implementation.md) — files touched, patterns, evals, version bump
 
 ## Changelog
+- 2026-09-19 (PR #162): the drift table gained a `prd.md` row — scope and non-goals on every task, goals only on a feature-completing one; see `specs/prd-authoring/decisions.md`, decision 3
 - 2026-07-11 (6cfa3a1): Initial spec — signed-off discovery design (fields.md n/a: no data mappings)

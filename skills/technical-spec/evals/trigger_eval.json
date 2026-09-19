@@ -17,6 +17,9 @@
   { "query": "browse the specs tree", "should_trigger": true, "expected_skill": "spec-browser" },
   { "query": "where is the spec for the auth feature", "should_trigger": true, "expected_skill": "spec-browser" },
   { "query": "design the feature first before documenting", "should_trigger": true, "expected_skill": "discovery" },
+  { "query": "save this PRD", "should_trigger": true, "expected_skill": "technical-spec" },
+  { "query": "write up the requirements from this ticket into the spec", "should_trigger": true, "expected_skill": "technical-spec", "disallowed": ["draft-plan"] },
+  { "query": "write a PRD for the notifications feature", "should_trigger": true, "expected_skill": "discovery", "accept": ["workflow"] },
   { "query": "generate openapi yaml from the routes", "should_trigger": false, "expected_skill": null },
   { "query": "write jsdoc comments for this module", "should_trigger": false, "expected_skill": null, "accept": ["workflow"], "note": "Writing comments is a code change — an implementation request workflow claims. null stays primary: it is also fine to just do it." },
   { "query": "host our swagger docs somewhere", "should_trigger": false, "expected_skill": null }

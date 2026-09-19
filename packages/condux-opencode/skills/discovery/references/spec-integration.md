@@ -21,8 +21,8 @@ If yes, go straight to **Launch preview** below (skip scaffold + write — spec 
 The Markdown design doc (Step 7) is always written. The spec write-back is
 **default-on** — announce it rather than ask:
 
-> "Saving this as a tech spec too (decisions + the concern files from the
-> detail round) and opening the live preview — say no to skip."
+> "Saving this as a tech spec too (the PRD from §0, decisions, and the concern
+> files from the detail round) and opening the live preview — say no to skip."
 
 Unless the user opts out (the spec directory then becomes the target for the
 Design Review Loop above, in directory mode):
@@ -45,7 +45,12 @@ Design Review Loop above, in directory mode):
    repo structure, automatically.
 
 3. **Write initial spec files** from the design into `$SPEC_PATH/`.
-   `decisions.md` always (chosen approach + rationale). Then every concern
+   `prd.md` first — the design file's `§0 · requirements` part, copied
+   heading for heading; if a `prd.md` was already on disk, update it in
+   place and add a changelog line to `index.md` rather than overwriting
+   silently. `decisions.md` always (chosen approach + rationale) — except on
+   the requirements-only exit (SKILL.md → The Requirements Card), where no
+   approach was agreed and `prd.md` is the only file written. Then every concern
    the detail round produced answers for gets its file: `api.md`,
    `fields.md`, `quirks.md`, `implementation.md`. A detail-round answer
    that never lands in a spec file is a bug in the flow, not a judgment call.

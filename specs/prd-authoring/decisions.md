@@ -46,6 +46,7 @@ Docket #83 asked whether the spec-related skills could evolve to write PRDs. As 
 
 **Consequences**
 - Only LARGE gets a PRD automatically. Accepted as proportional, not a gap.
+- **Added in the build:** "write a PRD for X" routes to discovery, so discovery needed an answer for a user who wants the requirements and no design yet. It runs as far as §0, then offers to sign off there and save `prd.md` as the only concern file. The design's four entries did not name this case; it is the author entry stopping early, not a fifth entry. The design file keeps `status: in-progress` on this path: a PRD is not a design, and a `signed-off` status would let draft-plan's gate pass against a file with no design sections.
 
 ## 3. Artifact contract — 2026-09-17
 
@@ -64,7 +65,7 @@ Docket #83 asked whether the spec-related skills could evolve to write PRDs. As 
 | Reader | Before | After |
 |---|---|---|
 | workflow router load list | new feature → decisions, api, fields | new feature → prd, decisions, api, fields |
-| preflight drift table | api, fields, quirks, implementation | adds `prd.md`: work inside a non-goal or outside scope is drift; a goal with nothing in the diff is a finding |
+| preflight drift table | api, fields, quirks, implementation | adds `prd.md`: work in the Scope table's Out column or inside a non-goal is drift; goals only on a feature-completing task (see Consequences) |
 | discovery design template | why-line and § entries | adds a `## §0 · requirements` part written at creation |
 | spec-browser catalog | reads the purpose note in `index.md` | unchanged; `prd.md` gets a Contents row like any concern file |
 
@@ -75,6 +76,8 @@ Docket #83 asked whether the spec-related skills could evolve to write PRDs. As 
 | Free-prose PRD | the layering rule: the table layer is what a scanning human, the drift check, and a loading agent all read |
 
 **Consequences**
+- **As built, the goals comparison is narrower than the design said.** The design had "a goal with nothing in the diff is a finding". Written literally, every task that serves a subset of a feature's goals would fail drift, and preflight's own "Requirements met" line already covers the task's scope. The shipped row compares goals only when the task claims to complete the feature. Scope and non-goals are checked on every task, as designed.
+- **As built, scope drift means the Out column.** The design said "outside scope". An In column is coarse, so tests, CI, or docs a task touches would read as outside it. The shipped row treats the *Out* column and the non-goal rows as the claims — both are explicit exclusions — and says work the In column merely does not mention is not drift. Found in code review of PR #162.
 - The two-homes rule extends: `prd.md` owns why and for whom; `decisions.md` owns how it was chosen. The design file's why-line is derived from the PRD's problem statement, never a second copy.
 - Per feature only, under `specs/<feature>/`. No per-product PRD.
 
