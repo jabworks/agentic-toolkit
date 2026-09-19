@@ -52,6 +52,74 @@ rule existed and two were already dead when they were found.
 
 ---
 
+## prd.md
+
+```markdown
+# PRD — {Feature Name}
+
+| Section | In one line |
+|---|---|
+| Problem | {the problem, stated as a claim} |
+| Users | {who it is for} |
+| Goals | {what changes when this succeeds} |
+| Scope | {where the boundary sits} |
+
+## Problem
+
+{one paragraph, three lines at most — what is wrong today, for whom, and why
+it is worth fixing now}
+
+## Users
+
+| Who | Today | What changes |
+|---|---|---|
+| {role or persona} | {what they do now} | {what they can do after} |
+
+## Goals and non-goals
+
+| Goal | Measured by |
+|---|---|
+| {outcome, not a feature} | {the metric row that proves it} |
+
+| Non-goal | Why excluded |
+|---|---|
+| {what this deliberately does not do} | {one line} |
+
+## Success metrics
+
+| Metric | Target | How measured |
+|---|---|---|
+| {what is counted} | {the number or state} | {where the reading comes from} |
+
+## Scope
+
+| In | Out |
+|---|---|
+| {a surface, flow, or platform this covers} | {the adjacent thing it does not} |
+
+## Open questions
+
+- {a question nobody has answered yet — or "none"}
+```
+
+The PRD is the one concern file written *before* the design: it says why the
+feature exists and for whom, and `decisions.md` says how it was chosen. The
+section set is fixed — these six headings, in this order — because
+`discovery` writes them from its requirements card and `preflight`'s drift
+check reads **Scope** and the **Non-goal** table as claims: work that lands
+in the Out column, or inside a non-goal, is drift. Write the Out column as
+things someone might plausibly build — an exclusion nobody would attempt
+checks nothing.
+
+**An empty section is an open question, not a blank to fill.** When nobody
+has stated the users or a metric, the section says so under *Open questions*
+in plain words. A PRD whose metrics were invented to complete the table is
+worse than one that admits it has none. Content from a document the user
+brought that fits none of the six sections also lands under *Open questions*,
+in its original wording.
+
+---
+
 ## decisions.md
 
 ```markdown

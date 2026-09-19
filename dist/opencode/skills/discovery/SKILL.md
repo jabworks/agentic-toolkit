@@ -1,6 +1,6 @@
 ---
 name: discovery
-description: "Refine a rough idea into a signed-off design, presented in sections for sign-off before any planning or code begins. Feeds the tech spec, written via technical-spec at sign-off. Trigger for LARGE tasks, when scope is unclear, or when the user wants to brainstorm or explore a rough idea. Also when resuming an existing design or design doc — the existing-design check offers resume-or-fresh. A soft gate before /draft-plan: if discovery has not run, ask whether to skip it consciously."
+description: "Refine a rough idea into a signed-off design, presented in sections for sign-off before any planning or code begins. Opens with the requirements — the feature PRD — and feeds the tech spec, written via technical-spec at sign-off. Trigger for LARGE tasks, when scope is unclear, or when the user wants to brainstorm or explore a rough idea — or to pin requirements first: \"write a PRD\", \"product requirements\", \"what are we building and why\". Also when resuming an existing design or design doc — the existing-design check offers resume-or-fresh. A soft gate before /draft-plan: if discovery has not run, ask whether to skip it consciously."
 argument-hint: "<rough idea or feature description>"
 effort: high
 ---
@@ -31,6 +31,13 @@ exists, read its frontmatter `status` and offer accordingly:
 
 Accept either answer, same as any other soft gate in this skill.
 
+**Requirements on disk.** The same two-scope lookup finds
+`specs/<slug>/prd.md`. When it exists, read it before Step 1 and say so —
+"Requirements loaded from `<path>`" — then treat its sections as already
+answered: the goal round asks only for the ones that are empty (The
+Requirements Card, below). A spec with no `prd.md` is the normal case, not a
+gap — say nothing.
+
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │                        DISCOVERY                                │
@@ -42,6 +49,9 @@ Accept either answer, same as any other soft gate in this skill.
 │    - Is the request already well-defined (ticket, spec doc)?    │
 │      → Ask: "This looks well-defined. Skip discovery and       │
 │        go straight to planning?"                                │
+│      → If discovery goes ahead: a PRD, ticket or product doc    │
+│        they brought is requirements, not a design — it feeds    │
+│        §0 (below); it never stands in for the design            │
 │    - Is the scope genuinely unclear?                            │
 │      → Proceed to Step 2                                        │
 │                                                                  │
@@ -50,10 +60,15 @@ Accept either answer, same as any other soft gate in this skill.
 │  Focus on: goals, constraints, what "done" looks like,         │
 │  known unknowns, and what should explicitly NOT be built.      │
 │  No implementation detail yet — that's Step 4's job.           │
+│  The batch covers the six PRD sections — problem, users,        │
+│  goals and non-goals, success metrics, scope, open              │
+│  questions — skipping any a loaded PRD already answers.         │
 │                                                                  │
 │  Step 3: PROPOSE                                                │
 │  Announce the section list, then create the design file        │
 │  (status: in-progress) and open the live preview.              │
+│  First card is §0 · requirements — the goal round in            │
+│  prd.md's six headings (The Requirements Card, below).          │
 │  Present one section at a time in the card shape, get          │
 │  acknowledgment, append the agreed section to the file.        │
 │  §1 is approaches-and-tradeoffs; the rest follow the design.   │
@@ -82,6 +97,8 @@ Accept either answer, same as any other soft gate in this skill.
 │    ✓ No subsystems that should be separate tasks               │
 │    ✓ Every contract, mapping, or edge case named in the        │
 │      design has a home in a spec concern file                   │
+│    ✓ §0 invents nothing — an unanswered PRD section is an       │
+│      open question, never a filled-in guess                     │
 │    ✓ Unanswered detail questions surface as open questions,    │
 │      never silently dropped                                     │
 │                                                                  │
@@ -94,8 +111,9 @@ Accept either answer, same as any other soft gate in this skill.
 │  every agreed section is in it. Flip its frontmatter            │
 │  status: in-progress → signed-off. That flip is what           │
 │  /draft-plan's gate check reads.                                │
-│  Spec write-back is default-on: persist the concern files       │
-│  too (Spec Integration below) unless the user opts out.         │
+│  Spec write-back is default-on: persist the concern files —     │
+│  prd.md from §0, then the rest (Spec Integration below) —       │
+│  unless the user opts out.                                      │
 │  The preview is already running — reuse it (Design Review       │
 │  Loop); never launch a second server or open a second tab.      │
 └──────────────────────────────────────────────────────────────────┘
@@ -160,6 +178,8 @@ Accept either answer. Never block. Never lecture.
 ✗ Proceeding to planning without explicit sign-off
 ✗ Treating a well-defined ticket as needing full discovery
 ✗ Widening past the named target surface without saying so
+✗ Inventing users, metrics, or scope to complete §0
+✗ Writing prd.md before sign-off
 ✗ A section card that runs past one screen, or a paragraph past three lines
 ✗ Launching a second preview server, or opening a tab the user didn't ask for
 ```
@@ -210,6 +230,51 @@ script-dead, so the click opens the artifact; an older preview simply shows
 the path as the label, and nothing degrades without a server. Never write a
 git-root-relative href (it cannot resolve against the served root), and
 never inline a copy of the diagram beside the artifact.
+
+## The Requirements Card (§0)
+
+The goal round has always collected requirements — goals, what done looks
+like, what not to build — and then compressed them into a three-line why-line,
+where they were lost. §0 keeps them. It is the first card of Step 3, presented
+once for acknowledgment before §1, and it is the feature's PRD in draft.
+
+**Shape.** §0 uses `prd.md`'s six headings verbatim — *Problem · Users · Goals
+and non-goals · Success metrics · Scope · Open questions* — each a table or a
+short list (technical-spec's `references/templates.md` has the template). Same
+one-screen rule as any card; overflow goes in the design file.
+
+**§0 sits outside the count.** The section list announced before §1 names the
+*design* sections — "4 sections: approach · …" — and cards stay `§n of N`
+against that N. Announce §0 separately, first: *"Requirements first (§0), then
+4 sections: …"*.
+
+**Three ways in, one card out:**
+
+| Arriving with | What §0 is built from |
+|---|---|
+| nothing | the goal round — one batch, six slots |
+| `specs/<slug>/prd.md` on disk | that file; ask only for empty sections |
+| a ticket, product doc, or pasted PRD | that document, mapped onto the six headings, gaps marked |
+
+**Rules underneath it:**
+
+| Rule | Why |
+|---|---|
+| An unanswered section is asked once, then written under *Open questions* — never filled in | a six-slot shape creates pressure to complete it; invented users and metrics read as facts forever after |
+| Content from the user's document that fits no heading goes under *Open questions*, in its original wording | losing what they wrote to fit the shape is worse than an untidy list |
+| A later design section that changes scope, goals, or users updates §0 visibly, and names the change | `prd.md` and `decisions.md` describe one feature; preflight's drift check reads both |
+| `prd.md` is written at Step 7, never at §0 | a PRD in `specs/` for a discovery nobody signed off is a durable file making unsigned claims |
+| The design's why-line is derived from §0's *Problem* | one fact, one home — never a second copy that can disagree |
+
+A request for *only* the requirements — "write a PRD for X", no design wanted
+yet — still runs Steps 1–3 as far as §0, then asks: carry on into the design,
+or sign off here and save the PRD alone? Saving it alone is the Step 7 spec
+write-back with `prd.md` as the only concern file — and **the design file
+keeps `status: in-progress`**. A PRD is not a design: no approach was agreed,
+so `/draft-plan`'s gate must still ask, and flipping the status here would let
+it plan against a file with requirements and no design in it. A later
+discovery on the same feature finds the file and the `prd.md`, and resumes
+from §0.
 
 ## The Design File and the Live Preview (Step 3 onward)
 
@@ -275,8 +340,9 @@ A short design summary covering:
 - Key constraints and out-of-scope items
 - Open questions (if any remain after sign-off)
 
-Detail-round answers (Step 4) belong in the spec concern files, not the
-summary — the summary stays short; the spec carries the detail.
+Requirements live in §0 and become `prd.md`; detail-round answers (Step 4)
+belong in the other spec concern files, not the summary — the summary stays
+short; the spec carries the detail.
 
 Lives at: `.condux/designs/YYYY-MM-DD-<feature>.md`, created at §1 and
 appended to per section, in the shape of `references/design-template.md`
@@ -334,8 +400,9 @@ the launch here.
 Integrates with `technical-spec` to persist the design and render it live while
 discovery runs. At sign-off (Step 7), unless the user opts out: run
 `technical-spec`'s scaffold script to create the spec directory, write the
-design's decisions/contracts/mappings/edge-cases into its concern files
-(`decisions.md`, `api.md`, `fields.md`, `quirks.md`, `implementation.md`), then
+design's requirements/decisions/contracts/mappings/edge-cases into its concern
+files (`prd.md` from §0, then `decisions.md`, `api.md`, `fields.md`,
+`quirks.md`, `implementation.md`), then
 launch `plan-review`'s directory-mode preview against that spec path so it
 live-reloads as the conversation refines the design. Full commands, the
 existing-spec check, and how to action a submitted review decision:

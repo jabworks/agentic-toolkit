@@ -78,7 +78,8 @@ Every tier ends with `preflight` then `finalize` — no exceptions.
    Match the task subject to a spec dir (fuzzy kebab-case: "checkout flow" →
    `specs/checkout-flow`). If found, read `index.md`, then load by task type —
    bug/debug → `quirks.md`, `api.md`, `fields.md`; refactor → `implementation.md`,
-   `decisions.md`; new feature → `decisions.md`, `api.md`, `fields.md`. Carry this
+   `decisions.md`; new feature → `prd.md`, `decisions.md`, `api.md`, `fields.md`
+   (any of these the spec does not have is skipped silently). Carry this
    context through; don't re-read mid-task. No spec → proceed without comment.
 3. **Confirm with the user.** State the inferred tier + a one-sentence reason. If a
    spec was loaded, mention it and offer the companion: "Found spec for

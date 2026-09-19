@@ -1,7 +1,7 @@
 ---
 name: technical-spec
-description: Persists feature decisions, API contracts, implementation details, and quirks into a structured, queryable spec tree — one folder per feature, one file per concern.
-when_to_use: Invoke-only — discovery runs it at design sign-off and preflight's drift check reads its output; the user runs it via /technical-spec when they say "save spec", "document this", "write up what we decided", "record the decision rationale", or "spec this out" — recording decisions for the future is spec work even when phrased as remembering. Not for turning a rough idea into a design first — that's discovery.
+description: Persists feature requirements, decisions, API contracts, implementation details, and quirks into a structured, queryable spec tree — one folder per feature, one file per concern.
+when_to_use: Invoke-only — discovery runs it at design sign-off and preflight's drift check reads its output; the user runs it via /technical-spec when they say "save spec", "document this", "write up what we decided", "record the decision rationale", "spec this out", "save this PRD", or "write up the requirements" — recording decisions for the future is spec work even when phrased as remembering. Not for turning a rough idea into a design first — that's discovery.
 disable-model-invocation: true
 ---
 
@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 ## Overview
 
-Persists feature decisions, API contracts, implementation details, and quirks into a structured, queryable spec tree. One folder per feature, one file per concern — future sessions load only what they need. Specs are living contracts: `/preflight`'s Drift Check compares the implementation against them at end-of-task.
+Persists feature requirements, decisions, API contracts, implementation details, and quirks into a structured, queryable spec tree. One folder per feature, one file per concern — future sessions load only what they need. Specs are living contracts: `/preflight`'s Drift Check compares the implementation against them at end-of-task.
 
 ## Spec Folder Layout
 
@@ -25,6 +25,7 @@ to place the spec.
   apps/web/
     {feature-slug}/         # scaffolded while working in apps/web
       index.md              # purpose, TOC, last updated, PR stamp, changelog  ← scaffold creates this
+      prd.md                # Requirements: problem, users, goals/non-goals, metrics, scope
       decisions.md          # Design decisions with context + rationale
       api.md                # Endpoints, types, external APIs consumed
       fields.md             # Field mappings: BE/3rd-party → UI, or forwarding chains
@@ -57,9 +58,11 @@ exists and has since the design's first section — discovery creates it at §1
 and appends to it as each section is agreed. So the input here is a finished
 file on disk, not a summary reconstructed from the conversation: read
 `.condux/designs/YYYY-MM-DD-<feature>.md` and map its sections into the
-concern files. Discovery's own preview server is already running against that
-file, so the live-preview offer below applies to the *spec directory* only —
-never start a second server for the design.
+concern files. Its `§0 · requirements` part uses `prd.md`'s six headings
+verbatim, so that mapping is a copy, heading for heading. Discovery's own
+preview server is already running against that file, so the live-preview
+offer below applies to the *spec directory* only — never start a second
+server for the design.
 
 ## Required Notifications
 
@@ -112,6 +115,16 @@ the spec all read, so write each row as a claim someone could check.
 trailing `//` per field, JSDoc only when a line won't do. `fields.md` says
 what *happens to it* — mapping and transformation only. One fact never lives
 in both places: a fact with two homes goes missing from the one being read.
+The same split holds one level up: `prd.md` says *why the feature exists and
+for whom*; `decisions.md` says *how it was chosen*. A decision never restates
+the problem, and the PRD never records an alternative.
+
+**`prd.md` is the requirements file, and the one file written before the
+design.** `discovery` authors it from its requirements card and writes it
+here at sign-off; run standalone ("save this PRD", "write up the
+requirements") you write it directly from what the user gives you. Six fixed
+sections — see the template. A section nobody has answered becomes an open
+question; never invent users or metrics to complete the table.
 
 **Quirk headings are `## Q<n> — Title`.** The `Q<n>` anchors are a citation
 contract (`durable-citations.test.mjs` resolves them), so numbers are unique,
