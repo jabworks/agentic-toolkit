@@ -66,7 +66,7 @@ Docket #83 asked whether the spec-related skills could evolve to write PRDs. As 
 |---|---|---|
 | workflow router load list | new feature → decisions, api, fields | new feature → prd, decisions, api, fields |
 | preflight drift table | api, fields, quirks, implementation | adds `prd.md`: work in the Scope table's Out column or inside a non-goal is drift; goals only on a feature-completing task (see Consequences) |
-| discovery design template | why-line and § entries | adds a `## §0 · requirements` part written at creation |
+| discovery design template | why-line and § entries | adds a `## §0 · requirements` part, written when the card is acknowledged and revised visibly after |
 | spec-browser catalog | reads the purpose note in `index.md` | unchanged; `prd.md` gets a Contents row like any concern file |
 
 | Alternative | Why not |

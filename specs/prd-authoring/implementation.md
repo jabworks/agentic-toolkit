@@ -8,10 +8,10 @@ instructions or a guard over them; the feature has no runtime code.
 | `skills/technical-spec/references/templates.md` | gains the `prd.md` template — six sections, summary table first — and a Contents-row example for it |
 | `skills/technical-spec/SKILL.md` | the Spec Folder Layout block lists `prd.md`; the two-homes rule extends to it; `description` names requirements; `when_to_use` gains "save this PRD", "write up the requirements" |
 | `skills/discovery/SKILL.md` | Step 1's well-defined branch ingests an external PRD; the on-disk check reads an in-tree `prd.md`; Step 2 covers the six sections; Step 3 opens with the §0 requirements card; Step 5 checks §0 invents nothing; Step 7's write-back list adds `prd.md`; a new section, The Requirements Card (§0), holds the contract; `when_to_use` gains three phrases |
-| `skills/discovery/references/design-template.md` | a `## §0 · requirements` part with an `[at creation]` lifecycle stamp |
+| `skills/discovery/references/design-template.md` | a `## §0 · requirements` part with an `[on acknowledgment; revised visibly]` lifecycle stamp |
 | `skills/discovery/references/spec-integration.md` | the sign-off write-back list adds `prd.md` beside `decisions.md` |
 | `skills/workflow/SKILL.md` | The Router step 2: the new-feature load list becomes prd, decisions, api, fields |
-| `skills/preflight/SKILL.md` | the Drift Check table gains a `prd.md` row — scope, non-goals, unaddressed goals |
+| `skills/preflight/SKILL.md` | the Drift Check table gains a `prd.md` row — the Scope table's *Out* column and the non-goal rows on every task; goals only when the task claims to complete the feature |
 | `skills/discovery/evals/trigger_eval.json`, `skills/technical-spec/evals/trigger_eval.json` | positives for the new phrases; a negative that a PRD ask on a trivial change stays out of discovery |
 | `plugins/condux/README.md` | the discovery and technical-spec rows of the skill table mention the PRD |
 | `tests/prd-authoring.test.mjs` | pins the wiring: the six headings in order, the table layer, §0 in the design template, `prd.md` in the write-back, the router list, the drift row, and that the two eval corpora agree on who owns a PRD request |
