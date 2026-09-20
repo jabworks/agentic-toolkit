@@ -29,6 +29,16 @@ Harvey said go on 2026-09-19. Built as PR #162: technical-spec carries the `prd.
 
 **Still open, by Harvey's choice:** the last done criterion — one real discovery run on this repo producing a `prd.md` that the drift check then reads. It needs a person answering a goal round, so it waits for the next real LARGE task rather than a staged one. The trigger eval run for the new phrases is also not yet run (model-billed; offered, not started). Close #84 when the first real `prd.md` lands.
 
+#### Status 2026-09-20 — fully released; the eval did run; the closing run moves to another repo
+
+Three corrections to the block above, which was written mid-flight:
+
+- **The trigger eval ran.** Three trials after the change: 92.8% ± 1.9pp, in band, zero disallowed violations, all four new phrases 3/3. Report and per-case table in `skills/toolkit-research-frontier/references/eval-prd-authoring-2026-09-19.md`.
+- **Three departures, not two.** `specs/prd-authoring/decisions.md` bolds all three: the requirements-only sign-off path, the narrowed goals comparison, and scope drift meaning the *Out* column. The third was found in code review of PR #162 and recorded there, but the count was never updated.
+- **The npm channel is verified.** `@jabworks/condux@0.25.0` published from Version Packages PR #163; confirmed 2026-09-20 by `npm view` with both release workflows green. All four distribution channels now carry the feature.
+
+**The criterion is unchanged and this item stays open.** Harvey said on 2026-09-20 that he will do the closing discovery run on a different repo, not this one. Two consequences for whoever picks this up: that repo is not to be read without his explicit say-so, and any evidence promoted into `specs/prd-authoring/verification/` must be synthesized rather than copied, since this repo is public. He brings the evidence out; do not go looking for it.
+
 
 ## Someday
 
