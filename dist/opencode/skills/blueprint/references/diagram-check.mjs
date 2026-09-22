@@ -106,11 +106,18 @@ const distPointToSegment = (px, py, x1, y1, x2, y2) => {
   return Math.hypot(px - nx, py - ny);
 };
 
+// Distance from a point to a box: zero inside it, else to its nearest edge.
+const distPointToBox = (px, py, box) =>
+  Math.hypot(Math.max(box.x0 - px, 0, px - box.x1), Math.max(box.y0 - py, 0, py - box.y1));
+
 // Distance from a box to a segment: zero when the segment enters the box,
-// else the nearest of the box's corners. Label attribution measures this, not
-// the box centre — a long start-anchored label beside a vertical edge has its
-// centre far from the line and its near edge right on it, and real diagrams
-// (the 2026-09-08 reporting one, six of seven labels) are drawn that way.
+// else the nearer of two measures — a box corner to the segment, or a segment
+// endpoint to the box. Label attribution measures this, not the box centre —
+// a long start-anchored label beside a vertical edge has its centre far from
+// the line and its near edge right on it, and real diagrams (the 2026-09-08
+// reporting one, six of seven labels) are drawn that way. Corners alone miss
+// the other shape: an arrow whose tip faces the middle of a wide label's side
+// is far from every corner (section-loop.html's step 1: 63.1 against 7.25).
 const distBoxToSegment = (box, x1, y1, x2, y2) => {
   if (liangBarsky(x1, y1, x2, y2, box)) return 0;
 
@@ -121,7 +128,11 @@ const distBoxToSegment = (box, x1, y1, x2, y2) => {
     [box.x1, box.y1],
   ];
 
-  return Math.min(...corners.map(([px, py]) => distPointToSegment(px, py, x1, y1, x2, y2)));
+  return Math.min(
+    ...corners.map(([px, py]) => distPointToSegment(px, py, x1, y1, x2, y2)),
+    distPointToBox(x1, y1, box),
+    distPointToBox(x2, y2, box),
+  );
 };
 
 const fmt = (n) => Math.round(n * 10) / 10;
