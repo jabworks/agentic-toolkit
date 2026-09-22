@@ -179,4 +179,14 @@ Seen while calibrating for #76 (2026-09-10): 8 of the 16 edge labels across thre
 
 Found redrawing the reporting specimen in the D9 language (2026-09-10, specs/blueprint/verification/2026-09-10-visual-language/report.md, "Also seen"): the `HTTP · effective composition JSON` halo spans y 285.75–300.75 while the frontend boundary's title strip ends at y 288 — a 2.25-unit overlap. The kit's Boundaries rule says no label or halo ever lands in the strip band (a halo punches a `var(--card)` hole through the tint), but the checker has no notion of a strip: it is a stroke-less rect, which the checker treats as decoration and ignores. The overlap is inherited from the 2026-09-08 routing geometry and invisible at render scale, so it shipped as-is. Candidate rule: a stroke-less rect whose top edge coincides with a boundary rect's top edge and whose width equals the boundary's is that boundary's strip; any text box or halo intersecting it reports `label-in-title-strip`. Wait for a case where the overlap is visible before adding the rule — same doctrine as #75 and #79.
 
+### 85. diagram-check: an edge that crosses a label claims it, so the crossing is reported as the wrong defect (2026-09-22)
+
+Found on 2026-09-22 sweeping every committed diagram for #75. In `specs/discovery-presentation/section-loop.html`, the step-7 sign-off arrow (x=535, y 288→388) ran straight through the dashed return path's label ("you read the design whole here — …", box 282–718 × 294–305), visibly splitting it in a headless render. The checker printed `unlabeled-edge` on the return path and nothing about the crossing.
+
+**Cause.** Each free label is attributed to exactly one edge, the nearest (`distBoxToSegment`), and `edge-through-label` skips an edge's own label, because a label drawn on its own edge over a halo legitimately touches it. A neighbour that crosses a label is at distance 0, so it wins the label: the crossing is exempted as "own", and the edge the label belonged to is reported as unlabeled instead.
+
+**Candidate rule.** An edge that crosses a label with no halo behind it is `edge-through-label` even when it is the nearest, and attribution then falls to the next-nearest edge. That needs the checker to recognise a label's halo, which is exactly what #79's candidate rule defines (the nearest stroke-less rect containing the text's anchor), so build the two together.
+
+**The case exists.** Unlike #75, #79 and #82, this one has already tripped on a real diagram. The same PR that filed this item moved the label below the return run (x 290, y 328), so the committed diagram no longer shows it; the geometry above is the case.
+
 ## Loose threads
