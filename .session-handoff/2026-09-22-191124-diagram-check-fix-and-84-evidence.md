@@ -1,6 +1,6 @@
 ---
 created: 2026-09-22 19:11:24
-branch: main (handoff committed direct); PR #166 open on fix/diagram-check-label-distance
+branch: main (handoff committed direct; PRs #166 and #167 merged, nothing open)
 repo: jabworks/agentic-toolkit (root)
 task: diagram-check-fix-and-84-evidence
 continues-from: 2026-09-20-103908-prd-authoring-shipped.md (pruned in the same commit; every step it listed is done or carried below)
@@ -9,7 +9,7 @@ workstream: docket sweep: #84 evidence, gate checks on the Someday items, diagra
 
 ## Immediate next steps
 
-1. **PR #166 waits on Harvey's merge. Do not merge it yourself.** It carries condux **2.32.1**: the `distBoxToSegment` fix in `skills/blueprint/references/diagram-check.mjs`, a two-sided regression test in `tests/diagram-check.test.mjs` (`a centered label above an arrow tip labels that arrow`), the uncrossed label in `specs/discovery-presentation/section-loop.html` (x 290, y 328), docket #85, and a patch changeset `.changeset/diagram-check-label-distance.md`. CI is green (`test`, `release-dry-run`). After the merge, plugin-release tags `condux--v2.32.1` on its own. changesets then opens a **Version Packages** PR taking `@jabworks/condux` 0.25.0 → 0.25.1. That PR publishes to npm, so Harvey merges it, never the agent. Then verify with `npm view @jabworks/condux version` (expect `0.25.1`) and `gh run list --branch main --limit 3`.
+1. **Nothing is left in flight: condux 2.32.1 is fully released.** On Harvey's instruction ("Merge the PRs for me", 2026-09-22), the agent merged PR #166 (`03785e4`: the `distBoxToSegment` fix, its regression test, the uncrossed section-loop label, docket #85) and then Version Packages PR #167 (`9b94793`). Every workflow is green. Tags `condux--v2.32.1` and `@jabworks/condux@0.25.1` exist. npm `latest` is **0.25.1**, visible about 165 s after the Release log said published. That instruction covered those two PRs only; the next merge waits for his word again. The next session starts at step 2.
 2. **#84 closes only on a *feature* discovery run that keeps the spec write-back.** Its last criterion is still a `specs/<slug>/prd.md` written at sign-off, then one task whose preflight drift check reads that row. Half of it is now observed in a real run (pocket-haven, 2026-09-21; see the 2026-09-22 status block under #84 in `docket/DOCKET.md`). When Harvey reports a run: synthesize the evidence into `specs/prd-authoring/verification/` (a public repo, so copy nothing), cite no path inside any repo's `.condux/`, and close with `docket_close 84 --note "…"`. A miss is a wording fix in the skill, never in the test.
 3. **Period 3 for #65/#67: re-check around mid-October 2026**, earlier than the old November estimate. On 2026-09-22 there were 51 in-scope Claude Code sessions since the 2026-08-28 cut: agentic-toolkit 17, terminus 21, pocket-haven 13 (new; personal and non-synthetic, so in scope). That's +21 in 8 days, against a target of ~100. Codex in scope: 0. The counting recipe is under Key discoveries. Once it reaches ~100, run the miner `.condux/scratch/period2-digests/mine.mjs` with `FROM` = 2026-08-28. A verdict on #65 is a finding to report and does not authorise a hook.
 4. **Still parked on Harvey, and unchanged by today's gate checks.** #74 needs his paid-model spend call. #75, #79 and #82 have no real case: the 2026-09-22 sweep found no decorative line read as an edge, and no halo or strip overlap visible in any render. #85 should be built together with #79 (same halo-identification rule). Also still waiting on him: the Codex trigger check for the blueprint visual language (recipe in `specs/blueprint/verification/2026-09-10-codex-trigger-check/report.md`), the history-rewrite decision, and keep-or-replace for the third-party remember plugin.
@@ -92,7 +92,7 @@ This session closed out the 2026-09-20 handoff and then swept the docket. The np
 ## Important context
 
 - **Other repos are read only when Harvey asks in that turn.** He did for pocket-haven's logs and spec tree on 2026-09-22. That doesn't carry forward. Nothing from another repo is copied into this public one, and no path inside another repo's `.condux/` may be cited (`durable-citations.test.mjs` rejects it anyway).
-- **Merges wait for Harvey, and npm publishes most of all.** He merged #164 and #165. #166 and its follow-up Version Packages PR are his too.
+- **Merges wait for Harvey, and npm publishes most of all.** He merged #164 and #165 himself, and told the agent to merge #166 and #167. That instruction was for those two PRs; it is not standing permission.
 - **Any condux skill edit needs a bump (the bump commit last on `dist/plugins/condux/`), `--write-changelog`, and a changeset.** The pre-commit hook stages `dist/` but not `packages/`, so run `git add packages` yourself.
 - Workflow tiers this session were stated and confirmed. Harvey answers the menus when they're shown, so show them.
 - Handoffs are committed straight to main with `git add -f`, no PR, pruning the consumed one in the same commit.
