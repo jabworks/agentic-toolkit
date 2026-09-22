@@ -39,6 +39,26 @@ Three corrections to the block above, which was written mid-flight:
 
 **The criterion is unchanged and this item stays open.** Harvey said on 2026-09-20 that he will do the closing discovery run on a different repo, not this one. Two consequences for whoever picks this up: that repo is not to be read without his explicit say-so, and any evidence promoted into `specs/prd-authoring/verification/` must be synthesized rather than copied, since this repo is public. He brings the evidence out; do not go looking for it.
 
+#### Status 2026-09-22 — half the criterion observed in a real run on pocket-haven; no prd.md, by a signed-off opt-out
+
+Harvey asked on 2026-09-22 for the session logs and pocket-haven's spec tree to be checked. A real LARGE discovery ran there on 2026-09-21, for an evaluation item on that repo's own backlog, and signed off. Only structure and decisions are recorded here; none of its content is copied.
+
+| Behaviour #84 needs | Observed | How |
+|---|---|---|
+| §0 card before §1 | yes | §0 is the first section of the signed-off design, §1 follows it |
+| §0 outside the `§n of N` count | yes | the header counts four sections, and §0 is not among them |
+| `## §0 · requirements` written on acknowledgment | yes | stamped `AGREED 2026-09-21` |
+| The six headings, verbatim and in order | yes | Problem · Users · Goals and non-goals · Success metrics · Scope · Open questions |
+| Goal round asked in one batch | not verified | that part ran before a `/clear`; the transcript holding it was not found |
+| `prd.md` written at sign-off | no — opted out | the design's own deliverable section, signed off, declines the spec write-back: the work was a review whose deliverable was a research document, with no contracts or fields to record |
+| Drift check reads the `prd.md` | no | there is no `prd.md` to read |
+
+**Not a skill miss.** `skills/discovery/references/spec-integration.md` makes the write-back default-on with an opt-out, and the opt-out was taken and signed off. The authoring half of the feature now has real-run evidence. The persisting half does not.
+
+**One design question it raised, not yet decided.** The opt-out's reason ("no contracts or fields") argues against `api.md` and `fields.md`, but the write-back is all or nothing, so declining it also dropped a PRD that had real content. That content now lives only in the other repo's gitignored working state. Whether that is wrong turns on whether a review should get a PRD at all: `specs/prd-authoring/decisions.md` scopes PRDs to features, and a review is not one, which would make §0 running on a non-feature LARGE task the odd part rather than the lost file.
+
+**Still open.** The next real *feature* run on a repo that keeps the spec write-back closes this item: a `prd.md` in `specs/<slug>/`, then one task whose preflight drift check reads its row.
+
 
 ## Someday
 
