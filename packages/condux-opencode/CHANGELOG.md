@@ -1,5 +1,11 @@
 # @jabworks/condux
 
+## 0.25.1
+
+### Patch Changes
+
+- [#166](https://github.com/jabworks/agentic-toolkit/pull/166) [`03785e4`](https://github.com/jabworks/agentic-toolkit/commit/03785e4838e82745251f0b34ac43a4b4c865ed99) Thanks [@vi-hieu](https://github.com/vi-hieu)! - `blueprint`'s diagram checker no longer reports a labeled arrow as `unlabeled-edge` when its label sits centered at the arrow's tail. Label distance was measured from the label box's corners only, so an arrow leaving from under the middle of a wide note looked far from it; it now also measures from the arrow's endpoints to the box.
+
 ## 0.25.0
 
 ### Minor Changes
