@@ -316,6 +316,34 @@ test('mark-as-path fixture: a kind glyph drawn as a raw path outside <defs> stil
   assert.equal(findings[0].line, 30, 'the finding must land on the raw path, not the node or its title');
 });
 
+test('checkSvg: a centered label above an arrow tip labels that arrow', () => {
+  // specs/discovery-presentation/section-loop.html, step 1: a note centered
+  // over a short vertical arrow that leaves from just under it. Label
+  // attribution measured only the box's four corners to the segment, and a
+  // wide box puts every corner far to the side of a tip that faces the middle
+  // of its bottom edge — 63.1 away instead of 7.25, so the arrow read as
+  // unlabeled. "status: in-progress" is 19 chars * 11 * 0.6 = 125.4 wide,
+  // centered on x=200 -> 137.3..262.7, bottom at y=42.75.
+  const near = `<svg viewBox="0 0 400 200">
+    <text x="200" y="40" text-anchor="middle" font-size="11">status: in-progress</text>
+    <line x1="200" y1="50" x2="200" y2="90" stroke="black"/>
+  </svg>`;
+  assert.deepEqual(
+    checkSvg(near).filter((f) => f.code === 'unlabeled-edge'),
+    [],
+    'a label 7.25 above the tip it faces is within labeling range',
+  );
+
+  // The fix measures the tip to the box, not a radius around the label: the
+  // same geometry 30 units clear is still out of range and still reported.
+  const far = near.replace('y1="50"', 'y1="73"');
+  assert.equal(
+    checkSvg(far).filter((f) => f.code === 'unlabeled-edge').length,
+    1,
+    'a tip 30.25 below the label is past the 24px range',
+  );
+});
+
 test('checkSvg: a boundary rect containing nodes is never an obstacle', () => {
   const svg = `<svg viewBox="0 0 200 100">
     <rect x="10" y="10" width="100" height="80" stroke="gray" stroke-dasharray="4 3"/>

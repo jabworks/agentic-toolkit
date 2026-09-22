@@ -4,8 +4,8 @@
 > time — HTML wireframes and renders for UI in the surface-kit token
 > language (two modes, one skeleton), inline-SVG system diagrams for BE.
 
-**Last updated:** 2026-09-10
-**Commit:** PR #153
+**Last updated:** 2026-09-22
+**Commit:** PR #166
 **Status:** draft
 
 ## Contents
@@ -19,6 +19,10 @@
 - [verification/2026-09-10-codex-trigger-check/report.md](verification/2026-09-10-codex-trigger-check/report.md) — three Codex trials on the shipped 2.30.0: does the agent run the checker unprompted before delivering, and does the base font size land on the `<svg>` tag
 
 ## Changelog
+- 2026-09-22 (PR #166, 2.32.1): `diagram-check.mjs` label attribution also measures an edge's
+  endpoints to the label box, not only the box's corners to the edge — an arrow leaving from
+  under a centered note was read as unlabeled (63.1 against 7.25); the blind spot where a
+  crossing edge claims a label is filed as docket #85
 - 2026-09-10 (2.31.0): visual language — role tint, kind marks, protocol dash, legend, boundary
   title strips across all four families; accent rule rewritten; the checker's defs skip survives
   nesting — see D9, Q10, Q11
