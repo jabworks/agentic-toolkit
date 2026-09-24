@@ -12,9 +12,13 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## toolkit-ops 1.7.23 — 2026-09-24
+
+- docs(toolkit-ops): mobile prior-art survey for #88-#92
+
 ## toolkit-ops 1.7.22 — 2026-09-24
 
-- docs(toolkit-ops): mobile-development eval; file #86-#93
+- docs(toolkit-ops): mobile-development eval; file #86–#93 (1.7.22) (#168)
 
 ## condux 2.32.1 — 2026-09-22
 

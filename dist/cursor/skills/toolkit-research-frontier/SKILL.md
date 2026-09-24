@@ -118,6 +118,12 @@ findings stop a re-investigation.
   asserted ones (#12), supply-chain lint on skill content (#13),
   trajectory-based routing measurement (#14), three cheap validation checks
   (#15). Includes what NOT to copy and what was checked and rejected.
+- `references/mobile-prior-art-survey-2026-09-24.md` — mobile skills and
+  device tooling (the Expo plugin, vercel-labs, callstack/agent-device,
+  mobile-mcp, Software Mansion and others), read before designing the mobile
+  fixes #88–#92. Every fix keeps a self-contained core and only *prefers* an
+  installed tool (the no-plugin-deps ladder). Pairs with
+  `references/eval-mobile-2026-09-22.md`, the eval that filed those items.
 
 ## Evidence required
 

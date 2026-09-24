@@ -230,6 +230,19 @@ Found 2026-09-22 in the mobile eval (`skills/toolkit-research-frontier/reference
 
 **Fix direction.** One detector: a path list plus an AGENTS.md override, with one home for the fact. Report it the way finalize reports `Env`: never blocking, always visibly run.
 
+#### Status 2026-09-24 — prior art surveyed; design is two-tier
+
+See `skills/toolkit-research-frontier/references/mobile-prior-art-survey-2026-09-24.md` §2.
+
+**Expo already has both halves.**
+- The mechanism is the **fingerprint**: `npx @expo/fingerprint fingerprint:generate`/`fingerprint:diff` and `runtimeVersion.policy: "fingerprint"`. `expo:eas-simulator` already uses it to decide when a build can be reused.
+- The semantic rule is in `expo:eas-update`: "new native build when a change adds or modifies native code or native configuration".
+
+**Design.**
+- **Core, always present.** The path list, extended with config plugins, autolinked modules and SDK upgrades.
+- **Precise tier.** A fingerprint diff whenever `expo-updates` or `@expo/fingerprint` is present.
+- **Vocabulary.** Report in Radon's three rungs: JS reload, process restart, native rebuild.
+
 ### 89. live-verification has no native-app path — the agent built its own emulator playbook, and 9 of 11 runs left no report (2026-09-22)
 
 Found 2026-09-22 in the mobile eval (`skills/toolkit-research-frontier/references/eval-mobile-2026-09-22.md`, A2).
@@ -260,6 +273,23 @@ Found 2026-09-22 in the mobile eval (`skills/toolkit-research-frontier/reference
 
 Separately, a CP-3 "Verify it live" choice must load the skill. Hand platform mechanics to `expo:expo-dev-client` / `expo:eas-simulator` when they are installed.
 
+#### Status 2026-09-24 — prior art surveyed; build as a three-rung ladder
+
+See `skills/toolkit-research-frontier/references/mobile-prior-art-survey-2026-09-24.md` §1.
+
+**Prior art.**
+- `callstack/agent-device` is the most adopted device driver (MIT, about 540k npm downloads a month). Its skills already state our contract: findings come only from the running app, a blocked run reports the next command to try, and it never auto-installs.
+- `mobile-next/mobile-mcp` is the MCP-only option, and the one that can read logcat and the iOS unified log.
+
+**Design, under the no-plugin-deps ladder.**
+1. **Core, in the skill's own files.** An adb/simctl recipe, a `logcat -d` sweep, the stale-UI and PATH rules, and a `device-only` verdict.
+2. **Preferred driver.** agent-device or mobile-mcp when detected.
+3. **Expo projects.** Defer build and install mechanics to `expo:expo-dev-client`/`expo:eas-simulator` when installed.
+
+Recommend agent-device in the README, but never require it.
+
+**Ours to write, since nobody else covers them:** the logcat sweep, uiautomator staleness, and the report template.
+
 ### 90. release treats an Expo app as a GitHub repo — wrong version file, no versionCode, OTA stranding unmentioned (2026-09-22)
 
 Found 2026-09-22 in the mobile eval (`skills/toolkit-research-frontier/references/eval-mobile-2026-09-22.md`, A3).
@@ -280,6 +310,23 @@ Found 2026-09-22 in the mobile eval (`skills/toolkit-research-frontier/reference
 
 condux keeps the tag ceremony.
 
+#### Status 2026-09-24 — prior art surveyed; version-source check first
+
+See `skills/toolkit-research-frontier/references/mobile-prior-art-survey-2026-09-24.md` §3.
+
+**The version-source correction.** Expo recommends `cli.appVersionSource: "remote"`. Under it:
+- EAS holds only the build number (`versionCode`/`buildNumber`) and ignores the app-config values.
+- `expo.version` stays in the app config, so this item's tag premise holds.
+
+**What the release row must do.**
+- Read `eas.json` first.
+- Never bump `versionCode` in `app.json` under `remote`.
+- Note that local Gradle/Xcode builds need `eas build:version:sync`.
+
+**Ours to write.** Nobody names the `appVersion`-policy OTA stranding warning.
+
+**Covered elsewhere.** Store and OTA mechanics are well covered by `expo:eas-app-stores`/`expo:eas-update`. Outside Expo, release is unowned.
+
 ### 91. coding-directive assumes Next.js and the DOM — expo-router route exceptions missing, React/toolchain rows web-only (2026-09-22)
 
 Found 2026-09-22 in the mobile eval (`skills/toolkit-research-frontier/references/eval-mobile-2026-09-22.md`, A6).
@@ -296,6 +343,16 @@ Found 2026-09-22 in the mobile eval (`skills/toolkit-research-frontier/reference
 - There is no `expo/tsconfig.base` variant.
 
 **Fix direction.** Add the expo-router exceptions, plus a small React Native/Expo delta, either as a reference file or as rows in the existing files.
+
+#### Status 2026-09-24 — prior art surveyed
+
+See `skills/toolkit-research-frontier/references/mobile-prior-art-survey-2026-09-24.md` §5.
+
+- **The export exception has an authoritative source:** `expo:expo-router` `references/route-structure.md`, which says "every file should export a default component" and keeps `app/` to routes and `_layout` only.
+- **Special files:** nobody names `+not-found`, `+html` or `+native-intent`, so cite the Expo docs.
+- **DOM → React Native delta:** `expo-web-to-native`'s false-friends table is the model; write our own.
+- **Touch targets:** 44pt/48dp plus `hitSlop`.
+- **Counter-example:** vercel `react-best-practices` has the same web-shaped defect (zero React Native mentions, DOM-only rules). It doubles as a list of rules to fence off on native.
 
 ### 92. workflow and expo-overview both say "load first" — let the platform router ride along like house style does (2026-09-22)
 
@@ -314,6 +371,17 @@ Found 2026-09-22 in the mobile eval (`skills/toolkit-research-frontier/reference
 **Fix direction.** Generalize workflow rule 6 ("house style rides along") to cover platform routers. After tier confirmation, when the project carries a platform plugin's marker (e.g. an `expo` dependency), load that router, so the two layers compose instead of competing. This is a companion pairing, not a twin, so `condux-doctor/conflicts.json` is the wrong registry. Related: the researcher agent's chain (MCP → Context7 → docs) has no installed-skill rung.
 
 **Open question.** Is the EXTREMELY_IMPORTANT routing framing suppressing domain triggers? That is unproven, and in trigger-reliability territory. Measure it with `eval-invocations.mjs` in a scratch fixture that has the expo plugin installed, never in a real project's tree.
+
+#### Status 2026-09-24 — prior art surveyed; "rides along" confirmed compatible
+
+See `skills/toolkit-research-frontier/references/mobile-prior-art-survey-2026-09-24.md` §4.
+
+**Why "rides along" works with expo-overview.**
+- expo-overview's "load first" is description-only. The Expo plugin's hooks are telemetry, so condux wins by mechanism.
+- Its only skip condition is a user naming a leaf skill, so loading it after tier confirmation is not a skip.
+- Scope its "Trust the leaf skill … Don't improvise" to domain steps.
+
+**Plan for the unconditional-trigger case too.** Software Mansion's react-native-best-practices says "MUST USE before writing, reviewing, or debugging ANY code" in any React Native or Expo project. The same rides-along clause absorbs it as a companion.
 
 ### 93. condux contract erodes on long runs — tiers self-assigned, bypass recommended on LARGE, checklist never ticked, coders skip house style (2026-09-22)
 
