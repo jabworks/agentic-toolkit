@@ -63,7 +63,9 @@ Base (`@jabworks/typescript-config/base.json`):
   module; use `export type` / inline type imports correctly.
 - `module` / `moduleResolution`: `NodeNext` (base, Node packages), `ESNext` +
   `Bundler` (Next.js apps).
-- `target: ES2022`, lib includes DOM.
+- `target: ES2022`, lib includes DOM — which is wrong for React Native: there
+  is no native variant, so Expo apps extend `expo/tsconfig.base` instead (see
+  `react-native.md`).
 - Libraries emit `declaration` + `declarationMap`.
 - Variants: `nextjs` (`jsx: preserve`, `allowJs`, `noEmit`), `react-library`
   (`jsx: react-jsx`).
