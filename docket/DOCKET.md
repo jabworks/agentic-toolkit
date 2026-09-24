@@ -189,31 +189,6 @@ Found on 2026-09-22 sweeping every committed diagram for #75. In `specs/discover
 
 **The case exists.** Unlike #75, #79 and #82, this one has already tripped on a real diagram. The same PR that filed this item moved the label below the return run (x 290, y 328), so the committed diagram no longer shows it; the geometry above is the case.
 
-### 86. workflow cannot load in a repo with no commits — its live-context block hard-fails the Skill load (2026-09-22)
-
-Found 2026-09-22 in the mobile eval (`skills/toolkit-research-frontier/references/eval-mobile-2026-09-22.md`, B1), while reading the kickoff sessions of a greenfield app project.
-
-`skills/workflow/SKILL.md:21` is a ```` ```! ```` live-context block: `git status --short`, then `git log --oneline -5`. With no `.git`, `git status` exits 128. With `.git` but no commits, `git log` fails. Claude Code refuses the whole skill on either failure ("Shell command failed for pattern …").
-
-In the kickoff session the load failed twice. The agent then ran `git init` and `git commit --allow-empty -m "chore: initialize repository"`, a commit nobody asked for, made only to get the skill to load. In the next session the load failed twice more, and the agent `cat`-ed workflow, discovery, subagent-deployment, draft-plan and technical-spec out of the plugin cache. The whole greenfield kickoff ran on that text.
-
-**Why it matters.** It is the only `` ```! `` block in `skills/`, and it hits every new-project kickoff, which is exactly when workflow is supposed to take over.
-
-**Fix direction.** Make the block fail open: `git status --short 2>/dev/null || echo "(no git repo yet)"` and `git log --oneline -5 2>/dev/null || true`. Add a fixture test that renders the live context in a non-git dir and in a repo with no commits. The doctrine is the same as `condux-hooks.test.mjs`'s fail-open assertion on `session-start.mjs`.
-
-### 87. workflow CP-1 prescribes five options; AskUserQuestion takes four, so rows get merged or dropped (2026-09-22)
-
-Found 2026-09-22 in the mobile eval (`skills/toolkit-research-frontier/references/eval-mobile-2026-09-22.md`, B2).
-
-**Confirmed by construction.** The CP-1 table in `skills/workflow/SKILL.md` has five rows: Start implementing, Write tests first, Spawn specialist agents, Dispatch independent tasks in parallel, Revise the plan. The AskUserQuestion tool caps options at 4.
-
-**Observed in the sessions.**
-- Two CP-1 menus merged the two agent rows into "Use agents". That is the same erosion `2cc080d` fixed for merged sign-off prompts.
-- Four other CP-1 menus kept both agent rows and pushed "Revise the plan" into Other.
-- One CP-3 was replaced by a custom menu with no Verify-it-live or Code-review row.
-
-**Fix direction.** Put the four-slot shape in the skill itself: say "Revise travels as Other", or split CP-1 into two questions. Also consider a CP-3 publish row for projects with an OTA channel.
-
 ### 88. Native-change awareness: one detector so workflow, finalize, live-verification and release know a change needs a rebuild (2026-09-22)
 
 Found 2026-09-22 in the mobile eval (`skills/toolkit-research-frontier/references/eval-mobile-2026-09-22.md`, A1). This is the cross-cutting mobile gap.
