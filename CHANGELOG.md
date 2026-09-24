@@ -12,10 +12,13 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## toolkit-ops 1.7.22 — 2026-09-24
+
+- docs(toolkit-ops): mobile-development eval; file #86-#93
+
 ## condux 2.32.1 — 2026-09-22
 
-- chore(condux): 2.32.1
-- fix(blueprint): diagram-check measures an arrow tip to a label, not only corners
+- fix(blueprint): diagram-check label distance; uncross section-loop — condux 2.32.1 (#166)
 
 ## toolkit-ops 1.7.21 — 2026-09-19
 

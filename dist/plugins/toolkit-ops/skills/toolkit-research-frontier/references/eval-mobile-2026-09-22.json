@@ -1,0 +1,1255 @@
+[
+  {
+    "query": "check it on the emulator before we push",
+    "expected": "live-verification",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:live-verification",
+    "got": "live-verification",
+    "runs": [
+      "live-verification",
+      "live-verification",
+      "live-verification"
+    ]
+  },
+  {
+    "query": "check it in the browser before we ship",
+    "expected": "live-verification",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:live-verification",
+    "got": "live-verification",
+    "runs": [
+      "live-verification",
+      "live-verification",
+      "live-verification"
+    ]
+  },
+  {
+    "query": "verify it on my phone before we merge",
+    "expected": "live-verification",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:live-verification",
+    "got": "live-verification",
+    "runs": [
+      "live-verification",
+      "live-verification",
+      "live-verification"
+    ]
+  },
+  {
+    "query": "verify on preview then merge",
+    "expected": "live-verification",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:live-verification",
+    "got": "live-verification",
+    "runs": [
+      "live-verification",
+      "live-verification",
+      "live-verification"
+    ]
+  },
+  {
+    "query": "does the new gesture actually work on the device, go look",
+    "expected": "live-verification",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:live-verification",
+    "got": "live-verification",
+    "runs": [
+      "live-verification",
+      "live-verification",
+      "live-verification"
+    ]
+  },
+  {
+    "query": "did the button actually fix itself, go look",
+    "expected": "live-verification",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:live-verification",
+    "got": "live-verification",
+    "runs": [
+      "live-verification",
+      "live-verification",
+      "live-verification"
+    ]
+  },
+  {
+    "query": "does dark mode actually look right on Android",
+    "expected": "live-verification",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:live-verification",
+    "got": "live-verification",
+    "runs": [
+      "live-verification",
+      "live-verification",
+      "live-verification"
+    ]
+  },
+  {
+    "query": "does dark mode actually look right",
+    "expected": "live-verification",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:live-verification",
+    "got": "live-verification",
+    "runs": [
+      "live-verification",
+      "live-verification",
+      "live-verification"
+    ]
+  },
+  {
+    "query": "install the dev build on the emulator and click through the flow",
+    "expected": "live-verification",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:live-verification",
+    "got": "live-verification",
+    "runs": [
+      "live-verification",
+      "live-verification",
+      "live-verification"
+    ]
+  },
+  {
+    "query": "click through the flow and confirm it works",
+    "expected": "live-verification",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:live-verification",
+    "got": "live-verification",
+    "runs": [
+      "live-verification",
+      "live-verification",
+      "live-verification"
+    ]
+  },
+  {
+    "query": "drive the app over adb and screenshot each state before I commit",
+    "expected": "live-verification",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:live-verification",
+    "got": "live-verification",
+    "runs": [
+      "live-verification",
+      "live-verification",
+      "live-verification"
+    ]
+  },
+  {
+    "query": "run it and watch it work before I commit",
+    "expected": "live-verification",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:live-verification",
+    "got": "live-verification",
+    "runs": [
+      "live-verification",
+      "live-verification",
+      "live-verification"
+    ]
+  },
+  {
+    "query": "the app crashes on launch on Android after adding the native module",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:root-cause-analysis",
+    "got": "root-cause-analysis",
+    "runs": [
+      "workflow",
+      "root-cause-analysis",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "checkout crashes on empty cart",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:root-cause-analysis",
+    "got": "root-cause-analysis",
+    "runs": [
+      "workflow",
+      "root-cause-analysis",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "Uncaught Error: undefined is not a function in the scene component, thrown from a node_modules build",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:root-cause-analysis",
+    "got": "root-cause-analysis",
+    "runs": [
+      "workflow",
+      "root-cause-analysis",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "TypeError: cannot read property of undefined in the orders page",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:root-cause-analysis",
+    "got": "root-cause-analysis",
+    "runs": [
+      "workflow",
+      "root-cause-analysis",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "the EAS build failed: Gradle build failed with unknown error",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:root-cause-analysis",
+    "got": "root-cause-analysis",
+    "runs": [
+      "workflow",
+      "root-cause-analysis",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "the app broke after the last deploy",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:root-cause-analysis",
+    "got": "root-cause-analysis",
+    "runs": [
+      "workflow",
+      "root-cause-analysis",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "the notification sound doesn't play when the phone is locked",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:root-cause-analysis",
+    "got": "root-cause-analysis",
+    "runs": [
+      "workflow",
+      "root-cause-analysis",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "on my phone I can't drag the item, only its preview moves",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:root-cause-analysis",
+    "got": "root-cause-analysis",
+    "runs": [
+      "workflow",
+      "root-cause-analysis",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "logcat shows a native crash in our Kotlin module when the screen turns off",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:root-cause-analysis",
+    "got": "root-cause-analysis",
+    "runs": [
+      "workflow",
+      "root-cause-analysis",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "debug the 500 on the orders endpoint",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:root-cause-analysis",
+    "got": "root-cause-analysis",
+    "runs": [
+      "workflow",
+      "root-cause-analysis",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "why does the timer reset when I lock the phone",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:root-cause-analysis",
+    "got": "root-cause-analysis",
+    "runs": [
+      "workflow",
+      "root-cause-analysis",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "why does this test fail intermittently",
+    "expected": "root-cause-analysis",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:root-cause-analysis",
+    "got": "root-cause-analysis",
+    "runs": [
+      "workflow",
+      "root-cause-analysis",
+      "root-cause-analysis"
+    ]
+  },
+  {
+    "query": "mock up the shop screen as a grid of thumbnails before we build it",
+    "expected": "blueprint",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:blueprint",
+    "got": "blueprint",
+    "runs": [
+      "blueprint",
+      "blueprint",
+      "blueprint"
+    ]
+  },
+  {
+    "query": "mock this up before we build it",
+    "expected": "blueprint",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:blueprint",
+    "got": "blueprint",
+    "runs": [
+      "blueprint",
+      "blueprint",
+      "blueprint"
+    ]
+  },
+  {
+    "query": "wireframe the editing toolbar for the phone so I know what to expect",
+    "expected": "blueprint",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:blueprint",
+    "got": "blueprint",
+    "runs": [
+      "blueprint",
+      "blueprint",
+      "blueprint"
+    ]
+  },
+  {
+    "query": "wireframe the settings page so the frontend dev knows what to expect",
+    "expected": "blueprint",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:blueprint",
+    "got": "blueprint",
+    "runs": [
+      "blueprint",
+      "blueprint",
+      "blueprint"
+    ]
+  },
+  {
+    "query": "mock up the purchase bottom sheet on the phone including the empty and error states",
+    "expected": "blueprint",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:blueprint",
+    "got": "blueprint",
+    "runs": [
+      "blueprint",
+      "blueprint",
+      "blueprint"
+    ]
+  },
+  {
+    "query": "can you mock up the checkout flow including the empty and error states",
+    "expected": "blueprint",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:blueprint",
+    "got": "blueprint",
+    "runs": [
+      "blueprint",
+      "blueprint",
+      "blueprint"
+    ]
+  },
+  {
+    "query": "diagram the session state machine: running, backgrounded, failed, completed",
+    "expected": "blueprint",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:blueprint",
+    "got": "blueprint",
+    "runs": [
+      "blueprint",
+      "blueprint",
+      "blueprint"
+    ]
+  },
+  {
+    "query": "diagram the auth flow between the gateway and the identity service",
+    "expected": "blueprint",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:blueprint",
+    "got": "blueprint",
+    "runs": [
+      "blueprint",
+      "blueprint",
+      "blueprint"
+    ]
+  },
+  {
+    "query": "add long-press on a list item to start dragging it, with a vibration",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:workflow",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "add an export button to the invoice table",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:workflow",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "add a Kotlin native module that detects when the user leaves the app",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:workflow",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "build a new auth flow with SSO",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:workflow",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "add the SCHEDULE_EXACT_ALARM permission and a banner when it's denied",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:workflow",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "implement dark mode",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:workflow",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "fix the label on the bottom tab bar",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:workflow",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "fix the label on the settings page",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:workflow",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "refactor the native bridge so screens only import its public api file",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:workflow",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "refactor the dashboard module to feature-sliced design",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:workflow",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "upgrade the app to Expo SDK 58",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:workflow",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "set up the local Android toolchain so we can build without EAS",
+    "expected": "workflow",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:workflow",
+    "got": "workflow",
+    "runs": [
+      "workflow",
+      "workflow",
+      "workflow"
+    ]
+  },
+  {
+    "query": "brainstorm the specs and PRD for a habit-tracker mobile app",
+    "expected": "discovery",
+    "accept": [
+      "workflow"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:discovery",
+    "got": "discovery",
+    "runs": [
+      "discovery",
+      "discovery",
+      "discovery"
+    ]
+  },
+  {
+    "query": "write a PRD for the notifications feature",
+    "expected": "discovery",
+    "accept": [
+      "workflow"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:discovery",
+    "got": "discovery",
+    "runs": [
+      "discovery",
+      "discovery",
+      "discovery"
+    ]
+  },
+  {
+    "query": "i have a rough idea for streak rewards in the app",
+    "expected": "discovery",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:discovery",
+    "got": "discovery",
+    "runs": [
+      null,
+      "discovery",
+      "discovery"
+    ]
+  },
+  {
+    "query": "i have a rough idea for an activity feed",
+    "expected": "discovery",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:discovery",
+    "got": "discovery",
+    "runs": [
+      null,
+      "discovery",
+      "discovery"
+    ]
+  },
+  {
+    "query": "lets figure out whether to port the Android app to iOS and what it would cost",
+    "expected": "discovery",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:discovery",
+    "got": "discovery",
+    "runs": [
+      "workflow",
+      "discovery",
+      "discovery"
+    ]
+  },
+  {
+    "query": "lets figure out the design for the billing revamp",
+    "expected": "discovery",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:discovery",
+    "got": "discovery",
+    "runs": [
+      "workflow",
+      "discovery",
+      "discovery"
+    ]
+  },
+  {
+    "query": "push this JS change over the air to the preview channel",
+    "expected": "release",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:release",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "tag and publish this",
+    "expected": "release",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:release",
+    "got": "release",
+    "runs": [
+      "release",
+      "release",
+      "release"
+    ]
+  },
+  {
+    "query": "cut the 0.3.0 preview build and ship it",
+    "expected": "release",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:release",
+    "got": "release",
+    "runs": [
+      "release",
+      "release",
+      "release"
+    ]
+  },
+  {
+    "query": "cut a release",
+    "expected": "release",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:release",
+    "got": "release",
+    "runs": [
+      "release",
+      "release",
+      "release"
+    ]
+  },
+  {
+    "query": "everything's merged and green — ship v0.2.0 to the Play Store closed test",
+    "expected": "release",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:release",
+    "got": "release",
+    "runs": [
+      "release",
+      "release",
+      "release"
+    ]
+  },
+  {
+    "query": "everything's merged and green — ship v1.4.0",
+    "expected": "release",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:release",
+    "got": "release",
+    "runs": [
+      "release",
+      "release",
+      "release"
+    ]
+  },
+  {
+    "query": "run typecheck lint and tests before I commit the native module",
+    "expected": "finalize",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:finalize",
+    "got": "finalize",
+    "runs": [
+      "finalize",
+      "finalize",
+      "finalize"
+    ]
+  },
+  {
+    "query": "run tests and lint before I commit",
+    "expected": "finalize",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:finalize",
+    "got": "finalize",
+    "runs": [
+      "finalize",
+      "finalize",
+      "finalize"
+    ]
+  },
+  {
+    "query": "am I done with the gesture work, did I miss anything before finalize",
+    "expected": "preflight",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:preflight",
+    "got": "preflight",
+    "runs": [
+      "preflight",
+      "preflight",
+      "preflight"
+    ]
+  },
+  {
+    "query": "did I miss anything before finalize",
+    "expected": "preflight",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:preflight",
+    "got": "preflight",
+    "runs": [
+      "preflight",
+      "preflight",
+      "preflight"
+    ]
+  },
+  {
+    "query": "review the Kotlin native module before merging",
+    "expected": "code-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:code-review",
+    "got": "code-review",
+    "runs": [
+      "code-review",
+      "code-review",
+      "code-review"
+    ]
+  },
+  {
+    "query": "review this before merging",
+    "expected": "code-review",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:code-review",
+    "got": "code-review",
+    "runs": [
+      "code-review",
+      "code-review",
+      "code-review"
+    ]
+  },
+  {
+    "query": "tdd the reward calculation table",
+    "expected": "test-first-development",
+    "accept": [
+      "workflow"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:test-first-development",
+    "got": "test-first-development",
+    "runs": [
+      "test-first-development",
+      "test-first-development",
+      "test-first-development"
+    ]
+  },
+  {
+    "query": "tdd this feature",
+    "expected": "test-first-development",
+    "accept": [
+      "workflow"
+    ],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:test-first-development",
+    "got": "test-first-development",
+    "runs": [
+      "test-first-development",
+      "test-first-development",
+      "test-first-development"
+    ]
+  },
+  {
+    "query": "should I tdd the 3D scene components",
+    "expected": "test-first-development",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:test-first-development",
+    "got": "test-first-development",
+    "runs": [
+      "test-first-development",
+      "test-first-development",
+      "test-first-development"
+    ]
+  },
+  {
+    "query": "should I tdd ui components",
+    "expected": "test-first-development",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:test-first-development",
+    "got": "test-first-development",
+    "runs": [
+      "test-first-development",
+      "test-first-development",
+      "test-first-development"
+    ]
+  },
+  {
+    "query": "why do our expo-router route files use default exports when we ban them",
+    "expected": "coding-directive",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:coding-directive",
+    "got": "coding-directive",
+    "runs": [
+      "coding-directive",
+      "coding-directive",
+      "coding-directive"
+    ]
+  },
+  {
+    "query": "why do we ban default exports",
+    "expected": "coding-directive",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:coding-directive",
+    "got": "coding-directive",
+    "runs": [
+      "coding-directive",
+      "coding-directive",
+      "coding-directive"
+    ]
+  },
+  {
+    "query": "does app/_layout.tsx follow my style guide",
+    "expected": "coding-directive",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:coding-directive",
+    "got": "coding-directive",
+    "runs": [
+      "coding-directive",
+      "coding-directive",
+      "coding-directive"
+    ]
+  },
+  {
+    "query": "does this component file follow my style guide",
+    "expected": "coding-directive",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:coding-directive",
+    "got": "coding-directive",
+    "runs": [
+      "coding-directive",
+      "coding-directive",
+      "coding-directive"
+    ]
+  },
+  {
+    "query": "wrap up, I'll continue on my other laptop that doesn't have the Android toolchain",
+    "expected": "session-handoff",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:session-handoff",
+    "got": "session-handoff",
+    "runs": [
+      "session-handoff",
+      "session-handoff",
+      "session-handoff"
+    ]
+  },
+  {
+    "query": "wrap up this session",
+    "expected": "session-handoff",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:session-handoff",
+    "got": "session-handoff",
+    "runs": [
+      "session-handoff",
+      "session-handoff",
+      "session-handoff"
+    ]
+  },
+  {
+    "query": "add a docket item: support Android home-screen widgets",
+    "expected": "record",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:record",
+    "got": "record",
+    "runs": [
+      "record",
+      "record",
+      "record"
+    ]
+  },
+  {
+    "query": "add this to the docket: rate-limit the webhook endpoint",
+    "expected": "record",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:record",
+    "got": "record",
+    "runs": [
+      "record",
+      "record",
+      "record"
+    ]
+  },
+  {
+    "query": "someday: a tablet layout for the app",
+    "expected": "record",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:record",
+    "got": "record",
+    "runs": [
+      "record",
+      "record",
+      "record"
+    ]
+  },
+  {
+    "query": "someday: dark mode for the board",
+    "expected": "record",
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:record",
+    "got": "record",
+    "runs": [
+      "record",
+      "record",
+      "record"
+    ]
+  },
+  {
+    "query": "why did we pick Expo instead of bare React Native?",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:null",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "explain how react suspense works",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:null",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "would a local build be faster than the EAS cloud build?",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:null",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "how do I get the over-the-air update on my phone, is it just a link?",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:null",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "what does SCHEDULE_EXACT_ALARM do on Android 14",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:null",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "what does the CSS overflow property do",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "web:null",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  },
+  {
+    "query": "explain how React Three Fiber's native renderer works",
+    "expected": null,
+    "accept": [],
+    "disallowed": [],
+    "kind": "cold",
+    "context": null,
+    "source": "mobile:null",
+    "got": null,
+    "runs": [
+      null,
+      null,
+      null
+    ]
+  }
+]
