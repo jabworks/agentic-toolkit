@@ -18,8 +18,8 @@ No under-planning for a cross-cutting feature.
 ## Live Context
 
 ```!
-git status --short
-git log --oneline -5
+git status --short 2>/dev/null || echo "(not a git repository yet)"
+git log --oneline -5 2>/dev/null || echo "(no commits yet)"
 ```
 
 ## Operating Rules
@@ -105,6 +105,15 @@ Every tier ends with `preflight` then `finalize` — no exceptions.
 
 After the user picks, load **only** that skill, run it, then return to the nearest
 checkpoint and re-present the menu until the user chooses Done.
+
+**When the question tool caps the options.** CP-1 and CP-3 have five rows, and
+some hosts' question tools take four (Claude Code's AskUserQuestion does). The
+first four rows go on buttons, recommended first. The fifth row rides in the
+free-text slot the tool adds ("Other"), and the question text names it:
+"Plan ready — how do we proceed? (or type 'revise' to rework the plan)" for
+CP-1, "(or say done)" for CP-3. Never merge two rows into one button to make
+room — "Use agents" for the two agent rows is exactly the erosion this rule
+prevents. A host with no cap, or a plain-text menu, shows every row.
 
 ### CP-1 — Plan ready
 
@@ -248,6 +257,7 @@ Stop if you catch yourself doing any of these:
 | Tests / lint / typecheck mid-implementation | Save it all for `finalize` |
 | Spawning agents for a task you can just do | Default is to implement yourself |
 | Omitting the subagent options from a checkpoint menu | The default shapes the recommendation, never the menu — present every CP-1 row |
+| Merging or dropping rows to fit a four-option question tool | Four rows on buttons, the fifth named in the question text and taken through "Other" |
 | Silently skipping discovery on a LARGE task | Ask — it's a soft gate, not a free pass |
 | Rewriting a test spec to make it pass | Stop and ask — never silently edit specs |
 | Auto-running code-review, commits, or agents | They're checkpoint choices; run only when picked |

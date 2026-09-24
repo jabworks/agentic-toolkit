@@ -14,11 +14,15 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## toolkit-ops 1.7.23 — 2026-09-24
 
-- docs(toolkit-ops): mobile prior-art survey for #88-#92
+- docs(toolkit-ops): mobile prior-art survey for #88–#92 (1.7.23) (#169)
 
 ## toolkit-ops 1.7.22 — 2026-09-24
 
 - docs(toolkit-ops): mobile-development eval; file #86–#93 (1.7.22) (#168)
+
+## condux 2.32.2 — 2026-09-24
+
+- fix(workflow): live context fails open; five-row menus fit a four-option tool (#86, #87)
 
 ## condux 2.32.1 — 2026-09-22
 
