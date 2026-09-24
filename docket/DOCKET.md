@@ -189,4 +189,148 @@ Found on 2026-09-22 sweeping every committed diagram for #75. In `specs/discover
 
 **The case exists.** Unlike #75, #79 and #82, this one has already tripped on a real diagram. The same PR that filed this item moved the label below the return run (x 290, y 328), so the committed diagram no longer shows it; the geometry above is the case.
 
+### 86. workflow cannot load in a repo with no commits — its live-context block hard-fails the Skill load (2026-09-22)
+
+Found 2026-09-22 in the mobile eval (`skills/toolkit-research-frontier/references/eval-mobile-2026-09-22.md`, B1), while reading the kickoff sessions of a greenfield app project.
+
+`skills/workflow/SKILL.md:21` is a ```` ```! ```` live-context block: `git status --short`, then `git log --oneline -5`. With no `.git`, `git status` exits 128. With `.git` but no commits, `git log` fails. Claude Code refuses the whole skill on either failure ("Shell command failed for pattern …").
+
+In the kickoff session the load failed twice. The agent then ran `git init` and `git commit --allow-empty -m "chore: initialize repository"`, a commit nobody asked for, made only to get the skill to load. In the next session the load failed twice more, and the agent `cat`-ed workflow, discovery, subagent-deployment, draft-plan and technical-spec out of the plugin cache. The whole greenfield kickoff ran on that text.
+
+**Why it matters.** It is the only `` ```! `` block in `skills/`, and it hits every new-project kickoff, which is exactly when workflow is supposed to take over.
+
+**Fix direction.** Make the block fail open: `git status --short 2>/dev/null || echo "(no git repo yet)"` and `git log --oneline -5 2>/dev/null || true`. Add a fixture test that renders the live context in a non-git dir and in a repo with no commits. The doctrine is the same as `condux-hooks.test.mjs`'s fail-open assertion on `session-start.mjs`.
+
+### 87. workflow CP-1 prescribes five options; AskUserQuestion takes four, so rows get merged or dropped (2026-09-22)
+
+Found 2026-09-22 in the mobile eval (`skills/toolkit-research-frontier/references/eval-mobile-2026-09-22.md`, B2).
+
+**Confirmed by construction.** The CP-1 table in `skills/workflow/SKILL.md` has five rows: Start implementing, Write tests first, Spawn specialist agents, Dispatch independent tasks in parallel, Revise the plan. The AskUserQuestion tool caps options at 4.
+
+**Observed in the sessions.**
+- Two CP-1 menus merged the two agent rows into "Use agents". That is the same erosion `2cc080d` fixed for merged sign-off prompts.
+- Four other CP-1 menus kept both agent rows and pushed "Revise the plan" into Other.
+- One CP-3 was replaced by a custom menu with no Verify-it-live or Code-review row.
+
+**Fix direction.** Put the four-slot shape in the skill itself: say "Revise travels as Other", or split CP-1 into two questions. Also consider a CP-3 publish row for projects with an OTA channel.
+
+### 88. Native-change awareness: one detector so workflow, finalize, live-verification and release know a change needs a rebuild (2026-09-22)
+
+Found 2026-09-22 in the mobile eval (`skills/toolkit-research-frontier/references/eval-mobile-2026-09-22.md`, A1). This is the cross-cutting mobile gap.
+
+**Which paths change the binary.** On an Expo app: `modules/**`, the `plugins`, `permissions` and `version` fields of `app.json`/`app.config.*`, native dependencies in `package.json`, and the generated `android/`/`ios/` trees. No skill knows this.
+
+**What each skill gets wrong without it.**
+- **workflow.** Tier inference scores a one-line Kotlin edit SMALL. It actually costs a multi-minute Gradle build, a reinstall and a new APK.
+- **finalize.** The gates come from AGENTS.md and, on a typical Expo project, are JS-only. It still prints "Ready to commit" over uncompiled Kotlin.
+- **live-verification.** It can drive a stale dev client.
+- **release.** `eas update` cannot carry the change. Under `runtimeVersion.policy: appVersion`, a version bump also cuts installed builds off from OTA.
+
+**Field specimen.** The agent wrote itself a memory note after a stale dev client left persistent device state (an immutable notification channel) wrong: after a native change, rebuild the dev client and clear its app data before trusting it.
+
+**Fix direction.** One detector: a path list plus an AGENTS.md override, with one home for the fact. Report it the way finalize reports `Env`: never blocking, always visibly run.
+
+### 89. live-verification has no native-app path — the agent built its own emulator playbook, and 9 of 11 runs left no report (2026-09-22)
+
+Found 2026-09-22 in the mobile eval (`skills/toolkit-research-frontier/references/eval-mobile-2026-09-22.md`, A2).
+
+**The body is browser-shaped.**
+- Step 1 resolves a URL.
+- Step 3 checks hover, Tab and Escape.
+- Failure handling assumes a DOM.
+- Evidence is console/network, with no `adb logcat`.
+- The verdict template allows only ✓/✗.
+
+**Routing is not the problem.** Mobile phrasings ("check it on the emulator", "verify it on my phone") routed to it in every trial of the router stratum.
+
+**What the sessions show.**
+- Right after the skill loaded, the agent's next move was to read its own memory file of emulator gotchas: 11 bullets, "each of these cost a failed attempt".
+- Across the sessions, 223 of 950 Bash calls invoke `adb`, 167 take screencaps, and 210 Reads open a PNG.
+- 227 Bash calls prefix a platform-tools PATH export, because adb was on the owner's interactive shell PATH only.
+- The device-only verdict ("unchecked: the emulator has no haptics; goes to the phone") was invented in the field.
+- Nine of the eleven verification runs have screenshots and no report. The two with reports are exactly the two where the skill loaded.
+- Once, the user picked the recommended "verify live" option at CP-3, and the skill never loaded.
+
+**Fix direction.** Add a platform branch to Steps 1, 3 and 4:
+- A rebuild precondition (see #88).
+- The project's own emulator and dev-client scripts first.
+- An adb recipe: deep-link launch, `input tap`/`swipe`/`motionevent`, screencap, and a `logcat -d` error sweep.
+- Stale-UI rules.
+- A first-class `device-only` verdict that feeds a phone checklist.
+
+Separately, a CP-3 "Verify it live" choice must load the skill. Hand platform mechanics to `expo:expo-dev-client` / `expo:eas-simulator` when they are installed.
+
+### 90. release treats an Expo app as a GitHub repo — wrong version file, no versionCode, OTA stranding unmentioned (2026-09-22)
+
+Found 2026-09-22 in the mobile eval (`skills/toolkit-research-frontier/references/eval-mobile-2026-09-22.md`, A3).
+
+**What goes wrong.**
+- **Machinery detection falls through to git tag + `gh release`** whenever AGENTS.md has no release section.
+- **The version guard reads the wrong file.** It reads "the manifest/package version". An Expo app's truth is `app.json` `expo.version`, and in the observed project the tags followed it while `package.json` lagged behind.
+- **The dry-run misses two consequences.** `android.versionCode` must bump on every store upload. With `runtimeVersion.policy: appVersion`, a version bump cuts every installed build off from OTA.
+- **"Deploying … out of scope" routes nowhere.** For an app, store submission and `eas update` *are* the release.
+
+**Routing makes it worse.** In the router stratum, "ship v0.2.0 to the Play Store closed test" routed to `release` in every trial. "push this JS change over the air" went to `null` in every trial. In a closed catalog that is correct, because `expo:eas-update` owns OTA in a real install.
+
+**Fix direction.** Add an Expo machinery row. It should:
+- Detect `app.json` + `eas.json`.
+- Read the version from the app config.
+- Flag the versionCode and runtimeVersion effects in the dry-run.
+- Hand store and OTA work to `expo:eas-app-stores` / `expo:eas-update`.
+
+condux keeps the tag ceremony.
+
+### 91. coding-directive assumes Next.js and the DOM — expo-router route exceptions missing, React/toolchain rows web-only (2026-09-22)
+
+Found 2026-09-22 in the mobile eval (`skills/toolkit-research-frontier/references/eval-mobile-2026-09-22.md`, A6).
+
+**The export exceptions name only Next.js.** They list `page.tsx`, `layout.tsx` and `*.config.*`, but not the expo-router routes under `app/**` (`_layout.tsx`, `+not-found.tsx`, `+html.tsx`, `+api.ts`). A route written to the directive gets a named export and does not render. The observed project's AGENTS.md restates the exception by hand, so nothing broke there. A fresh Expo repo would hit it.
+
+**`references/react.md` assumes the DOM.**
+- `<button>` carries `type`; React Native uses `Pressable`.
+- jsx-a11y; React Native uses `accessibilityRole` and `accessibilityLabel`.
+- Keyboard and Escape parity; mobile needs back-button behaviour, screen-reader order and 48dp touch targets.
+
+**`references/formatting-and-toolchain.md` assumes a web stack.**
+- "`lib` includes DOM" hides a real class of mobile bug: DOM-assuming helpers that type-check and crash on device.
+- There is no `expo/tsconfig.base` variant.
+
+**Fix direction.** Add the expo-router exceptions, plus a small React Native/Expo delta, either as a reference file or as rows in the existing files.
+
+### 92. workflow and expo-overview both say "load first" — let the platform router ride along like house style does (2026-09-22)
+
+Found 2026-09-22 in the mobile eval (`skills/toolkit-research-frontier/references/eval-mobile-2026-09-22.md`, A4).
+
+**The contest.**
+- condux's SessionStart hook says every implementation request starts at `/workflow`.
+- `expo:expo-overview` (from `expo@claude-plugins-official`) says "Load this skill first — before writing code" in any repo with an `expo` dependency.
+- condux wins the race, so expo-overview's shared rules are lost, e.g. `npx expo install` rather than a raw package-manager add, and SDK-pinned docs.
+
+**What the sessions show.**
+- The owner had to stop work to go looking for mobile skills.
+- After installing them, the expo leaf skills fired twice. `eas-app-stores` fired inside a condux MEDIUM flow, complementary, with no conflict.
+- Some never fired despite matching work: `eas-update` (11 `eas update` invocations after the install), `expo-dev-client` and `expo-router`. `vercel-react-native-skills` fired 0 times.
+
+**Fix direction.** Generalize workflow rule 6 ("house style rides along") to cover platform routers. After tier confirmation, when the project carries a platform plugin's marker (e.g. an `expo` dependency), load that router, so the two layers compose instead of competing. This is a companion pairing, not a twin, so `condux-doctor/conflicts.json` is the wrong registry. Related: the researcher agent's chain (MCP → Context7 → docs) has no installed-skill rung.
+
+**Open question.** Is the EXTREMELY_IMPORTANT routing framing suppressing domain triggers? That is unproven, and in trigger-reliability territory. Measure it with `eval-invocations.mjs` in a scratch fixture that has the expo plugin installed, never in a real project's tree.
+
+### 93. condux contract erodes on long runs — tiers self-assigned, bypass recommended on LARGE, checklist never ticked, coders skip house style (2026-09-22)
+
+Found 2026-09-22 in the mobile eval (`skills/toolkit-research-frontier/references/eval-mobile-2026-09-22.md`, B3–B6). These are platform-neutral defects, surfaced by a greenfield project run over a week. Each could be split out when picked up.
+
+- **Multi-day erosion (B3).** One session ran four days with no compaction.
+  - On its first day it asked 6 questions and loaded 7 skills over 145 tool calls.
+  - On its last two days it asked 2 questions and loaded 3 skills over 386 tool calls and 13 commits.
+  - Seven backlog tasks ran with no CP menus and no preflight, with tiers self-assigned from a bare "sure" ("I infer MEDIUM").
+  - Gates still ran. A fresh session kept the full contract.
+  - Candidate: treat "pick the next docket item" as a new task that re-enters `/workflow`.
+- **The recommendation was the bypass (B4).** On work that had just grown to LARGE, the recommended option was "Sign off here, write the plan", which skips discovery. The user overrode it. On LARGE the recommended option must be discovery.
+- **The plan checklist is never ticked on the implement-yourself path (B5).**
+  - One plan shows 0/13 boxes ticked while its progress ledger says PLAN COMPLETE.
+  - Another shows 0/10 after it shipped.
+  - preflight loaded and did not flag either.
+  - Only subagent-execution owns ticking. Give it to CP-2 or preflight, or drop the checklist from the inline path.
+- **Coders skip house style (B6).** 4 of 9 coder subagents in the kickoff made 60 edits without loading coding-directive. Coder briefs should require the load, or inline the enforced tier.
+
 ## Loose threads
