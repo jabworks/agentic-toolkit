@@ -302,33 +302,6 @@ See `skills/toolkit-research-frontier/references/mobile-prior-art-survey-2026-09
 
 **Covered elsewhere.** Store and OTA mechanics are well covered by `expo:eas-app-stores`/`expo:eas-update`. Outside Expo, release is unowned.
 
-### 91. coding-directive assumes Next.js and the DOM — expo-router route exceptions missing, React/toolchain rows web-only (2026-09-22)
-
-Found 2026-09-22 in the mobile eval (`skills/toolkit-research-frontier/references/eval-mobile-2026-09-22.md`, A6).
-
-**The export exceptions name only Next.js.** They list `page.tsx`, `layout.tsx` and `*.config.*`, but not the expo-router routes under `app/**` (`_layout.tsx`, `+not-found.tsx`, `+html.tsx`, `+api.ts`). A route written to the directive gets a named export and does not render. The observed project's AGENTS.md restates the exception by hand, so nothing broke there. A fresh Expo repo would hit it.
-
-**`references/react.md` assumes the DOM.**
-- `<button>` carries `type`; React Native uses `Pressable`.
-- jsx-a11y; React Native uses `accessibilityRole` and `accessibilityLabel`.
-- Keyboard and Escape parity; mobile needs back-button behaviour, screen-reader order and 48dp touch targets.
-
-**`references/formatting-and-toolchain.md` assumes a web stack.**
-- "`lib` includes DOM" hides a real class of mobile bug: DOM-assuming helpers that type-check and crash on device.
-- There is no `expo/tsconfig.base` variant.
-
-**Fix direction.** Add the expo-router exceptions, plus a small React Native/Expo delta, either as a reference file or as rows in the existing files.
-
-#### Status 2026-09-24 — prior art surveyed
-
-See `skills/toolkit-research-frontier/references/mobile-prior-art-survey-2026-09-24.md` §5.
-
-- **The export exception has an authoritative source:** `expo:expo-router` `references/route-structure.md`, which says "every file should export a default component" and keeps `app/` to routes and `_layout` only.
-- **Special files:** nobody names `+not-found`, `+html` or `+native-intent`, so cite the Expo docs.
-- **DOM → React Native delta:** `expo-web-to-native`'s false-friends table is the model; write our own.
-- **Touch targets:** 44pt/48dp plus `hitSlop`.
-- **Counter-example:** vercel `react-best-practices` has the same web-shaped defect (zero React Native mentions, DOM-only rules). It doubles as a list of rules to fence off on native.
-
 ### 92. workflow and expo-overview both say "load first" — let the platform router ride along like house style does (2026-09-22)
 
 Found 2026-09-22 in the mobile eval (`skills/toolkit-research-frontier/references/eval-mobile-2026-09-22.md`, A4).

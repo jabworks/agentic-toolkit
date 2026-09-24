@@ -22,7 +22,11 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## condux 2.32.2 — 2026-09-24
 
-- fix(workflow): live context fails open; five-row menus fit a four-option tool (#86, #87)
+- fix(workflow): live context fails open; five-row menus fit a four-option tool — condux 2.32.2 (#86, #87) (#170)
+
+## coding-directive 1.4.0 — 2026-09-24
+
+- feat(coding-directive): React Native and Expo coverage (#91)
 
 ## condux 2.32.1 — 2026-09-22
 

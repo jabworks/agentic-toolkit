@@ -28,7 +28,8 @@ convention exists, fall back to the references here.
 The rules agents get wrong most often — internalize before writing a line:
 
 - **Named exports only** — default exports are an error, except
-  framework-mandated files (Next.js `page.tsx`, `layout.tsx`, `*.config.*`, …)
+  framework-mandated files (Next.js `page.tsx`, `layout.tsx`, expo-router
+  `app/**` routes but not `+api` routes, `*.config.*`, …)
 - **kebab-case filenames, always** — the component inside is PascalCase, the
   file is not (`log-trail.tsx`, `use-log-store.ts`)
 - **All React components are arrow functions**; boolean props shorthand
@@ -61,6 +62,7 @@ Load only what the task touches:
 | TS lint rules, code shape & rhythm, type judgment, error handling | `references/typescript.md` |
 | Import order, exports, monorepo boundaries, dependencies | `references/imports-and-boundaries.md` |
 | React/JSX rules, component anatomy, state libraries | `references/react.md` |
+| React Native / Expo — the `reactNative` preset, expo-router exports, web → native, native a11y | `references/react-native.md` |
 | Naming — files, booleans, handlers, collections, generics | `references/naming-and-files.md` |
 | CSS Modules, Stylelint, Tailwind discipline | `references/css-and-tailwind.md` |
 | Quality gates, git/versioning, agent editing discipline, portability | `references/process.md` |

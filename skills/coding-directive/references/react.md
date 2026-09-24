@@ -16,11 +16,14 @@
 - **Never define a component inside another component**
   (`no-unstable-nested-components`, error).
 - Avoid array index as `key`; components are PascalCase in JSX; self-close
-  childless elements; `<button>` always has an explicit `type`.
+  childless elements; `<button>` always has an explicit `type` (web only).
 - `react-hooks` recommended-latest rules apply in full (exhaustive deps,
   etc.).
-- **jsx-a11y recommended is enforced** — write accessible JSX by default
-  (alt text, roles, keyboard handlers paired with click handlers).
+- **jsx-a11y recommended is enforced** on web — write accessible JSX by
+  default (alt text, roles, keyboard handlers paired with click handlers).
+- **React Native / Expo:** the `reactNative` preset keeps everything above
+  except `button-has-type`, `jsx-no-target-blank` and jsx-a11y — see
+  `react-native.md` for what replaces them.
 - React 19 / automatic JSX runtime: no `import React` for JSX, no PropTypes.
 
 ## Component anatomy _(Medium)_
@@ -59,6 +62,8 @@ Optimistic updates need a defined rollback before they are worth writing; if
 you cannot state what reverts on failure, render pending instead.
 
 ## Accessibility beyond the linter _(Medium)_
+
+Web. On React Native, see "Accessibility on native" in `react-native.md`.
 
 `jsx-a11y` recommended catches the mechanical cases (alt text, roles, a click
 handler without a key handler). It does not catch the ones that actually reach

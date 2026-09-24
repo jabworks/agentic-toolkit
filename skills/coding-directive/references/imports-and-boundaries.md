@@ -18,6 +18,10 @@
   _required_ (`prefer-default-export`): Next.js `page.tsx`, `layout.tsx`,
   `not-found.tsx`, `*error.tsx`, `opengraph-image.tsx`, `robots.ts`,
   `sitemap.ts`, `apple-icon.tsx`, `*.config.*`, `*.d.ts`, `*.stories.tsx`.
+  In Expo apps (the `reactNative` preset), every file under `app/**` or
+  `src/app/**` — routes, `_layout`, `+not-found`, `+html` — default-exports,
+  **except API routes (`*+api.ts`)**, which export named HTTP handlers. See
+  `react-native.md`.
 - All imports at the top of the file, blank line after the import block.
 - **No extraneous dependencies:** every imported package (including type-only
   imports) must be declared in _that package's_ `package.json`. In the
