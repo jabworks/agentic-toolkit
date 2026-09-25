@@ -1,5 +1,11 @@
 # @jabworks/condux
 
+## 0.26.0
+
+### Minor Changes
+
+- [#173](https://github.com/jabworks/agentic-toolkit/pull/173) [`336a158`](https://github.com/jabworks/agentic-toolkit/commit/336a1587f6b62c5bf297c55744ab2246fe7c8560) Thanks [@vi-hieu](https://github.com/vi-hieu)! - `finalize` now reports a `Native` line in mobile app projects. None of the quality gates compile an app's native layer, so a change that touches it (Kotlin/Swift, native modules, native app config, native dependencies) passes every check and still is not in the app until it is rebuilt. The line says whether a JS reload is enough or a native rebuild is needed. On Expo projects it compares against a recorded fingerprint of the installed build when one exists, and otherwise checks a list of native paths. It never blocks. `workflow` mentions a native change when confirming the tier, and `live-verification` rebuilds and reinstalls before driving the app.
+
 ## 0.25.2
 
 ### Patch Changes
