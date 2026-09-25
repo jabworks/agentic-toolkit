@@ -189,35 +189,6 @@ Found on 2026-09-22 sweeping every committed diagram for #75. In `specs/discover
 
 **The case exists.** Unlike #75, #79 and #82, this one has already tripped on a real diagram. The same PR that filed this item moved the label below the return run (x 290, y 328), so the committed diagram no longer shows it; the geometry above is the case.
 
-### 88. Native-change awareness: one detector so workflow, finalize, live-verification and release know a change needs a rebuild (2026-09-22)
-
-Found 2026-09-22 in the mobile eval (`skills/toolkit-research-frontier/references/eval-mobile-2026-09-22.md`, A1). This is the cross-cutting mobile gap.
-
-**Which paths change the binary.** On an Expo app: `modules/**`, the `plugins`, `permissions` and `version` fields of `app.json`/`app.config.*`, native dependencies in `package.json`, and the generated `android/`/`ios/` trees. No skill knows this.
-
-**What each skill gets wrong without it.**
-- **workflow.** Tier inference scores a one-line Kotlin edit SMALL. It actually costs a multi-minute Gradle build, a reinstall and a new APK.
-- **finalize.** The gates come from AGENTS.md and, on a typical Expo project, are JS-only. It still prints "Ready to commit" over uncompiled Kotlin.
-- **live-verification.** It can drive a stale dev client.
-- **release.** `eas update` cannot carry the change. Under `runtimeVersion.policy: appVersion`, a version bump also cuts installed builds off from OTA.
-
-**Field specimen.** The agent wrote itself a memory note after a stale dev client left persistent device state (an immutable notification channel) wrong: after a native change, rebuild the dev client and clear its app data before trusting it.
-
-**Fix direction.** One detector: a path list plus an AGENTS.md override, with one home for the fact. Report it the way finalize reports `Env`: never blocking, always visibly run.
-
-#### Status 2026-09-24 — prior art surveyed; design is two-tier
-
-See `skills/toolkit-research-frontier/references/mobile-prior-art-survey-2026-09-24.md` §2.
-
-**Expo already has both halves.**
-- The mechanism is the **fingerprint**: `npx @expo/fingerprint fingerprint:generate`/`fingerprint:diff` and `runtimeVersion.policy: "fingerprint"`. `expo:eas-simulator` already uses it to decide when a build can be reused.
-- The semantic rule is in `expo:eas-update`: "new native build when a change adds or modifies native code or native configuration".
-
-**Design.**
-- **Core, always present.** The path list, extended with config plugins, autolinked modules and SDK upgrades.
-- **Precise tier.** A fingerprint diff whenever `expo-updates` or `@expo/fingerprint` is present.
-- **Vocabulary.** Report in Radon's three rungs: JS reload, process restart, native rebuild.
-
 ### 89. live-verification has no native-app path — the agent built its own emulator playbook, and 9 of 11 runs left no report (2026-09-22)
 
 Found 2026-09-22 in the mobile eval (`skills/toolkit-research-frontier/references/eval-mobile-2026-09-22.md`, A2).
