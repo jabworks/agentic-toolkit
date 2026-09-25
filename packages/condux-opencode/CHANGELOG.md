@@ -1,5 +1,11 @@
 # @jabworks/condux
 
+## 0.26.1
+
+### Patch Changes
+
+- [#175](https://github.com/jabworks/agentic-toolkit/pull/175) [`badad88`](https://github.com/jabworks/agentic-toolkit/commit/badad88153e0311276952627fa6e79c97d036d48) Thanks [@vi-hieu](https://github.com/vi-hieu)! - The bundled agents' prompts no longer contradict themselves. `researcher` may read the files version resolution needs (`package.json`, the lockfile, the installed package), which its constraints had forbidden. `explorer` no longer points to a search tool it doesn't have. `planner` follows workflow's tiers instead of its own conflicting file-count thresholds. Every agent drops spawn-cost guidance that only the orchestrator could act on. `discovery` and `draft-plan` drop wording that described earlier versions of themselves.
+
 ## 0.26.0
 
 ### Minor Changes
