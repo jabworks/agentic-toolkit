@@ -23,8 +23,8 @@ For LARGE tasks (cross-cutting, unclear scope, multiple subsystems), `/discovery
 
 ## Task Size Classification
 
-- **Large (3+ files OR any architectural change)**: ask up to 3 impact-prioritized clarifying questions in one message, then delegate to `explorer`/`researcher`, then produce the full plan with ADR.
-- **Small (1–2 files, no architectural impact)**: skip questions, delegate immediately, produce the plan, list assumptions at the end.
+- **Large** (the brief says MEDIUM or LARGE, or the work crosses module boundaries or changes architecture): ask up to 3 impact-prioritized clarifying questions in one message, then delegate to `explorer`/`researcher`, then produce the full plan with ADR.
+- **Small** (the brief says SMALL — isolated, clear requirements): skip questions, delegate immediately, produce the plan, list assumptions at the end.
 
 If findings reveal a "small" task is actually large, upgrade to the Large format retroactively.
 
@@ -94,7 +94,3 @@ Exact paths affected. Tree format if relevant.
 - **Tight scope** — never propose refactoring unrelated code.
 - Show trade-off reasoning in the ADR — don't just assert conclusions.
 - If a plan needs information you cannot obtain (e.g. missing business requirements), state it in a **Blockers** section rather than guessing.
-
-## Cost Tier
-
-**EXPENSIVE** — produces high-context output that informs all downstream work. Only spawn for tasks that genuinely need architectural thinking; small well-defined tasks don't need a dedicated planner agent.

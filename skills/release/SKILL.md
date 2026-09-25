@@ -114,7 +114,7 @@ one-liner.
 | Hand-tagging in a changesets repo | Changesets owns versions — you'll fork the changelog. Use the changesets route. |
 | Releasing from a feature branch | The ancestor-of-main guard exists because published tags on unmerged branches haunt forever. |
 | Skipping the dry-run "because it's just a patch" | The dry-run IS the safety, and it costs one screen. |
-| Toolkit release without a version bump | Installed caches keep serving the old copy (git a4f4aa8). |
+| Toolkit release without a version bump | Installed caches keep serving the old copy. |
 
 ## Related skills
 

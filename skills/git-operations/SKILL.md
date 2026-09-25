@@ -118,7 +118,7 @@ This skill is **everyday + recovery only**.
 
 **Covered by a sibling skill:**
 
-- Worktrees — isolated workspaces, listing and switching trees, prune/remove, recovery → **`git-worktree`** (added 2026-08-15; previously listed here as excluded)
+- Worktrees — isolated workspaces, listing and switching trees, prune/remove, recovery → **`git-worktree`**
 - Committing → `git-commit`
 - Tagging and publishing a version → `release`
 
