@@ -71,7 +71,11 @@ Every tier ends with `preflight` then `finalize` — no exceptions.
 ## The Router
 
 1. **Infer the tier.** How many files? Requirement clear or needs design? Crosses
-   service/package boundaries? Unknowns needing exploration first?
+   service/package boundaries? Unknowns needing exploration first? In a mobile
+   app, also: does it touch the native layer (finalize's native-change check
+   lists what does)? That doesn't change the tier — a one-line Kotlin fix is
+   still SMALL — but say so when confirming, because nothing can verify it
+   until the app is rebuilt and reinstalled.
 2. **Spec lookup.** Detect the package root (walk up from CWD to git root, find the
    nearest `package.json` / `Cargo.toml` / `go.mod` / `pyproject.toml`). Check both
    scopes (deduplicate if identical):
