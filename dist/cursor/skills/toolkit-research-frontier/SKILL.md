@@ -33,7 +33,7 @@ stale precisely when the work it proposes gets done.
   condux agents mirror, plan-review no-egress, scaffold + annotate-server behavior.
 - `scripts/sync.sh` (multi-bundle target detection), `scripts/install-hooks.sh`.
 - The condux and toolkit-ops bundles; toolkit-foundry's authoring runbook.
-- Per-skill trigger evals under `skills/*/evals/` (23 skills, 398 queries) + the
+- Per-skill trigger evals under `skills/*/evals/` + the
   trigger matrix and model-transfer eval under `distillation/` (2026-07-08 audit).
 - `scripts/eval-triggers.mjs` — live routing scorer (`claude -p` judge; baseline
   76.0% recorded in `references/health-campaign.md` Front A3).

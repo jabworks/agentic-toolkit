@@ -186,8 +186,8 @@ Accept either answer. Never block. Never lecture.
 
 ## The Section Card (Step 3)
 
-Step 3 used to say "show design in sections" and stop, which left the shape to
-be reinvented every time — and what came out was prose. The shape is now fixed.
+Every section is presented in one fixed shape. Left open, the shape gets
+reinvented each time and comes out as prose.
 
 **Before §1, announce the section list.** Name every section you intend to
 present, in order: *"4 sections: approach · section shape · blueprint trigger ·

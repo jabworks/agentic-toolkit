@@ -7,7 +7,7 @@ Reference for deciding when and which agent to spawn. Read this before every spa
 | Tier          | Examples                  | Model                                  | When to Use                                                                                 |
 | ------------- | ------------------------- | ----------------------------------------- | --------------------------------------------------------------------------------------------- |
 | **FREE**      | —                         | n/a                                        | Built-in tool calls (bash, grep, file reads) — do these yourself, no agent needed           |
-| **CHEAP**     | `explorer`, `researcher`  | haiku                                      | Read-only, narrow scope, clear output. Good for lookup tasks that would bloat your context  |
+| **CHEAP**     | `explorer`, `researcher`  | haiku (`explorer`), sonnet (`researcher`)  | Read-only, narrow scope, clear output. Good for lookup tasks that would bloat your context  |
 | **EXPENSIVE** | `coder`, `planner`        | sonnet (default) — see Model Selection     | Write-capable or high-context output. Justify carefully                                     |
 
 ### Model Selection for `coder` Dispatch

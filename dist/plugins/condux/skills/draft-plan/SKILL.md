@@ -29,7 +29,7 @@ Turn a signed-off design into a clear, executable plan. Lean task cards, not mic
    you want to skip it."
 
 **Reading `status`.** Discovery creates the design file at its first
-section, not at sign-off, so the file existing no longer means the design
+section, not at sign-off, so the file existing does not mean the design
 was approved. Its frontmatter carries the answer:
 
 | `status` | Means | Gate |

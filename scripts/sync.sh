@@ -59,12 +59,17 @@ fi
 # mkdir -p first because rsync cannot create nested parents: a brand-new
 # standalone plugin has no dist/plugins/<name>/skills/<name>/ yet, and that was
 # the failure the silent path hid.
+#
+# --checksum because rsync's default quick check compares size and mtime only:
+# an edit that keeps a file's size, landing in the same second as the last copy
+# (a fresh checkout or worktree, then an immediate edit), is skipped as
+# unchanged. dist-mirror caught it; the copy should not need catching.
 # ---------------------------------------------------------------------------
 copy_dir() {
   local src="$1" dst="$2"
   mkdir -p "$dst" || return 1
   if command -v rsync &>/dev/null; then
-    rsync -a --delete "$src/" "$dst/" || return 1
+    rsync -a --checksum --delete "$src/" "$dst/" || return 1
   else
     rm -rf "$dst"
     mkdir -p "$dst"
