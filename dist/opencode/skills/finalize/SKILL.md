@@ -77,7 +77,7 @@ Tests fail
 
 ## Output Format
 
-The `Plan` line below only appears when no matching plan doc was found for the inferred feature slug — it's omitted entirely otherwise.
+The `Plan` line below only appears when no matching plan doc was found for the inferred feature slug — it's omitted entirely otherwise. In a mobile app project a `Native` line joins `Env` (see Companion Files); the example below is a web project, so it has none.
 
 ```
 ## Finalize: [task or feature name]
@@ -119,6 +119,13 @@ until it breaks someone else's checkout.
   example file (`.env.example`, `.env.sample`, or whatever it uses) gains the
   same key in the same change — placeholder value only, never a real secret.
 - Report `Env  ✓ n/a` when the diff adds none, so the check is visibly running.
+- **Native (mobile app projects only).** None of the gates above compiles the
+  native layer, so a diff that touches it passes everything and still is not
+  in the app until it is rebuilt and reinstalled. Classify the diff as
+  `JS only` or `native rebuild` and report it as a `Native` line; on a native
+  rebuild, end "Ready to commit — native rebuild needed before it can run" and
+  name the project's rebuild command. The path list, the fingerprint check and
+  when to omit the line are in `references/native-change.md`.
 
 ## What Does NOT Happen
 
@@ -134,3 +141,4 @@ until it breaks someone else's checkout.
 ## See Also
 
 - `references/rationalization-table.md` — common rationalizations for skipping finalize and why they're wrong
+- `references/native-change.md` — mobile apps: when a diff needs a native rebuild, the fingerprint check, the `Native` line

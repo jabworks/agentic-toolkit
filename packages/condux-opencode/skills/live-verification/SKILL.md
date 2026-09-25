@@ -43,6 +43,15 @@ Do not assume a dev server. In order:
 Start it in the background, wait for it to actually serve (poll the URL — do
 not `sleep` and hope), and note the URL in the report.
 
+**Mobile app: rebuild first when the change is native.** If finalize's
+`Native` line said *native rebuild* (or the diff touches the native layer —
+see finalize's native-change check), the installed app does not contain the
+change. Rebuild and reinstall it before driving anything, and clear the app's
+data when the change touches native state that persists across installs. On
+an Expo project, record the new fingerprint as that check describes. A verdict
+driven on the old binary is a verdict on code that isn't there — if the
+rebuild can't run here, stop and report that instead.
+
 ### Step 2 — Enumerate the claims
 
 Before touching the UI, write down what the change claims to do — one line
