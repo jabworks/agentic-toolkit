@@ -12,6 +12,10 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## condux 2.33.0 — 2026-09-25
+
+- feat(finalize): native-change check for mobile apps (#88)
+
 ## toolkit-ops 1.7.23 — 2026-09-24
 
 - docs(toolkit-ops): mobile prior-art survey for #88–#92 (1.7.23) (#169)
@@ -26,7 +30,7 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## coding-directive 1.4.0 — 2026-09-24
 
-- feat(coding-directive): React Native and Expo coverage (#91)
+- feat(coding-directive): React Native and Expo coverage — 1.4.0 (#91) (#172)
 
 ## condux 2.32.1 — 2026-09-22
 
