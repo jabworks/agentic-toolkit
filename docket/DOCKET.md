@@ -320,4 +320,8 @@ Found 2026-09-22 in the mobile eval (`skills/toolkit-research-frontier/reference
   - Only subagent-execution owns ticking. Give it to CP-2 or preflight, or drop the checklist from the inline path.
 - **Coders skip house style (B6).** 4 of 9 coder subagents in the kickoff made 60 edits without loading coding-directive. Coder briefs should require the load, or inline the enforced tier.
 
+### 94. Deep-research orchestration — Research-mode parity for condux (LARGE) (2026-10-06)
+
+Claude.ai Research mode = lead agent plans, spawns parallel subagents with distinct briefs, synthesizes, then a citation pass (~15× chat tokens). Our `researcher` is a single-library API lookup (stop at first source, fixed reference card) and subagents can't nest, so it can't play lead. Parity needs a main-session-orchestrated flow with researcher instances as workers. Opus on researcher (condux 2.34.0) improves lookups but does not close this gap. Route via /workflow as LARGE (discovery → plan). Source: 2026-10-04 subagent model audit; primary source to read: Anthropic's "How we built our multi-agent research system" (audit only saw secondhand summaries).
+
 ## Loose threads
