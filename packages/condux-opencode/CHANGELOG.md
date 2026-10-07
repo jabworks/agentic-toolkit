@@ -1,5 +1,11 @@
 # @jabworks/condux
 
+## 0.27.0
+
+### Minor Changes
+
+- [#177](https://github.com/jabworks/agentic-toolkit/pull/177) [`8904e50`](https://github.com/jabworks/agentic-toolkit/commit/8904e5001cb4ae6c02a6e8d4c3b6a39fc414bec5) Thanks [@vi-hieu](https://github.com/vi-hieu)! - Refresh subagent model tiers: explorer moves from haiku to sonnet at low effort, researcher moves to opus, fable becomes a dispatch-time choice with an opus fallback, and the Codex agent installer writes default model and reasoning-effort tiers.
+
 ## 0.26.1
 
 ### Patch Changes
