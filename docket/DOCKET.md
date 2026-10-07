@@ -362,10 +362,6 @@ Read the primary source (https://www.anthropic.com/engineering/multi-agent-resea
 
 condux routing says research "routes nowhere", so a deep-research request gets no hand-off even when `anthropic-skills:deep-research` is installed. Decide whether `skills/workflow/hooks/routing.md` (or workflow) should name it, and whether a missing install degrades to the main session researching directly. Split from #94; findings in its 2026-10-07 status block.
 
-### 96. Resolve the general-purpose-subagent conflict between deep-research and subagent-deployment (split from #94) (2026-10-07)
-
-deep-research mandates `subagent_type="general-purpose"` for its workers and report writer. condux subagent-deployment says a generic or custom-prompt subagent request resolves to one of the four named agents. With both loaded, the agent gets contradictory orders. Decide which yields: carve out skill-mandated general-purpose spawns in subagent-deployment, or document that deep-research overrides it. Split from #94.
-
 ### 97. deep-research litters CWD with research_notes/ and reports/ (split from #94) (2026-10-07)
 
 deep-research writes `research_notes/<title>/` and `reports/<title>.md` into CWD — inside a repo that is the repo root, which breaks the toolkit artifact contract (working state → `<git-root>/.<plugin>/`, gitignored; durable → `specs/`). We cannot edit the skill; options are a routing-side instruction to run it from a scratch dir, or redirecting it where we hand off. Split from #94.

@@ -23,6 +23,16 @@ injecting a system prompt into a general-purpose one — an agent whose behaviou
 written at call time has no reviewable contract, no consistent tool restrictions,
 and no way to improve across sessions.
 
+**The exception: another skill's mandated spawn.** When a different installed
+skill tells you to spawn a specific agent type *and* ships that worker's contract
+as a file the worker reads first — `anthropic-skills:deep-research` spawns
+`general-purpose` workers whose first step is reading its own worker
+reference — run it as written. That contract is reviewable; it
+lives in the skill. Substituting a named agent breaks both sides: condux's agents
+carry their own contracts (researcher stops at the first source and never writes
+files), which contradict the brief. The ban is on condux writing an agent's
+behaviour at call time, not on honouring another skill's.
+
 **You implement by default.** Spawning is an explicit decision with a stated reason — not the default mode of operation.
 
 ```
