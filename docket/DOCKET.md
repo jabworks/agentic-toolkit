@@ -362,12 +362,24 @@ Read the primary source (https://www.anthropic.com/engineering/multi-agent-resea
 
 condux routing says research "routes nowhere", so a deep-research request gets no hand-off even when `anthropic-skills:deep-research` is installed. Decide whether `skills/workflow/hooks/routing.md` (or workflow) should name it, and whether a missing install degrades to the main session researching directly. Split from #94; findings in its 2026-10-07 status block.
 
+#### Status 2026-10-07 — optional-only, and blocked on #98
+
+condux cannot declare deep-research as a dependency. It reaches this machine as a claude.ai-synced skill (manifest `source: "anthropic-example"`), not through any marketplace condux could list, and it never reaches Codex, OpenCode, or Cursor. Any routing must be conditional: hand off when it is installed, otherwise research in the main session. If #98 ships a condux-owned flow, routing points there instead and this item mostly dissolves, so decide #98 first.
+
 ### 97. deep-research litters CWD with research_notes/ and reports/ (split from #94) (2026-10-07)
 
 deep-research writes `research_notes/<title>/` and `reports/<title>.md` into CWD — inside a repo that is the repo root, which breaks the toolkit artifact contract (working state → `<git-root>/.<plugin>/`, gitignored; durable → `specs/`). We cannot edit the skill; options are a routing-side instruction to run it from a scratch dir, or redirecting it where we hand off. Split from #94.
 
+#### Status 2026-10-07 — rides with #95
+
+Only bites when condux hands off to deep-research, so it ships with #95 or not at all. If #98 builds a condux-owned flow, that flow writes to `.condux/research/` by construction and this item closes with it.
+
 ### 98. Cross-host deep-research port for Codex/OpenCode/Cursor (split from #94) (2026-10-07)
 
 deep-research is a claude.ai-synced skill and reaches Claude Code only; condux on Codex, OpenCode, and Cursor has no Research-mode equivalent. This is the one remaining case for a condux-owned port (main session as lead, parallel workers, cited notes on disk, report writer, optionally the post's separate citation pass). Check license/redistribution terms before anything else; a port is LARGE via /workflow. Split from #94.
+
+#### Status 2026-10-07 — license check: no copying; a clean-room build only
+
+deep-research has no published license. The synced copy ships no LICENSE file (manifest `source: "anthropic-example"`), and the skill is not in the public `anthropics/skills` repo, which has no repo-level license either. So its prompt text cannot be vendored or adapted line by line. A condux version has to be written fresh from the public design in Anthropic's multi-agent research post (orchestrator-worker split, effort-scaling rules, delegation briefs, filesystem hand-off, citation pass), in our own words and to our own contracts. That is also the better fit: it can use a dedicated worker agent instead of an injected `general-purpose` prompt, and write to `.condux/research/` instead of CWD. Now the only path to cross-host Research-mode parity; #95 and #97 wait on it.
 
 ## Loose threads
