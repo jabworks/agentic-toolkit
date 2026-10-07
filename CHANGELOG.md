@@ -12,21 +12,25 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## condux 2.34.0 — 2026-10-07
+
+- feat(subagent-execution): refresh subagent model tiers
+
 ## toolkit-ops 1.7.24 — 2026-09-25
 
-- fix: prompt-audit corrections for agent contracts and dated skill text
+- fix: prompt-audit corrections — agent contracts and dated skill text (#175)
 
 ## release 1.3.2 — 2026-09-25
 
-- fix: prompt-audit corrections for agent contracts and dated skill text
+- fix: prompt-audit corrections — agent contracts and dated skill text (#175)
 
 ## git-operations 1.1.2 — 2026-09-25
 
-- fix: prompt-audit corrections for agent contracts and dated skill text
+- fix: prompt-audit corrections — agent contracts and dated skill text (#175)
 
 ## condux 2.33.1 — 2026-09-25
 
-- fix: prompt-audit corrections for agent contracts and dated skill text
+- fix: prompt-audit corrections — agent contracts and dated skill text (#175)
 
 ## condux 2.33.0 — 2026-09-25
 
