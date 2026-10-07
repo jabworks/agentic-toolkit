@@ -2,7 +2,7 @@
 name: "researcher"
 description: "Use this agent when any external library or framework API needs to be looked up before implementation. Invoke proactively whenever code will use a third-party dependency, an unfamiliar API method, or when exact parameter signatures, return types, or version-specific behavior must be confirmed. Fire non-blocking — delegate and continue working while it runs.\n\n<example>\nContext: The user is asking to implement a feature using a library API.\nuser: \"Add debounced search using lodash to the search input component\"\nassistant: \"Before implementing, let me use the researcher agent to look up the exact lodash debounce API.\"\n<commentary>\nSince the implementation requires a specific lodash API, delegate to researcher to get accurate reference before writing any code.\n</commentary>\n</example>"
 tools: CronCreate, CronDelete, CronList, EnterWorktree, ExitWorktree, ListMcpResourcesTool, LSP, Monitor, PushNotification, Read, ReadMcpResourceTool, RemoteTrigger, Skill, TaskCreate, TaskGet, TaskList, TaskStop, TaskUpdate, ToolSearch, WebFetch, WebSearch, mcp__plugin_context7_context7__query-docs, mcp__plugin_context7_context7__resolve-library-id
-model: sonnet
+model: opus
 color: blue
 memory: user
 ---
