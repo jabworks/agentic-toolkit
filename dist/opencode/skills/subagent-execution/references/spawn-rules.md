@@ -7,8 +7,12 @@ Reference for deciding when and which agent to spawn. Read this before every spa
 | Tier          | Examples                  | Model                                  | When to Use                                                                                 |
 | ------------- | ------------------------- | ----------------------------------------- | --------------------------------------------------------------------------------------------- |
 | **FREE**      | —                         | n/a                                        | Built-in tool calls (bash, grep, file reads) — do these yourself, no agent needed           |
-| **CHEAP**     | `explorer`, `researcher`  | haiku (`explorer`), sonnet (`researcher`)  | Read-only, narrow scope, clear output. Good for lookup tasks that would bloat your context  |
+| **CHEAP**     | `explorer`                | sonnet, `effort: low`                      | Read-only, narrow scope, clear output. Good for lookup tasks that would bloat your context  |
+| **EXPENSIVE** | `researcher`              | opus                                       | Read-only, but source judgment decides the result — conflicting docs, version drift         |
 | **EXPENSIVE** | `coder`, `planner`        | sonnet (default) — see Model Selection     | Write-capable or high-context output. Justify carefully                                     |
+
+No agent uses haiku. Sonnet at low effort beats it at the same job in fewer
+turns, and turn count costs more than token price on multi-step work.
 
 ### Model Selection for `coder` Dispatch
 
@@ -17,17 +21,33 @@ complexity — always pass the model explicitly; an omitted model silently
 inherits the session's own model, which is often the most capable and most
 expensive tier.
 
-| Task complexity                                                     | Model  |
-| --------------------------------------------------------------------- | ------ |
-| Mechanical, 1-2 files, complete spec/code already in the task brief    | haiku  |
-| Multi-file integration, pattern-matching, moderate judgment            | sonnet |
-| Architecture-level judgment; the final whole-branch review            | opus   |
+| Task complexity                                                     | Model                  |
+| --------------------------------------------------------------------- | ---------------------- |
+| Mechanical, 1-2 files, complete spec/code already in the task brief    | sonnet, `effort: low`  |
+| Multi-file integration, pattern-matching, moderate judgment            | sonnet                 |
+| Architecture-level judgment; the final whole-branch review            | fable → opus fallback  |
 
-Turn count costs more than token price on multi-step work — the cheapest
-tier routinely takes more turns to reach the same result, which can cost
-more overall. Use sonnet as the floor for reviewers and for implementers
-working from prose descriptions; reserve haiku for tasks whose brief
-already contains the exact code to write.
+**Fable is a dispatch-time choice, never a frontmatter pin.** It ships only
+on the Max plan, and Claude Code has no automatic fallback — a `fable`
+dispatch on a plan without it, or past Max's Fable allowance, errors or
+bills usage credits instead of downgrading. Dispatch `fable` only when the
+session is known to have it; if the dispatch fails on model availability,
+redispatch the same brief with `opus`. When unsure, use `opus`.
+
+### Codex Model Defaults
+
+`install-codex-agents.mjs` writes these when a TOML has no `model` /
+`model_reasoning_effort` of its own (yours always win):
+
+| Agent                | `model`        | `model_reasoning_effort` |
+| -------------------- | -------------- | ------------------------ |
+| `explorer`           | `gpt-6-luna`   | `low`                    |
+| `planner`, `coder`   | `gpt-6.1-sol`  | `medium`                 |
+| `researcher`         | `gpt-6-astra`  | `high`                   |
+
+Free and Go plans get Luna only, and Astra's plan gating is not settled in
+OpenAI's docs — on those plans, edit the TOML's `model` down. Codex has no
+documented fallback for an unavailable model either.
 
 ## Agent Capability Boundaries
 

@@ -2,7 +2,8 @@
 name: "explorer"
 description: "Use this agent when you need to understand an unfamiliar codebase, trace types or symbols, identify module boundaries, discover conventions, map call graphs, or find where specific patterns are implemented — before planning or implementing any changes. Fire non-blocking when possible — delegate and continue while it traverses.\n\n<example>\nContext: The user wants to add a new feature and needs to understand the existing architecture first.\nuser: \"I want to add authentication middleware to the API. Where should I put it?\"\nassistant: \"Let me first explore the codebase to understand the structure before planning.\"\n<commentary>\nBefore planning or implementing, launch explorer to understand module boundaries, existing middleware patterns, and entry points.\n</commentary>\n</example>"
 tools: CronCreate, CronDelete, CronList, EnterWorktree, ExitWorktree, ListMcpResourcesTool, LSP, Monitor, PushNotification, Read, ReadMcpResourceTool, RemoteTrigger, Skill, TaskCreate, TaskGet, TaskList, TaskStop, TaskUpdate, ToolSearch, WebFetch, WebSearch, mcp__plugin_context7_context7__query-docs, mcp__plugin_context7_context7__resolve-library-id
-model: haiku
+model: sonnet
+effort: low
 color: cyan
 memory: user
 ---

@@ -19,7 +19,8 @@
 //   - tuning keys on an existing TOML (model, model_reasoning_effort,
 //     sandbox_mode, nickname_candidates) are preserved; otherwise
 //     sandbox_mode defaults to read-only for explorer/researcher and
-//     workspace-write for planner/coder
+//     workspace-write for planner/coder, and model / model_reasoning_effort
+//     default per MODEL_DEFAULTS (Free/Go plans get Luna only — edit down)
 //   - existing files are backed up to <name>.toml.bak first
 //
 // --uninstall removes exactly the .toml files this installer would have
@@ -31,7 +32,7 @@
 // [features] hooks flag is shared host state this script does not own.
 //
 // Schema per https://developers.openai.com/codex/subagents (verified
-// 2026-07-08): required name/description/developer_instructions; a custom
+// 2026-07-08; model / model_reasoning_effort keys re-verified 2026-10-04): required name/description/developer_instructions; a custom
 // agent named like a built-in (e.g. explorer) takes precedence over it.
 
 import fs from 'node:fs';
@@ -53,7 +54,15 @@ const SANDBOX_DEFAULTS = {
   planner: 'workspace-write',
   coder: 'workspace-write',
 };
-const PRESERVE_KEYS = ['model', 'model_reasoning_effort', 'sandbox_mode', 'nickname_candidates'];
+// Model tiers per spawn-rules.md → Codex Model Defaults. Applied per key,
+// only when the existing TOML doesn't set it.
+const MODEL_DEFAULTS = {
+  explorer: { model: 'gpt-6-luna', model_reasoning_effort: 'low' },
+  researcher: { model: 'gpt-6-astra', model_reasoning_effort: 'high' },
+  planner: { model: 'gpt-6.1-sol', model_reasoning_effort: 'medium' },
+  coder: { model: 'gpt-6.1-sol', model_reasoning_effort: 'medium' },
+};
+const PRESERVE_KEYS =['model', 'model_reasoning_effort', 'sandbox_mode', 'nickname_candidates'];
 
 function fmField(block, key) {
   const m = block.match(new RegExp('^' + key + ':[ \\t]*(.*)$', 'm'));
@@ -110,6 +119,9 @@ for (const file of fs.readdirSync(AGENTS_DIR).filter((f) => f.endsWith('.md'))) 
   }
   if (!preserved.some((l) => l.startsWith('sandbox_mode')) && SANDBOX_DEFAULTS[name]) {
     preserved.push(`sandbox_mode = "${SANDBOX_DEFAULTS[name]}"`);
+  }
+  for (const [key, value] of Object.entries(MODEL_DEFAULTS[name] || {})) {
+    if (!preserved.some((l) => l.startsWith(key + ' ') || l.startsWith(key + '='))) preserved.push(`${key} = "${value}"`);
   }
 
   const toml = [

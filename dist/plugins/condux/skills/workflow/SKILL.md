@@ -232,8 +232,8 @@ with an injected prompt. Implement yourself by default; spawn only with concrete
 justification (unfamiliar codebase, external API to verify, genuinely parallel
 exploration, or a LARGE plan via `subagent-execution`).
 
-- `explorer` — read-only codebase navigation (haiku, non-blocking; LSP over grep).
-- `researcher` — external API/library verification (sonnet, non-blocking; resolves
+- `explorer` — read-only codebase navigation (sonnet at low effort, non-blocking; LSP over grep).
+- `researcher` — external API/library verification (opus, non-blocking; resolves
   the installed version first, omits what it can't verify).
 - `planner` — design → executable plan (sonnet; always delegates to explorer, and
   researcher when external libs are involved, before planning).
