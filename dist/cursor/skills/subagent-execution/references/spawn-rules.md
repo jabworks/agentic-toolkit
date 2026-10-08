@@ -10,6 +10,7 @@ Reference for deciding when and which agent to spawn. Read this before every spa
 | **CHEAP**     | `explorer`                | sonnet, `effort: low`                      | Read-only, narrow scope, clear output. Good for lookup tasks that would bloat your context  |
 | **EXPENSIVE** | `researcher`              | opus                                       | Read-only, but source judgment decides the result — conflicting docs, version drift         |
 | **EXPENSIVE** | `coder`, `planner`        | sonnet (default) — see Model Selection     | Write-capable or high-context output. Justify carefully                                     |
+| **FAN-OUT**   | `scout`                   | sonnet                                     | Only via `/condux:research` — cheap per worker, but 2–6 run at once (about 15× chat tokens) |
 
 No agent uses haiku. Sonnet at low effort beats it at the same job in fewer
 turns, and turn count costs more than token price on multi-step work.
@@ -42,7 +43,7 @@ redispatch the same brief with `opus`. When unsure, use `opus`.
 | Agent                | `model`        | `model_reasoning_effort` |
 | -------------------- | -------------- | ------------------------ |
 | `explorer`           | `gpt-6-luna`   | `low`                    |
-| `planner`, `coder`   | `gpt-6.1-sol`  | `medium`                 |
+| `planner`, `coder`, `scout` | `gpt-6.1-sol`  | `medium`          |
 | `researcher`         | `gpt-6-astra`  | `high`                   |
 
 Free and Go plans get Luna only, and Astra's plan gating is not settled in
@@ -57,6 +58,7 @@ documented fallback for an unavailable model either.
 | `researcher` | ✓ MCP, web, docs  | ✗            | ✗          | External research: library docs, API specs, best practices      |
 | `coder`      | ✓                 | ✓ full file  | ✓          | Implementation tasks with isolated scope                        |
 | `planner`    | ✓                 | ✓ write only | ✗          | Architecture decisions, task breakdowns, ADRs                   |
+| `scout`      | ✓ MCP, web, docs  | ✓ notes only | ✗          | Survey research for `/condux:research` — one angle, cited notes |
 
 **Hard rule:** Specialists receive task context via delegation prompt only. They do not and should not query the plan file directly.
 

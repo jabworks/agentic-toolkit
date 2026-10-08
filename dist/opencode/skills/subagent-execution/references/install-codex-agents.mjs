@@ -19,7 +19,8 @@
 //   - tuning keys on an existing TOML (model, model_reasoning_effort,
 //     sandbox_mode, nickname_candidates) are preserved; otherwise
 //     sandbox_mode defaults to read-only for explorer/researcher and
-//     workspace-write for planner/coder, and model / model_reasoning_effort
+//     workspace-write for planner/coder/scout (scout writes its notes file),
+//     and model / model_reasoning_effort
 //     default per MODEL_DEFAULTS (Free/Go plans get Luna only — edit down)
 //   - existing files are backed up to <name>.toml.bak first
 //
@@ -53,6 +54,7 @@ const SANDBOX_DEFAULTS = {
   researcher: 'read-only',
   planner: 'workspace-write',
   coder: 'workspace-write',
+  scout: 'workspace-write',
 };
 // Model tiers per spawn-rules.md → Codex Model Defaults. Applied per key,
 // only when the existing TOML doesn't set it.
@@ -61,6 +63,7 @@ const MODEL_DEFAULTS = {
   researcher: { model: 'gpt-6-astra', model_reasoning_effort: 'high' },
   planner: { model: 'gpt-6.1-sol', model_reasoning_effort: 'medium' },
   coder: { model: 'gpt-6.1-sol', model_reasoning_effort: 'medium' },
+  scout: { model: 'gpt-6.1-sol', model_reasoning_effort: 'medium' },
 };
 const PRESERVE_KEYS =['model', 'model_reasoning_effort', 'sandbox_mode', 'nickname_candidates'];
 

@@ -87,7 +87,7 @@ See `skills/toolkit-foundry/SKILL.md` for the canonical checklist. Short version
 | `release` | Cut a release safely — machinery router (changesets/toolkit/GitHub), dry-run first |
 | `coding-directive` | The jabworks house style — TS/React/formatting/imports/naming/CSS, enforced tier + judgment tier |
 | `concord` (plugin) | Continuous memory for Codex — rollout-sync capture, aging tiers, session-start recall (Codex-only hooks). Bundle: `remember` (the memory skill, sources `skills/remember/`) + `concord-doctor` |
-| `condux` (plugin) | agentic workflow bundle (workflow, discovery, blueprint, draft-plan, test-first-development, subagent-execution, subagent-deployment, finalize, live-verification, code-review, preflight, root-cause-analysis, plan-review, technical-spec, condux-doctor) |
+| `condux` (plugin) | agentic workflow bundle (workflow, discovery, blueprint, draft-plan, test-first-development, subagent-execution, subagent-deployment, finalize, live-verification, code-review, preflight, root-cause-analysis, plan-review, technical-spec, research, condux-doctor) |
 | `docket` (plugin) | file-based backlog bundle (record, groom, docket-doctor) + plugin-level `server/` — dependency-free CLI, MCP server (`.mcp.json`), HTML board, installer (`install.sh`/`INSTALL.md`); sources `skills/record/` (owns `server/`) and `skills/groom/` |
 | `toolkit-ops` (plugin) | repo-maintenance bundle (toolkit-orientation, toolkit-foundry, toolkit-change-control, toolkit-skill-standards, toolkit-debugging-playbook, toolkit-failure-archaeology, toolkit-plugin-reference, toolkit-research-frontier) |
 <!-- catalog:end claude-md-skills -->

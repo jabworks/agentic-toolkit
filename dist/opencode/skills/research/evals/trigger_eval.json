@@ -1,0 +1,18 @@
+[
+  { "query": "compare tanstack query vs swr for a next.js app with heavy optimistic updates", "should_trigger": true, "expected_skill": "research" },
+  { "query": "how do other monorepos version and release their plugins?", "should_trigger": true, "expected_skill": "research" },
+  { "query": "research the options for edge-compatible auth in a cloudflare workers app", "should_trigger": true, "expected_skill": "research" },
+  { "query": "survey the current state of react server components support across frameworks", "should_trigger": true, "expected_skill": "research" },
+  { "query": "what are teams using instead of eslint these days, and what did they give up switching?", "should_trigger": true, "expected_skill": "research" },
+  { "query": "drizzle vs prisma vs kysely for a postgres app — which fits a small team better?", "should_trigger": true, "expected_skill": "research" },
+  { "query": "how do popular CLIs handle plugin discovery and sandboxing? I want a cited overview", "should_trigger": true, "expected_skill": "research" },
+  { "query": "dig into how open-source design systems ship tokens to both web and react native", "should_trigger": true, "expected_skill": "research" },
+  { "query": "what's the signature of zod's .max() on strings?", "should_trigger": false, "expected_skill": null, "note": "A single API lookup: answer directly or hand to the researcher agent. The near-miss this corpus exists for." },
+  { "query": "does vitest support the --shard flag?", "should_trigger": false, "expected_skill": null, "note": "One fact from one source — no fan-out." },
+  { "query": "add retry with backoff to the fetch client", "should_trigger": false, "expected_skill": null, "accept": ["workflow"] },
+  { "query": "migrate our forms from formik to react-hook-form", "should_trigger": false, "expected_skill": null, "accept": ["workflow"], "note": "A dev task that names two libraries — still an implementation request, not a survey." },
+  { "query": "explain what this reducer does", "should_trigger": false, "expected_skill": null },
+  { "query": "why is the build failing on CI", "should_trigger": false, "expected_skill": null, "accept": ["root-cause-analysis", "workflow"] },
+  { "query": "look up what changed in node 24's fetch implementation", "should_trigger": false, "expected_skill": null, "note": "One changelog, one answer — a lookup, not multi-source research." },
+  { "query": "how does human memory consolidation work?", "should_trigger": false, "expected_skill": null, "note": "General research outside dev — condux:research is dev-tuned; answering directly or another installed research skill is fine." }
+]

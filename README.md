@@ -336,6 +336,7 @@ opt-in at checkpoints or justified by genuinely parallel work.
 | [/test-first-development](./skills/test-first-development/) | Opt-in tests-first — one upfront consent, then red-green-refactor; asks before editing existing specs |
 | [/subagent-execution](./skills/subagent-execution/) | Named specialist agents for LARGE plans, only when justified, never to fill time |
 | [/subagent-deployment](./skills/subagent-deployment/) | Fan out independent tasks across named agents in one message — ad-hoc, not a formal plan |
+| [/research](./skills/research/) | Cited multi-source research for dev questions — the main session leads, parallel `scout` agents write cited notes, and a decision-ready report lands in `.condux/research/`; sequential where no agents exist |
 | [/finalize](./skills/finalize/) | End-of-task quality gate — typecheck → lint → format → test, once, stop on first failure |
 | [/live-verification](./skills/live-verification/) | Run the change and watch it work — drives the real UI or endpoint after finalize, light mode then dark, reports claim → evidence → verdict and names what it couldn't verify |
 | [/code-review](./skills/code-review/) | On-request diagnostic report (Critical/Important/Minor), never auto-triggers, never fixes |
