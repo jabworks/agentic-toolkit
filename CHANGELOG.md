@@ -12,9 +12,16 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
-## condux 2.34.1 — 2026-10-07
+## condux 2.35.0 — 2026-10-08
 
-- fix(subagent-execution): honour another skill's mandated spawn type — condux 2.34.1 (#96)
+- chore(condux): bump to 2.35.0 — condux:research and scout (#98)
+- feat(research): manual quality eval for condux:research (#98)
+- feat(condux): name scout wherever the agents are counted (#98)
+- feat(research): condux:research lead skill and scout agent (#98)
+
+## condux 2.34.1 — 2026-10-08
+
+- fix(subagent-execution): honour another skill's mandated spawn type — condux 2.34.1 (#96) (#179)
 
 ## condux 2.34.0 — 2026-10-07
 
