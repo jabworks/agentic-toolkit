@@ -8,6 +8,7 @@
 | 4 | scout ships through each host's agent channel and falls back to sequential research where it is absent; routing is a single hook line | three hosts already have an agent channel; Cursor has none | accepted |
 | 5 | Trigger cases in the existing harness; a manual quality eval with one LLM judge | reuses tooling; follows the post's judging method; keeps token cost opt-in | accepted |
 | 6 | Clean-room: prompt text is drafted in a context that never saw deep-research | deep-research has no published license, and the designing session read it | accepted |
+| 7 | Inferred triggers ask quick-or-deep before fanning out; explicit asks go straight in | the skill fires on research-sounding questions, and deep research costs about 15× a chat turn | accepted |
 
 ## 1. Lead skill plus a scout agent — 2026-10-07
 
@@ -92,3 +93,17 @@
 
 **Consequences**
 - One deliberate delegation in an implement-yourself-by-default flow.
+
+## 7. Depth gate on inferred triggers — 2026-10-08
+
+**Decided:** after classifying, an *explicit* request (the skill named, or "deep research", "thorough", "comprehensive", "cited report", "dig into") proceeds with the classified scout count. An *inferred* trigger answers a single fact directly, and asks once before a comparison or survey: "Quick answer (one pass, about 1×) or deep research (N scouts, about 15×)?" A quick answer is one pass in the main session with inline citations, no run folder, and no scouts.
+**Because:** the routing hook and the trigger description load the skill on research-*sounding* questions, and a silent fan-out on those spends multi-agent tokens nobody asked for.
+
+| Alternative | Why not |
+|---|---|
+| Always ask, even when the skill was named | an extra round-trip on every deliberate request |
+| Classify only, never ask | inferred triggers still fan out silently |
+
+**Consequences**
+- Amends decision 2: the flow now has a gate between classify and plan.
+- Headless eval runs name the skill, so they count as explicit and never stall on the question.

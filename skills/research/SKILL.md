@@ -1,6 +1,6 @@
 ---
 name: research
-description: Multi-source dev research with parallel scouts. Scales effort to the question's shape, writes a plan and per-angle notes to a run folder, then synthesizes a cited report with a recommendation first. Every claim traces to a note finding with a URL.
+description: Multi-source dev research with parallel scouts. Scales effort to the question's shape, writes a plan and per-angle notes to a run folder, then synthesizes a cited report with a recommendation first. Every claim traces to a note finding with a URL. Inferred triggers are confirmed before a deep run.
 when_to_use: Comparing libraries, frameworks or approaches; surveying how others solve X; "research X"; ecosystem or standards surveys that need several sources. Not for a single API or signature lookup (researcher agent, or answer directly); not for implementation tasks (/workflow); not for explaining code (answer directly).
 argument-hint: "[question to research]"
 ---
@@ -22,6 +22,15 @@ Ask only when the answer would change *what gets researched*: which options to c
 | Survey | "how do teams handle offline sync in 2026" | **5–6** — one per distinct angle |
 
 More than 6 needs the user's yes first. Name the cost when you ask: multi-agent research ran at about 15x the tokens of a chat turn in Anthropic's own measurement.
+
+**Depth gate.** How the skill was reached decides whether to fan out:
+
+| Reached by | What happens |
+|---|---|
+| **Explicit** — the user named the skill (`/condux:research`, "use the research skill", "condux:research") or asked for depth in words ("deep research", "thorough", "comprehensive", "cited report", "dig into") | Proceed with the classified scout count. Do not ask. |
+| **Inferred** — the skill loaded because a question sounded like research (routing hook or trigger description) | Single fact or API: answer directly, never ask. Comparison or survey: ask ONCE, recommendation marked: "Quick answer (one pass, about 1x cost) or deep research (N scouts, about 15x cost)?" N is the classified count. Recommend quick for a comparison of well-known options, deep for a survey or a comparison where the user's constraints decide it. |
+
+**Quick answer** means: the main session answers in one pass, with a few searches and fetches through the host's search and fetch tools, sources cited inline, no run folder and no scouts. Same honesty rules: a version or date on dev claims, and say what could not be verified. If the user picks quick, answer and stop; offer deep research in one line only if the answer is visibly thin.
 
 ## 3. Open the run folder
 
@@ -118,6 +127,7 @@ A finding without a URL goes under Gaps.
 ## What does NOT happen
 
 - No scouts for a single fact — answer it or use `researcher`
+- No fan-out from an inferred trigger without asking
 - No more than 6 scouts without the user's yes and the cost named
 - No dispatch before `plan.md` holds the briefs
 - No general-purpose or custom-prompt agent standing in for `scout`
