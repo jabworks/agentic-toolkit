@@ -7,7 +7,7 @@
 // to ONE judge call that scores the five rubric criteria from Anthropic's
 // multi-agent research post (factual accuracy, citation accuracy,
 // completeness, source quality, tool efficiency) 0–1 plus pass/fail. A case
-// marked `fallback: true` runs with `--disallowedTools Agent`, so no scout can
+// marked `fallback: true` runs with the subagent tool disallowed, so no scout can
 // spawn and the skill's sequential branch is what gets measured.
 //
 // MANUAL ONLY. Every case is a full research run — roughly 15× a chat turn in
@@ -161,8 +161,11 @@ function flag(args, name, fallback) {
 }
 
 // Research needs the web, the scout dispatch, and writes inside the temp dir —
-// nothing else. An allowlist, not a permission bypass.
-const LEAD_TOOLS = ['Agent', 'Skill', 'Read', 'Write', 'Edit', 'Glob', 'Grep', 'WebSearch', 'WebFetch', 'Bash(git check-ignore:*)', 'Bash(mkdir:*)', 'Bash(date:*)', 'Bash(ls:*)'];
+// nothing else. An allowlist, not a permission bypass. The subagent tool is
+// `Task` in headless `claude -p` and `Agent` in interactive sessions, so both
+// names are listed here and both are denied for fallback cases.
+const SUBAGENT_TOOLS = ['Task', 'Agent'];
+const LEAD_TOOLS = [...SUBAGENT_TOOLS, 'Skill', 'Read', 'Write', 'Edit', 'Glob', 'Grep', 'WebSearch', 'WebFetch', 'Bash(git check-ignore:*)', 'Bash(mkdir:*)', 'Bash(date:*)', 'Bash(ls:*)'];
 
 function runLead(c, { pluginDir, model, maxTurns, timeout }) {
   const cwd = fs.mkdtempSync(path.join(os.tmpdir(), 'eval-research-'));
@@ -176,7 +179,7 @@ function runLead(c, { pluginDir, model, maxTurns, timeout }) {
     '--max-turns', String(maxTurns),
     '--allowedTools', ...LEAD_TOOLS,
   ];
-  if (c.fallback) args.push('--disallowedTools', 'Agent');
+  if (c.fallback) args.push('--disallowedTools', ...SUBAGENT_TOOLS);
   const since = Date.now();
   const res = spawnSync('claude', args, { cwd, encoding: 'utf8', timeout, maxBuffer: 64 * 1024 * 1024 });
   return { cwd, since, stream: res.stdout || '', error: res.error ? String(res.error.code || res.error.message) : null };
