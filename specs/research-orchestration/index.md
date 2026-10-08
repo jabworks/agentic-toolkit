@@ -3,7 +3,7 @@
 > Research-mode parity for condux: a lead skill (`condux:research`) and a `scout` worker agent that produce cited, dev-tuned research reports on every host.
 
 **Last updated:** 2026-10-08
-**Commit:** PR #pending
+**Commit:** PR #180
 **Status:** draft
 
 ## Contents
@@ -17,4 +17,4 @@
 | [Implementation](implementation.md) | which files change, including the four-agents ripple |
 
 ## Changelog
-- 2026-10-08 (PR #pending): Initial spec, from the signed-off discovery (docket #98)
+- 2026-10-08 (PR #180): Initial spec, from the signed-off discovery (docket #98)
