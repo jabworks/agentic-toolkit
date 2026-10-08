@@ -227,7 +227,9 @@ override always wins over these defaults.
 ## Agents
 
 Four **named specialist agents** ship with condux — never invent a generic subagent
-with an injected prompt. Implement yourself by default; spawn only with concrete
+with an injected prompt. (Another installed skill that mandates its own spawn type
+and ships the worker's contract, like deep-research, runs as written — see
+`subagent-execution`.) Implement yourself by default; spawn only with concrete
 justification (unfamiliar codebase, external API to verify, genuinely parallel
 exploration, or a LARGE plan via `subagent-execution`).
 

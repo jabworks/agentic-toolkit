@@ -1,7 +1,7 @@
 ---
 name: subagent-deployment
 description: Fan out 2+ independent tasks across named agents (explorer/researcher/planner/coder) in a single message when they share no files and no dependencies. For ad-hoc independent work discovered outside a formal plan.
-when_to_use: "Trigger when the fan-out is already the ask — \"in parallel\", \"fan out\", \"dispatch these together\", \"kick off explorer and researcher\" — over two or more genuinely independent tasks, nothing shared, no ordering. Independence alone is not the signal: a plain implementation request goes to workflow first, which loads this when the tier warrants it. Also owns which agent gets dispatched: asking to spawn a generic or custom-prompt subagent routes here, where the answer is one of the four named agents instead. Not for executing an ordered plan task-by-task (that's subagent-execution)."
+when_to_use: "Trigger when the fan-out is already the ask — \"in parallel\", \"fan out\", \"dispatch these together\", \"kick off explorer and researcher\" — over two or more genuinely independent tasks, nothing shared, no ordering. Independence alone is not the signal: a plain implementation request goes to workflow first, which loads this when the tier warrants it. Also owns which agent gets dispatched: asking to spawn a generic or custom-prompt subagent routes here, where the answer is one of the four named agents instead — unless another installed skill mandates its own spawn type. Not for executing an ordered plan task-by-task (that's subagent-execution)."
 argument-hint: "<list of independent tasks>"
 ---
 
@@ -46,7 +46,8 @@ the fan-out — parallel, dispatch, fan out, these agents at once.
 │  Read-only lookup → explorer or researcher.                     │
 │  Isolated implementation/fix → coder.                           │
 │  Never a generic subagent with an injected prompt — only        │
-│  condux's four named agents.                                    │
+│  condux's four named agents. A skill that mandates its own      │
+│  spawn type runs as written (see subagent-execution).           │
 │                                                                  │
 │  Step 4: DISPATCH TOGETHER                                      │
 │  Issue every checklist-cleared dispatch in the SAME message —   │

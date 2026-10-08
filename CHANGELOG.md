@@ -12,9 +12,13 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## condux 2.34.1 — 2026-10-07
+
+- fix(subagent-execution): honour another skill's mandated spawn type — condux 2.34.1 (#96)
+
 ## condux 2.34.0 — 2026-10-07
 
-- feat(subagent-execution): refresh subagent model tiers
+- feat(subagent-execution): refresh subagent model tiers — condux 2.34.0 (#177)
 
 ## toolkit-ops 1.7.24 — 2026-09-25
 
