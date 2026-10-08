@@ -1,6 +1,6 @@
 ---
 name: condux-doctor
-description: "Health check for the condux plugin on the host it is installed on. Runs the SessionStart routing hook on both hosts and checks each wire format, confirms Codex's hooks flag is on and plan-review's Stop hook resolves, checks the OpenCode registration and its bundled agents and skills, verifies the four specialist agents shipped, compares the installed version against the marketplace clone, and flags conflicting skill libraries installed. Offline; read-only unless --fix. Checking whether condux itself works on this machine: is condux working, the routing rule stopped appearing, /workflow is not being reached, did the SessionStart hook fire, check my condux install, the agents are missing, does condux clash with superpowers. Run it after installing or updating. Not for routing a dev task (that is workflow); not for diagnosing this repo's own build or dist drift (that is toolkit-debugging-playbook)."
+description: "Health check for the condux plugin on the host it is installed on. Runs the SessionStart routing hook on both hosts and checks each wire format, confirms Codex's hooks flag is on and plan-review's Stop hook resolves, checks the OpenCode registration and its bundled agents and skills, verifies the five specialist agents shipped, compares the installed version against the marketplace clone, and flags conflicting skill libraries installed. Offline; read-only unless --fix. Checking whether condux itself works on this machine: is condux working, the routing rule stopped appearing, /workflow is not being reached, did the SessionStart hook fire, check my condux install, the agents are missing, does condux clash with superpowers. Run it after installing or updating. Not for routing a dev task (that is workflow); not for diagnosing this repo's own build or dist drift (that is toolkit-debugging-playbook)."
 argument-hint: "[--host claude|codex|opencode] [--fix]"
 ---
 
@@ -50,8 +50,8 @@ else on the machine competes with it. Only `broken` affects the exit code.
   routing reminder it injects names the OpenCode verb, `skill(name="workflow")`
   — a payload still saying `/condux:workflow` is the docket #72 under-firing
   shape, reported broken with an upgrade as the fix.
-- **The four specialist agents** — `coder`, `explorer`, `planner`,
-  `researcher`. They live in a plugin-level directory reached by its own sync
+- **The five specialist agents** — `coder`, `explorer`, `planner`,
+  `researcher`, `scout`. They live in a plugin-level directory reached by its own sync
   step, which is exactly the mirror that drifted once before.
 - **Version** — installed against the local marketplace clone, with that
   clone's own last-fetch date printed beside it. Never fetches.

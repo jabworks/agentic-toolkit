@@ -226,7 +226,7 @@ override always wins over these defaults.
 
 ## Agents
 
-Four **named specialist agents** ship with condux — never invent a generic subagent
+Five **named specialist agents** ship with condux — never invent a generic subagent
 with an injected prompt. (Another installed skill that mandates its own spawn type
 and ships the worker's contract, like deep-research, runs as written — see
 `subagent-execution`.) Implement yourself by default; spawn only with concrete
@@ -240,6 +240,8 @@ exploration, or a LARGE plan via `subagent-execution`).
   researcher when external libs are involved, before planning).
 - `coder` — executes a provided plan only (sonnet; no exploration, no
   typecheck/lint/test — that's finalize's job).
+- `scout` — one angle of a survey, dispatched only by `/condux:research` (sonnet;
+  writes only its own notes file).
 
 Pipeline: explorer/researcher gather (non-blocking) → planner plans → coder executes
 → finalize validates. Spawn mechanics, model tiering, and the parallel-safety

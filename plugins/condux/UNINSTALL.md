@@ -28,7 +28,7 @@ registrations it left behind have to be cleaned up by hand.
 | Host | Outcome | Why |
 |---|---|---|
 | Claude Code | `skipped` | The plugin manifest registered the `SessionStart` routing hook. Removing the plugin removes it — nothing was ever written by hand. |
-| Codex | `warn` | The four specialist agent TOMLs and the plan-review `Stop` hook are removed. The shared feature flag is left set — see below, which is why the row is `warn` and not `done`. |
+| Codex | `warn` | The five specialist agent TOMLs and the plan-review `Stop` hook are removed. The shared feature flag is left set — see below, which is why the row is `warn` and not `done`. |
 | OpenCode | `done` | `@jabworks/condux` is removed from the `plugin` array in `opencode.json`. Other entries are untouched. |
 
 A host that is not installed reports `absent`. Neither `skipped` nor `absent` is

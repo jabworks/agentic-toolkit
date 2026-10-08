@@ -79,7 +79,7 @@ why removal never clears it (see Removal).
 
 ## 3. Codex — the agents, and the Stop hook only when unmanaged
 
-**Always:** the four specialist agents. Codex plugins cannot bundle agents —
+**Always:** the five specialist agents. Codex plugins cannot bundle agents —
 the plugin format has no `agents/` component — so they are standalone TOMLs
 under `$CODEX_HOME/agents/` regardless of how condux was installed.
 
