@@ -18,7 +18,20 @@
 //   node scripts/eval-research-quality.mjs [--cases <file>] [--ids a,b | --limit n]
 //         [--plugin-dir <dir>] [--model <id>] [--judge-model <id>]
 //         [--max-turns <n>] [--timeout <ms>] [--out <report.md>]
-//         [--disable-plugins <id,id>]
+//         [--disable-plugins <id,id>] [--scout-model <alias>]
+//   node scripts/eval-research-quality.mjs --gate [--gate-cases <file>] [...]
+//
+// --gate checks the depth gate (decision 7), not report quality. Each case in
+// skills/research/evals/gate_eval.json is posed WITHOUT naming the skill, capped
+// at a few turns, and scored on the transcript alone: was the skill loaded,
+// was any subagent dispatched, did the reply ask quick-or-deep? Expect `ask`
+// for comparisons and surveys, `direct` for single facts. Cheap: no research
+// run, no judge.
+//
+// --scout-model runs against a temp copy of the plugin dir whose
+// agents/scout.md frontmatter says `model: <alias>` — the A/B lever for the
+// worker model (e.g. haiku vs the shipped sonnet). The shipped tree is never
+// touched.
 //
 // --disable-plugins turns installed plugins off for every lead and judge run
 // via a settings override, e.g. context-mode@context-mode, whose WebFetch
@@ -111,6 +124,51 @@ export function runCost(text) {
   return 0;
 }
 
+// scout.md with its frontmatter `model:` line replaced. Throws rather than
+// returning the text unchanged, so a renamed field can't silently A/B nothing.
+export function withScoutModel(text, model) {
+  const fm = String(text).match(/^---\n([\s\S]*?)\n---\n/);
+  if (!fm || !/^model: .*$/m.test(fm[1])) throw new Error('scout.md has no frontmatter model: line');
+  return text.replace(fm[0], fm[0].replace(/^model: .*$/m, `model: ${model}`));
+}
+
+// The depth-gate observation for one transcript. `fannedOut` counts any
+// subagent dispatch (Task headless, Agent interactive); `asked` means the last
+// assistant text offers both a quick and a deep path.
+export function gateOutcome(streamText, expect) {
+  let loaded = false;
+  let fannedOut = false;
+  let said = '';
+  for (const line of String(streamText ?? '').split('\n')) {
+    if (!line.trim()) continue;
+    let e;
+    try {
+      e = JSON.parse(line);
+    } catch {
+      continue;
+    }
+    if (e.type !== 'assistant') continue;
+    for (const block of e.message?.content ?? []) {
+      if (block.type === 'tool_use' && block.name === 'Skill' && /(^|:)research$/.test(String(block.input?.skill ?? ''))) loaded = true;
+      if (block.type === 'tool_use' && (block.name === 'Task' || block.name === 'Agent')) fannedOut = true;
+      if (block.type === 'text' && block.text.trim()) said = block.text.trim();
+    }
+  }
+  const asked = /\bquick\b/i.test(said) && /\bdeep\b/i.test(said);
+  const pass = !fannedOut && (expect === 'ask' ? asked : !asked);
+  return { loaded, fannedOut, asked, pass };
+}
+
+export function buildGateSummary(rows) {
+  const lines = ['# condux:research depth-gate check', ''];
+  lines.push('| id | expect | skill loaded | fanned out | asked | pass |');
+  lines.push('|---|---|---|---|---|---|');
+  const yn = (b) => (b ? 'yes' : 'no');
+  for (const r of rows) lines.push(`| ${r.id} | ${r.expect} | ${yn(r.loaded)} | ${yn(r.fannedOut)} | ${yn(r.asked)} | ${r.pass ? '✓' : '✗'} |`);
+  lines.push('', `**Pass:** ${rows.filter((r) => r.pass).length}/${rows.length}`);
+  return lines.join('\n') + '\n';
+}
+
 export function judgePrompt({ query, report, notes }) {
   const notesBlock = notes.length
     ? notes.map((n) => `--- notes/${n.name} ---\n${n.text}`).join('\n\n')
@@ -144,11 +202,12 @@ export function judgePrompt({ query, report, notes }) {
 const fmt = (v) => (typeof v === 'number' ? v.toFixed(2) : '—');
 
 // Result = { id, query, shape, fallback, runDir, verdict, cost?, error? }
-// env = { host, tools, plugin, disabledPlugins? }
+// env = { host, tools, plugin, disabledPlugins?, scoutModel? }
 export function buildSummary(results, env) {
   const lines = ['# condux:research quality eval', ''];
   lines.push(`- Host: ${env.host}`, `- Plugin: ${env.plugin}`);
   lines.push(`- Disabled plugins: ${env.disabledPlugins?.length ? env.disabledPlugins.join(', ') : 'none'}`);
+  lines.push(`- Scout model: ${env.scoutModel ?? 'as shipped'}`);
   lines.push(`- Lead tools: ${env.tools.length ? env.tools.join(', ') : '(unknown)'}`, '');
   lines.push('| id | shape | fallback | factual | citation | completeness | source quality | tool efficiency | pass | cost | note |');
   lines.push('|---|---|---|---|---|---|---|---|---|---|---|');
@@ -229,7 +288,15 @@ function runJudge(prompt, { model, timeout, disabled }) {
 function main() {
   const args = process.argv.slice(2);
   const casesPath = path.resolve(flag(args, '--cases', path.join(REPO, 'skills/research/evals/quality_eval.json')));
-  const pluginDir = path.resolve(flag(args, '--plugin-dir', path.join(REPO, 'dist/plugins/condux')));
+  let pluginDir = path.resolve(flag(args, '--plugin-dir', path.join(REPO, 'dist/plugins/condux')));
+  const scoutModel = flag(args, '--scout-model', null);
+  if (scoutModel) {
+    const copy = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'eval-research-plugin-')), 'condux');
+    fs.cpSync(pluginDir, copy, { recursive: true });
+    const scout = path.join(copy, 'agents', 'scout.md');
+    fs.writeFileSync(scout, withScoutModel(fs.readFileSync(scout, 'utf8'), scoutModel));
+    pluginDir = copy;
+  }
   const model = flag(args, '--model', 'opus');
   const judgeModel = flag(args, '--judge-model', 'opus');
   const maxTurns = Number(flag(args, '--max-turns', '80'));
@@ -238,6 +305,21 @@ function main() {
   const ids = flag(args, '--ids', null)?.split(',');
   const limit = Number(flag(args, '--limit', '0'));
   const disabled = flag(args, '--disable-plugins', '').split(',').filter(Boolean);
+
+  if (args.includes('--gate')) {
+    const gatePath = path.resolve(flag(args, '--gate-cases', path.join(REPO, 'skills/research/evals/gate_eval.json')));
+    const rows = [];
+    for (const c of JSON.parse(fs.readFileSync(gatePath, 'utf8'))) {
+      process.stderr.write(`→ gate ${c.id}\n`);
+      const cwd = fs.mkdtempSync(path.join(os.tmpdir(), 'eval-research-gate-'));
+      const res = spawnSync('claude', ['-p', c.query, '--plugin-dir', pluginDir, '--model', model, '--output-format', 'stream-json', '--verbose', '--max-turns', String(Number(flag(args, '--max-turns', '6'))), ...settingsOverride(disabled), '--allowedTools', ...LEAD_TOOLS], { cwd, encoding: 'utf8', timeout, maxBuffer: 64 * 1024 * 1024 });
+      rows.push({ id: c.id, expect: c.expect, ...gateOutcome(res.stdout || '', c.expect) });
+    }
+    const summary = buildGateSummary(rows);
+    if (out) fs.writeFileSync(out, summary);
+    process.stdout.write(summary);
+    return;
+  }
 
   let cases = JSON.parse(fs.readFileSync(casesPath, 'utf8'));
   if (ids) cases = cases.filter((c) => ids.includes(c.id));
@@ -263,11 +345,21 @@ function main() {
       ? fs.readdirSync(notesDir).filter((f) => f.endsWith('.md')).map((f) => ({ name: f, text: fs.readFileSync(path.join(notesDir, f), 'utf8') }))
       : [];
     const report = fs.readFileSync(path.join(runDir, 'report.md'), 'utf8');
-    const judge = runJudge(judgePrompt({ query: c.query, report, notes }), { model: judgeModel, timeout, disabled });
-    results.push({ ...base, runDir, verdict: parseVerdict(judge.text), cost: runCost(lead.stream) + judge.cost });
+    // One retry on an unparseable verdict: the reply is kept beside the report
+    // either way, so a second failure can be diagnosed instead of guessed at.
+    const prompt = judgePrompt({ query: c.query, report, notes });
+    let judge = runJudge(prompt, { model: judgeModel, timeout, disabled });
+    let cost = runCost(lead.stream) + judge.cost;
+    if (!parseVerdict(judge.text)) {
+      fs.writeFileSync(path.join(runDir, 'judge-attempt-1.md'), judge.text);
+      judge = runJudge(prompt, { model: judgeModel, timeout, disabled });
+      cost += judge.cost;
+    }
+    fs.writeFileSync(path.join(runDir, 'judge.md'), judge.text);
+    results.push({ ...base, runDir, verdict: parseVerdict(judge.text), cost });
   }
 
-  const summary = buildSummary(results, { host: 'claude', tools, plugin: `${pluginDir} (condux ${version})`, disabledPlugins: disabled });
+  const summary = buildSummary(results, { host: 'claude', tools, plugin: `${pluginDir} (condux ${version})`, disabledPlugins: disabled, scoutModel: scoutModel ?? undefined });
   if (out) fs.writeFileSync(out, summary);
   process.stdout.write(summary);
 }

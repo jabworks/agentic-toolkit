@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { parseVerdict, newestRunDir, initTools, judgePrompt, buildSummary, settingsOverride, runCost } from '../scripts/eval-research-quality.mjs';
+import { parseVerdict, newestRunDir, initTools, judgePrompt, buildSummary, settingsOverride, runCost, withScoutModel, gateOutcome, buildGateSummary } from '../scripts/eval-research-quality.mjs';
 
 // The pure half of the condux:research quality eval (docket #98). The runner
 // spawns real research runs and a judge, so it is manual-only; everything it
@@ -94,6 +94,7 @@ test('buildSummary says so when nothing was scorable', () => {
   assert.match(md, /No case produced a scorable verdict/);
   assert.match(md, /Lead tools: \(unknown\)/);
   assert.match(md, /Disabled plugins: none/);
+  assert.match(md, /Scout model: as shipped/);
 });
 
 test('settingsOverride disables each named plugin, and adds nothing when none are named', () => {
@@ -108,4 +109,48 @@ test('runCost reads total_cost_usd from the last result event, 0 when absent', (
   assert.equal(runCost(stream), 2.25);
   assert.equal(runCost(''), 0);
   assert.equal(runCost(JSON.stringify({ type: 'result' })), 0);
+});
+
+test('withScoutModel rewrites only the frontmatter model line, and refuses a file without one', () => {
+  const md = '---\nname: "scout"\nmodel: sonnet\ncolor: green\n---\n\nBody mentions model: sonnet too.\n';
+  const out = withScoutModel(md, 'haiku');
+  assert.match(out, /^---\nname: "scout"\nmodel: haiku\ncolor: green\n---\n/);
+  assert.match(out, /Body mentions model: sonnet too\./, 'body untouched');
+  assert.throws(() => withScoutModel('---\nname: "scout"\n---\nbody\n', 'haiku'), /no frontmatter model/);
+  assert.throws(() => withScoutModel('no frontmatter', 'haiku'), /no frontmatter model/);
+});
+
+const turn = (...blocks) => JSON.stringify({ type: 'assistant', message: { content: blocks } });
+const skill = (name) => ({ type: 'tool_use', name: 'Skill', input: { skill: name } });
+const text = (t) => ({ type: 'text', text: t });
+
+test('gateOutcome passes an inferred comparison that loads the skill and asks quick-or-deep without dispatching', () => {
+  const stream = [turn(skill('condux:research')), turn(text('Quick answer (one pass) or deep research (3 scouts)?'))].join('\n');
+  assert.deepEqual(gateOutcome(stream, 'ask'), { loaded: true, fannedOut: false, asked: true, pass: true });
+});
+
+test('gateOutcome fails a silent fan-out, whichever tool name dispatched it', () => {
+  for (const name of ['Task', 'Agent']) {
+    const stream = [turn(skill('research')), turn({ type: 'tool_use', name, input: { subagent_type: 'condux:scout' } }), turn(text('Quick or deep?'))].join('\n');
+    const o = gateOutcome(stream, 'ask');
+    assert.equal(o.fannedOut, true, name);
+    assert.equal(o.pass, false, name);
+  }
+});
+
+test('gateOutcome: a direct case passes when answered without asking, and fails when it asks', () => {
+  assert.equal(gateOutcome(turn(text('Yes — vitest supports --shard since 0.29.')), 'direct').pass, true);
+  assert.equal(gateOutcome(turn(text('Quick answer or deep research?')), 'direct').pass, false);
+  assert.equal(gateOutcome(turn(text('Here is a summary.')), 'ask').pass, false, 'ask expected, none asked');
+  assert.equal(gateOutcome('', 'ask').loaded, false);
+});
+
+test('buildGateSummary tabulates the observations and the pass count', () => {
+  const md = buildGateSummary([
+    { id: 'a', expect: 'ask', loaded: true, fannedOut: false, asked: true, pass: true },
+    { id: 'b', expect: 'direct', loaded: false, fannedOut: false, asked: true, pass: false },
+  ]);
+  assert.match(md, /\| a \| ask \| yes \| no \| yes \| ✓ \|/);
+  assert.match(md, /\| b \| direct \| no \| no \| yes \| ✗ \|/);
+  assert.match(md, /Pass:\*\* 1\/2/);
 });
