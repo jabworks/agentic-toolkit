@@ -18,6 +18,12 @@
 //   node scripts/eval-research-quality.mjs [--cases <file>] [--ids a,b | --limit n]
 //         [--plugin-dir <dir>] [--model <id>] [--judge-model <id>]
 //         [--max-turns <n>] [--timeout <ms>] [--out <report.md>]
+//         [--disable-plugins <id,id>]
+//
+// --disable-plugins turns installed plugins off for every lead and judge run
+// via a settings override, e.g. context-mode@context-mode, whose WebFetch
+// redirect blocks allowlisted agents (specs/research-orchestration quirks Q4).
+// The summary records what was disabled, so the baseline says what it measured.
 //
 // If condux is also installed from the marketplace, --plugin-dir loads a
 // second copy; the summary records which plugin dir and version answered.
@@ -125,10 +131,12 @@ export function judgePrompt({ query, report, notes }) {
 const fmt = (v) => (typeof v === 'number' ? v.toFixed(2) : '—');
 
 // Result = { id, query, shape, fallback, runDir, verdict, error? }
-// env = { host, tools, plugin }
+// env = { host, tools, plugin, disabledPlugins? }
 export function buildSummary(results, env) {
   const lines = ['# condux:research quality eval', ''];
-  lines.push(`- Host: ${env.host}`, `- Plugin: ${env.plugin}`, `- Lead tools: ${env.tools.length ? env.tools.join(', ') : '(unknown)'}`, '');
+  lines.push(`- Host: ${env.host}`, `- Plugin: ${env.plugin}`);
+  lines.push(`- Disabled plugins: ${env.disabledPlugins?.length ? env.disabledPlugins.join(', ') : 'none'}`);
+  lines.push(`- Lead tools: ${env.tools.length ? env.tools.join(', ') : '(unknown)'}`, '');
   lines.push('| id | shape | fallback | factual | citation | completeness | source quality | tool efficiency | pass | note |');
   lines.push('|---|---|---|---|---|---|---|---|---|---|');
   for (const r of results) {
@@ -167,7 +175,10 @@ function flag(args, name, fallback) {
 const SUBAGENT_TOOLS = ['Task', 'Agent'];
 const LEAD_TOOLS = [...SUBAGENT_TOOLS, 'Skill', 'Read', 'Write', 'Edit', 'Glob', 'Grep', 'WebSearch', 'WebFetch', 'Bash(git check-ignore:*)', 'Bash(mkdir:*)', 'Bash(date:*)', 'Bash(ls:*)'];
 
-function runLead(c, { pluginDir, model, maxTurns, timeout }) {
+export const settingsOverride = (disabled) =>
+  disabled.length ? ['--settings', JSON.stringify({ enabledPlugins: Object.fromEntries(disabled.map((id) => [id, false])) })] : [];
+
+function runLead(c, { pluginDir, model, maxTurns, timeout, disabled }) {
   const cwd = fs.mkdtempSync(path.join(os.tmpdir(), 'eval-research-'));
   spawnSync('git', ['init', '-q'], { cwd });
   fs.writeFileSync(path.join(cwd, '.gitignore'), '.condux/\n');
@@ -177,6 +188,7 @@ function runLead(c, { pluginDir, model, maxTurns, timeout }) {
     '--model', model,
     '--output-format', 'stream-json', '--verbose',
     '--max-turns', String(maxTurns),
+    ...settingsOverride(disabled),
     '--allowedTools', ...LEAD_TOOLS,
   ];
   if (c.fallback) args.push('--disallowedTools', ...SUBAGENT_TOOLS);
@@ -185,8 +197,8 @@ function runLead(c, { pluginDir, model, maxTurns, timeout }) {
   return { cwd, since, stream: res.stdout || '', error: res.error ? String(res.error.code || res.error.message) : null };
 }
 
-function runJudge(prompt, { model, timeout }) {
-  const res = spawnSync('claude', ['-p', prompt, '--model', model, '--output-format', 'json', '--max-turns', '10', '--allowedTools', 'WebFetch'], {
+function runJudge(prompt, { model, timeout, disabled }) {
+  const res = spawnSync('claude', ['-p', prompt, '--model', model, '--output-format', 'json', '--max-turns', '10', ...settingsOverride(disabled), '--allowedTools', 'WebFetch'], {
     encoding: 'utf8',
     timeout,
     maxBuffer: 16 * 1024 * 1024,
@@ -209,6 +221,7 @@ function main() {
   const out = flag(args, '--out', null);
   const ids = flag(args, '--ids', null)?.split(',');
   const limit = Number(flag(args, '--limit', '0'));
+  const disabled = flag(args, '--disable-plugins', '').split(',').filter(Boolean);
 
   let cases = JSON.parse(fs.readFileSync(casesPath, 'utf8'));
   if (ids) cases = cases.filter((c) => ids.includes(c.id));
@@ -222,7 +235,7 @@ function main() {
   for (const c of cases) {
     process.stderr.write(`→ ${c.id}${c.fallback ? ' (fallback)' : ''}\n`);
     const base = { id: c.id, query: c.query, shape: c.shape, fallback: Boolean(c.fallback), runDir: null, verdict: null };
-    const lead = runLead(c, { pluginDir, model, maxTurns, timeout });
+    const lead = runLead(c, { pluginDir, model, maxTurns, timeout, disabled });
     if (!tools.length) tools = initTools(lead.stream);
     const runDir = newestRunDir(path.join(lead.cwd, '.condux/research'), lead.since);
     if (!runDir) {
@@ -234,11 +247,11 @@ function main() {
       ? fs.readdirSync(notesDir).filter((f) => f.endsWith('.md')).map((f) => ({ name: f, text: fs.readFileSync(path.join(notesDir, f), 'utf8') }))
       : [];
     const report = fs.readFileSync(path.join(runDir, 'report.md'), 'utf8');
-    const verdict = parseVerdict(runJudge(judgePrompt({ query: c.query, report, notes }), { model: judgeModel, timeout }));
+    const verdict = parseVerdict(runJudge(judgePrompt({ query: c.query, report, notes }), { model: judgeModel, timeout, disabled }));
     results.push({ ...base, runDir, verdict });
   }
 
-  const summary = buildSummary(results, { host: 'claude', tools, plugin: `${pluginDir} (condux ${version})` });
+  const summary = buildSummary(results, { host: 'claude', tools, plugin: `${pluginDir} (condux ${version})`, disabledPlugins: disabled });
   if (out) fs.writeFileSync(out, summary);
   process.stdout.write(summary);
 }

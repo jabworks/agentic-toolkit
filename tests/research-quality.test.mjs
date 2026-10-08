@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { parseVerdict, newestRunDir, initTools, judgePrompt, buildSummary } from '../scripts/eval-research-quality.mjs';
+import { parseVerdict, newestRunDir, initTools, judgePrompt, buildSummary, settingsOverride } from '../scripts/eval-research-quality.mjs';
 
 // The pure half of the condux:research quality eval (docket #98). The runner
 // spawns real research runs and a judge, so it is manual-only; everything it
@@ -75,7 +75,8 @@ test('buildSummary reports scores, means, pass rate, environment, and unscored c
     { id: 'c', query: 'qc', shape: 'survey', fallback: false, runDir: null, verdict: null, error: 'no report.md written' },
     { id: 'd', query: 'qd', shape: 'survey', fallback: false, runDir: '/r/d', verdict: null },
   ];
-  const md = buildSummary(results, { host: 'claude', tools: ['Agent', 'WebFetch'], plugin: '/p (condux 2.35.0)' });
+  const md = buildSummary(results, { host: 'claude', tools: ['Agent', 'WebFetch'], plugin: '/p (condux 2.35.0)', disabledPlugins: ['context-mode@context-mode'] });
+  assert.match(md, /Disabled plugins: context-mode@context-mode/);
   assert.match(md, /Plugin: \/p \(condux 2\.35\.0\)/);
   assert.match(md, /Lead tools: Agent, WebFetch/);
   assert.match(md, /\| a \| comparison \| no \| 0\.90 \| 0\.80 \| 0\.70 \| 1\.00 \| 0\.60 \| ✓ \|/);
@@ -91,4 +92,12 @@ test('buildSummary says so when nothing was scorable', () => {
   const md = buildSummary([{ id: 'x', query: 'q', shape: 'survey', fallback: false, runDir: null, verdict: null, error: 'boom' }], { host: 'claude', tools: [], plugin: 'p' });
   assert.match(md, /No case produced a scorable verdict/);
   assert.match(md, /Lead tools: \(unknown\)/);
+  assert.match(md, /Disabled plugins: none/);
+});
+
+test('settingsOverride disables each named plugin, and adds nothing when none are named', () => {
+  assert.deepEqual(settingsOverride([]), []);
+  const [flagName, json] = settingsOverride(['context-mode@context-mode', 'x@y']);
+  assert.equal(flagName, '--settings');
+  assert.deepEqual(JSON.parse(json), { enabledPlugins: { 'context-mode@context-mode': false, 'x@y': false } });
 });
