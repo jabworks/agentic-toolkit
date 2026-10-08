@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { parseVerdict, newestRunDir, initTools, judgePrompt, buildSummary, settingsOverride, runCost, withScoutModel, gateOutcome, buildGateSummary } from '../scripts/eval-research-quality.mjs';
+import { parseVerdict, newestRunDir, initTools, judgePrompt, buildSummary, settingsOverride, runCost, withScoutModel, gateOutcome, buildGateSummary, runFailure } from '../scripts/eval-research-quality.mjs';
 
 // The pure half of the condux:research quality eval (docket #98). The runner
 // spawns real research runs and a judge, so it is manual-only; everything it
@@ -153,4 +153,10 @@ test('buildGateSummary tabulates the observations and the pass count', () => {
   assert.match(md, /\| a \| ask \| yes \| no \| yes \| ✓ \|/);
   assert.match(md, /\| b \| direct \| no \| no \| yes \| ✗ \|/);
   assert.match(md, /Pass:\*\* 1\/2/);
+});
+
+test('runFailure names the error from the result event, null on success, and flags a missing result', () => {
+  assert.equal(runFailure(JSON.stringify({ type: 'result', is_error: true, subtype: 'error_during_execution', result: 'Usage limit reached' })), 'error_during_execution: Usage limit reached');
+  assert.equal(runFailure(JSON.stringify({ type: 'result', is_error: false, subtype: 'success' })), null);
+  assert.equal(runFailure(''), 'no result event');
 });

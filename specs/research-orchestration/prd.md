@@ -37,7 +37,7 @@ condux has no multi-source, cited research flow. `anthropic-skills:deep-research
 
 | Metric | Target | How measured |
 |---|---|---|
-| Report quality on 10–20 real dev-research queries | set from the baseline run (open question) | one LLM-judge call per report: factual accuracy, citation accuracy, completeness, source quality, tool efficiency, each 0–1, plus pass/fail |
+| Report quality on 10–20 real dev-research queries | judge pass on ≥ 11 of 12; every criterion mean ≥ 0.80 except tool efficiency ≥ 0.70 (set 2026-10-08 from the baseline: 12/12, means 0.89 / 0.88 / 0.87 / 0.88 / 0.77 — see verification.md) | one LLM-judge call per report: factual accuracy, citation accuracy, completeness, source quality, tool efficiency, each 0–1, plus pass/fail |
 | Trigger precision | fires on research asks; does not fire on API lookups, dev tasks, or explanations | `scripts/eval-invocations.mjs` over `skills/research/evals/trigger_eval.json` |
 
 ## Scope
@@ -52,6 +52,6 @@ condux has no multi-source, cited research flow. `anthropic-skills:deep-research
 
 ## Open questions
 
-- The quality judge's pass threshold, set from the baseline run.
+- ~~The quality judge's pass threshold~~ — resolved 2026-10-08: pass on ≥ 11 of 12, criterion means ≥ 0.80 (tool efficiency ≥ 0.70), from the baseline in verification.md.
 - ~~Codex `MODEL_DEFAULTS` for scout~~ — resolved 2026-10-08: `gpt-6.1-sol` at medium effort, sandbox `workspace-write` (`install-codex-agents.mjs`).
 - ~~Do OpenCode's restricted-agent denials need scout hardcoded?~~ — resolved 2026-10-08: no. `agentPermissionPolicy` derives them from `tools:`, so scout gets `bash: deny` and keeps edit, because Write is allowed.

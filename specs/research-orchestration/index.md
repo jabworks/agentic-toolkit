@@ -15,6 +15,8 @@
 | [API](api.md) | the scout contract and the plan, notes, and report shapes |
 | [Quirks](quirks.md) | what will bite you, and whether it is mitigated |
 | [Implementation](implementation.md) | which files change, including the four-agents ripple |
+| [Verification](verification.md) | the quality baseline, the depth-gate check, and the Haiku scout A/B |
 
 ## Changelog
 - 2026-10-08 (PR #180): Initial spec, from the signed-off discovery (docket #98)
+- 2026-10-08 (PR #180): Depth gate (decision 7); verification.md; pass threshold set from the baseline

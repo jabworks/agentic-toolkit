@@ -6,7 +6,7 @@ Evidence that `condux:research` does what `prd.md` claims, measured against cond
 |---|---|---|
 | Quality baseline (Sonnet scouts) | 12/12 pass; means below | 2026-10-08 |
 | Depth gate (decision 7) | 5/5 pass | 2026-10-08 |
-| Haiku 5.5 scout A/B | partial — 5/12 scored, inconclusive | 2026-10-08 |
+| Haiku 5.5 scout A/B | 12/12 pass; quality within noise, no cost saving — keep Sonnet scouts | 2026-10-08 |
 
 ## Environment
 
@@ -65,19 +65,36 @@ Run folders checked by hand:
 
 Same 12 questions with `--scout-model haiku` (`claude-haiku-5-5`), everything else unchanged. Decision rule agreed 2026-10-08: switch scouts to Haiku if no criterion's mean drops more than 0.05 and citation accuracy does not drop.
 
-**Partial run.** The first 5 cases scored. The last 7 (from `plugin-versioning` on, including all 3 fallback noise controls) wrote no `report.md`, and most recorded no cost. That pattern is consistent with the runs being cut off — the session hit a usage limit around the same time — but the cause is unconfirmed. Re-run those 7 before deciding.
+The first pass scored 5 cases. The other 7 ended within seconds of starting because the session's usage limit was reached, not because of Haiku. They were re-run the same day; the runner now records the failure reason from the result event.
 
-Matched comparison on the 5 scored cases:
+| id | fallback | factual | citation | completeness | source quality | tool efficiency | pass | cost |
+|---|---|---|---|---|---|---|---|---|
+| server-state-libs | no | 0.90 | 0.90 | 0.85 | 0.90 | 0.75 | ✓ | $2.95 |
+| ts-orms | no | 0.90 | 0.90 | 0.80 | 0.90 | 0.75 | ✓ | $5.54 |
+| js-linters | no | 0.88 | 0.90 | 0.85 | 0.85 | 0.75 | ✓ | $4.94 |
+| monorepo-tools | no | 0.92 | 0.90 | 0.80 | 0.90 | 0.75 | ✓ | $4.32 |
+| edge-auth | no | 0.90 | 0.88 | 0.85 | 0.87 | 0.75 | ✓ | $4.96 |
+| plugin-versioning | no | 0.90 | 0.90 | 0.80 | 0.85 | 0.75 | ✓ | $4.66 |
+| design-tokens | no | 0.90 | 0.90 | 0.70 | 0.85 | 0.70 | ✓ | $5.67 |
+| rsc-support | no | 0.85 | 0.85 | 0.90 | 0.80 | 0.75 | ✓ | $4.38 |
+| local-first-sync | no | 0.88 | 0.80 | 0.82 | 0.85 | 0.75 | ✓ | $5.73 |
+| test-runners-fallback | yes | 0.88 | 0.90 | 0.95 | 0.85 | 0.85 | ✓ | $2.87 |
+| feature-flags-fallback | yes | 0.93 | 0.90 | 0.88 | 0.90 | 0.82 | ✓ | $2.81 |
+| bundlers-fallback | yes | 0.80 | 0.85 | 0.85 | 0.85 | 0.75 | ✓ | $3.38 |
 
-| Criterion | Sonnet scouts | Haiku scouts | Δ |
-|---|---|---|---|
-| factual | 0.90 | 0.90 | +0.00 |
-| citation | 0.90 | 0.90 | −0.00 |
-| completeness | 0.85 | 0.83 | −0.02 |
-| source quality | 0.89 | 0.88 | −0.01 |
-| tool efficiency | 0.73 | 0.75 | +0.02 |
+**Comparison.** The 9 normal cases compare scout models. The 3 fallback cases spawn no scouts, so they ran the same condition twice and measure noise.
 
-- All 5 pass.
-- Every delta is within ±0.02, inside the 0.05 rule. Citation moved by −0.002, which is below any meaningful resolution.
-- **Cost did not fall** on the 3 cases costed in both runs: $13.45 with Sonnet scouts, $14.80 with Haiku. The opus lead and judge dominate the bill, so a cheaper scout alone does not cut cost here; the lead model is the bigger lever.
-- **Verdict: inconclusive** — no noise control, and only 5 of 12 cases.
+| Criterion | Sonnet (9) | Haiku (9) | Δ | Noise: same-condition Δ of means (max per case) |
+|---|---|---|---|---|
+| factual | 0.89 | 0.89 | +0.00 | −0.04 (0.15) |
+| citation | 0.89 | 0.88 | −0.00 | +0.02 (0.15) |
+| completeness | 0.85 | 0.82 | −0.03 | −0.02 (0.05) |
+| source quality | 0.88 | 0.86 | −0.02 | 0.00 (0.05) |
+| tool efficiency | 0.75 | 0.74 | −0.00 | −0.05 (0.10) |
+
+- **Cost:** $35.54 with Sonnet scouts vs $35.24 with Haiku, on the 7 normal cases costed both ways. The opus lead and judge dominate the bill.
+- **Decision — keep Sonnet scouts.**
+  - Every delta is within the 0.05 rule and inside the measured noise.
+  - Citation's −0.004 breaks the rule's letter, but is far below noise.
+  - With no cost saving, switching buys nothing and risks the small completeness dip (−0.03, the largest delta).
+  - The cost lever is the lead model, not the scout.

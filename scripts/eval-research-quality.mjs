@@ -169,6 +169,19 @@ export function buildGateSummary(rows) {
   return lines.join('\n') + '\n';
 }
 
+// Why a run produced nothing, from its stream-json result event — so a usage
+// limit or an API error reads as that, not as a missing report.
+export function runFailure(text) {
+  for (const line of String(text ?? '').split('\n').reverse()) {
+    if (!line.trim()) continue;
+    try {
+      const e = JSON.parse(line);
+      if (e.type === 'result') return e.is_error ? `${e.subtype ?? 'error'}: ${String(e.result ?? '').slice(0, 100)}` : null;
+    } catch {}
+  }
+  return 'no result event';
+}
+
 export function judgePrompt({ query, report, notes }) {
   const notesBlock = notes.length
     ? notes.map((n) => `--- notes/${n.name} ---\n${n.text}`).join('\n\n')
@@ -337,7 +350,7 @@ function main() {
     if (!tools.length) tools = initTools(lead.stream);
     const runDir = newestRunDir(path.join(lead.cwd, '.condux/research'), lead.since);
     if (!runDir) {
-      results.push({ ...base, cost: runCost(lead.stream), error: lead.error || 'no report.md written' });
+      results.push({ ...base, cost: runCost(lead.stream), error: lead.error || runFailure(lead.stream) || 'no report.md written' });
       continue;
     }
     const notesDir = path.join(runDir, 'notes');
