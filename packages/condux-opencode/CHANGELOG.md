@@ -1,5 +1,15 @@
 # @jabworks/condux
 
+## 0.28.0
+
+### Minor Changes
+
+- [#180](https://github.com/jabworks/agentic-toolkit/pull/180) [`90fd987`](https://github.com/jabworks/agentic-toolkit/commit/90fd9877ebd0662ba323b4bdd73c1bd434066087) Thanks [@vi-hieu](https://github.com/vi-hieu)! - Add condux:research and the scout agent: cited multi-source research for dev questions. The main session leads, parallel scout agents write cited notes, and a decision-ready report lands in .condux/research/. Where no scout can be spawned, the same flow runs sequentially. The routing reminder now points multi-source research at the research skill.
+
+### Patch Changes
+
+- [#179](https://github.com/jabworks/agentic-toolkit/pull/179) [`45c7da6`](https://github.com/jabworks/agentic-toolkit/commit/45c7da65260ea6cf5a134c37f7ef226945273056) Thanks [@vi-hieu](https://github.com/vi-hieu)! - Scope the named-agents-only rule: another installed skill that mandates its own spawn type and ships the worker's contract (such as deep-research's general-purpose workers) now runs as written instead of being swapped for a condux agent.
+
 ## 0.27.0
 
 ### Minor Changes
