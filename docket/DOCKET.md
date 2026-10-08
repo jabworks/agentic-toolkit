@@ -382,4 +382,19 @@ deep-research is a claude.ai-synced skill and reaches Claude Code only; condux o
 
 deep-research has no published license. The synced copy ships no LICENSE file (manifest `source: "anthropic-example"`), and the skill is not in the public `anthropics/skills` repo, which has no repo-level license either. So its prompt text cannot be vendored or adapted line by line. A condux version has to be written fresh from the public design in Anthropic's multi-agent research post (orchestrator-worker split, effort-scaling rules, delegation briefs, filesystem hand-off, citation pass), in our own words and to our own contracts. That is also the better fit: it can use a dedicated worker agent instead of an injected `general-purpose` prompt, and write to `.condux/research/` instead of CWD. Now the only path to cross-host Research-mode parity; #95 and #97 wait on it.
 
+#### Status 2026-10-08 — built in PR #180 (condux 2.35.0); baseline 12/12 pass, Haiku A/B pending
+
+- **Shipped (draft):** `condux:research` and the fifth agent `scout`. Spec: `specs/research-orchestration/`.
+- **Depth gate:** an inferred trigger asks quick-or-deep before fanning out (decision 7).
+- **Baseline:** 12 queries, all passing, with Sonnet scouts and context-mode disabled (#99). Mean scores: factual 0.89, citation 0.88, completeness 0.87, source quality 0.88, tool efficiency 0.77. About $5 per query. One verdict needed a re-judge, and the runner now retries.
+- **Next:** the depth-gate check, a Haiku 5.5 scout A/B over the same 12 queries, `verification.md`, then close this item and #95 and #97.
+
+### 99. scout cannot fetch under context-mode — WebFetch redirect vs agent tool allowlists (2026-10-08)
+
+scout (and researcher) carry a `tools:` allowlist. context-mode's PreToolUse hook redirects WebFetch to its own `ctx_*` MCP tools, which no allowlisted agent can call — so on a machine with context-mode, every scout fetch fails and research degrades to search snippets (confirmed 2026-10-08 in a headless smoke check; specs/research-orchestration quirks Q4). Options to weigh: whether agent `tools:` accepts MCP wildcards, a context-mode exclusion for subagents, or documenting the conflict. The #98 quality baseline ran with context-mode disabled for this reason.
+
+### 100. Re-evaluate explorer on Haiku 5.5 (2026-10-08)
+
+condux moved explorer off haiku in #177 (2026-10-07): sonnet at low effort finished in fewer turns than Haiku 4.5, and turn count costs more than token price. Haiku 5.5 shipped 2026-10-07 (`claude-haiku-5-5`, $0.10/$0.50 per MTok up to 100K), and the `haiku` alias now resolves to it. That reasoning predates the model, so re-measure. explorer has no quality harness yet, so this needs a small one (fixed codebase questions, turn count and answer accuracy) before any switch. The scout A/B under #98 is the template.
+
 ## Loose threads
