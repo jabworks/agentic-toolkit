@@ -53,5 +53,5 @@ condux has no multi-source, cited research flow. `anthropic-skills:deep-research
 ## Open questions
 
 - The quality judge's pass threshold, set from the baseline run.
-- Codex `MODEL_DEFAULTS` for scout: proposed `gpt-6.1-sol` at medium effort, mirroring sonnet.
-- Does `scripts/build-opencode.mjs` derive restricted-agent `permission` denials from `tools:` or hardcode explorer/researcher?
+- ~~Codex `MODEL_DEFAULTS` for scout~~ — resolved 2026-10-08: `gpt-6.1-sol` at medium effort, sandbox `workspace-write` (`install-codex-agents.mjs`).
+- ~~Do OpenCode's restricted-agent denials need scout hardcoded?~~ — resolved 2026-10-08: no. `agentPermissionPolicy` derives them from `tools:`, so scout gets `bash: deny` and keeps edit, because Write is allowed.
