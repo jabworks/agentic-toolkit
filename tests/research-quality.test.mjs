@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { parseVerdict, newestRunDir, initTools, judgePrompt, buildSummary, settingsOverride } from '../scripts/eval-research-quality.mjs';
+import { parseVerdict, newestRunDir, initTools, judgePrompt, buildSummary, settingsOverride, runCost } from '../scripts/eval-research-quality.mjs';
 
 // The pure half of the condux:research quality eval (docket #98). The runner
 // spawns real research runs and a judge, so it is manual-only; everything it
@@ -70,7 +70,7 @@ test('judgePrompt carries the question, report, notes, and the exact verdict sha
 test('buildSummary reports scores, means, pass rate, environment, and unscored cases separately', () => {
   const verdict = parseVerdict(`\`\`\`json\n${VERDICT}\n\`\`\``);
   const results = [
-    { id: 'a', query: 'qa', shape: 'comparison', fallback: false, runDir: '/r/a', verdict },
+    { id: 'a', query: 'qa', shape: 'comparison', fallback: false, runDir: '/r/a', verdict, cost: 1.5 },
     { id: 'b', query: 'qb', shape: 'survey', fallback: true, runDir: '/r/b', verdict: { ...verdict, pass: false } },
     { id: 'c', query: 'qc', shape: 'survey', fallback: false, runDir: null, verdict: null, error: 'no report.md written' },
     { id: 'd', query: 'qd', shape: 'survey', fallback: false, runDir: '/r/d', verdict: null },
@@ -79,7 +79,8 @@ test('buildSummary reports scores, means, pass rate, environment, and unscored c
   assert.match(md, /Disabled plugins: context-mode@context-mode/);
   assert.match(md, /Plugin: \/p \(condux 2\.35\.0\)/);
   assert.match(md, /Lead tools: Agent, WebFetch/);
-  assert.match(md, /\| a \| comparison \| no \| 0\.90 \| 0\.80 \| 0\.70 \| 1\.00 \| 0\.60 \| ✓ \|/);
+  assert.match(md, /\| a \| comparison \| no \| 0\.90 \| 0\.80 \| 0\.70 \| 1\.00 \| 0\.60 \| ✓ \| \$1\.50 \|/);
+  assert.match(md, /Total cost:\*\* \$1\.50/);
   assert.match(md, /\| b \| survey \| yes \|.*\| ✗ \|/);
   assert.match(md, /\| c \|.*no report\.md written/);
   assert.match(md, /\| d \|.*unparseable verdict/);
@@ -100,4 +101,11 @@ test('settingsOverride disables each named plugin, and adds nothing when none ar
   const [flagName, json] = settingsOverride(['context-mode@context-mode', 'x@y']);
   assert.equal(flagName, '--settings');
   assert.deepEqual(JSON.parse(json), { enabledPlugins: { 'context-mode@context-mode': false, 'x@y': false } });
+});
+
+test('runCost reads total_cost_usd from the last result event, 0 when absent', () => {
+  const stream = [JSON.stringify({ type: 'system', subtype: 'init' }), JSON.stringify({ type: 'result', total_cost_usd: 2.25 }), ''].join('\n');
+  assert.equal(runCost(stream), 2.25);
+  assert.equal(runCost(''), 0);
+  assert.equal(runCost(JSON.stringify({ type: 'result' })), 0);
 });

@@ -98,6 +98,19 @@ export function initTools(streamText) {
   return [];
 }
 
+// What a run spent, from the stream-json result event (lead) or the json
+// output (judge). 0 when absent, so a missing figure never inflates a total.
+export function runCost(text) {
+  for (const line of String(text ?? '').split('\n').reverse()) {
+    if (!line.trim()) continue;
+    try {
+      const e = JSON.parse(line);
+      if (e.type === 'result' && typeof e.total_cost_usd === 'number') return e.total_cost_usd;
+    } catch {}
+  }
+  return 0;
+}
+
 export function judgePrompt({ query, report, notes }) {
   const notesBlock = notes.length
     ? notes.map((n) => `--- notes/${n.name} ---\n${n.text}`).join('\n\n')
@@ -130,20 +143,20 @@ export function judgePrompt({ query, report, notes }) {
 
 const fmt = (v) => (typeof v === 'number' ? v.toFixed(2) : '—');
 
-// Result = { id, query, shape, fallback, runDir, verdict, error? }
+// Result = { id, query, shape, fallback, runDir, verdict, cost?, error? }
 // env = { host, tools, plugin, disabledPlugins? }
 export function buildSummary(results, env) {
   const lines = ['# condux:research quality eval', ''];
   lines.push(`- Host: ${env.host}`, `- Plugin: ${env.plugin}`);
   lines.push(`- Disabled plugins: ${env.disabledPlugins?.length ? env.disabledPlugins.join(', ') : 'none'}`);
   lines.push(`- Lead tools: ${env.tools.length ? env.tools.join(', ') : '(unknown)'}`, '');
-  lines.push('| id | shape | fallback | factual | citation | completeness | source quality | tool efficiency | pass | note |');
-  lines.push('|---|---|---|---|---|---|---|---|---|---|');
+  lines.push('| id | shape | fallback | factual | citation | completeness | source quality | tool efficiency | pass | cost | note |');
+  lines.push('|---|---|---|---|---|---|---|---|---|---|---|');
   for (const r of results) {
     const s = r.verdict?.scores ?? {};
     const pass = r.verdict ? (r.verdict.pass ? '✓' : '✗') : '—';
     const note = r.error ? r.error.replace(/\|/g, '/').slice(0, 120) : r.verdict ? '' : 'unparseable verdict';
-    lines.push(`| ${r.id} | ${r.shape} | ${r.fallback ? 'yes' : 'no'} | ${fmt(s.factual)} | ${fmt(s.citation)} | ${fmt(s.completeness)} | ${fmt(s.sourceQuality)} | ${fmt(s.toolEfficiency)} | ${pass} | ${note} |`);
+    lines.push(`| ${r.id} | ${r.shape} | ${r.fallback ? 'yes' : 'no'} | ${fmt(s.factual)} | ${fmt(s.citation)} | ${fmt(s.completeness)} | ${fmt(s.sourceQuality)} | ${fmt(s.toolEfficiency)} | ${pass} | ${r.cost ? '$' + r.cost.toFixed(2) : '—'} | ${note} |`);
   }
   const scored = results.filter((r) => r.verdict);
   lines.push('');
@@ -154,6 +167,8 @@ export function buildSummary(results, env) {
   } else {
     lines.push('**No case produced a scorable verdict.**');
   }
+  const spent = results.reduce((sum, r) => sum + (r.cost || 0), 0);
+  if (spent) lines.push(`**Total cost:** $${spent.toFixed(2)} (lead + judge)`);
   const unscored = results.length - scored.length;
   if (unscored) lines.push(`**Unscored:** ${unscored} (harness errors or unparseable verdicts — not counted as failures)`);
   return lines.join('\n') + '\n';
@@ -204,9 +219,10 @@ function runJudge(prompt, { model, timeout, disabled }) {
     maxBuffer: 16 * 1024 * 1024,
   });
   try {
-    return JSON.parse(res.stdout).result ?? '';
+    const out = JSON.parse(res.stdout);
+    return { text: out.result ?? '', cost: out.total_cost_usd ?? 0 };
   } catch {
-    return '';
+    return { text: '', cost: 0 };
   }
 }
 
@@ -239,7 +255,7 @@ function main() {
     if (!tools.length) tools = initTools(lead.stream);
     const runDir = newestRunDir(path.join(lead.cwd, '.condux/research'), lead.since);
     if (!runDir) {
-      results.push({ ...base, error: lead.error || 'no report.md written' });
+      results.push({ ...base, cost: runCost(lead.stream), error: lead.error || 'no report.md written' });
       continue;
     }
     const notesDir = path.join(runDir, 'notes');
@@ -247,8 +263,8 @@ function main() {
       ? fs.readdirSync(notesDir).filter((f) => f.endsWith('.md')).map((f) => ({ name: f, text: fs.readFileSync(path.join(notesDir, f), 'utf8') }))
       : [];
     const report = fs.readFileSync(path.join(runDir, 'report.md'), 'utf8');
-    const verdict = parseVerdict(runJudge(judgePrompt({ query: c.query, report, notes }), { model: judgeModel, timeout, disabled }));
-    results.push({ ...base, runDir, verdict });
+    const judge = runJudge(judgePrompt({ query: c.query, report, notes }), { model: judgeModel, timeout, disabled });
+    results.push({ ...base, runDir, verdict: parseVerdict(judge.text), cost: runCost(lead.stream) + judge.cost });
   }
 
   const summary = buildSummary(results, { host: 'claude', tools, plugin: `${pluginDir} (condux ${version})`, disabledPlugins: disabled });
