@@ -1,0 +1,7 @@
+[
+  { "id": "inferred-comparison", "expect": "ask", "query": "tanstack query vs swr — which should we use for an app with lots of optimistic updates?" },
+  { "id": "inferred-survey", "expect": "ask", "query": "how do other monorepos handle versioning for independently installable plugins?" },
+  { "id": "inferred-options", "expect": "ask", "query": "what are the options for auth on cloudflare workers these days?" },
+  { "id": "single-fact", "expect": "direct", "query": "does vitest support the --shard flag?" },
+  { "id": "single-api", "expect": "direct", "query": "what's the signature of zod's .max() on strings?" }
+]

@@ -320,66 +320,12 @@ Found 2026-09-22 in the mobile eval (`skills/toolkit-research-frontier/reference
   - Only subagent-execution owns ticking. Give it to CP-2 or preflight, or drop the checklist from the inline path.
 - **Coders skip house style (B6).** 4 of 9 coder subagents in the kickoff made 60 edits without loading coding-directive. Coder briefs should require the load, or inline the enforced tier.
 
-### 94. Deep-research orchestration — Research-mode parity for condux (LARGE) (2026-10-06)
+### 99. scout cannot fetch under context-mode — WebFetch redirect vs agent tool allowlists (2026-10-08)
 
-Claude.ai Research mode = lead agent plans, spawns parallel subagents with distinct briefs, synthesizes, then a citation pass (~15× chat tokens). Our `researcher` is a single-library API lookup (stop at first source, fixed reference card) and subagents can't nest, so it can't play lead. Parity needs a main-session-orchestrated flow with researcher instances as workers. Opus on researcher (condux 2.34.0) improves lookups but does not close this gap. Route via /workflow as LARGE (discovery → plan). Source: 2026-10-04 subagent model audit; primary source to read: Anthropic's "How we built our multi-agent research system" (audit only saw secondhand summaries).
+scout (and researcher) carry a `tools:` allowlist. context-mode's PreToolUse hook redirects WebFetch to its own `ctx_*` MCP tools, which no allowlisted agent can call — so on a machine with context-mode, every scout fetch fails and research degrades to search snippets (confirmed 2026-10-08 in a headless smoke check; specs/research-orchestration quirks Q4). Options to weigh: whether agent `tools:` accepts MCP wildcards, a context-mode exclusion for subagents, or documenting the conflict. The #98 quality baseline ran with context-mode disabled for this reason.
 
-#### Status 2026-10-07 — orchestration already exists as `anthropic-skills:deep-research`; #94 is a routing decision, not a build
+### 100. Re-evaluate explorer on Haiku 5.5 (2026-10-08)
 
-Read the primary source (https://www.anthropic.com/engineering/multi-agent-research-system) and the installed `anthropic-skills:deep-research` skill.
-
-**The skill is the flow this item asked for.** Main session acts as coordinator and does no research itself. It decomposes the query using a 1 / 3 / 4 / 5 / 6+ researcher table (3 by default) and spawns parallel foreground `general-purpose` workers. Each worker gets a brief with objective, key questions, suggested sources, constraints, and an output path. Workers write notes to disk as `Takeaway / Cited Findings / Inferences / Gaps`; any claim without a URL is demoted to Gaps. There is at most one gap-filling round. A single report-writer subagent then synthesizes a BLUF + signpost-section report with inline `([Source](URL))`, and drops any claim that has no source.
-
-**Where it diverges from the production system in the post:**
-- No separate CitationAgent. Citation discipline is pushed into the worker note format instead.
-- Hard caps: one extra round, and about 15 tool calls per worker.
-- Spawns are synchronous. The post names synchronous execution as its own bottleneck.
-- Workers are generic, not specialized.
-
-**Numbers from the post:**
-- Opus 4 lead + Sonnet 4 workers beat a single Opus 4 by 90.2% on Anthropic's internal research eval.
-- Cost is about 15× chat tokens.
-- Token usage alone explains 80% of BrowseComp variance; with tool-call count and model choice, the three factors explain 95%.
-- Effort scaling: 1 agent with 3–10 calls; 2–4 subagents with 10–15 calls each; 10+ subagents for complex research.
-- Parallel tool calling cut research time by up to 90%.
-- Evaluation: an LLM judge in a single call (0.0–1.0 score plus pass/fail); about 20 queries is enough early on.
-- The post's own rule: multi-agent is a poor fit for most coding work, which has fewer parallel tasks and more shared context.
-- Not yet read: the actual prompts, linked from the post via the Cookbook (`patterns-agents-basic-workflows`).
-
-**Consequence.** `condux:researcher` should stay the API reference-card tool. The worker brief the post prescribes (objective + output format + source guidance + boundaries) is what deep-research's worker reference already is. Bending researcher into that role would fight its own contract: stop at the first source, don't expand scope, never edit project files.
-
-**Tensions to resolve** (follow-up candidates, not filed):
-- Routing: the condux routing rule says research routes nowhere, so a deep-research request gets no hand-off. Decide whether workflow/routing should name the skill.
-- Rule conflict: deep-research mandates `subagent_type="general-purpose"`. condux's subagent-deployment says a generic-subagent request resolves to one of the four named agents. One of them has to yield.
-- Artifact locations: deep-research writes `research_notes/` and `reports/` into CWD. That breaks the toolkit contract (working state → `<git-root>/.<plugin>/`, durable → `specs/`).
-- Host coverage: deep-research is a claude.ai-synced skill and only reaches Claude Code. Codex, OpenCode, and Cursor condux users get nothing. That is the one remaining argument for a condux-owned port; its license and redistribution terms are unchecked.
-
-**Tier:** drop from LARGE to a MEDIUM decision item. Only a cross-host port would bring it back to LARGE.
-
-**Split 2026-10-07:** the four tensions are now #95 (routing), #96 (general-purpose conflict), #97 (CWD artifacts), #98 (cross-host port). #94 stays open as the umbrella until they settle.
-
-### 95. Route deep-research requests to anthropic-skills:deep-research (split from #94) (2026-10-07)
-
-condux routing says research "routes nowhere", so a deep-research request gets no hand-off even when `anthropic-skills:deep-research` is installed. Decide whether `skills/workflow/hooks/routing.md` (or workflow) should name it, and whether a missing install degrades to the main session researching directly. Split from #94; findings in its 2026-10-07 status block.
-
-#### Status 2026-10-07 — optional-only, and blocked on #98
-
-condux cannot declare deep-research as a dependency. It reaches this machine as a claude.ai-synced skill (manifest `source: "anthropic-example"`), not through any marketplace condux could list, and it never reaches Codex, OpenCode, or Cursor. Any routing must be conditional: hand off when it is installed, otherwise research in the main session. If #98 ships a condux-owned flow, routing points there instead and this item mostly dissolves, so decide #98 first.
-
-### 97. deep-research litters CWD with research_notes/ and reports/ (split from #94) (2026-10-07)
-
-deep-research writes `research_notes/<title>/` and `reports/<title>.md` into CWD — inside a repo that is the repo root, which breaks the toolkit artifact contract (working state → `<git-root>/.<plugin>/`, gitignored; durable → `specs/`). We cannot edit the skill; options are a routing-side instruction to run it from a scratch dir, or redirecting it where we hand off. Split from #94.
-
-#### Status 2026-10-07 — rides with #95
-
-Only bites when condux hands off to deep-research, so it ships with #95 or not at all. If #98 builds a condux-owned flow, that flow writes to `.condux/research/` by construction and this item closes with it.
-
-### 98. Cross-host deep-research port for Codex/OpenCode/Cursor (split from #94) (2026-10-07)
-
-deep-research is a claude.ai-synced skill and reaches Claude Code only; condux on Codex, OpenCode, and Cursor has no Research-mode equivalent. This is the one remaining case for a condux-owned port (main session as lead, parallel workers, cited notes on disk, report writer, optionally the post's separate citation pass). Check license/redistribution terms before anything else; a port is LARGE via /workflow. Split from #94.
-
-#### Status 2026-10-07 — license check: no copying; a clean-room build only
-
-deep-research has no published license. The synced copy ships no LICENSE file (manifest `source: "anthropic-example"`), and the skill is not in the public `anthropics/skills` repo, which has no repo-level license either. So its prompt text cannot be vendored or adapted line by line. A condux version has to be written fresh from the public design in Anthropic's multi-agent research post (orchestrator-worker split, effort-scaling rules, delegation briefs, filesystem hand-off, citation pass), in our own words and to our own contracts. That is also the better fit: it can use a dedicated worker agent instead of an injected `general-purpose` prompt, and write to `.condux/research/` instead of CWD. Now the only path to cross-host Research-mode parity; #95 and #97 wait on it.
+condux moved explorer off haiku in #177 (2026-10-07): sonnet at low effort finished in fewer turns than Haiku 4.5, and turn count costs more than token price. Haiku 5.5 shipped 2026-10-07 (`claude-haiku-5-5`, $0.10/$0.50 per MTok up to 100K), and the `haiku` alias now resolves to it. That reasoning predates the model, so re-measure. explorer has no quality harness yet, so this needs a small one (fixed codebase questions, turn count and answer accuracy) before any switch. The scout A/B under #98 is the template.
 
 ## Loose threads

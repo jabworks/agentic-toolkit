@@ -27,6 +27,7 @@
         "live-verification",
         "plan-review",
         "preflight",
+        "research",
         "root-cause-analysis",
         "subagent-deployment",
         "subagent-execution",
@@ -39,7 +40,7 @@
         "skills/workflow/hooks": "hooks"
       },
       "marketplace": {
-        "description": "Lean agentic workflow skills: tiered task routing, discovery gate, design-time wireframes and diagrams, lean plan drafting, opt-in tests-first, subagent coordination, end-of-task quality gate, on-request code review, preflight done-check, root-cause-first debugging, and feature spec management."
+        "description": "Lean agentic workflow skills: tiered task routing, discovery gate, design-time wireframes and diagrams, lean plan drafting, opt-in tests-first, subagent coordination, end-of-task quality gate, on-request code review, preflight done-check, root-cause-first debugging, cited multi-source research, and feature spec management."
       }
     },
     "spec-browser": {
@@ -201,6 +202,10 @@
           "blurb": "Fan out independent tasks across named agents in one message — ad-hoc, not a formal plan"
         },
         {
+          "skill": "research",
+          "blurb": "Cited multi-source research for dev questions — the main session leads, parallel `scout` agents write cited notes, and a decision-ready report lands in `.condux/research/`; sequential where no agents exist"
+        },
+        {
           "skill": "finalize",
           "blurb": "End-of-task quality gate — typecheck → lint → format → test, once, stop on first failure"
         },
@@ -310,7 +315,7 @@
         },
         {
           "entry": "`condux` (plugin)",
-          "blurb": "agentic workflow bundle (workflow, discovery, blueprint, draft-plan, test-first-development, subagent-execution, subagent-deployment, finalize, live-verification, code-review, preflight, root-cause-analysis, plan-review, technical-spec, condux-doctor)"
+          "blurb": "agentic workflow bundle (workflow, discovery, blueprint, draft-plan, test-first-development, subagent-execution, subagent-deployment, finalize, live-verification, code-review, preflight, root-cause-analysis, plan-review, technical-spec, research, condux-doctor)"
         },
         {
           "entry": "`docket` (plugin)",

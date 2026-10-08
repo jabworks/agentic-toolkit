@@ -169,6 +169,10 @@ export function translateAgent(text, label) {
 
 const CLAUDE_ROUTING_VERB = '`/condux:workflow`';
 export const OPENCODE_ROUTING_VERB = 'the `workflow` skill — `skill(name="workflow")`';
+// Every `/condux:<skill>` the payload names gets the same rewrite — workflow is
+// the anchor, but the payload also routes research to `/condux:research`.
+const CLAUDE_SKILL_VERB = /`\/condux:([a-z][a-z0-9-]*)`/g;
+const opencodeVerb = (name) => `the \`${name}\` skill — \`skill(name="${name}")\``;
 const ROUTING_CLOSE = '</EXTREMELY_IMPORTANT>';
 const OPENCODE_ROUTING_MAPPING =
   '\n**On OpenCode, a `/name` mention of any condux skill means the `skill` tool:** ' +
@@ -180,7 +184,7 @@ export function transformRouting(text, label) {
   if (!text.includes(ROUTING_CLOSE)) throw new Error(`${label}: routing payload has no ${ROUTING_CLOSE} anchor`);
   // Function-form replacements for the same reason as transformSkill.
   return text
-    .replaceAll(CLAUDE_ROUTING_VERB, () => OPENCODE_ROUTING_VERB)
+    .replaceAll(CLAUDE_SKILL_VERB, (_, name) => opencodeVerb(name))
     .replace(ROUTING_CLOSE, () => OPENCODE_ROUTING_MAPPING + ROUTING_CLOSE);
 }
 

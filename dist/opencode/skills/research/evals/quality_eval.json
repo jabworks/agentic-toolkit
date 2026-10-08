@@ -1,0 +1,14 @@
+[
+  { "id": "server-state-libs", "shape": "comparison", "query": "TanStack Query vs SWR vs RTK Query for a React app with heavy optimistic updates and offline support — which fits best, and why?" },
+  { "id": "ts-orms", "shape": "comparison", "query": "Drizzle vs Prisma vs Kysely for a Postgres-backed TypeScript service: migrations, type safety, edge runtime support, and performance." },
+  { "id": "js-linters", "shape": "comparison", "query": "Oxlint vs Biome vs ESLint for a large TypeScript monorepo in 2026: rule coverage, speed, plugin support, and migration cost." },
+  { "id": "monorepo-tools", "shape": "comparison", "query": "Turborepo vs Nx vs moon for a pnpm monorepo with about 30 packages: caching, task graphs, and remote cache options." },
+  { "id": "edge-auth", "shape": "survey", "query": "What are the current options for authentication on edge runtimes (Cloudflare Workers, Vercel Edge), and what are the tradeoffs of each?" },
+  { "id": "plugin-versioning", "shape": "survey", "query": "How do popular open-source monorepos version and release independently installable plugins or packages?" },
+  { "id": "design-tokens", "shape": "survey", "query": "How do open-source design systems ship design tokens to both web and React Native?" },
+  { "id": "rsc-support", "shape": "survey", "query": "What is the current state of React Server Components support across Next.js, Remix/React Router, Waku, and TanStack Start?" },
+  { "id": "local-first-sync", "shape": "survey", "query": "What are teams using for local-first sync in web apps (CRDT libraries and sync engines), and what are the tradeoffs?" },
+  { "id": "test-runners-fallback", "shape": "comparison", "fallback": true, "query": "Vitest vs Jest vs the Node.js built-in test runner for a TypeScript library: speed, ESM support, mocking, and coverage." },
+  { "id": "feature-flags-fallback", "shape": "survey", "fallback": true, "query": "What are the main open-source feature-flag platforms, and how do they compare on self-hosting, SDK coverage, and pricing?" },
+  { "id": "bundlers-fallback", "shape": "comparison", "fallback": true, "query": "Vite vs Rspack vs Turbopack for a large React application: build speed, plugin ecosystem, and maturity." }
+]

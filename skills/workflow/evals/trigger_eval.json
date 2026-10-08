@@ -21,7 +21,7 @@
   { "query": "how does condux work", "should_trigger": true, "expected_skill": "workflow" },
   { "query": "explain the soft gates", "should_trigger": true, "expected_skill": "workflow" },
   { "query": "can I skip workflow and just start", "should_trigger": true, "expected_skill": "workflow" },
-  { "query": "what are the four named agents", "should_trigger": true, "expected_skill": "workflow" },
+  { "query": "what are the five named agents", "should_trigger": true, "expected_skill": "workflow" },
   { "query": "who wins, my CLAUDE.md or condux rules", "should_trigger": true, "expected_skill": "workflow" },
   { "query": "why does condux ban mid-task test runs", "should_trigger": true, "expected_skill": "workflow" },
   { "query": "what should we improve next in the toolkit repo", "should_trigger": true, "expected_skill": "toolkit-research-frontier" },

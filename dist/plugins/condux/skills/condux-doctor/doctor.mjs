@@ -363,7 +363,7 @@ function probeOpencode(hosts) {
   };
 }
 
-// The four specialist agents are plugin-level and reached by their own sync
+// The five specialist agents are plugin-level and reached by their own sync
 // step, not by the skill copy — the mirror that drifted in 6ba6572.
 function probeAgents() {
   const dir = firstExisting([
@@ -374,11 +374,11 @@ function probeAgents() {
   if (!dir) return { host: 'all', status: 'absent', detail: 'no agents/ directory — not a plugin install' };
 
   const agents = fs.readdirSync(dir).filter((entry) => entry.endsWith('.md'));
-  const expected = ['coder', 'explorer', 'planner', 'researcher'];
+  const expected = ['coder', 'explorer', 'planner', 'researcher', 'scout'];
   const missing = expected.filter((name) => !agents.includes(`${name}.md`));
 
   return missing.length === 0
-    ? { host: 'all', status: 'done', detail: `all four specialist agents present (${dir === path.join(PLUGIN_ROOT, 'agents') ? 'plugin-level' : 'source tree'})` }
+    ? { host: 'all', status: 'done', detail: `all five specialist agents present (${dir === path.join(PLUGIN_ROOT, 'agents') ? 'plugin-level' : 'source tree'})` }
     : { host: 'all', status: 'broken', detail: `missing agent definitions: ${missing.join(', ')}`, fix: 'reinstall the plugin' };
 }
 

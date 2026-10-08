@@ -18,7 +18,7 @@ Execute a plan using specialist agents. Default is to do the work yourself. Spaw
 ## Core Principle
 
 **Agents must be pre-defined.** Spawn only the named agents that ship with condux
-(`explorer`, `researcher`, `planner`, `coder`). Never invent a generic subagent by
+(`explorer`, `researcher`, `planner`, `coder`, `scout`). Never invent a generic subagent by
 injecting a system prompt into a general-purpose one — an agent whose behaviour is
 written at call time has no reviewable contract, no consistent tool restrictions,
 and no way to improve across sessions.

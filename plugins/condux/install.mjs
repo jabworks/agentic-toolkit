@@ -231,7 +231,7 @@ function registerCodex(codexHome, dry) {
   if (flag.status === 'broken') return { host: 'codex', ...flag };
 
   // Codex plugins cannot bundle agents — the plugin format has no agents/
-  // component — so the four specialist agents are standalone TOMLs either way.
+  // component — so the five specialist agents are standalone TOMLs either way.
   if (!AGENT_INSTALLER) {
     return { host: 'codex', status: 'broken', detail: 'install-codex-agents.mjs not found beside this plugin', fix: 'reinstall the plugin' };
   }
@@ -240,7 +240,7 @@ function registerCodex(codexHome, dry) {
   if (dry) agentArgs.push('--dry-run');
   const agents = runSub(process.execPath, agentArgs, 'the Codex agent installer');
   if (!agents.ok) return { host: 'codex', status: 'broken', detail: agents.why };
-  steps.push(dry ? 'would install the four specialist agents' : 'installed the four specialist agents');
+  steps.push(dry ? 'would install the five specialist agents' : 'installed the five specialist agents');
 
   // The Stop hook ships in hooks/codex-hooks.json for a plugin install, so the
   // script is redundant there and load-bearing only without a manifest.
@@ -279,7 +279,7 @@ function unregisterCodex(codexHome, dry) {
     if (dry) args.push('--dry-run');
     const agents = runSub(process.execPath, args, 'the Codex agent installer');
     if (!agents.ok) return { host: 'codex', status: 'broken', detail: agents.why };
-    steps.push(dry ? 'would remove the four specialist agents' : 'removed the four specialist agents');
+    steps.push(dry ? 'would remove the five specialist agents' : 'removed the five specialist agents');
   } else {
     // `npx skills add` ships bare skill trees, so a missing delegate is an
     // install shape, not a failure.

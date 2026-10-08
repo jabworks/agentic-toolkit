@@ -40,7 +40,7 @@ which bundles these skills and self-registers them on `config.skills.paths`:
 ```
 
 **Codex needs two more things**, and no plugin can do either for you: Codex's
-experimental hooks feature has to be enabled, and the four specialist agents are
+experimental hooks feature has to be enabled, and the five specialist agents are
 standalone TOMLs because the Codex plugin format has no `agents/` component.
 
 ```bash
@@ -120,7 +120,7 @@ data edit.
 
 ---
 
-## The 15 skills
+## The 16 skills
 
 Start with `/workflow` — it is both the entry point and the operating manual.
 
@@ -140,11 +140,13 @@ Start with `/workflow` — it is both the entry point and the operating manual.
 | `finalize` | The single end-of-task quality gate: typecheck → lint → format → test, in order, once. |
 | `code-review` | Diagnostic report by severity. On request only; never auto-triggers, never fixes. |
 | `live-verification` | Drives the real UI, endpoint, or CLI and checks each claim against observed behaviour before you push. |
+| `research` | Cited multi-source research for dev questions — parallel `scout` agents write cited notes, and a decision-ready report lands in `.condux/research/`. |
 | `condux-doctor` | Is condux actually working on this host? Runs the SessionStart hook, resolves the Codex Stop hook, checks the agents shipped. |
 
-Four named specialist agents ship alongside them: `explorer` (read-only codebase
-navigation), `researcher` (external API verification), `planner` (design → plan), and
-`coder` (executes a provided plan). Condux implements directly by default — spawning
+Five named specialist agents ship alongside them: `explorer` (read-only codebase
+navigation), `researcher` (external API verification), `planner` (design → plan),
+`coder` (executes a provided plan), and `scout` (one angle of a `/condux:research`
+survey). Condux implements directly by default — spawning
 an agent requires a concrete justification.
 
 ---

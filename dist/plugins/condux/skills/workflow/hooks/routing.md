@@ -22,7 +22,9 @@ still a dev task, so it routes through workflow, which loads
 inference is the router's job, not yours. The only valid bypasses are explicit
 user instructions — "skip workflow", "just do it", "I've already planned this".
 
-**Not everything is a dev task.** Questions, explanations, code reading, research,
-and one-line factual answers route nowhere — answer them directly. Routing a
-conversation through a workflow is as wrong as skipping the router on a feature.
+**Not everything is a dev task.** Questions, explanations, code reading, quick
+lookups, and one-line factual answers route nowhere — answer them directly.
+Multi-source research (comparing options, surveying how others solve X) goes to
+`/condux:research`. Routing a conversation through a workflow is as wrong as
+skipping the router on a feature.
 </EXTREMELY_IMPORTANT>

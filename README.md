@@ -123,7 +123,7 @@ codex plugin add toolkit-ops@jabworks-agentic-toolkit
 ### OpenCode — condux plugin + merged-trigger skill variants
 
 For the **condux** workflow, one plugin line is the whole install. The
-[`@jabworks/condux`](packages/condux-opencode/) plugin bundles the 15 condux
+[`@jabworks/condux`](packages/condux-opencode/) plugin bundles the 16 condux
 skills, injects the specialist agents (coder / explorer / planner / researcher),
 and wires an opt-in plan-review listener:
 
@@ -192,7 +192,7 @@ Verified end-to-end 2026-08-14 (Cursor on Windows, WSL remote):
 | Docket MCP server | ✅ works — auto-imported from an existing Claude Code plugin install, or manually via `.cursor/mcp.json` (see [docket INSTALL.md](dist/plugins/docket/server/INSTALL.md)) |
 | Docket CLI fallback | ✅ works as-is (dependency-free) |
 | Condux `/workflow` routing | ⚠️ degrades — no SessionStart hook on Cursor, so routing relies on the skill descriptions instead of the injected routing rule |
-| plan-review auto-capture, named agents (explorer/researcher/planner/coder) | ❌ absent — Cursor has no ExitPlanMode/Stop hook or custom-subagent surface |
+| plan-review auto-capture, named agents (explorer/researcher/planner/coder/scout) | ❌ absent — Cursor has no ExitPlanMode/Stop hook or custom-subagent surface |
 
 Bonus: if Claude Code is installed on the same machine, Cursor picks up its
 plugin ecosystem by itself — already-installed plugins (skills and MCP
@@ -315,9 +315,10 @@ agents / revise), after implementation (verify & finalize / code review / keep
 building), and after everything is green (review / commit / release / done).
 The agent never auto-advances past a checkpoint; SMALL runs linear with no menus.
 
-**Named agents**: four specialists ship with the bundle — `explorer` (read-only
+**Named agents**: five specialists ship with the bundle — `explorer` (read-only
 codebase navigation), `researcher` (external API/library verification),
-`planner` (design → executable plan), and `coder` (executes a provided plan).
+`planner` (design → executable plan), `coder` (executes a provided plan), and
+`scout` (one angle of a `/condux:research` survey).
 Pipeline: explorer/researcher gather → planner plans → coder executes →
 finalize validates. The default is still to implement directly — agents are
 opt-in at checkpoints or justified by genuinely parallel work.
@@ -336,6 +337,7 @@ opt-in at checkpoints or justified by genuinely parallel work.
 | [/test-first-development](./skills/test-first-development/) | Opt-in tests-first — one upfront consent, then red-green-refactor; asks before editing existing specs |
 | [/subagent-execution](./skills/subagent-execution/) | Named specialist agents for LARGE plans, only when justified, never to fill time |
 | [/subagent-deployment](./skills/subagent-deployment/) | Fan out independent tasks across named agents in one message — ad-hoc, not a formal plan |
+| [/research](./skills/research/) | Cited multi-source research for dev questions — the main session leads, parallel `scout` agents write cited notes, and a decision-ready report lands in `.condux/research/`; sequential where no agents exist |
 | [/finalize](./skills/finalize/) | End-of-task quality gate — typecheck → lint → format → test, once, stop on first failure |
 | [/live-verification](./skills/live-verification/) | Run the change and watch it work — drives the real UI or endpoint after finalize, light mode then dark, reports claim → evidence → verdict and names what it couldn't verify |
 | [/code-review](./skills/code-review/) | On-request diagnostic report (Critical/Important/Minor), never auto-triggers, never fixes |
