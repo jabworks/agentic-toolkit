@@ -34,8 +34,8 @@
 // touched.
 //
 // --disable-plugins turns installed plugins off for every lead and judge run
-// via a settings override, e.g. context-mode@context-mode, whose WebFetch
-// redirect blocks allowlisted agents (specs/research-orchestration quirks Q4).
+// via a settings override, e.g. context-mode@context-mode. The first baseline
+// disabled it; it no longer needs to be (specs/research-orchestration quirks Q4).
 // The summary records what was disabled, so the baseline says what it measured.
 //
 // If condux is also installed from the marketplace, --plugin-dir loads a

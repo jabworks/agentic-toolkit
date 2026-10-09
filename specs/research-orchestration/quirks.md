@@ -5,7 +5,7 @@
 | Q1 | scout can write anywhere, not only its notes file | Claude Code `tools:` cannot path-restrict Write; Codex workspace-write sandbox | medium | partial |
 | Q2 | Codex has no scout until the agent installer is re-run | upgrading condux on Codex | low | yes |
 | Q3 | Cursor always runs the sequential fallback | Cursor has no named agents (cursor-channel Q7) | low | yes |
-| Q4 | Named search and fetch tools may be intercepted or absent | host differences; plugins such as context-mode redirect WebFetch | medium | yes |
+| Q4 | Named search and fetch tools may be intercepted, deferred, or absent | host differences; plugins that hook tool calls | low | yes |
 | Q5 | deep-research and condux:research compete for the same asks on Claude Code | both installed; overlapping descriptions | low | partial |
 
 ## Q1 — Write is not path-restricted
@@ -43,6 +43,8 @@
 **Trigger:** host differences, or plugins that hook tool calls.
 **Cause:** tool names are not portable across hosts and setups.
 **Mitigation:** yes — the scout contract says to use whatever search and fetch tools the host exposes, and the quality baseline records its tool environment.
+
+**Re-checked 2026-10-09 (docket #99):** context-mode does **not** block scouts. Since its PR #834 (2026-06-21, upstream issue #794), the WebFetch redirect is skipped whenever the hook payload carries `agent_id`/`agent_type`, so any subagent fetches directly. With context-mode 1.0.166 enabled, a scout's single WebFetch returned page content both interactively and under the runner's headless `claude -p --plugin-dir` setup — no denial, no hook message. Each run had a control: context-mode's MCP server reported `connected`, and the lead's own WebFetch in the same session was redirected. On Claude Code, WebFetch is a *deferred* tool inside the scout: it loads the schema with `ToolSearch` (`select:WebFetch`) first, which the allowlist already grants. The 2026-10-08 smoke-check failure that disabled context-mode for the baseline did not reproduce, and its transcripts were not kept, so its cause is unknown.
 
 ## Q5 — Overlap with deep-research
 

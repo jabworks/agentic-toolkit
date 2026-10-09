@@ -320,10 +320,6 @@ Found 2026-09-22 in the mobile eval (`skills/toolkit-research-frontier/reference
   - Only subagent-execution owns ticking. Give it to CP-2 or preflight, or drop the checklist from the inline path.
 - **Coders skip house style (B6).** 4 of 9 coder subagents in the kickoff made 60 edits without loading coding-directive. Coder briefs should require the load, or inline the enforced tier.
 
-### 99. scout cannot fetch under context-mode — WebFetch redirect vs agent tool allowlists (2026-10-08)
-
-scout (and researcher) carry a `tools:` allowlist. context-mode's PreToolUse hook redirects WebFetch to its own `ctx_*` MCP tools, which no allowlisted agent can call — so on a machine with context-mode, every scout fetch fails and research degrades to search snippets (confirmed 2026-10-08 in a headless smoke check; specs/research-orchestration quirks Q4). Options to weigh: whether agent `tools:` accepts MCP wildcards, a context-mode exclusion for subagents, or documenting the conflict. The #98 quality baseline ran with context-mode disabled for this reason.
-
 ### 100. Re-evaluate explorer on Haiku 5.5 (2026-10-08)
 
 condux moved explorer off haiku in #177 (2026-10-07): sonnet at low effort finished in fewer turns than Haiku 4.5, and turn count costs more than token price. Haiku 5.5 shipped 2026-10-07 (`claude-haiku-5-5`, $0.10/$0.50 per MTok up to 100K), and the `haiku` alias now resolves to it. That reasoning predates the model, so re-measure. explorer has no quality harness yet, so this needs a small one (fixed codebase questions, turn count and answer accuracy) before any switch. The scout A/B under #98 is the template.
