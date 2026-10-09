@@ -151,7 +151,7 @@ UIs), the combined menu must still carry the full CP-1 option set.
 
 | Option | What it does |
 |---|---|
-| **Verify it live** *(recommended when the change has a runnable surface)* | Load `live-verification` — drive the real UI or endpoint and check each claim against observed behaviour |
+| **Verify it live** *(recommended when the change has a runnable surface — an app on an emulator counts)* | Load the `live-verification` skill and follow it — including on a mobile app: drive the real UI, endpoint or emulator, check each claim against observed behaviour, and write its report |
 | **Code review** *(recommended)* | `/code-review` the diff before merging |
 | **Commit** | Load the `git-commit` skill if installed (conventional message from the diff, safe staging); otherwise follow the repo's commit conventions |
 | **Cut a release** | Load the `release` skill if installed — machinery detection, dry-run plan, then tag → push → GitHub release; otherwise follow the repo's release conventions |
@@ -269,6 +269,7 @@ Stop if you catch yourself doing any of these:
 | Silently skipping discovery on a LARGE task | Ask — it's a soft gate, not a free pass |
 | Rewriting a test spec to make it pass | Stop and ask — never silently edit specs |
 | Auto-running code-review, commits, or agents | They're checkpoint choices; run only when picked |
+| Verifying live without loading `live-verification` | Load it — its `report.md` is the evidence (9 of 11 ad-hoc runs in a mobile eval left none) |
 | Auto-advancing past a checkpoint on MEDIUM/LARGE | The user owns every transition |
 | Expanding scope past the confirmed tier | Stop, report, re-confirm |
 

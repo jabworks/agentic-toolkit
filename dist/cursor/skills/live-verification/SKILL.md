@@ -20,7 +20,7 @@ between "the pipeline passed" and "I watched it do the thing".
 
 | Change touches | Run this? |
 |---|---|
-| A rendered surface — page, component, story, dialog | **Yes** |
+| A rendered surface — page, component, story, dialog, a mobile app screen | **Yes** |
 | An endpoint, procedure, or CLI a human will call | **Yes** |
 | Behaviour behind a flag or a state the tests don't reach | **Yes** |
 | Types, docs, comments, config with no runtime effect | No — say so and skip |
@@ -42,6 +42,14 @@ Do not assume a dev server. In order:
 
 Start it in the background, wait for it to actually serve (poll the URL — do
 not `sleep` and hope), and note the URL in the report.
+
+**Mobile app: load the native recipe.** If the project is a mobile app —
+finalize's native-change test: an `expo` or `react-native` dependency, or a
+committed `android/` or `ios/` — read `references/native-app.md` now. Its
+target order replaces the list above; it picks the driving rung once (adb,
+`agent-device`, mobile-mcp, Expo's skills — recommended, never installed) and
+resolves `adb` to an absolute path. The claims, verdicts and report below are
+unchanged.
 
 **Mobile app: rebuild first when the change is native.** If finalize's
 `Native` line said *native rebuild* (or the diff touches the native layer —
@@ -81,6 +89,12 @@ Order of checks, because this is where the defects were:
 4. **Keyboard.** Tab to it, Escape out of it, confirm focus lands somewhere
    sensible.
 
+**Mobile app:** the same four checks, translated — both themes via
+`cmd uimode night`; pressed, disabled and in-flight states in place of hover;
+the failure path in airplane mode; the system back (`keyevent 4`) in place of
+Tab and Escape, which must close what it opened. Every tap follows
+`native-app.md`'s stale-UI rules.
+
 ### Step 4 — Capture evidence
 
 One artifact per claim that has a visual or observable outcome — screenshot,
@@ -90,6 +104,12 @@ produces lives inside that dir, nothing at the verification root. Name each
 evidence file for the claim it supports and reference it from the report's
 claim table. Console errors and failed network requests seen along the way
 get reported even when they belong to another feature.
+
+**Mobile app:** evidence is a screenshot you have read back, or a recording
+for motion, and `native-app.md`'s log sweep stands in for console and network.
+A claim the emulator cannot settle — haptics, camera, push, feel — gets the
+`device-only` verdict and a line under the report's `For the phone:`, never ✓.
+The report adds the `Device` and `Build` header keys.
 
 Then write `report.md` into the same dir, in the shape of
 `references/report-template.md` — every run writes one, including runs where
@@ -127,11 +147,16 @@ Wait timed out
 
 Two failed attempts on the same claim is the ceiling. Report and move on.
 
+On a mobile app, the device-side failures — an offline device, an emulator
+that won't boot, a stale binary — are in `native-app.md`'s part 8, under the
+same ceiling.
+
 ## Output Format
 
-The report shape — the fixed header table (Date / Target / Diff / Themes),
-the claim table (Claim | Evidence | Verdict), "Also seen", and the outcome
-line — lives in `references/report-template.md`, the canonical home. It also
+The report shape — the fixed header table (Date / Target / Diff / Themes,
+plus Device / Build on a native app run), the claim table (Claim | Evidence |
+Verdict), the phone checklist for `device-only` claims, "Also seen", and the
+outcome line — lives in `references/report-template.md`, the canonical home. It also
 carries the fallback shape for when nothing could be driven; that run still
 writes `report.md`, because an absent report is indistinguishable from a run
 that never happened. Fixed header keys and a fixed claim-table shape are what
@@ -142,7 +167,8 @@ make two runs of the same surface comparable.
 ```
 ✗ Reporting a claim as verified because the code looks right
 ✗ Inventing a screenshot, a response, or a result that wasn't observed
-✗ Installing a browser driver or scaffolding a test harness to get a result
+✗ Installing a browser or device driver, or scaffolding a test harness to get a result
+✗ Reporting a device-only claim as ✓
 ✗ sleep-then-check instead of polling for the condition
 ✗ Retrying the same selector more than twice
 ✗ Killing processes the run didn't start
