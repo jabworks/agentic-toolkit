@@ -35,8 +35,14 @@ for p in dist/plugins/*/; do
     fail=1
     continue
   fi
-  findings=$(echo "$out" | grep -c '❯' || true)
-  known=$(echo "$out" | grep -c "Unknown field 'interface'" || true)
+  # The validator's "ℹ Advice (does not change the verdict)" block lists its
+  # items with the same ❯ marker as warnings. Advice is not a finding: concord's
+  # README is told to add a Claude `/plugin install` line, but concord is
+  # Codex-only by design. Drop the block, from its header to the next
+  # unindented line, before counting.
+  verdict=$(echo "$out" | awk '/^ℹ Advice/ { skip = 1; next } skip && /^[^ ]/ { skip = 0 } !skip')
+  findings=$(echo "$verdict" | grep -c '❯' || true)
+  known=$(echo "$verdict" | grep -c "Unknown field 'interface'" || true)
   if [ "$findings" != "$known" ]; then
     echo "✘ $p has findings beyond the known interface warning:"
     echo "$out"

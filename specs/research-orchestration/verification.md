@@ -16,7 +16,7 @@ Evidence that `condux:research` does what `prd.md` claims, measured against cond
 | Plugin | `dist/plugins/condux` loaded with `--plugin-dir`, condux 2.35.0; the only condux copy loaded (verified in the init event) |
 | Lead / judge | opus / opus |
 | Scouts | sonnet (as shipped) |
-| Disabled plugins | `context-mode@context-mode` — its WebFetch redirect blocks every allowlisted agent (quirks Q4, docket #99) |
+| Disabled plugins | `context-mode@context-mode` — a 2026-10-08 smoke check saw scout fetches fail. That did not reproduce on 2026-10-09: context-mode skips its WebFetch redirect inside subagents (quirks Q4, docket #99), so later runs need not disable it |
 | Corpus | `skills/research/evals/quality_eval.json` — 12 questions: 9 normal, 3 fallback |
 
 ## Quality baseline

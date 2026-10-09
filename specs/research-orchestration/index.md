@@ -2,8 +2,8 @@
 
 > Research-mode parity for condux: a lead skill (`condux:research`) and a `scout` worker agent that produce cited, dev-tuned research reports on every host.
 
-**Last updated:** 2026-10-08
-**Commit:** PR #180
+**Last updated:** 2026-10-09
+**Commit:** PR #182
 **Status:** draft
 
 ## Contents
@@ -20,3 +20,4 @@
 ## Changelog
 - 2026-10-08 (PR #180): Initial spec, from the signed-off discovery (docket #98)
 - 2026-10-08 (PR #180): Depth gate (decision 7); verification.md; pass threshold set from the baseline
+- 2026-10-09 (PR #182): Q4 re-checked — context-mode skips its WebFetch redirect inside subagents, so scouts fetch fine; the baseline's disabled-plugin note corrected
