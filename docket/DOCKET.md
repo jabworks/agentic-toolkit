@@ -9,57 +9,6 @@ Stale open markers cost real sessions — closing means moving.
 
 ## Committed
 
-### 84. Build PRD authoring into condux — prd.md concern file, authored by discovery (follow-up to #83) (2026-09-17)
-
-**Why.** #83 evaluated the spec-related skills and signed off a shape on 2026-09-17: the PRD is a `prd.md` concern file in the technical-spec tree, authored by discovery's goal round as a §0 requirements card, written at sign-off, and read by the workflow router and preflight's drift check. No new skill. The whole design, its rejected alternatives, the touch list and five edge-case rules are in `specs/prd-authoring/` — start from `index.md`; do not re-derive.
-
-**The build, one PR** (`specs/prd-authoring/implementation.md` has the file table):
-
-1. technical-spec — `prd.md` template in `references/templates.md` (six sections, summary table first: problem · users · goals and non-goals · success metrics · scope · open questions), the SKILL.md layout block, `when_to_use` gains "save this PRD", "write up the requirements". `scaffold.sh` stays untouched.
-2. discovery — Step 1 ingests an external PRD, the existing-design check reads an in-tree one, Step 2 covers the six sections, Step 3 opens with the §0 card, Step 7's write-back adds `prd.md`; `references/design-template.md` and `references/spec-integration.md` follow; `when_to_use` gains "write a PRD", "product requirements", "what are we building and why".
-3. workflow router load list and preflight drift table — one row each.
-4. Trigger eval cases in the discovery and technical-spec `evals/trigger_eval.json`: positives for the new phrases, a negative that a PRD ask on a trivial change stays out of discovery.
-5. condux minor bump, bump commit last, `--write-changelog`, and a **minor** changeset for `@jabworks/condux`.
-
-**Done when.** The suite is green, the five quirks in `specs/prd-authoring/quirks.md` are flipped from `no` to their shipped state, and one real discovery run on this repo produces a `prd.md` that the drift check then reads.
-
-#### Status 2026-09-19 — promoted to Committed and built; held open for the end-to-end run
-
-Harvey said go on 2026-09-19. Built as PR #162: technical-spec carries the `prd.md` template, discovery authors it as a §0 requirements card and writes it at sign-off, the workflow router loads it for new-feature tasks, and preflight's drift table reads its scope and non-goals. `tests/prd-authoring.test.mjs` pins the wiring (seen failing 8 of 8 without the skill edits). condux 2.32.0, minor changeset for the npm channel. Quirks Q1–Q5 flipped to mitigated. Two departures from the #83 design are recorded in `specs/prd-authoring/decisions.md`: goals are drift-checked only on a feature-completing task, and a requirements-only request may sign off at §0.
-
-**Still open, by Harvey's choice:** the last done criterion — one real discovery run on this repo producing a `prd.md` that the drift check then reads. It needs a person answering a goal round, so it waits for the next real LARGE task rather than a staged one. The trigger eval run for the new phrases is also not yet run (model-billed; offered, not started). Close #84 when the first real `prd.md` lands.
-
-#### Status 2026-09-20 — fully released; the eval did run; the closing run moves to another repo
-
-Three corrections to the block above, which was written mid-flight:
-
-- **The trigger eval ran.** Three trials after the change: 92.8% ± 1.9pp, in band, zero disallowed violations, all four new phrases 3/3. Report and per-case table in `skills/toolkit-research-frontier/references/eval-prd-authoring-2026-09-19.md`.
-- **Three departures, not two.** `specs/prd-authoring/decisions.md` bolds all three: the requirements-only sign-off path, the narrowed goals comparison, and scope drift meaning the *Out* column. The third was found in code review of PR #162 and recorded there, but the count was never updated.
-- **The npm channel is verified.** `@jabworks/condux@0.25.0` published from Version Packages PR #163; confirmed 2026-09-20 by `npm view` with both release workflows green. All four distribution channels now carry the feature.
-
-**The criterion is unchanged and this item stays open.** Harvey said on 2026-09-20 that he will do the closing discovery run on a different repo, not this one. Two consequences for whoever picks this up: that repo is not to be read without his explicit say-so, and any evidence promoted into `specs/prd-authoring/verification/` must be synthesized rather than copied, since this repo is public. He brings the evidence out; do not go looking for it.
-
-#### Status 2026-09-22 — half the criterion observed in a real run on pocket-haven; no prd.md, by a signed-off opt-out
-
-Harvey asked on 2026-09-22 for the session logs and pocket-haven's spec tree to be checked. A real LARGE discovery ran there on 2026-09-21, for an evaluation item on that repo's own backlog, and signed off. Only structure and decisions are recorded here; none of its content is copied.
-
-| Behaviour #84 needs | Observed | How |
-|---|---|---|
-| §0 card before §1 | yes | §0 is the first section of the signed-off design, §1 follows it |
-| §0 outside the `§n of N` count | yes | the header counts four sections, and §0 is not among them |
-| `## §0 · requirements` written on acknowledgment | yes | stamped `AGREED 2026-09-21` |
-| The six headings, verbatim and in order | yes | Problem · Users · Goals and non-goals · Success metrics · Scope · Open questions |
-| Goal round asked in one batch | not verified | that part ran before a `/clear`; the transcript holding it was not found |
-| `prd.md` written at sign-off | no — opted out | the design's own deliverable section, signed off, declines the spec write-back: the work was a review whose deliverable was a research document, with no contracts or fields to record |
-| Drift check reads the `prd.md` | no | there is no `prd.md` to read |
-
-**Not a skill miss.** `skills/discovery/references/spec-integration.md` makes the write-back default-on with an opt-out, and the opt-out was taken and signed off. The authoring half of the feature now has real-run evidence. The persisting half does not.
-
-**One design question it raised, not yet decided.** The opt-out's reason ("no contracts or fields") argues against `api.md` and `fields.md`, but the write-back is all or nothing, so declining it also dropped a PRD that had real content. That content now lives only in the other repo's gitignored working state. Whether that is wrong turns on whether a review should get a PRD at all: `specs/prd-authoring/decisions.md` scopes PRDs to features, and a review is not one, which would make §0 running on a non-feature LARGE task the odd part rather than the lost file.
-
-**Still open.** The next real *feature* run on a repo that keeps the spec write-back closes this item: a `prd.md` in `specs/<slug>/`, then one task whose preflight drift check reads its row.
-
-
 ## Someday
 
 ### 65. toolkit-debugging-playbook applied-but-cold — evaluate for a routing nudge next period (2026-08-28)
@@ -235,6 +184,14 @@ See `skills/toolkit-research-frontier/references/mobile-prior-art-survey-2026-09
 Recommend agent-device in the README, but never require it.
 
 **Ours to write, since nobody else covers them:** the logcat sweep, uiautomator staleness, and the report template.
+
+#### Status 2026-10-09 — built in PR #183 (condux 2.36.0); open until a full drive on a device
+
+Built as signed off in `specs/live-verification-native/`: `references/native-app.md` (Android core, three-rung ladder, iOS gap stated), Step 1/3/4 branches, the `device-only` verdict with a "For the phone:" checklist, and the CP-3 / Red Flags wording. Guarded by `tests/live-verification-native.test.mjs`.
+
+**First live run: partial.** Against a real Expo app, no device was reachable — its emulators now run on another host behind a project wrapper, none was up, and Metro's default port was held by an unrelated container. The run still found two recipe gaps before any drive, both fixed in the PR (quirks Q8 wrong adb, Q9 variant package and scheme).
+
+**Closes on:** one full drive through the skill on an Android emulator that writes `report.md` with at least one `device-only` row — the PRD's success metric. Five recipe claims are unchecked until then: deep-link launch, tap from dump bounds, the stale-UI rules, the log sweep, and the phone checklist.
 
 ### 90. release treats an Expo app as a GitHub repo — wrong version file, no versionCode, OTA stranding unmentioned (2026-09-22)
 
