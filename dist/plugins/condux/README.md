@@ -139,7 +139,7 @@ Start with `/workflow` — it is both the entry point and the operating manual.
 | `preflight` | "Am I actually done?" — catches skipped steps and silent regressions before the quality gate. |
 | `finalize` | The single end-of-task quality gate: typecheck → lint → format → test, in order, once. |
 | `code-review` | Diagnostic report by severity. On request only; never auto-triggers, never fixes. |
-| `live-verification` | Drives the real UI, endpoint, or CLI and checks each claim against observed behaviour before you push. |
+| `live-verification` | Drives the real UI, endpoint, or CLI and checks each claim against observed behaviour before you push — including Android apps on an emulator via adb; install [`agent-device`](https://github.com/callstack/agent-device) for a richer driver (optional). |
 | `research` | Cited multi-source research for dev questions — parallel `scout` agents write cited notes, and a decision-ready report lands in `.condux/research/`. |
 | `condux-doctor` | Is condux actually working on this host? Runs the SessionStart hook, resolves the Codex Stop hook, checks the agents shipped. |
 
