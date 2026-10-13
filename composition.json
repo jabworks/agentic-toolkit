@@ -97,7 +97,10 @@
         "record"
       ],
       "pluginDirs": {
-        "skills/record/server": "server"
+        "skills/record/server": "server",
+        "skills/record/pane/hooks": "hooks",
+        "skills/record/pane/types": "types",
+        "skills/record/pane/tests": "tests"
       },
       "marketplace": {
         "description": "File-based project backlog in committed files: open items in docket/DOCKET.md, closed items archived per year with verification records, ids never reused. The record skill captures and closes items, groom sweeps for stale and ghost work and picks what to do next; a dependency-free CLI, bundled MCP server, and self-contained HTML board keep the mechanics byte-exact."

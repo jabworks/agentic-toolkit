@@ -20,5 +20,6 @@
     "doctor",
     "health-check"
   ],
-  "skills": "./skills"
+  "skills": "./skills",
+  "types": "./types/index.d.ts"
 }

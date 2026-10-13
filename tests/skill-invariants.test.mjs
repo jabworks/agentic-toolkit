@@ -32,7 +32,9 @@ const MAX_ASSET_BYTES = 5 * 1024 * 1024;
 // `6ba6572`, and `hooks/` stayed hand-maintained in dist/ until 2026-08-05
 // regardless. When this list needs a new entry, ask whether the new directory
 // is also a new out-of-tree mirror target before adding it.
-const ALLOWED_SKILL_DIRS = new Set(['references', 'evals', 'hooks', 'server', 'lib', 'bin', 'agents']);
+// `pane` is docket's Claude Code hooks module (record/pane → dist hooks/, types/, tests/ via composition.json
+// pluginDirs, mirrored by composition.test.mjs).
+const ALLOWED_SKILL_DIRS = new Set(['references', 'evals', 'hooks', 'server', 'lib', 'bin', 'agents', 'pane']);
 
 // Returns the raw frontmatter block (between the leading `---` fences, excluding
 // them) or null if the file has none.
