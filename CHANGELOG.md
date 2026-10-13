@@ -12,10 +12,14 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
-## condux 2.36.0 — 2026-10-09
+## docket 0.12.0 — 2026-10-13
 
-- chore(condux): bump to 2.36.0 (#89)
-- feat(live-verification): a native-app path for Android (#89)
+- chore(docket): bump to 0.12.0
+- feat(docket): a /docket pane for Claude Code
+
+## condux 2.36.0 — 2026-10-10
+
+- feat(live-verification): a native-app path for Android — condux 2.36.0 (#89) (#183)
 
 ## condux 2.35.0 — 2026-10-08
 
