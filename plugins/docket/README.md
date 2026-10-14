@@ -38,6 +38,20 @@ table, and the doctor that verifies it.
 
 ---
 
+## The `/docket` pane (Claude Code)
+
+Type `/docket` to open the open board beside the transcript: every item by
+section, aged and colour-coded by staleness, refreshing on its own when
+`DOCKET.md` changes. Expand an item to read it, then **Start work** (`w`) puts
+`/condux:workflow #N — <title>` in your prompt, or **Cite** (`c`) inserts
+`#N`. It only reads the docket and adds nothing to the model's context.
+
+It is a Claude Code function-hooks module (early access; built on Claude Code
+2.1.296, which auto-update keeps you past). Codex, OpenCode and Cursor never
+load it — docket's skills, CLI and MCP server work there exactly as before.
+
+---
+
 ## The 3 skills
 
 | Skill | What it does |
