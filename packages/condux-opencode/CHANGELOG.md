@@ -1,5 +1,11 @@
 # @jabworks/condux
 
+## 0.29.0
+
+### Minor Changes
+
+- [#183](https://github.com/jabworks/agentic-toolkit/pull/183) [`6e267f1`](https://github.com/jabworks/agentic-toolkit/commit/6e267f11df7d8974795c1d1819f5ec3c6facfce5) Thanks [@vi-hieu](https://github.com/vi-hieu)! - live-verification gains a native-app path for Android: a reference loaded on app detection (the project's own setup first, adb resolved once by absolute path, a core recipe, stale-UI rules, a logcat sweep, and agent-device or mobile-mcp when installed), a device-only verdict with a "For the phone:" checklist in the report, and a workflow CP-3 row that loads the skill on a mobile app too.
+
 ## 0.28.0
 
 ### Minor Changes
