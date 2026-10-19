@@ -50,6 +50,12 @@ Run through this checklist. Every item must be answered honestly — not optimis
 │    No console.log, no debug code, no TODO comments that         │
 │    weren't there before, no commented-out blocks.               │
 │                                                                  │
+│  □ NO WORKAROUNDS                                               │
+│    Did anything here bypass a convention, widen a type,         │
+│    disable a rule, or special-case around a design just to      │
+│    make it land? Report it — the user decides whether it        │
+│    ships. Nothing bypassed → N/A, no commentary.                │
+│                                                                 │
 │  □ READY FOR FINALIZE                                           │
 │    All the above are yes → call /finalize                       │
 │    Any are no → fix first, then re-check                        │
@@ -101,6 +107,7 @@ a preflight failure like any other.
 | "The edge cases are unlikely"                  | They happen in production. Consider them now.            |
 | "The plan steps were mostly done"              | Mostly done is not done.                                 |
 | "I only changed one line, nothing could break" | One-line changes cause regressions too.                  |
+| "It's a small workaround, I'll do it properly later" | Later is a PR nobody opens. Report it; the user chooses.  |
 
 ## Output
 
@@ -113,6 +120,7 @@ a preflight failure like any other.
 □ Spec drift           ✓ / ✗ / N/A [notes]  (N/A = no spec for this task)
 □ No regressions       ✓ / ✗ [notes]
 □ Nothing left behind  ✓ / ✗ [notes]
+□ No workarounds       ✓ / ✗ / N/A [notes]  (N/A = nothing bypassed)
 
 → Ready for /finalize  [YES / NO — list blockers if NO]
 ```

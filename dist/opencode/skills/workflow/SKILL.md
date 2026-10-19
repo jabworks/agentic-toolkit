@@ -42,6 +42,11 @@ Condux is **lean and proportional** — the opposite of "always run every gate."
 6. **House style rides along.** Before the first line of code in any tier, load
    the `coding-directive` skill if it is installed — skip silently when it
    isn't. Codebase mimicry and repo config still win over the directive.
+7. **Two tracks, one of them triggered.** Tactical is the task in front of you.
+   Strategic is the environment that produced it — would a narrower type, a
+   lint rule, or a written convention have made this task's bug impossible?
+   The strategic track is *not* a standing obligation; that would violate rule
+   1. It fires on a trigger, and the triggers are in Environment Hardening.
 
 ## Entry Contract
 
@@ -253,6 +258,38 @@ Scope turns out bigger than the confirmed tier? Stop immediately, report what yo
 found ("this touches auth middleware, not just the UI"), re-confirm the tier before
 continuing. Never silently expand scope.
 
+## Environment Hardening
+
+The strategic track, fired by a trigger rather than run on every task. Two
+triggers, both observed rather than imagined:
+
+- **Repeated friction.** The same obstacle cost time twice — twice in this
+  task, or once here and once earlier in the session.
+- **A workaround taken.** You bypassed a convention, widened a type, disabled a
+  rule, or special-cased around a design to make the change land. `preflight`'s
+  no-workarounds box catches the ones you stopped noticing.
+
+When one fires, spend a sentence on the cause rather than the symptom. Agents
+succeed in a **pit of success** — an environment where the wrong thing is hard
+to express:
+
+| Lever | Looks like |
+|---|---|
+| Constrained surface | a narrower type, a smaller public API, an argument that cannot be passed wrong |
+| Rules that force correctness | a lint rule, a stricter compiler flag, a test that fails on the shape and not just the value |
+| Written convention | a line in `AGENTS.md` / `CLAUDE.md` or the house-style skill, so a reviewer cites it instead of re-deriving it |
+| Data the agent lacks | dev-server or production logs, a test database, browser access to watch the thing actually render |
+
+**The output is a sentence to the user, or a backlog item — never a new
+artifact.** Name the hardening and let the user decide. If a backlog skill
+(`record`, or the repo's own convention) is installed and they want it kept,
+file it there. Do not create a file for it, do not add a `.condux/` directory
+for it, and do not implement it inside the current task — that is scope
+expansion, which Escalating Mid-Task already forbids.
+
+**Silence is the correct output when neither trigger fired.** A clean SMALL
+task gets no hardening commentary at all.
+
 ## Red Flags
 
 Stop if you catch yourself doing any of these:
@@ -271,6 +308,7 @@ Stop if you catch yourself doing any of these:
 | Auto-running code-review, commits, or agents | They're checkpoint choices; run only when picked |
 | Verifying live without loading `live-verification` | Load it — its `report.md` is the evidence (9 of 11 ad-hoc runs in a mobile eval left none) |
 | Auto-advancing past a checkpoint on MEDIUM/LARGE | The user owns every transition |
+| Absorbing a workaround silently so the change lands | Name it — that's a hardening trigger, and preflight asks for it anyway |
 | Expanding scope past the confirmed tier | Stop, report, re-confirm |
 
 ## Tips
