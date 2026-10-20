@@ -193,7 +193,7 @@ test('barSvg rounds every segment, labels each, and leaves a share too thin for 
     12,
   );
 
-  expect(svg.match(/stroke-linecap="round"/g)?.length).toBe(3);
+  expect(svg.match(/stroke-linecap="round"/g)?.length).toBe(2);
   expect(svg).toContain('1 someday');
   expect(svg).not.toContain('#333333');
 
@@ -202,6 +202,16 @@ test('barSvg rounds every segment, labels each, and leaves a share too thin for 
   expect(dot?.[1]).toBe(dot?.[2]);
 });
 
-test('barSvg draws only the track for an empty board', async () => {
-  expect(barSvg([], 100, 10).match(/<line/g)?.length).toBe(1);
+test('barSvg draws nothing for an empty board, and has an intrinsic size so the desktop does not pad it', async () => {
+  const svg = barSvg([], 100, 10);
+
+  expect(svg).not.toContain('<line');
+  expect(svg).toContain('width="100" height="10"');
+});
+
+test('neither chart draws a grey track behind its segments', async () => {
+  const shares = [{ name: 'Done', count: 3, color: '#111111' }];
+
+  expect(barSvg(shares)).not.toContain('#888888');
+  expect(ringSvg(shares, 3).match(/stroke="#888888"/g)).toBe(null);
 });

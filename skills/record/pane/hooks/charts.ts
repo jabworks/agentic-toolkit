@@ -45,8 +45,7 @@ export const ringSvg = (shares: Share[], doneCount: number): string => {
     .join('');
 
   return [
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">',
-    `<circle cx="50" cy="50" r="${radius}" fill="none" stroke="#888888" stroke-opacity="0.2" stroke-width="${stroke}"/>`,
+    '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">',
     arcs,
     `<text x="50" y="47" text-anchor="middle" dominant-baseline="central" font-size="20" font-weight="600" fill="#888888">${percent}%</text>`,
     '<text x="50" y="65" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#888888">done</text>',
@@ -54,20 +53,22 @@ export const ringSvg = (shares: Share[], doneCount: number): string => {
   ].join('');
 };
 
-// Rounded progress segments: each is a line with round caps, so a share narrower than the bar is tall stays a dot.
-export const barSvg = (shares: Share[], width = 560, height = 12): string => {
+// Rounded progress segments: each is a line with round caps, so a share narrower than the bar is tall stays a dot. Drawn
+// large and sized by its own width/height: an SVG with a viewBox alone has no intrinsic size, and the desktop gives it a
+// tall default box instead.
+export const barSvg = (shares: Share[], width = 1200, height = 22): string => {
   const total = shares.reduce((sum, share) => sum + share.count, 0);
   const visibleShares = shares.filter(share => share.count > 0);
   const middle = height / 2;
-  const track = `<line x1="${middle}" y1="${middle}" x2="${width - middle}" y2="${middle}" stroke="#888888" stroke-opacity="0.2" stroke-width="${height}" stroke-linecap="round"/>`;
+  const open = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">`;
 
   if (total === 0) {
-    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}">${track}</svg>`;
+    return `${open}</svg>`;
   }
 
   // Each share owns a span of the full width; a round cap overhangs its line by half the height, so the line runs between
   // the caps' centres and the drawn segment fills the span minus the gap. A span too short for that collapses to a dot.
-  const gap = visibleShares.length > 1 ? GAP : 0;
+  const gap = visibleShares.length > 1 ? height / 3 : 0;
 
   let cursor = 0;
 
@@ -77,7 +78,7 @@ export const barSvg = (shares: Share[], width = 560, height = 12): string => {
       const start = cursor + gap / 2;
       const end = cursor + span - gap / 2;
       const isDot = end - start < height;
-      // A dot is clamped inside the track, or the last share's would be cut by the edge of the drawing.
+      // A dot is clamped inside the drawing, or the last share's would be cut by its edge.
       const from = isDot ? Math.min(width - middle, Math.max(middle, (start + end) / 2)) : start + middle;
       const to = isDot ? from : end - middle;
 
@@ -87,7 +88,7 @@ export const barSvg = (shares: Share[], width = 560, height = 12): string => {
     })
     .join('');
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}">${track}${segments}</svg>`;
+  return `${open}${segments}</svg>`;
 };
 
 export const sparklineSvg = (counts: number[], color: string): string => {
