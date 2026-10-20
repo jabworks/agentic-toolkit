@@ -16,6 +16,8 @@
 | [Fields](fields.md) | how each plan and ledger field becomes something on screen |
 | [Implementation](implementation.md) | the planned files, data flow and patterns |
 | [Quirks](quirks.md) | what will bite you, and whether it is mitigated |
+| [Verification](verification.md) | what was checked live, how, and what is still unproven |
 
 ## Changelog
 - 2026-10-20 (PR #190): Initial spec from the signed-off design
+- 2026-10-20 (PR #190): Added verification.md (the broken-module and Codex checks) and updated Q11

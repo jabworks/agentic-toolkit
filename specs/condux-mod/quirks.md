@@ -12,7 +12,7 @@
 | Q8 | The engine writes a `tsconfig.json` into any plugin folder it loads | Loading `dist/plugins/condux` through `CLAUDE_CODE_PLUGIN_DIRS` | low | partial |
 | Q9 | A same-named folder plugin replaces the installed one wholesale | Loading a partial `condux` copy through `--plugin-dir` | low | yes |
 | Q10 | An agent in a git worktree writes that worktree's working-state directory | The session runs in the main checkout | medium | no |
-| Q11 | "Codex is unaffected" and "a broken module leaves the routing hook working" are unverified | Adding `modules` to condux's `hooks.json` | medium | no |
+| Q11 | "Codex is unaffected" is only partly proven; "a broken module leaves the routing hook working" is now verified | Adding `modules` to condux's `hooks.json` | medium | partial |
 | Q12 | The status line needs a session-long poll; docket polls only while its pane is open | Copying docket's `tick`, which stops when the pane is gone | medium | yes |
 
 ## Q1 — Plans with no ledger
@@ -105,14 +105,14 @@
 **Cause:** the board reads only the session's own git root.
 **Mitigation:** none; unverified and recorded as an open question in the PRD.
 
-## Q11 — Unverified claims
+## Q11 — Claims that needed a live check
 
 **Discovered:** 2026-10-20.
 
-**Symptom:** none yet.
+**Symptom:** none.
 **Trigger:** adding `modules` to condux's `hooks.json`.
-**Cause:** the scratch test proved a command hook and a module coexist, not that Codex ignores the key or that a throwing module leaves the routing hook working. The mod API is early access.
-**Mitigation:** none yet; two live checks are plan tasks (a live Codex session, and a deliberately broken module).
+**Cause:** a scratch test proved a command hook and a module coexist, not that Codex ignores the key or that a throwing module leaves the routing hook working. The mod API is early access.
+**Mitigation:** partial. A deliberately broken module was run and the session, the routing payload and all skills survived, with the error shown as one log line. Codex installs the plugin without error and its configuration keys condux's hooks to the override file, but the routing hook firing in an authenticated Codex session is unproven. See verification.md for the method and the one remaining step.
 
 ## Q12 — Session-long polling
 
