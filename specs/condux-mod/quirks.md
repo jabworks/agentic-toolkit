@@ -14,6 +14,8 @@
 | Q10 | An agent in a git worktree writes that worktree's working-state directory | The session runs in the main checkout | medium | no |
 | Q11 | "Codex is unaffected" is only partly proven; "a broken module leaves the routing hook working" is now verified | Adding `modules` to condux's `hooks.json` | medium | partial |
 | Q12 | The status line needs a session-long poll; docket polls only while its pane is open | Copying docket's `tick`, which stops when the pane is gone | medium | yes |
+| Q13 | The validator rejects two hooks on one event without a matcher | Two features each registering `session.start` | medium | yes |
+| Q14 | Past an import, `$` is followed only into function declarations | An exported helper that takes `$` written as an arrow constant | medium | yes |
 
 ## Q1 — Plans with no ledger
 
@@ -122,3 +124,21 @@
 **Trigger:** reusing docket's `tick`, which cancels when the pane is gone.
 **Cause:** docket needs polling only for its open pane.
 **Mitigation:** the status timer arms at `session.start` only when the working-state directory exists, cancels at session end and re-arms after a hot reload.
+
+## Q13 — One hook per event
+
+**Discovered:** 2026-10-20, building the status line.
+
+**Symptom:** `claude plugin validate` fails with `on("session.start") is registered twice without a matcher`.
+**Trigger:** the board and the status line each registering `session.start`.
+**Cause:** the validator treats two un-matchered hooks on one event as ambiguous.
+**Mitigation:** `register.tsx` owns the one `session.start` hook and calls each feature through a plain function (`resumeBoard`, `armStatus`); `session.end` follows the same shape. A later slice adds a call, not a hook.
+
+## Q14 — Declarations, not arrows, across an import
+
+**Discovered:** 2026-10-20, building the board.
+
+**Symptom:** `claude plugin validate` fails with `$ is passed to "<name>", a name bound to a function expression, outside the hook's own file`.
+**Trigger:** an exported `const fn = async ($, …) => …` called from another file, or any `$`-taking helper reached through one.
+**Cause:** past an import the validator follows `$` only into function declarations, which a bundle keeps as written.
+**Mitigation:** every helper that takes `$` is written `function name($: EngineInterface, …)`, with a comment saying why, against the house arrow style. Pure helpers that never touch `$` stay arrows.

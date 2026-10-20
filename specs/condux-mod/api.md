@@ -49,6 +49,29 @@ interface Ledger {
 type TaskState = 'done' | 'next-ready' | 'ready' | 'blocked';   // next-ready is the lowest-numbered ready task
 
 type PlanStatus = 'no-ledger' | 'not-started' | 'in-progress' | 'tasks-done' | 'complete' | 'stale';   // see quirks Q1 and Q5
+
+interface BoardTask {
+  task: PlanTask;            // the parsed card
+  state: TaskState;          // derived from the ledger and the dependency lines; shown neutral when the plan has no ledger
+  waitsOn: number[];         // dependencies not yet done; empty for a done or ready task
+  inCycle: boolean;          // true when the task's unmet dependencies lead back to itself
+}
+
+interface BoardPlan {
+  plan: Plan;                // the plan, or a synthetic one for an orphan ledger
+  ledger: Ledger | null;     // the linked ledger (by its Plan: header, else by file name); null when there is none
+  status: PlanStatus;        // see fields.md for the rules
+  tasks: BoardTask[];        // in task-number order
+  wrapUp: LedgerLine[];      // ledger lines that are not tasks, in file order
+  doneCount: number;         // tasks the ledger ticks, counted against the plan's own task numbers
+  idleMinutes: number | null; // whole minutes since the ledger changed, for an unfinished plan with a ledger; null otherwise
+  isOrphan: boolean;         // true for a ledger that names no plan on disk
+}
+
+type BoardSnapshot =
+  | { kind: 'found'; root: string; plans: BoardPlan[]; updatedMs: number }   // plans arrive sorted: active, complete, stale, no-ledger
+  | { kind: 'missing'; searchedFrom: string }                                // no working-state directory at or above the cwd
+  | { kind: 'unreadable'; reason: string };                                  // two failed polls in a row
 ```
 
 ## External APIs Consumed
