@@ -14,7 +14,7 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## docket 0.12.2 — 2026-10-20
 
-- fix(docket): pane dividers no longer wrap into a stub line on the desktop app; feat: a per-section progress bar (committed / someday / loose threads over the open total)
+- fix(docket): pane dividers no longer wrap into a stub line on the desktop app; feat: a progress bar of done / committed / someday / loose threads over everything ever logged
 
 ## docket 0.12.1 — 2026-10-20
 

@@ -29,6 +29,9 @@ export type DocketBoard =
       layout: 'docket' | 'legacy';
       mtimeMs: number;
       sections: DocketSection[];
+      // docket.json's `next_id`: ids are never reused, so everything ever logged is `nextId - 1`. Null for a legacy
+      // BACKLOG.md board, or when docket.json is missing or unreadable.
+      nextId: number | null;
     }
   | { kind: 'missing'; searchedFrom: string }
   | { kind: 'unreadable'; file: string; reason: string };

@@ -40,6 +40,8 @@ type Fill = { text: string; mode: PromptFillMode };
 type World = {
   hasDocket: boolean;
   text: string;
+  // docket.json's text; `null` plays a board with none.
+  config: string | null;
   mtimeMs: number;
   isPaneUp: boolean;
   // How `ui.open` answers: placed, waiting for room, or never (a surface that drops the request).
@@ -55,6 +57,7 @@ const answerBeneath = (on: On, hasDocket: boolean) => {
   const world: World = {
     hasDocket,
     text: FIXTURE,
+    config: '{ "next_id": 11 }',
     mtimeMs: 1,
     isPaneUp: true,
     open: 'placed',
@@ -80,7 +83,13 @@ const answerBeneath = (on: On, hasDocket: boolean) => {
 
     return { value: { kind: 'file', size: world.text.length, mtimeMs: world.mtimeMs, isLink: false } };
   });
-  on('fs.read', () => ({ value: world.text }));
+  on('fs.read', (_$, e) => {
+    if (e.path.endsWith('docket.json')) {
+      return world.config === null ? { deny: 'ENOENT' } : { value: world.config };
+    }
+
+    return { value: world.text };
+  });
   on('ui.open', () => {
     if (world.open === 'silent') {
       return new Promise(() => undefined);
@@ -275,17 +284,31 @@ test('a surface that never answers ui.open does not hang /docket', async ($, on)
 });
 
 for (const surface of SURFACES) {
-  test(`shows each section's share of the open total on ${surface}`, async ($, on) => {
+  test(`shows done and each section's share of everything logged on ${surface}`, async ($, on) => {
     answerBeneath(on, true);
 
     await $.command.run(RUN_DOCKET);
 
     const ui = await mountPane(surface, $);
 
-    // FIXTURE: Committed 0, Someday 1 (#7), Loose threads 1 (a stray thought).
+    // FIXTURE: Committed 0, Someday 1 (#7), Loose threads 1; next_id 11 means 10 ids logged, 1 open item, so 9 done.
+    expect(await ui.find({ text: /9 done/ })).toBeDefined();
     expect(await ui.find({ text: /0 committed/ })).toBeDefined();
     expect(await ui.find({ text: /1 someday/ })).toBeDefined();
     expect(await ui.find({ text: /1 loose threads/ })).toBeDefined();
-    expect(await ui.find({ text: /of 2/ })).toBeDefined();
+    expect(await ui.find({ text: /of 11 logged/ })).toBeDefined();
+  });
+
+  test(`leaves Done out when docket.json is unreadable on ${surface}`, async ($, on) => {
+    const { world } = answerBeneath(on, true);
+
+    world.config = null;
+
+    await $.command.run(RUN_DOCKET);
+
+    const ui = await mountPane(surface, $);
+
+    expect(await ui.find({ text: /done/ })).toBe(undefined);
+    expect(await ui.find({ text: /of 2 logged/ })).toBeDefined();
   });
 }

@@ -46,6 +46,18 @@ const locate = async ($: EngineInterface, cwd: string): Promise<Located | null> 
   return null;
 };
 
+// A board without a readable docket.json just has no Done segment; it is never an error.
+const readNextId = async ($: EngineInterface, root: string): Promise<number | null> => {
+  try {
+    const config: unknown = JSON.parse(await $.fs.read(joinPath(root, 'docket', 'docket.json')));
+    const nextId = (config as { next_id?: unknown } | null)?.next_id;
+
+    return typeof nextId === 'number' && Number.isInteger(nextId) && nextId > 0 ? nextId : null;
+  } catch {
+    return null;
+  }
+};
+
 // Missing and unreadable boards are rewritten on every poll; skipping identical writes keeps the pane from redrawing.
 const setBoard = async ($: EngineInterface, value: DocketBoard): Promise<void> => {
   const current = await read($, board);
@@ -164,7 +176,8 @@ const load = async ($: EngineInterface, isForced: boolean): Promise<void> => {
 
     const text = await $.fs.read(file);
     const sections = parseDocket(text);
-    const loaded: DocketBoard = { kind: 'found', root, file, layout, mtimeMs, sections };
+    const nextId = layout === 'docket' ? await readNextId($, root) : null;
+    const loaded: DocketBoard = { kind: 'found', root, file, layout, mtimeMs, sections, nextId };
 
     failures = 0;
     lastMtime = mtimeMs;
@@ -464,13 +477,18 @@ export const register: Register = on => {
       );
     };
 
-    // One colour per section, in board order; a section holding nothing takes no share of the bar.
-    const SHARE_COLORS = ['claude', 'suggestion', 'warning', 'success'];
-    const shares = current.sections.map((section, index) => ({
-      name: section.name,
-      count: section.items.length + section.threads.length,
-      color: SHARE_COLORS[index % SHARE_COLORS.length] ?? 'claude',
-    }));
+    // Done leads, then one colour per section in board order; a segment holding nothing takes no share of the bar.
+    const SHARE_COLORS = ['claude', 'suggestion', 'warning'];
+    // Ids are never reused, so `next_id - 1` is every item ever logged and what is no longer open is done.
+    const done = current.nextId === null ? 0 : Math.max(0, current.nextId - 1 - total);
+    const shares = [
+      { name: 'Done', count: done, color: 'success' },
+      ...current.sections.map((section, index) => ({
+        name: section.name,
+        count: section.items.length + section.threads.length,
+        color: SHARE_COLORS[index % SHARE_COLORS.length] ?? 'claude',
+      })),
+    ];
     const shareTotal = shares.reduce((sum, share) => sum + share.count, 0);
 
     const progress =
@@ -497,13 +515,15 @@ export const register: Register = on => {
             gap={2}
             flexWrap='wrap'
           >
-            {shares.map(share => (
-              <Text key={`legend:${share.name}`}>
-                <Text color={share.color}>■ </Text>
-                {`${share.count} ${share.name.toLowerCase()}`}
-              </Text>
-            ))}
-            <Text color='subtle'>{`of ${shareTotal}`}</Text>
+            {shares
+              .filter(share => share.name !== 'Done' || share.count > 0)
+              .map(share => (
+                <Text key={`legend:${share.name}`}>
+                  <Text color={share.color}>■ </Text>
+                  {`${share.count} ${share.name.toLowerCase()}`}
+                </Text>
+              ))}
+            <Text color='subtle'>{`of ${shareTotal} logged`}</Text>
           </Box>
         </Box>
       );
