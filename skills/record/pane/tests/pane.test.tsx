@@ -374,3 +374,21 @@ test('every Svg the desktop draws is given an explicit height, or the app boxes 
     expect(typeof svg.props.height).toBe('number');
   }
 });
+
+for (const surface of SURFACES) {
+  test(`puts the key hints above the list, where a long board does not scroll them away, on ${surface}`, async ($, on) => {
+    answerBeneath(on, true);
+
+    await $.command.run(RUN_DOCKET);
+
+    const ui = await mountPane(surface, $);
+    // Document order. A container's `text` holds all its descendants', so only the hint's own Text node counts.
+    const tree = await ui.findAll({});
+    const hintsAt = tree.findIndex(node => node.type === 'Text' && /tab move/.test(node.text));
+    const firstItemAt = tree.findIndex(node => node.key === 'item:7');
+
+    expect(hintsAt).toBeGreaterThanOrEqual(0);
+    expect(firstItemAt).toBeGreaterThanOrEqual(0);
+    expect(hintsAt).toBeLessThan(firstItemAt);
+  });
+}

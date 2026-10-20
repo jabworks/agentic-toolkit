@@ -374,7 +374,9 @@ export const register: Register = on => {
     );
     const rule = divider('─', windowWidth);
 
-    const frame = (title: string, count: string, body: RenderChildren, footer: string) => (
+    // The hints sit under the header, not below the list: a pane has no fixed footer, its whole body scrolls as one, and
+    // a hint line at the bottom is out of sight until the end of a long list.
+    const frame = (title: string, count: string, body: RenderChildren, hints: string) => (
       <Box
         flexDirection='column'
         borderStyle='round'
@@ -399,10 +401,9 @@ export const register: Register = on => {
             onPress={() => refresh($, true)}
           />
         </Box>
+        <Text color='subtle'>{hints}</Text>
         {rule}
         {body}
-        {rule}
-        <Text color='subtle'>{footer}</Text>
       </Box>
     );
 
