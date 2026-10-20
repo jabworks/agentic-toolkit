@@ -82,11 +82,27 @@ export interface BoardPlan {
   isOrphan: boolean;
 }
 
+// What the board draws from. `found` carries the derived plans; `missing` and `unreadable` are states the pane explains.
+export type BoardSnapshot =
+  | {
+      kind: 'found';
+      // The git root holding `.condux/`.
+      root: string;
+      plans: BoardPlan[];
+      // Newest modification time across the plan and ledger files, for the "updated HH:MM" hint.
+      updatedMs: number;
+    }
+  | { kind: 'missing'; searchedFrom: string }
+  | { kind: 'unreadable'; reason: string };
+
 declare module 'claude-code' {
   interface PluginState {
     condux: {
-      // Filled in as features land; the board's snapshot arrives with the pane.
-      board: null;
+      // null until the first load finishes: the pane's pending state.
+      board: BoardSnapshot | null;
+      // Keys the person has toggled: a plan (`plan:<file>`) or a task card (`task:<file>:<n>`). An active plan is open by
+      // default and a finished one closed, so a toggle flips whichever default applies.
+      toggled: string[];
     };
   }
 }
