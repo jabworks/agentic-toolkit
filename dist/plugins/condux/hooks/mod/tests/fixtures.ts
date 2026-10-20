@@ -133,3 +133,37 @@ export const PLAN_UNKNOWN_AND_SELF = [
 ].join('\n');
 
 export const PLAN_NO_CARDS = ['# Plan: plain notes', '', '## Overview', '', 'Just prose, no task cards.', ''].join('\n');
+
+// The one real ledger on disk, trimmed: tasks complete out of order, then wrap-up lines that are not tasks.
+export const LEDGER_REAL = [
+  '# Subagent Execution Progress: diagram-routing-gate',
+  '',
+  'Plan: .condux/plans/2026-09-08-diagram-routing-gate.md',
+  'BASE: 97b0f89',
+  '',
+  '- [x] Task 2: routing rules in diagram-kit.md + SKILL.md check step — uncommitted (BASE 97b0f89), review clean',
+  '- [x] Task 1: diagram-check.mjs + tests + fixtures — uncommitted (BASE 97b0f89), review clean after two fixes',
+  '- [x] Task 3: ripple (allow-list, specs Q8/#8, 2.29.0, changeset, changelog, sync) — done',
+  '- [x] code-review: 1 Important (comment stripping) + 3 Minors fixed; docket #75 #76 filed',
+  '- [x] preflight + finalize green (504 tests)',
+  '- [x] live-verification: as-drawn reconstruction → 26 findings matching the screenshot',
+  '- [x] committed eb8cd83 + d58edc3 + fb00840 on feat/blueprint-diagram-routing-gate; PR #150 open',
+  '',
+].join('\n');
+
+export const LEDGER_HEADER_ONLY = ['# Subagent Execution Progress: fresh', '', 'Plan: .condux/plans/2026-10-01-fresh.md', ''].join('\n');
+
+export const LEDGER_ODD = [
+  '# Progress',
+  '',
+  'BASE: abc1234',
+  'Plan: C:\\repo\\.condux\\plans\\2026-10-03-odd.md',
+  '',
+  'Some prose that is not a checkbox.',
+  '- a plain bullet with no checkbox',
+  '- [ ] Task 4: not done yet',
+  '- [X] Task 12: upper-case X still counts as checked',
+  '- [x] Tasks all done: plural is a wrap-up line, not a task',
+  '* [x] task 5: a star bullet and a lower-case word',
+  '',
+].join('\n');

@@ -28,6 +28,28 @@ export interface Plan {
   tasks: PlanTask[];
 }
 
+export interface LedgerLine {
+  // N for a "- [x] Task N: ..." line; null for a wrap-up line (code-review, preflight, committed, ...).
+  taskNumber: number | null;
+  // "[x]" (either case) versus "[ ]"; only a checked Task line makes a task done.
+  isChecked: boolean;
+  // The line after the checkbox, verbatim.
+  text: string;
+}
+
+export interface Ledger {
+  // File name without its directory.
+  file: string;
+  // Basename from the "Plan:" header line; null when the header is missing.
+  planFile: string | null;
+  // The "BASE:" header value; null when absent.
+  baseSha: string | null;
+  // In file order, which is completion order, not task order.
+  lines: LedgerLine[];
+  // Last modification time of the file; drives the quiet and stalled advice.
+  mtimeMs: number;
+}
+
 declare module 'claude-code' {
   interface PluginState {
     condux: {
