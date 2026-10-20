@@ -14,6 +14,9 @@ import { ageInDays, ancestors, baseName, joinPath, parseDocket } from './docket'
 
 const PANE = 'docket';
 const POLL_MS = 3000;
+// The desktop app's Code tab never answered `$.ui.open`, leaving /docket spinning; a surface that is slower than this is
+// treated as not placing the pane.
+const OPEN_TIMEOUT_MS = 2000;
 
 const board = atom({ plugin: 'docket', key: 'board' } as const, null);
 const expanded = atom({ plugin: 'docket', key: 'expanded' } as const, []);
@@ -222,6 +225,39 @@ const tick = async ($: EngineInterface): Promise<void> => {
   await refresh($, false);
 };
 
+type OpenOutcome = { isPlaced: true } | { isPlaced: false; reason: string };
+
+// The engine follows `$` only into functions declared at the top of the file, so the race lives here.
+const openPane = ($: EngineInterface): Promise<OpenOutcome> =>
+  Promise.race<OpenOutcome>([
+    $.ui.open({ id: PANE, title: 'Docket', focus: true }),
+    $.clock.sleep(OPEN_TIMEOUT_MS).then(() => ({ isPlaced: false, reason: 'this surface did not answer' })),
+  ]);
+
+// The text a surface without the pane gets instead; one line per item, as the pane shows them.
+const describeBoard = (current: DocketBoard | null): string => {
+  if (current === null) {
+    return 'The docket is still loading.';
+  }
+
+  if (current.kind === 'unreadable') {
+    return `Could not read ${current.file}: ${current.reason}`;
+  }
+
+  if (current.kind === 'missing') {
+    return `No docket found in ${current.searchedFrom} or above it. \`docket scaffold\` creates one.`;
+  }
+
+  const blocks = current.sections.map(section => {
+    const rows = section.items.map(item => `  #${item.idPart} ${item.title}`);
+    const threads = section.threads.map(thread => `  - ${thread}`);
+
+    return [`${section.name} (${section.items.length})`, ...rows, ...threads].join('\n');
+  });
+
+  return blocks.join('\n\n');
+};
+
 const startPolling = ($: EngineInterface): void => {
   if (poll) {
     return;
@@ -249,14 +285,18 @@ export const register: Register = on => {
   });
 
   on('command.run', { command: 'docket' }, async $ => {
-    const opened = await $.ui.open({ id: PANE, title: 'Docket', focus: true });
+    const opened = await openPane($);
 
     await refresh($, true);
-    startPolling($);
 
     if (!opened.isPlaced) {
-      $.ui.toast(`The docket pane is waiting for room: ${opened.reason}`);
+      // No pane here, so nothing polls; the board goes to the transcript once, which does cost the model tokens.
+      const summary = describeBoard(await read($, board));
+
+      return { text: `The docket pane is not available here (${opened.reason}).\n\n${summary}` };
     }
+
+    startPolling($);
 
     // No text: the pane is the output, and a transcript line would cost the model tokens for nothing.
     return {};

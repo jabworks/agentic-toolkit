@@ -42,6 +42,8 @@ type World = {
   text: string;
   mtimeMs: number;
   isPaneUp: boolean;
+  // How `ui.open` answers: placed, waiting for room, or never (a surface that drops the request).
+  open: 'placed' | 'waiting' | 'silent';
   isStatFailing: boolean;
   stats: number;
   fills: Fill[];
@@ -55,6 +57,7 @@ const answerBeneath = (on: On, hasDocket: boolean) => {
     text: FIXTURE,
     mtimeMs: 1,
     isPaneUp: true,
+    open: 'placed',
     isStatFailing: false,
     stats: 0,
     fills: [],
@@ -78,7 +81,13 @@ const answerBeneath = (on: On, hasDocket: boolean) => {
     return { value: { kind: 'file', size: world.text.length, mtimeMs: world.mtimeMs, isLink: false } };
   });
   on('fs.read', () => ({ value: world.text }));
-  on('ui.open', () => ({ value: { isPlaced: true } }));
+  on('ui.open', () => {
+    if (world.open === 'silent') {
+      return new Promise(() => undefined);
+    }
+
+    return { value: world.open === 'placed' ? { isPlaced: true } : { isPlaced: false, reason: 'no room' } };
+  });
   on('ui.toast', () => ({ value: undefined }));
   on('prompt.read', () => ({ value: { text: '', cursor: 0 } }));
   on('prompt.fill', ($, e) => {
@@ -239,4 +248,28 @@ test('an expanded item that closes is forgotten, so it comes back collapsed', as
 
   expect(await ui.find({ key: 'item:7' })).toBeDefined();
   expect(await ui.find({ key: 'cite:7' })).toBe(undefined);
+});
+
+test('a surface that cannot place the pane gets the board as text', async ($, on) => {
+  const { world } = answerBeneath(on, true);
+
+  world.open = 'waiting';
+
+  const result = await $.command.run(RUN_DOCKET);
+
+  expect(result.text).toContain('not available here (no room)');
+  expect(result.text).toContain('#7 Fix the thing');
+  expect(result.text).toContain('a stray thought');
+});
+
+test('a surface that never answers ui.open does not hang /docket', async ($, on) => {
+  const { world, clock } = answerBeneath(on, true);
+
+  world.open = 'silent';
+
+  const running = $.command.run(RUN_DOCKET);
+
+  await clock.advance(2000);
+
+  expect((await running).text).toContain('this surface did not answer');
 });
