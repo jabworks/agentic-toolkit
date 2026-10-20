@@ -13,6 +13,10 @@ Stale open markers cost real sessions — closing means moving.
 
 Follow-up to #106, rides in PR #189 (docket 0.12.2). (1) A share thinner than a round-capped segment is wide (3 of 175 in a ring) was centred nowhere near its slice and spilled over its neighbours. `allot()` now gives every segment a minimum span (stroke+gap) taken proportionally from the large ones, and each arc/line is centred in its span; tests parse the drawn arcs and lines and assert no overlap, mutation-checked (min span 0 fails both). (2) The bar still sat in a tall box after it was given width/height attributes: the app ignores the markup's own size, the ring and sparkline only looked right because they pass explicit width/height props. The bar now passes `height` too (a test asserts every desktop Svg has one). NOT verified in the app: height-only is a guess; fallback is an explicit width as well (slot looked ~800 CSS px), at the cost of overflow risk in narrow panes.
 
+### 110. condux-mod slice 1: plan and progress board + status line (a Claude Code mod inside condux) (2026-10-20)
+
+Design signed off and spec written (specs/condux-mod, PR #190); reviewed by an independent Opus 5.5 agent first. Slice 1 = a read-only /condux board pane (terminal + desktop chrome) and an always-visible status line, nested under skills/workflow/hooks/mod/. Shipping plan: two PRs after docket #189 merges — (1) scaffold + packaging, parsers + state, terminal board with text fallback, status line; (2) desktop chrome (ring, dependency graph, stepper, activity/stall, badges, filter). Extra plan tasks from the review: a live Codex session after adding `modules`, a deliberately broken module to confirm skills and the routing hook survive. Follow-up already filed: #109 (inline execution writes no ledger). Next step: /draft-plan.
+
 ## Someday
 
 ### 65. toolkit-debugging-playbook applied-but-cold — evaluate for a routing nudge next period (2026-08-28)
