@@ -273,3 +273,19 @@ test('a surface that never answers ui.open does not hang /docket', async ($, on)
 
   expect((await running).text).toContain('this surface did not answer');
 });
+
+for (const surface of SURFACES) {
+  test(`shows each section's share of the open total on ${surface}`, async ($, on) => {
+    answerBeneath(on, true);
+
+    await $.command.run(RUN_DOCKET);
+
+    const ui = await mountPane(surface, $);
+
+    // FIXTURE: Committed 0, Someday 1 (#7), Loose threads 1 (a stray thought).
+    expect(await ui.find({ text: /0 committed/ })).toBeDefined();
+    expect(await ui.find({ text: /1 someday/ })).toBeDefined();
+    expect(await ui.find({ text: /1 loose threads/ })).toBeDefined();
+    expect(await ui.find({ text: /of 2/ })).toBeDefined();
+  });
+}

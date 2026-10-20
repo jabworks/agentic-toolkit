@@ -319,7 +319,17 @@ export const register: Register = on => {
     // Window frame (2) + its padding (2); each section box spends the same again inside it.
     const windowWidth = Math.max(20, e.props.bodyColumns - 4);
     const rowWidth = Math.max(16, windowWidth - 4);
-    const rule = <Text color='subtle'>{'─'.repeat(windowWidth)}</Text>;
+    // Drawn twice as wide as the pane and clipped to one row: a proportional font (the desktop) makes `─` narrower or
+    // wider than a cell, and an exact-width string wrapped into a second, partial line there.
+    const divider = (glyph: string, width: number) => (
+      <Box
+        height={1}
+        overflow='hidden'
+      >
+        <Text color='subtle'>{glyph.repeat(width * 2)}</Text>
+      </Box>
+    );
+    const rule = divider('─', windowWidth);
 
     const frame = (title: string, count: string, body: RenderChildren, footer: string) => (
       <Box
@@ -389,7 +399,7 @@ export const register: Register = on => {
     const editedAt = `${String(edited.getHours()).padStart(2, '0')}:${String(edited.getMinutes()).padStart(2, '0')}`;
 
     // Dashed and indented under #N, so it reads as part of the item rather than a section break.
-    const detailRule = <Text color='subtle'>{'┄'.repeat(Math.max(8, rowWidth - 2))}</Text>;
+    const detailRule = divider('┄', Math.max(8, rowWidth - 2));
 
     const renderItem = (item: DocketItem) => {
       const isOpen = openIds.includes(item.idPart);
@@ -454,12 +464,57 @@ export const register: Register = on => {
       );
     };
 
+    // One colour per section, in board order; a section holding nothing takes no share of the bar.
+    const SHARE_COLORS = ['claude', 'suggestion', 'warning', 'success'];
+    const shares = current.sections.map((section, index) => ({
+      name: section.name,
+      count: section.items.length + section.threads.length,
+      color: SHARE_COLORS[index % SHARE_COLORS.length] ?? 'claude',
+    }));
+    const shareTotal = shares.reduce((sum, share) => sum + share.count, 0);
+
+    const progress =
+      shareTotal === 0 ? null : (
+        <Box
+          flexDirection='column'
+          gap={1}
+        >
+          <Box
+            width='100%'
+            height={1}
+          >
+            {shares
+              .filter(share => share.count > 0)
+              .map(share => (
+                <Box
+                  key={`share:${share.name}`}
+                  flexGrow={share.count}
+                  backgroundColor={share.color}
+                />
+              ))}
+          </Box>
+          <Box
+            gap={2}
+            flexWrap='wrap'
+          >
+            {shares.map(share => (
+              <Text key={`legend:${share.name}`}>
+                <Text color={share.color}>■ </Text>
+                {`${share.count} ${share.name.toLowerCase()}`}
+              </Text>
+            ))}
+            <Text color='subtle'>{`of ${shareTotal}`}</Text>
+          </Box>
+        </Box>
+      );
+
     const body = (
       <Box
         flexDirection='column'
         marginY={1}
         gap={1}
       >
+        {progress}
         {current.sections.map(section => {
           // Loose threads are entries too: a section holding only threads is not empty.
           const count = section.items.length + section.threads.length;
