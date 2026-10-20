@@ -32,5 +32,6 @@
     "doctor",
     "health-check"
   ],
-  "skills": "./skills"
+  "skills": "./skills",
+  "types": "./hooks/mod/types/index.d.ts"
 }

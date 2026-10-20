@@ -11,5 +11,8 @@
         ]
       }
     ]
-  }
+  },
+  "modules": [
+    "./mod/register.tsx"
+  ]
 }
