@@ -12,6 +12,30 @@ export const colorFor = (index: number): string => PALETTE[index % PALETTE.lengt
 
 const GAP = 3;
 
+// Each share's span along a track of `length`, proportional to its count except that none is shorter than `minSpan`: a
+// round-capped segment is at least as wide as it is thick, so a thinner share would spill over its neighbours. What the
+// small ones are lent is taken from the large ones in proportion.
+export const allot = (counts: number[], length: number, minSpan: number): number[] => {
+  const total = counts.reduce((sum, count) => sum + count, 0);
+
+  if (total === 0) {
+    return counts.map(() => 0);
+  }
+
+  const raw = counts.map(count => (count / total) * length);
+  const isSmall = raw.map(span => span < minSpan);
+  const lent = isSmall.filter(Boolean).length * minSpan;
+  const largeTotal = raw.reduce((sum, span, index) => sum + (isSmall[index] ? 0 : span), 0);
+
+  if (largeTotal <= 0 || lent >= length) {
+    return raw;
+  }
+
+  const scale = (length - lent) / largeTotal;
+
+  return raw.map((span, index) => (isSmall[index] ? minSpan : span * scale));
+};
+
 export const ringSvg = (shares: Share[], doneCount: number): string => {
   const total = shares.reduce((sum, share) => sum + share.count, 0);
   const stroke = 10;
@@ -20,11 +44,14 @@ export const ringSvg = (shares: Share[], doneCount: number): string => {
   const percent = total === 0 ? 0 : Math.round((doneCount / total) * 100);
   const visibleShares = shares.filter(share => share.count > 0);
 
+  // The drawn arc is its `visible` length plus a round cap of half the stroke at each end, centred in the span it owns.
+  const spans = allot(visibleShares.map(share => share.count), circumference, stroke + GAP);
+
   let offset = 0;
 
   const arcs = visibleShares
-    .map(share => {
-      const length = (share.count / total) * circumference;
+    .map((share, index) => {
+      const span = spans[index] ?? 0;
       const title = `<title>${escapeXml(`${share.count} ${share.name.toLowerCase()}`)}</title>`;
 
       // One segment is the whole ring: a gap would only be a notch.
@@ -32,13 +59,11 @@ export const ringSvg = (shares: Share[], doneCount: number): string => {
         return `<circle cx="50" cy="50" r="${radius}" fill="none" stroke="${share.color}" stroke-width="${stroke}">${title}</circle>`;
       }
 
-      // A round cap reaches half the stroke past each end, so the drawn arc is `visible` plus a full stroke; shrinking it
-      // by the stroke and the gap leaves a gap between neighbours, and a share too small for that stays a dot.
-      const visible = Math.max(0.01, length - stroke - GAP);
-      const start = offset + (GAP + stroke) / 2;
+      const visible = Math.max(0.01, span - stroke - GAP);
+      const start = offset + (span - visible) / 2;
       const arc = `<circle cx="50" cy="50" r="${radius}" fill="none" stroke="${share.color}" stroke-width="${stroke}" stroke-linecap="round" stroke-dasharray="${visible.toFixed(2)} ${(circumference - visible).toFixed(2)}" stroke-dashoffset="${(-start).toFixed(2)}" transform="rotate(-90 50 50)">${title}</circle>`;
 
-      offset += length;
+      offset += span;
 
       return arc;
     })
@@ -56,7 +81,9 @@ export const ringSvg = (shares: Share[], doneCount: number): string => {
 // Rounded progress segments: each is a line with round caps, so a share narrower than the bar is tall stays a dot. Drawn
 // large and sized by its own width/height: an SVG with a viewBox alone has no intrinsic size, and the desktop gives it a
 // tall default box instead.
-export const barSvg = (shares: Share[], width = 1200, height = 22): string => {
+export const BAR_HEIGHT = 22;
+
+export const barSvg = (shares: Share[], width = 1200, height = BAR_HEIGHT): string => {
   const total = shares.reduce((sum, share) => sum + share.count, 0);
   const visibleShares = shares.filter(share => share.count > 0);
   const middle = height / 2;
@@ -67,20 +94,19 @@ export const barSvg = (shares: Share[], width = 1200, height = 22): string => {
   }
 
   // Each share owns a span of the full width; a round cap overhangs its line by half the height, so the line runs between
-  // the caps' centres and the drawn segment fills the span minus the gap. A span too short for that collapses to a dot.
+  // the caps' centres and the drawn segment fills the span minus the gap.
   const gap = visibleShares.length > 1 ? height / 3 : 0;
+
+  const spans = allot(visibleShares.map(share => share.count), width, height + gap);
 
   let cursor = 0;
 
   const segments = visibleShares
-    .map(share => {
-      const span = (share.count / total) * width;
-      const start = cursor + gap / 2;
-      const end = cursor + span - gap / 2;
-      const isDot = end - start < height;
-      // A dot is clamped inside the drawing, or the last share's would be cut by its edge.
-      const from = isDot ? Math.min(width - middle, Math.max(middle, (start + end) / 2)) : start + middle;
-      const to = isDot ? from : end - middle;
+    .map((share, index) => {
+      const span = spans[index] ?? 0;
+      const from = cursor + gap / 2 + middle;
+      // A span holding only a cap's worth is a dot: the two ends meet.
+      const to = Math.max(from, cursor + span - gap / 2 - middle);
 
       cursor += span;
 

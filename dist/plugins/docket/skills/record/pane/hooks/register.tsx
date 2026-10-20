@@ -10,7 +10,7 @@ import {
 } from 'claude-code';
 
 import { type DocketBoard, type DocketItem, type DocketSection } from '../types';
-import { type Share, PALETTE, barSvg, colorFor, ringSvg, sparklineSvg } from './charts';
+import { type Share, BAR_HEIGHT, PALETTE, barSvg, colorFor, ringSvg, sparklineSvg } from './charts';
 import { ageInDays, ancestors, baseName, closesByWeek, joinPath, parseDocket } from './docket';
 
 const PANE = 'docket';
@@ -543,10 +543,12 @@ export const register: Register = on => {
                 ))}
             </Box>
           ) : (
-            // Rounded segments are a vector drawing; the terminal's cells cannot round a block.
+            // Rounded segments are a vector drawing; the terminal's cells cannot round a block. The height is passed as well
+            // as drawn into the markup: the desktop ignores the markup's own size and boxes an unsized Svg far taller than it.
             <Svg
               source={barSvg(shares)}
               alt={`${done} of ${shareTotal} items done`}
+              height={BAR_HEIGHT}
               isInteractive
             />
           )}

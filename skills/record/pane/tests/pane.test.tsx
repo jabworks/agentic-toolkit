@@ -358,3 +358,19 @@ test('typing in the desktop filter hides items that do not match and says so', a
 
   expect(await ui.find({ key: 'item:7' })).toBeDefined();
 });
+
+test('every Svg the desktop draws is given an explicit height, or the app boxes it far taller than it is', async ($, on) => {
+  answerBeneath(on, true);
+
+  await $.command.run(RUN_DOCKET);
+
+  const ui = await mountPane('desktop', $);
+  const svgs = await ui.findAll({ type: 'Svg' });
+
+  // The bar, the ring and the sparkline.
+  expect(svgs.length).toBe(3);
+
+  for (const svg of svgs) {
+    expect(typeof svg.props.height).toBe('number');
+  }
+});

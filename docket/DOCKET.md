@@ -9,6 +9,10 @@ Stale open markers cost real sessions — closing means moving.
 
 ## Committed
 
+### 107. /docket pane desktop: thin segments overlapped in the ring and bar; the bar's Svg still had a tall box (2026-10-20)
+
+Follow-up to #106, rides in PR #189 (docket 0.12.2). (1) A share thinner than a round-capped segment is wide (3 of 175 in a ring) was centred nowhere near its slice and spilled over its neighbours. `allot()` now gives every segment a minimum span (stroke+gap) taken proportionally from the large ones, and each arc/line is centred in its span; tests parse the drawn arcs and lines and assert no overlap, mutation-checked (min span 0 fails both). (2) The bar still sat in a tall box after it was given width/height attributes: the app ignores the markup's own size, the ring and sparkline only looked right because they pass explicit width/height props. The bar now passes `height` too (a test asserts every desktop Svg has one). NOT verified in the app: height-only is a guess; fallback is an explicit width as well (slot looked ~800 CSS px), at the cost of overflow risk in narrow panes.
+
 ## Someday
 
 ### 65. toolkit-debugging-playbook applied-but-cold — evaluate for a routing nudge next period (2026-08-28)

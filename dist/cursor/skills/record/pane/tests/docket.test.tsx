@@ -1,7 +1,7 @@
 import { expect, test } from 'claude-code/testing';
 
 import { ageInDays, ancestors, baseName, closesByWeek, joinPath, parseDocket, splitTitle } from '../hooks/docket';
-import { barSvg, colorFor, ringSvg, sparklineSvg } from '../hooks/charts';
+import { allot, barSvg, colorFor, ringSvg, sparklineSvg } from '../hooks/charts';
 
 const FIXTURE = [
   '# DOCKET',
@@ -214,4 +214,69 @@ test('neither chart draws a grey track behind its segments', async () => {
 
   expect(barSvg(shares)).not.toContain('#888888');
   expect(ringSvg(shares, 3).match(/stroke="#888888"/g)).toBe(null);
+});
+
+const TINY = [
+  { name: 'Done', count: 140, color: '#1' },
+  { name: 'Committed', count: 12, color: '#2' },
+  { name: 'Someday', count: 7, color: '#3' },
+  { name: 'Parked', count: 13, color: '#4' },
+  { name: 'Loose threads', count: 3, color: '#5' },
+];
+const EXTREME = [
+  { name: 'A', count: 300, color: '#1' },
+  { name: 'B', count: 1, color: '#2' },
+  { name: 'C', count: 1, color: '#3' },
+  { name: 'D', count: 1, color: '#4' },
+];
+
+// What each drawn segment covers along its track, caps included, in drawing order.
+const ringIntervals = (svg: string, stroke = 10): [number, number][] =>
+  [...svg.matchAll(/stroke-dasharray="([\d.]+) [\d.]+" stroke-dashoffset="(-[\d.]+|0\.00)"/g)].map(match => {
+    const start = -Number(match[2]);
+
+    return [start - stroke / 2, start + Number(match[1]) + stroke / 2];
+  });
+
+const barIntervals = (svg: string, height: number): [number, number][] =>
+  [...svg.matchAll(/<line x1="([\d.]+)" y1="[\d.]+" x2="([\d.]+)"/g)].map(match => [
+    Number(match[1]) - height / 2,
+    Number(match[2]) + height / 2,
+  ]);
+
+const overlaps = (intervals: [number, number][]): boolean =>
+  intervals.some(([, end], index) => {
+    const next = intervals[index + 1];
+
+    return next !== undefined && end > next[0] + 0.05;
+  });
+
+test('allot keeps the total, never goes below the minimum, and takes from the large shares', async () => {
+  const spans = allot([140, 12, 7, 13, 3], 240, 13);
+
+  expect(Math.abs(spans.reduce((sum, span) => sum + span, 0) - 240)).toBeLessThan(1e-6);
+  expect(Math.min(...spans)).toBeGreaterThanOrEqual(13 - 1e-9);
+  expect(spans[0]).toBeLessThan((140 / 175) * 240);
+});
+
+test('allot leaves proportions alone when every share is big enough', async () => {
+  expect(allot([1, 1], 100, 10)).toEqual([50, 50]);
+});
+
+test('ring segments never overlap, even when several shares are far thinner than the stroke', async () => {
+  for (const shares of [TINY, EXTREME]) {
+    const intervals = ringIntervals(ringSvg(shares, shares[0]?.count ?? 0));
+
+    expect(intervals.length).toBe(shares.length);
+    expect(overlaps(intervals)).toBe(false);
+  }
+});
+
+test('bar segments never overlap, even when several shares are far thinner than the bar is tall', async () => {
+  for (const shares of [TINY, EXTREME]) {
+    const intervals = barIntervals(barSvg(shares, 1200, 22), 22);
+
+    expect(intervals.length).toBe(shares.length);
+    expect(overlaps(intervals)).toBe(false);
+  }
 });
