@@ -9,3 +9,6 @@ node_modules/
 # `npx skills add` local install state
 .agents/
 skills-lock.json
+
+# Written by Claude Code into a plugin folder it loads via CLAUDE_CODE_PLUGIN_DIRS; never part of the plugin.
+dist/plugins/*/tsconfig.json
