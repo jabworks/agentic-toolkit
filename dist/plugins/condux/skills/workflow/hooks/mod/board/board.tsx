@@ -5,7 +5,7 @@ import { joinPath } from '../kit/paths';
 import { type BoardPlan, type BoardSnapshot, type Ledger, type Plan } from '../types';
 import { parseLedger } from './parse-ledger';
 import { parsePlan } from './parse-plan';
-import { deriveBoard } from './state';
+import { deriveBoard, statusText } from './state';
 import { boardText, groupPlans, isActive, planCount, statusLabel, taskGlyph, waitLabel } from './text';
 
 const PANE = 'condux';
@@ -38,6 +38,9 @@ let lastCwd: string | undefined;
 let fingerprint: string | undefined;
 let cache: { plans: Plan[]; ledgers: Ledger[]; updatedMs: number } | undefined;
 let failures = 0;
+// The status line rides the same poll as the pane: one timer, two reasons to keep it running.
+let isStatusOn = false;
+let lastStatus: string | null | undefined;
 
 // Missing and unreadable boards are rewritten on every poll; skipping identical writes keeps the pane from redrawing.
 async function setBoard($: EngineInterface, value: BoardSnapshot): Promise<void> {
@@ -146,17 +149,36 @@ const stopPolling = (): void => {
   poll = undefined;
 };
 
-// ui.close hooks do not run when the engine unloads a pane whose drawing threw, so each tick checks the pane is up.
+// Pins the one-line summary under the prompt; a repeat of what is already pinned is not sent again.
+async function publishStatus($: EngineInterface): Promise<void> {
+  if (!isStatusOn) {
+    return;
+  }
+
+  const snapshot = await read($, board);
+  const text = snapshot?.kind === 'found' ? statusText(snapshot.plans) : null;
+
+  if (text === lastStatus) {
+    return;
+  }
+
+  lastStatus = text;
+  $.ui.status(text ?? undefined);
+}
+
+// ui.close hooks do not run when the engine unloads a pane whose drawing threw, so each tick checks the pane is up. The
+// timer then stops only if the status line has no use for it either.
 async function tick($: EngineInterface): Promise<void> {
   const panes = await $.ui.panes().catch(() => undefined);
 
-  if (panes !== undefined && !panes.some(pane => pane.id === PANE)) {
+  if (!isStatusOn && panes !== undefined && !panes.some(pane => pane.id === PANE)) {
     stopPolling();
 
     return;
   }
 
   await refresh($, false);
+  await publishStatus($);
 }
 
 function startPolling($: EngineInterface): void {
@@ -214,6 +236,35 @@ export async function resumeBoard($: EngineInterface): Promise<void> {
   }
 }
 
+// Arms the status line: a session-long timer that runs only where a working-state directory exists, so a repository
+// that never used condux never pays for a poll. One that gains `.condux` mid-session is picked up the next time `/condux` is
+// run. After a hot reload `session.start` fires again, which re-arms this with fresh module state.
+export async function armStatus($: EngineInterface): Promise<void> {
+  const found = await locateWorkingState($, await $.session.cwd());
+
+  if (found === null) {
+    return;
+  }
+
+  isStatusOn = true;
+  await refresh($, true);
+  await publishStatus($);
+  startPolling($);
+}
+
+// Called from session.end. A `/clear` ends the session without a new session.start, and the process goes on with the
+// same plans, so it keeps the line; anything else is the end of the process and clears it.
+export function disarmStatus($: EngineInterface, reason: string): void {
+  if (reason === 'clear') {
+    return;
+  }
+
+  isStatusOn = false;
+  lastStatus = undefined;
+  $.ui.status(undefined);
+  stopPolling();
+}
+
 export const registerBoard = (on: On): void => {
   on('command.run', { command: 'condux' }, async ($, e) => {
     const argument = e.args.trim();
@@ -231,6 +282,7 @@ export const registerBoard = (on: On): void => {
     const opened = await openPane($);
 
     await refresh($, true);
+    await armStatus($);
 
     if (!opened.isPlaced) {
       // No pane here, so nothing polls; the board goes to the transcript once.
@@ -246,7 +298,7 @@ export const registerBoard = (on: On): void => {
   });
 
   on('ui.close', ($, e, next) => {
-    if (e.id === PANE) {
+    if (e.id === PANE && !isStatusOn) {
       stopPolling();
     }
 

@@ -1,134 +1,20 @@
-import { type CommandRunInput, type On, type RenderSurface } from 'claude-code';
-import { type Engine, expect, mock, test } from 'claude-code/testing';
+import { expect, test } from 'claude-code/testing';
 
-const SURFACES = ['terminal', 'desktop'] as const;
-const ROOT = '/repo';
-const PLANS = `${ROOT}/.condux/plans`;
-const PROGRESS = `${ROOT}/.condux/progress`;
-const MINUTE = 60_000;
-const DAY = 86_400_000;
-
-const run = (args: string): CommandRunInput => ({
-  command: 'condux',
-  args,
-  origin: { kind: 'composer' },
-  presentation: { isFullscreen: true, columns: 160 },
-});
-
-type VFile = { text: string; mtimeMs: number };
-
-// A plan whose tasks form a chain: each waits on the one before it.
-const planText = (title: string, count: number): string =>
-  [
-    `# Plan: ${title}`,
-    '',
-    ...Array.from({ length: count }, (_, i) => [
-      `## Task ${i + 1}: step ${i + 1}`,
-      '',
-      `Card text for step ${i + 1}.`,
-      '',
-      `**Dependencies:** ${i === 0 ? 'None' : `Task ${i}`}`,
-      '',
-    ]).flat(),
-  ].join('\n');
-
-const ledgerText = (planFile: string, lines: string[]): string =>
-  ['# Progress', '', `Plan: .condux/plans/${planFile}`, '', ...lines, ''].join('\n');
-
-type World = {
-  files: Record<string, VFile>;
-  hasCondux: boolean;
-  open: 'placed' | 'silent';
-  isPaneUp: boolean;
-  lists: number;
-};
-
-// The kit runs with no fs, so the test answers every `$` call the module makes from beneath it.
-const answerBeneath = (on: On, build: (now: number) => Record<string, VFile>) => {
-  const clock = mock.clock(on);
-  const now = clock.now();
-  const world: World = { files: build(now), hasCondux: true, open: 'placed', isPaneUp: true, lists: 0 };
-  const children = (dir: string) =>
-    Object.entries(world.files).filter(([path]) => path.startsWith(`${dir}/`) && !path.slice(dir.length + 1).includes('/'));
-
-  on('session.start', (_$, e) => ({ cwd: e.cwd }));
-  on('session.cwd', () => ({ value: ROOT }));
-  on('command.register', (_$, e) => ({ value: { command: e.name } }));
-  on('ui.panes', () => ({
-    value: world.isPaneUp ? [{ id: 'condux', title: 'condux', isShown: true, isFocused: true, isPlaced: true }] : [],
-  }));
-  on('ui.toast', () => ({ value: undefined }));
-  on('ui.open', () => {
-    if (world.open === 'silent') {
-      return new Promise(() => undefined);
-    }
-
-    return { value: { isPlaced: true } };
-  });
-  on('fs.exists', (_$, e) => ({
-    value: (world.hasCondux && e.path === `${ROOT}/.condux`) || e.path === `${ROOT}/.git`,
-  }));
-  on('fs.list', (_$, e) => {
-    world.lists += 1;
-
-    if (e.path !== PLANS && e.path !== PROGRESS) {
-      return { deny: 'ENOENT' };
-    }
-
-    return {
-      value: children(e.path).map(([path, file]) => ({
-        name: path.slice(e.path.length + 1),
-        kind: 'file',
-        size: file.text.length,
-        mtimeMs: file.mtimeMs,
-        isLink: false,
-      })),
-    };
-  });
-  on('fs.read', (_$, e) => {
-    const file = world.files[e.path];
-
-    return file ? { value: file.text } : { deny: 'ENOENT' };
-  });
-
-  return { world, clock, now };
-};
-
-const mountPane = <S extends RenderSurface>(surface: S, $: Engine) =>
-  $.ui.mount({
-    plugin: 'condux',
-    surface,
-    component: 'Pane',
-    requestId: 'condux',
-    props: {
-      title: 'condux',
-      isFocused: true,
-      bodyColumns: 100,
-      placement: 'dock',
-      scroll: { offset: 0, bodyRows: 40 },
-      view: {},
-    },
-  });
-
-// An active plan, a finished one, one with no ledger and an abandoned one.
-const sampleFiles = (now: number): Record<string, VFile> => ({
-  [`${PLANS}/2026-10-10-active.md`]: { text: planText('Active work', 3), mtimeMs: now - DAY },
-  [`${PROGRESS}/active.md`]: {
-    text: ledgerText('2026-10-10-active.md', ['- [x] Task 1: step 1 — done']),
-    mtimeMs: now - 2 * MINUTE,
-  },
-  [`${PLANS}/2026-09-01-shipped.md`]: { text: planText('Shipped work', 1), mtimeMs: now - 30 * DAY },
-  [`${PROGRESS}/shipped.md`]: {
-    text: ledgerText('2026-09-01-shipped.md', ['- [x] Task 1: step 1 — done', '- [x] committed abc1234; PR #7 open']),
-    mtimeMs: now - 20 * DAY,
-  },
-  [`${PLANS}/2026-08-01-quiet.md`]: { text: planText('Never ledgered', 2), mtimeMs: now - 60 * DAY },
-  [`${PLANS}/2026-07-01-abandoned.md`]: { text: planText('Abandoned work', 2), mtimeMs: now - 90 * DAY },
-  [`${PROGRESS}/abandoned.md`]: {
-    text: ledgerText('2026-07-01-abandoned.md', ['- [x] Task 1: step 1 — done']),
-    mtimeMs: now - 40 * DAY,
-  },
-});
+import {
+  answerBeneath,
+  DAY,
+  ledgerText,
+  MINUTE,
+  mountPane,
+  PLANS,
+  planText,
+  PROGRESS,
+  ROOT,
+  run,
+  sampleFiles,
+  SURFACES,
+  type VFile,
+} from './harness';
 
 for (const surface of SURFACES) {
   test(`lists active plans with glyph rows, and the key hints sit above the list on ${surface}`, async ($, on) => {
@@ -255,26 +141,28 @@ test('the board redraws as the agent appends to a ledger: a ticked task appears 
   expect((await ui.find({ key: 'task:2026-10-10-active.md:3' }))?.text).toContain('▶');
 });
 
-test('polling stops once the pane is gone, even when no ui.close hook ran', async ($, on) => {
+test('without a working-state directory the poll runs only while the pane is up, even when no ui.close hook ran', async ($, on) => {
   const { world, clock } = answerBeneath(on, sampleFiles);
 
+  // No `.condux` means the status line never arms, so the pane is the poll's only reason to run.
+  world.hasCondux = false;
   await $.command.run(run(''));
 
-  // Control: with the pane up, every tick lists both directories.
-  const before = world.lists;
+  // Control: with the pane up, every tick looks again.
+  const before = world.exists;
 
   await clock.advance(6000);
 
-  expect(world.lists).toBe(before + 4);
+  expect(world.exists).toBeGreaterThan(before);
 
   world.isPaneUp = false;
   await clock.advance(3000);
 
-  const after = world.lists;
+  const after = world.exists;
 
   await clock.advance(9000);
 
-  expect(world.lists).toBe(after);
+  expect(world.exists).toBe(after);
 });
 
 test('a surface that never answers ui.open gets the board as text instead of a hang', async ($, on) => {
