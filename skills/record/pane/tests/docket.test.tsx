@@ -1,6 +1,7 @@
 import { expect, test } from 'claude-code/testing';
 
-import { ageInDays, ancestors, baseName, joinPath, parseDocket, splitTitle } from '../hooks/docket';
+import { ageInDays, ancestors, baseName, closesByWeek, joinPath, parseDocket, splitTitle } from '../hooks/docket';
+import { colorFor, ringSvg, sparklineSvg } from '../hooks/charts';
 
 const FIXTURE = [
   '# DOCKET',
@@ -118,4 +119,57 @@ test('ageInDays counts whole UTC days and rejects unparsable dates', async () =>
   expect(ageInDays('2026-10-01', now)).toBe(10);
   expect(ageInDays('not a date', now)).toBe(null);
   expect(ageInDays('2026-02-31', now)).toBe(null);
+});
+
+const NOW = Date.UTC(2026, 9, 20, 12);
+
+test('closesByWeek buckets DONE dates by week, oldest first, and counts a combined entry twice', async () => {
+  const archive = [
+    '# DOCKET ARCHIVE 2026',
+    '',
+    '## 19. Closed this week (2026-10-01) — ✅ DONE 2026-10-19',
+    '## 2 + 17. Closed together (2026-08-05) — ✅ DONE 2026-10-15',
+    '## 5. Closed last week — ✅ DONE 2026-10-09',
+    '## 6. Too old to chart — ✅ DONE 2026-01-02',
+    '## 7. No close stamp at all',
+  ].join('\n');
+
+  const counts = closesByWeek([archive], NOW, 4);
+
+  expect(counts).toEqual([0, 0, 1, 3]);
+});
+
+test('closesByWeek is all zeros for an empty archive', async () => {
+  expect(closesByWeek([], NOW, 3)).toEqual([0, 0, 0]);
+});
+
+test('colorFor gives distinct colours to the first seven segments', async () => {
+  const colors = new Set([0, 1, 2, 3, 4, 5, 6].map(colorFor));
+
+  expect(colors.size).toBe(7);
+});
+
+test('ringSvg draws one arc per non-empty share, the done percentage, and escapes names', async () => {
+  const svg = ringSvg(
+    [
+      { name: 'Done', count: 3, color: '#111111' },
+      { name: 'A & B', count: 1, color: '#222222' },
+      { name: 'Empty', count: 0, color: '#333333' },
+    ],
+    3,
+  );
+
+  expect(svg.match(/stroke-dasharray/g)?.length).toBe(2);
+  expect(svg).toContain('75%');
+  expect(svg).toContain('1 a &amp; b');
+  expect(svg).not.toContain('#333333');
+});
+
+test('sparklineSvg draws a bar per week with a tooltip, and a quiet week stays visible', async () => {
+  const svg = sparklineSvg([0, 2, 4], '#3f8f5b');
+
+  expect(svg.match(/<rect/g)?.length).toBe(3);
+  expect(svg).toContain('4 closed this week');
+  expect(svg).toContain('2 closed 1 week ago');
+  expect(svg).toContain('fill-opacity="0.25"');
 });

@@ -32,6 +32,8 @@ export type DocketBoard =
       // docket.json's `next_id`: ids are never reused, so everything ever logged is `nextId - 1`. Null for a legacy
       // BACKLOG.md board, or when docket.json is missing or unreadable.
       nextId: number | null;
+      // Items closed per week, oldest first, the last being this week, read from the archive; null where there is none.
+      weeklyCloses: number[] | null;
     }
   | { kind: 'missing'; searchedFrom: string }
   | { kind: 'unreadable'; file: string; reason: string };
@@ -43,6 +45,8 @@ declare module 'claude-code' {
       board: DocketBoard | null;
       // The idParts whose bodies are expanded.
       expanded: string[];
+      // The desktop's filter box: items whose id or title lacks this text are hidden.
+      filter: string;
     };
   }
 }

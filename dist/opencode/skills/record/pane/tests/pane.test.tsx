@@ -40,6 +40,8 @@ type Fill = { text: string; mode: PromptFillMode };
 type World = {
   hasDocket: boolean;
   text: string;
+  // The archive's text: what the desktop's close sparkline reads.
+  archive: string;
   // docket.json's text; `null` plays a board with none.
   config: string | null;
   mtimeMs: number;
@@ -57,6 +59,7 @@ const answerBeneath = (on: On, hasDocket: boolean) => {
   const world: World = {
     hasDocket,
     text: FIXTURE,
+    archive: '## 3. Shipped — ✅ DONE 2026-10-19\n',
     config: '{ "next_id": 11 }',
     mtimeMs: 1,
     isPaneUp: true,
@@ -83,7 +86,12 @@ const answerBeneath = (on: On, hasDocket: boolean) => {
 
     return { value: { kind: 'file', size: world.text.length, mtimeMs: world.mtimeMs, isLink: false } };
   });
+  on('fs.list', () => ({ value: [{ name: '2026.md', kind: 'file', size: 1, mtimeMs: 1, isLink: false }] }));
   on('fs.read', (_$, e) => {
+    if (e.path.includes('/archive/')) {
+      return { value: world.archive };
+    }
+
     if (e.path.endsWith('docket.json')) {
       return world.config === null ? { deny: 'ENOENT' } : { value: world.config };
     }
@@ -108,7 +116,7 @@ const answerBeneath = (on: On, hasDocket: boolean) => {
   return { world, clock };
 };
 
-const mountPane = (surface: RenderSurface, $: Engine) =>
+const mountPane = <S extends RenderSurface>(surface: S, $: Engine) =>
   $.ui.mount({
     plugin: 'docket',
     surface,
@@ -312,3 +320,38 @@ for (const surface of SURFACES) {
     expect(await ui.find({ text: /of 2 logged/ })).toBeDefined();
   });
 }
+
+test('the desktop draws the ring, the close sparkline and a filter; the terminal draws none of them', async ($, on) => {
+  answerBeneath(on, true);
+
+  await $.command.run(RUN_DOCKET);
+
+  const desktop = await mountPane('desktop', $);
+
+  expect(await desktop.find({ key: 'filter' })).toBeDefined();
+  expect(await desktop.find({ text: /closed in the last 4 weeks/ })).toBeDefined();
+
+  const terminal = await mountPane('terminal', $);
+
+  expect(await terminal.find({ key: 'filter' })).toBe(undefined);
+  expect(await terminal.find({ text: /closed in the last 4 weeks/ })).toBe(undefined);
+});
+
+test('typing in the desktop filter hides items that do not match and says so', async ($, on) => {
+  answerBeneath(on, true);
+
+  await $.command.run(RUN_DOCKET);
+
+  const ui = await mountPane('desktop', $);
+
+  expect(await ui.find({ key: 'item:7' })).toBeDefined();
+
+  await ui.input({ key: 'filter', text: 'zzz-nothing' });
+
+  expect(await ui.find({ key: 'item:7' })).toBe(undefined);
+  expect(await ui.find({ text: /no matches/ })).toBeDefined();
+
+  await ui.input({ key: 'filter', text: 'fix the' });
+
+  expect(await ui.find({ key: 'item:7' })).toBeDefined();
+});
