@@ -1,6 +1,6 @@
-// Plan and ledger text shaped like the real files. The mod environment has no filesystem, so fixtures are strings. Each
-// one exists because a real line broke an earlier rule: ranges, an en dash, a real dependency next to a parenthetical, a
-// "None" with a note, and headings inside code fences.
+// Plan and ledger text shaped like the real files. The mod environment has no filesystem, so fixtures are strings.
+// Each one exists because a real line broke an earlier rule: ranges, an en dash, a real dependency next to a
+// parenthetical, a "None" with a note, and headings inside code fences.
 const FENCE = '```';
 
 export const PLAN_RANGES = [

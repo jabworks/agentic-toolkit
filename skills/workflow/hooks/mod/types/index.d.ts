@@ -50,6 +50,38 @@ export interface Ledger {
   mtimeMs: number;
 }
 
+// next-ready is the lowest-numbered ready task: a derived guess at what is next, never a claim that work is in progress.
+export type TaskState = 'done' | 'next-ready' | 'ready' | 'blocked';
+
+// no-ledger: no ledger file, state unknown. not-started: a ledger with no lines. tasks-done: every task ticked, no
+// commit or PR line yet. complete: tasks done and a commit or PR line. stale: unfinished, ledger untouched for 14 days.
+export type PlanStatus = 'no-ledger' | 'not-started' | 'in-progress' | 'tasks-done' | 'complete' | 'stale';
+
+export interface BoardTask {
+  task: PlanTask;
+  state: TaskState;
+  // Dependencies not yet done; empty for a done or ready task.
+  waitsOn: number[];
+  // True when the task's unmet dependencies lead back to itself.
+  inCycle: boolean;
+}
+
+export interface BoardPlan {
+  plan: Plan;
+  // The ledger linked to the plan; null for a plan with none.
+  ledger: Ledger | null;
+  status: PlanStatus;
+  tasks: BoardTask[];
+  // Ledger lines that are not tasks, in file order.
+  wrapUp: LedgerLine[];
+  // Tasks the ledger ticks, counted only against the plan's own task numbers.
+  doneCount: number;
+  // Whole minutes since the ledger last changed, for an unfinished plan with a ledger; null otherwise.
+  idleMinutes: number | null;
+  // True for a ledger that names no plan on disk: a synthetic plan stands in for it.
+  isOrphan: boolean;
+}
+
 declare module 'claude-code' {
   interface PluginState {
     condux: {

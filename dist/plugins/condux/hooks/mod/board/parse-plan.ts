@@ -31,8 +31,8 @@ const markFences = (text: string): Line[] => {
   });
 };
 
-// "Task 1 (defines X)" has a real dependency inside the parenthetical's neighbour, "None (independent of Tasks 1–3)" has
-// none: strip the parentheticals first so their contents never count, then read ranges, then plain mentions.
+// "Task 1 (defines X)" keeps its dependency and "None (independent of Tasks 1–3)" has none: strip the parentheticals
+// first so their contents never count, then read ranges, then plain mentions.
 export const parseDependencies = (raw: string, own: number, known: Set<number>): number[] => {
   const stripped = raw.replace(/\([^)]*\)/g, '');
 
