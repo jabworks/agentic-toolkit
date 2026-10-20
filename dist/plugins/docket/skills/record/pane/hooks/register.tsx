@@ -10,7 +10,7 @@ import {
 } from 'claude-code';
 
 import { type DocketBoard, type DocketItem, type DocketSection } from '../types';
-import { type Share, PALETTE, colorFor, ringSvg, sparklineSvg } from './charts';
+import { type Share, PALETTE, barSvg, colorFor, ringSvg, sparklineSvg } from './charts';
 import { ageInDays, ancestors, baseName, closesByWeek, joinPath, parseDocket } from './docket';
 
 const PANE = 'docket';
@@ -527,20 +527,29 @@ export const register: Register = on => {
           flexDirection='column'
           gap={1}
         >
-          <Box
-            width='100%'
-            height={1}
-          >
-            {shares
-              .filter(share => share.count > 0)
-              .map(share => (
-                <Box
-                  key={`share:${share.name}`}
-                  flexGrow={share.count}
-                  backgroundColor={share.color}
-                />
-              ))}
-          </Box>
+          {Svg === undefined ? (
+            <Box
+              width='100%'
+              height={1}
+            >
+              {shares
+                .filter(share => share.count > 0)
+                .map(share => (
+                  <Box
+                    key={`share:${share.name}`}
+                    flexGrow={share.count}
+                    backgroundColor={share.color}
+                  />
+                ))}
+            </Box>
+          ) : (
+            // Rounded segments are a vector drawing; the terminal's cells cannot round a block.
+            <Svg
+              source={barSvg(shares)}
+              alt={`${done} of ${shareTotal} items done`}
+              isInteractive
+            />
+          )}
           <Box
             gap={2}
             flexWrap='wrap'
@@ -549,7 +558,7 @@ export const register: Register = on => {
               .filter(share => share.name !== 'Done' || share.count > 0)
               .map(share => (
                 <Text key={`legend:${share.name}`}>
-                  <Text color={share.color}>■ </Text>
+                  <Text color={share.color}>{Svg === undefined ? '■ ' : '● '}</Text>
                   {`${share.count} ${share.name.toLowerCase()}`}
                 </Text>
               ))}

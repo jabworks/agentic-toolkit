@@ -1,7 +1,7 @@
 import { expect, test } from 'claude-code/testing';
 
 import { ageInDays, ancestors, baseName, closesByWeek, joinPath, parseDocket, splitTitle } from '../hooks/docket';
-import { colorFor, ringSvg, sparklineSvg } from '../hooks/charts';
+import { barSvg, colorFor, ringSvg, sparklineSvg } from '../hooks/charts';
 
 const FIXTURE = [
   '# DOCKET',
@@ -160,6 +160,7 @@ test('ringSvg draws one arc per non-empty share, the done percentage, and escape
   );
 
   expect(svg.match(/stroke-dasharray/g)?.length).toBe(2);
+  expect(svg.match(/stroke-linecap="round"/g)?.length).toBe(2);
   expect(svg).toContain('75%');
   expect(svg).toContain('1 a &amp; b');
   expect(svg).not.toContain('#333333');
@@ -172,4 +173,35 @@ test('sparklineSvg draws a bar per week with a tooltip, and a quiet week stays v
   expect(svg).toContain('4 closed this week');
   expect(svg).toContain('2 closed 1 week ago');
   expect(svg).toContain('fill-opacity="0.25"');
+});
+
+test('ringSvg draws a lone segment as a whole ring, with no notch', async () => {
+  const svg = ringSvg([{ name: 'Done', count: 5, color: '#111111' }], 5);
+
+  expect(svg).not.toContain('stroke-dasharray');
+  expect(svg).toContain('100%');
+});
+
+test('barSvg rounds every segment, labels each, and leaves a share too thin for a bar as a dot', async () => {
+  const svg = barSvg(
+    [
+      { name: 'Done', count: 99, color: '#111111' },
+      { name: 'Someday', count: 1, color: '#222222' },
+      { name: 'Empty', count: 0, color: '#333333' },
+    ],
+    200,
+    12,
+  );
+
+  expect(svg.match(/stroke-linecap="round"/g)?.length).toBe(3);
+  expect(svg).toContain('1 someday');
+  expect(svg).not.toContain('#333333');
+
+  const dot = svg.match(/<line x1="([\d.]+)" y1="6" x2="([\d.]+)"[^>]*stroke="#222222"/);
+
+  expect(dot?.[1]).toBe(dot?.[2]);
+});
+
+test('barSvg draws only the track for an empty board', async () => {
+  expect(barSvg([], 100, 10).match(/<line/g)?.length).toBe(1);
 });

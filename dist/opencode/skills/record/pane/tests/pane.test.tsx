@@ -330,10 +330,13 @@ test('the desktop draws the ring, the close sparkline and a filter; the terminal
 
   expect(await desktop.find({ key: 'filter' })).toBeDefined();
   expect(await desktop.find({ text: /closed in the last 4 weeks/ })).toBeDefined();
+  // The bar is a rounded vector drawing here, not the terminal's block segments.
+  expect(await desktop.find({ key: 'share:Someday' })).toBe(undefined);
 
   const terminal = await mountPane('terminal', $);
 
   expect(await terminal.find({ key: 'filter' })).toBe(undefined);
+  expect(await terminal.find({ key: 'share:Someday' })).toBeDefined();
   expect(await terminal.find({ text: /closed in the last 4 weeks/ })).toBe(undefined);
 });
 
