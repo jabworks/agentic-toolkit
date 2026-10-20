@@ -3,7 +3,7 @@
 > A Claude Code mod inside the condux plugin: a live, read-only plan and progress board plus a status line, so condux's working state stays in view in the terminal and the desktop app.
 
 **Last updated:** 2026-10-20
-**Commit:** PR #pending
+**Commit:** PR #190
 **Status:** draft
 
 ## Contents
@@ -18,4 +18,4 @@
 | [Quirks](quirks.md) | what will bite you, and whether it is mitigated |
 
 ## Changelog
-- 2026-10-20 (PR #pending): Initial spec from the signed-off design
+- 2026-10-20 (PR #190): Initial spec from the signed-off design
