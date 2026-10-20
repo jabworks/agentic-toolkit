@@ -12,6 +12,10 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## docket 0.12.1 — 2026-10-20
+
+- fix(docket): /docket no longer hangs where the surface never answers ui.open — it times out and prints the board as text
+
 ## condux 2.37.0 — 2026-10-19
 
 - feat(workflow): a triggered strategic track — condux 2.37.0
