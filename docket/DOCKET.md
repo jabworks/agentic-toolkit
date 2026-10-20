@@ -285,4 +285,8 @@ Found 2026-09-22 in the mobile eval (`skills/toolkit-research-frontier/reference
 
 condux moved explorer off haiku in #177 (2026-10-07): sonnet at low effort finished in fewer turns than Haiku 4.5, and turn count costs more than token price. Haiku 5.5 shipped 2026-10-07 (`claude-haiku-5-5`, $0.10/$0.50 per MTok up to 100K), and the `haiku` alias now resolves to it. That reasoning predates the model, so re-measure. explorer has no quality harness yet, so this needs a small one (fixed codebase questions, turn count and answer accuracy) before any switch. The scout A/B under #98 is the template.
 
+### 109. Inline execution leaves no progress ledger — only subagent-execution writes one, so most plans are invisible to a board (2026-10-20)
+
+Found by the Opus review of the condux-mod design (2026-10-20): 7 plans in .condux/plans, 1 ledger in .condux/progress. Only subagent-execution writes `.condux/progress/<slug>.md`, and condux's default is to implement inline, so a read-only plan/progress board can say nothing about most shipped plans (the board will show them as "no ledger, state unknown"). Decide whether inline execution (the workflow's MEDIUM/LARGE implement step) should append ledger lines too — a change to workflow/draft-plan/subagent-execution, outside the mod itself. The mod design handles the gap without it.
+
 ## Loose threads
