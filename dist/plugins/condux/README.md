@@ -151,6 +151,21 @@ an agent requires a concrete justification.
 
 ---
 
+## The Claude Code mod
+
+On Claude Code (terminal and desktop app) condux also ships a **mod**: a small module that draws in the session instead
+of asking you to open a file. It is read-only: it never writes to `.condux/`, runs a command or fills your prompt.
+
+| | |
+|---|---|
+| `/condux` | Opens a live board of your plans: each task as done, next ready, ready or blocked, the ledger's wrap-up lines, and a task's card on expand. Plans with no progress ledger show as "state unknown" rather than guessing. `/condux all` lists every plan, including older finished ones. |
+| Status line | One line under the prompt, such as `plan: my-feature · 4/6 · next: Task 5`, for the open plan whose ledger changed most recently. It appears only in repositories that have a `.condux/` directory, and clears when nothing is open. |
+
+The board reads the plans and progress ledgers under `.condux/` in the repository you are in, and polls them every few
+seconds, so it follows an agent that is working through a plan on its own. If the mod fails to load, the skills and the
+routing hook are unaffected; you get one log line. Codex, OpenCode and Cursor do not load mods, so nothing changes for
+them. The design is in `specs/condux-mod/`.
+
 ## Artifacts
 
 Two tiers, split by durability:
