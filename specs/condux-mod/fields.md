@@ -21,7 +21,7 @@ How each source field turns into something on screen. What a field means lives o
 
 | Source Field | UI Label / FE Key | Type | Nullable | Transformation |
 |---|---|---|---|---|
-| `Plan:` header basename | Plan link | `string` | yes | Falls back to a slug match; a ledger with no plan shows as an orphan |
+| `Plan:` header | Plan link | `string` | yes | The first Markdown file path in the line, reduced to its file name (Q15); falls back to the ledger's own file name, with or without the plan's date; a ledger with no plan shows as an orphan |
 | `BASE:` header | BASE badge | `string` | yes | Shortened to seven characters |
 | `- [x] Task N:` line | Task state `done` | `LedgerLine` | no | Overrides the dependency-derived state |
 | Lines that are not `Task N` | Wrap-up chips | `string` | no | Shown verbatim in file order; four ghost chips (review, preflight or finalize, verify, commit) match loosely so an upcoming stage shows grey |

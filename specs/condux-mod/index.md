@@ -22,3 +22,4 @@
 - 2026-10-20 (PR #190): Initial spec from the signed-off design
 - 2026-10-20 (PR #190): Added verification.md (the broken-module and Codex checks) and updated Q11
 - 2026-10-20 (PR #190): Synced api.md and implementation.md to what PR 1 built; added Q13 and Q14
+- 2026-10-21 (PR #190): Added Q15 (the ledger header is prose) from a real board

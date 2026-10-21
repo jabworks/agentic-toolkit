@@ -16,6 +16,7 @@
 | Q12 | The status line needs a session-long poll; docket polls only while its pane is open | Copying docket's `tick`, which stops when the pane is gone | medium | yes |
 | Q13 | The validator rejects two hooks on one event without a matcher | Two features each registering `session.start` | medium | yes |
 | Q14 | Past an import, `$` is followed only into function declarations | An exported helper that takes `$` written as an arrow constant | medium | yes |
+| Q15 | A ledger's `Plan:` header is prose, and its file name may carry the plan's date | A header like ``Plan: `.condux/plans/x.md` (signed off …; do not edit). Mode chosen …`` | high | yes |
 
 ## Q1 — Plans with no ledger
 
@@ -142,3 +143,12 @@
 **Trigger:** an exported `const fn = async ($, …) => …` called from another file, or any `$`-taking helper reached through one.
 **Cause:** past an import the validator follows `$` only into function declarations, which a bundle keeps as written.
 **Mitigation:** every helper that takes `$` is written `function name($: EngineInterface, …)`, with a comment saying why, against the house arrow style. Pure helpers that never touch `$` stay arrows.
+
+## Q15 — The ledger header is prose
+
+**Discovered:** 2026-10-21, on a real board in another repository (seen in a desktop screenshot).
+
+**Symptom:** a plan shows under "no ledger" while its own ledger shows as a stale orphan.
+**Trigger:** a `Plan:` header with the path in backticks and commentary after it, in a ledger named exactly like its plan (date prefix included).
+**Cause:** an agent writes the header as it likes. The first parser took everything after the last slash as the file name, and the name fallback compared the ledger to the plan's slug without the date.
+**Mitigation:** the plan is the first Markdown file path in the header line (backticks, quotes and angle brackets stripped, the whole text if it names none), and the fallback also matches the plan's file name without the extension. Both are pinned by the real header as a fixture.
