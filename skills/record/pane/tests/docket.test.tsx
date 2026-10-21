@@ -1,6 +1,7 @@
 import { expect, test } from 'claude-code/testing';
 
-import { ageInDays, ancestors, baseName, joinPath, parseDocket, splitTitle } from '../hooks/docket';
+import { ageInDays, ancestors, baseName, closesByWeek, joinPath, parseDocket, splitTitle } from '../hooks/docket';
+import { allot, barSvg, colorFor, ringSvg, sparklineSvg } from '../hooks/charts';
 
 const FIXTURE = [
   '# DOCKET',
@@ -118,4 +119,164 @@ test('ageInDays counts whole UTC days and rejects unparsable dates', async () =>
   expect(ageInDays('2026-10-01', now)).toBe(10);
   expect(ageInDays('not a date', now)).toBe(null);
   expect(ageInDays('2026-02-31', now)).toBe(null);
+});
+
+const NOW = Date.UTC(2026, 9, 20, 12);
+
+test('closesByWeek buckets DONE dates by week, oldest first, and counts a combined entry twice', async () => {
+  const archive = [
+    '# DOCKET ARCHIVE 2026',
+    '',
+    '## 19. Closed this week (2026-10-01) — ✅ DONE 2026-10-19',
+    '## 2 + 17. Closed together (2026-08-05) — ✅ DONE 2026-10-15',
+    '## 5. Closed last week — ✅ DONE 2026-10-09',
+    '## 6. Too old to chart — ✅ DONE 2026-01-02',
+    '## 7. No close stamp at all',
+  ].join('\n');
+
+  const counts = closesByWeek([archive], NOW, 4);
+
+  expect(counts).toEqual([0, 0, 1, 3]);
+});
+
+test('closesByWeek is all zeros for an empty archive', async () => {
+  expect(closesByWeek([], NOW, 3)).toEqual([0, 0, 0]);
+});
+
+test('colorFor gives distinct colours to the first seven segments', async () => {
+  const colors = new Set([0, 1, 2, 3, 4, 5, 6].map(colorFor));
+
+  expect(colors.size).toBe(7);
+});
+
+test('ringSvg draws one arc per non-empty share, the done percentage, and escapes names', async () => {
+  const svg = ringSvg(
+    [
+      { name: 'Done', count: 3, color: '#111111' },
+      { name: 'A & B', count: 1, color: '#222222' },
+      { name: 'Empty', count: 0, color: '#333333' },
+    ],
+    3,
+  );
+
+  expect(svg.match(/stroke-dasharray/g)?.length).toBe(2);
+  expect(svg.match(/stroke-linecap="round"/g)?.length).toBe(2);
+  expect(svg).toContain('75%');
+  expect(svg).toContain('1 a &amp; b');
+  expect(svg).not.toContain('#333333');
+});
+
+test('sparklineSvg draws a bar per week with a tooltip, and a quiet week stays visible', async () => {
+  const svg = sparklineSvg([0, 2, 4], '#3f8f5b');
+
+  expect(svg.match(/<rect/g)?.length).toBe(3);
+  expect(svg).toContain('4 closed this week');
+  expect(svg).toContain('2 closed 1 week ago');
+  expect(svg).toContain('fill-opacity="0.25"');
+});
+
+test('ringSvg draws a lone segment as a whole ring, with no notch', async () => {
+  const svg = ringSvg([{ name: 'Done', count: 5, color: '#111111' }], 5);
+
+  expect(svg).not.toContain('stroke-dasharray');
+  expect(svg).toContain('100%');
+});
+
+test('barSvg rounds every segment, labels each, and leaves a share too thin for a bar as a dot', async () => {
+  const svg = barSvg(
+    [
+      { name: 'Done', count: 99, color: '#111111' },
+      { name: 'Someday', count: 1, color: '#222222' },
+      { name: 'Empty', count: 0, color: '#333333' },
+    ],
+    200,
+    12,
+  );
+
+  expect(svg.match(/stroke-linecap="round"/g)?.length).toBe(2);
+  expect(svg).toContain('1 someday');
+  expect(svg).not.toContain('#333333');
+
+  const dot = svg.match(/<line x1="([\d.]+)" y1="6" x2="([\d.]+)"[^>]*stroke="#222222"/);
+
+  expect(dot?.[1]).toBe(dot?.[2]);
+});
+
+test('barSvg draws nothing for an empty board, and has an intrinsic size so the desktop does not pad it', async () => {
+  const svg = barSvg([], 100, 10);
+
+  expect(svg).not.toContain('<line');
+  expect(svg).toContain('width="100" height="10"');
+});
+
+test('neither chart draws a grey track behind its segments', async () => {
+  const shares = [{ name: 'Done', count: 3, color: '#111111' }];
+
+  expect(barSvg(shares)).not.toContain('#888888');
+  expect(ringSvg(shares, 3).match(/stroke="#888888"/g)).toBe(null);
+});
+
+const TINY = [
+  { name: 'Done', count: 140, color: '#1' },
+  { name: 'Committed', count: 12, color: '#2' },
+  { name: 'Someday', count: 7, color: '#3' },
+  { name: 'Parked', count: 13, color: '#4' },
+  { name: 'Loose threads', count: 3, color: '#5' },
+];
+const EXTREME = [
+  { name: 'A', count: 300, color: '#1' },
+  { name: 'B', count: 1, color: '#2' },
+  { name: 'C', count: 1, color: '#3' },
+  { name: 'D', count: 1, color: '#4' },
+];
+
+// What each drawn segment covers along its track, caps included, in drawing order.
+const ringIntervals = (svg: string, stroke = 10): [number, number][] =>
+  [...svg.matchAll(/stroke-dasharray="([\d.]+) [\d.]+" stroke-dashoffset="(-[\d.]+|0\.00)"/g)].map(match => {
+    const start = -Number(match[2]);
+
+    return [start - stroke / 2, start + Number(match[1]) + stroke / 2];
+  });
+
+const barIntervals = (svg: string, height: number): [number, number][] =>
+  [...svg.matchAll(/<line x1="([\d.]+)" y1="[\d.]+" x2="([\d.]+)"/g)].map(match => [
+    Number(match[1]) - height / 2,
+    Number(match[2]) + height / 2,
+  ]);
+
+const overlaps = (intervals: [number, number][]): boolean =>
+  intervals.some(([, end], index) => {
+    const next = intervals[index + 1];
+
+    return next !== undefined && end > next[0] + 0.05;
+  });
+
+test('allot keeps the total, never goes below the minimum, and takes from the large shares', async () => {
+  const spans = allot([140, 12, 7, 13, 3], 240, 13);
+
+  expect(Math.abs(spans.reduce((sum, span) => sum + span, 0) - 240)).toBeLessThan(1e-6);
+  expect(Math.min(...spans)).toBeGreaterThanOrEqual(13 - 1e-9);
+  expect(spans[0]).toBeLessThan((140 / 175) * 240);
+});
+
+test('allot leaves proportions alone when every share is big enough', async () => {
+  expect(allot([1, 1], 100, 10)).toEqual([50, 50]);
+});
+
+test('ring segments never overlap, even when several shares are far thinner than the stroke', async () => {
+  for (const shares of [TINY, EXTREME]) {
+    const intervals = ringIntervals(ringSvg(shares, shares[0]?.count ?? 0));
+
+    expect(intervals.length).toBe(shares.length);
+    expect(overlaps(intervals)).toBe(false);
+  }
+});
+
+test('bar segments never overlap, even when several shares are far thinner than the bar is tall', async () => {
+  for (const shares of [TINY, EXTREME]) {
+    const intervals = barIntervals(barSvg(shares, 1200, 22), 22);
+
+    expect(intervals.length).toBe(shares.length);
+    expect(overlaps(intervals)).toBe(false);
+  }
 });
