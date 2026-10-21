@@ -85,6 +85,31 @@ test('if a later CLI rewords the block\'s closing line, the skip ends at the nex
   assert.notEqual(result.status, 0, 'a finding after a reworded block must still be counted');
 });
 
+const HOOKS_REPORT = [
+  'Validating hooks: /repo/dist/plugins/demo/hooks/hooks.json',
+  '',
+  '  ❯ ./mod/register.tsx hooks: session.start, tool.call{tool=Write|Edit}',
+  '  ❯ ./mod/register.tsx calls: $.env.get (via autoOpen), $.fs.list',
+  '  ❯ ./mod/register.tsx env writes: nothing',
+  '  ❯ ./mod/register.tsx env reads: CONDUX_AUTO_OPEN',
+  '  ❯ ./mod/register.tsx state writes: condux.board',
+  '  ❯ ./mod/register.tsx state reads: condux.board',
+  '',
+].join('\n');
+
+test('a hooks module that reads the environment reports `env reads` and `env writes`, which are facts, not findings', () => {
+  const result = run(`${MANIFEST_WITH_KNOWN_WARNING}\n${HOOKS_REPORT}\n${DIRECTORY_BLOCK}`);
+
+  assert.equal(result.status, 0, result.stdout + result.stderr);
+});
+
+test('a report-shaped line the script does not know still counts as a finding', () => {
+  const unknown = HOOKS_REPORT.replace('env writes: nothing', 'network writes: somewhere');
+  const result = run(`${MANIFEST_WITH_KNOWN_WARNING}\n${unknown}\n${DIRECTORY_BLOCK}`);
+
+  assert.notEqual(result.status, 0);
+});
+
 test('a validation error still fails', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'validate-plugins-err-'));
   const bin = path.join(root, 'bin');
