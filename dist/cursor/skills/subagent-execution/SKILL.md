@@ -46,32 +46,22 @@ If you can't answer all four, don't spawn.
 
 ## Progress Ledger
 
-Conversation memory does not survive compaction. Track task completion in a
-ledger file, not only in todos.
+The ledger contract — path, header, line format, wrap-up lines — is owned by
+`/workflow` → **Progress Ledger**, because inline execution keeps the same file;
+this section only adds what is specific to dispatching agents.
 
-- At skill start, check for a ledger: `.condux/progress/<feature-slug>.md`
-  (slug inferred kebab-case from the plan's feature name — the same
-  convention `draft-plan` uses for its own filename). Tasks listed there as
-  complete are DONE — do not re-dispatch them; resume at the first task not
-  marked complete.
-- If no ledger exists, create it with a header naming the plan file:
-  ```
-  # Subagent Execution Progress: <feature-slug>
-
-  Plan: .condux/plans/<plan-file>.md
-
-  ```
-- When a task's review comes back clean, append one line in the same
-  message as other bookkeeping: `- [x] Task N: <name> — commits
-  <base7>..<head7>, review clean`.
-- The ledger is a recovery aid, not the source of truth — the commits it
-  names exist in git even if context no longer remembers creating them.
-  After compaction or a new session, trust the ledger and `git log` over
-  your own recollection.
-- `.condux/` is gitignored working state (see `/workflow` → Artifacts). If
-  it's ever deleted, recover progress from `git log` against the plan's task
-  list — and note the plan itself lived there too, so re-derive scope from
-  the spec in `specs/` if the plan is gone as well.
+- At skill start, check for a ledger: `.condux/progress/<feature-slug>.md`.
+  Tasks listed there as complete are DONE — do not re-dispatch them; resume at
+  the first task not marked complete.
+- If no ledger exists, create it with the header `/workflow` defines (naming the
+  plan file and the BASE commit).
+- When a task's review comes back clean, append one line in the same message as
+  other bookkeeping: `- [x] Task N: <name> — commits <base7>..<head7>, review
+  clean`.
+- After compaction or a new session, trust the ledger and `git log` over your own
+  recollection. If `.condux/` is ever deleted, recover progress from `git log`
+  against the plan's task list — and note the plan itself lived there too, so
+  re-derive scope from the spec in `specs/` if the plan is gone as well.
 
 ## How It Works
 

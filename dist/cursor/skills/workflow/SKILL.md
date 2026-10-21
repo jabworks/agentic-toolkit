@@ -107,8 +107,8 @@ Every tier ends with `preflight` then `finalize` — no exceptions.
   Overview · Files · Interfaces · Sketch where non-obvious · Edge cases) → CP-1 →
   implement top-to-bottom → CP-2 → `/preflight` → `/finalize` → CP-3.
 - **LARGE:** load `discovery`, run fully to sign-off → load `draft-plan`, produce the
-  plan doc, sign-off → CP-1 → implement task by task (`subagent-execution` if the
-  user picks it) → CP-2 → `/preflight` → `/finalize` → CP-3.
+  plan doc, sign-off → CP-1 → implement task by task, keeping the Progress Ledger
+  (`subagent-execution` if the user picks it) → CP-2 → `/preflight` → `/finalize` → CP-3.
 
 ## Checkpoints
 
@@ -172,7 +172,7 @@ Load each only when its step is reached.
 | `blueprint` | discovery's propose step, or a standalone mockup/visualization ask | load only when a UI surface or data model is in play; structure, never styling |
 | `draft-plan` | LARGE, after discovery sign-off | needs a signed-off design; no design → apply the discovery soft gate first |
 | `test-first-development` | user asks, or picks it at CP-1 | one upfront consent; always ask before editing an existing test spec |
-| `subagent-execution` | LARGE plan where specialization/parallelism pays off | default is implement yourself |
+| `subagent-execution` | LARGE plan where specialization/parallelism pays off | default is implement yourself; keeps the Progress Ledger |
 | `subagent-deployment` | 2+ independent tasks, no shared files/deps | ad-hoc work, not ordered plans |
 | `preflight` | end of every tier, before finalize | automatic on SMALL; recommended CP-2 choice |
 | `finalize` | after all implementation | runs in order, once, stops on first failure; check AGENTS.md for the real commands |
@@ -228,6 +228,40 @@ without asking. Not a git repo → fall back to CWD and say so once.
 
 **Override.** A project can relocate either tier in `AGENTS.md`; an explicit
 override always wins over these defaults.
+
+## Progress Ledger
+
+Conversation memory does not survive compaction, and a plan file records intent,
+not progress. Whoever implements a plan saved in `.condux/plans/` — you inline,
+or `subagent-execution` — keeps one ledger beside it,
+`.condux/progress/<feature-slug>.md` (the plan's file name minus its date and
+extension):
+
+```
+# Progress: <feature-slug>
+
+Plan: .condux/plans/<plan-file>.md
+BASE: <sha7 of HEAD before Task 1>
+
+- [x] Task 1: <name> — commit <sha7>
+- [x] preflight clean
+- [x] committed <sha7>; PR #N open
+```
+
+- **Task lines** are appended after the task's commit, one per task, in the same
+  message as ticking the todo. A line names a real commit.
+- **Wrap-up lines** (no task number) are appended as each checkpoint step
+  finishes: `code-review`, `preflight`, `finalize`, live verification, then the
+  commit or PR line. A tool that reads the ledger — the `/condux` board — turns
+  them into the pipeline's done and still-to-come steps.
+- **Start of work:** if a ledger exists, tasks ticked there are DONE; resume at
+  the first one that is not.
+- **No saved plan file, no ledger.** A SMALL task and a MEDIUM inline plan have
+  nothing for a ledger to key on; do not invent a plan file to get one.
+- The ledger is a recovery aid, not the source of truth: the commits it names
+  exist in git even when context no longer remembers them. `.condux/` is
+  gitignored working state (see Artifacts), so never cite a ledger from a
+  committed file.
 
 ## Agents
 
