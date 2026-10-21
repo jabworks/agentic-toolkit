@@ -1,7 +1,7 @@
 import { expect, test } from 'claude-code/testing';
 
 import { parseLedger } from '../board/parse-ledger';
-import { LEDGER_HEADER_ONLY, LEDGER_ODD, LEDGER_REAL } from './fixtures';
+import { LEDGER_BACKTICKED, LEDGER_HEADER_ONLY, LEDGER_ODD, LEDGER_REAL } from './fixtures';
 
 test('reads the header and every line of the real ledger in file order', async () => {
   const ledger = parseLedger(LEDGER_REAL, 'diagram-routing-gate.md', 1234);
@@ -54,4 +54,17 @@ test('Windows line endings do not leak into the header or the lines', async () =
   expect(ledger.planFile).toBe('2026-09-08-diagram-routing-gate.md');
   expect(ledger.baseSha).toBe('97b0f89');
   expect(ledger.lines[0]?.text.endsWith('\r')).toBe(false);
+});
+
+test('a Plan: header with the path in backticks and commentary after it still names the plan file', async () => {
+  const ledger = parseLedger(LEDGER_BACKTICKED, '2026-09-15-pocket-haven.md', 0);
+
+  expect(ledger.planFile).toBe('2026-09-15-pocket-haven.md');
+  expect(ledger.lines.length).toBe(1);
+});
+
+test('quotes, angle brackets and a bare path all reduce to the file name; a header naming no .md falls back to its text', async () => {
+  expect(parseLedger('Plan: "plans/a.md"\n', 'x.md', 0).planFile).toBe('a.md');
+  expect(parseLedger("Plan: <.condux/plans/b.md>\n", 'x.md', 0).planFile).toBe('b.md');
+  expect(parseLedger('Plan: see the design doc\n', 'x.md', 0).planFile).toBe('see the design doc');
 });

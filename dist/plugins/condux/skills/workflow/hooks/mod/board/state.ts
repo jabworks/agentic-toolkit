@@ -13,10 +13,11 @@ const dateMs = (date: string | null): number => (date === null ? 0 : (Date.parse
 
 const ledgerSlug = (ledger: Ledger): string => ledger.file.replace(/\.md$/i, '');
 
-// The ledger names its plan; a ledger whose header is missing or stale is still found by its own file name.
+// The ledger names its plan; a ledger whose header is missing or stale is still found by its own file name, with or
+// without the plan's date prefix (a ledger is often named exactly like its plan).
 const linkLedger = (plan: Plan, ledgers: Ledger[]): Ledger | null =>
   ledgers.find(ledger => ledger.planFile === plan.file) ??
-  ledgers.find(ledger => ledgerSlug(ledger) === plan.slug) ??
+  ledgers.find(ledger => [plan.slug, plan.file.replace(/\.md$/i, '')].includes(ledgerSlug(ledger))) ??
   null;
 
 // Whether a not-done task's unmet dependencies lead back to itself.

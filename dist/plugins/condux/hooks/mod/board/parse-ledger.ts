@@ -1,6 +1,9 @@
 import { type Ledger, type LedgerLine } from '../types';
 
 const PLAN_RE = /^Plan:\s*(.+?)\s*$/;
+// The header is prose an agent wrote: the path may sit in backticks or quotes and be followed by commentary ("(signed off
+// 2026-09-17; do not edit). Mode chosen at CP-1: ..."), so the plan is the first Markdown file path in the line.
+const PLAN_PATH_RE = /([^\s`'"()<>[\]]+\.md)\b/i;
 const BASE_RE = /^BASE:\s*(\S+)/;
 const CHECKBOX_RE = /^[-*]\s+\[([ xX])\]\s*(.*?)\s*$/;
 const TASK_RE = /^Task\s+(\d+)\b/i;
@@ -21,7 +24,9 @@ export const parseLedger = (text: string, file: string, mtimeMs: number): Ledger
 
     if (plan !== undefined && planFile === null) {
       // The header names a path from the repo root; only the file name links it to a plan.
-      planFile = plan.split(/[\\/]/).pop() || null;
+      const path = plan.match(PLAN_PATH_RE)?.[1] ?? plan.replace(/[`'"]/g, '');
+
+      planFile = path.split(/[\\/]/).pop() || null;
     } else if (base !== undefined && baseSha === null) {
       baseSha = base;
     } else if (box) {

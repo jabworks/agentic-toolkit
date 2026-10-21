@@ -167,3 +167,13 @@ export const LEDGER_ODD = [
   '* [x] task 5: a star bullet and a lower-case word',
   '',
 ].join('\n');
+
+// A real header from another repository: the path in backticks, then commentary on the same line.
+export const LEDGER_BACKTICKED = [
+  '# Progress — Pocket Haven MVP',
+  '',
+  'Plan: `.condux/plans/2026-09-15-pocket-haven.md` (signed off 2026-09-17; do not edit). Mode chosen at CP-1: dispatch independent tasks in parallel.',
+  '',
+  '- [x] Task 1: scaffold',
+  '',
+].join('\n');

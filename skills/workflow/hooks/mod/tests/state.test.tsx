@@ -163,6 +163,15 @@ test('a ledger finds its plan by header, by its own file name, and an unmatched 
   expect(bySlug['lost']?.status).toBe('in-progress');
 });
 
+test('a ledger named exactly like its plan, date prefix included, links even when its header names nothing usable', async () => {
+  const p = plan('pocket-haven', { 1: [] }, '2026-09-15');
+  const board = deriveBoard([p], [{ ...ledger(p, [done(1)]), file: '2026-09-15-pocket-haven.md', planFile: null }], NOW);
+
+  expect(board.length).toBe(1);
+  expect(board[0]?.isOrphan).toBe(false);
+  expect(board[0]?.doneCount).toBe(1);
+});
+
 test('a plan with no task cards but a ledger with a commit line is complete; without one it is in progress', async () => {
   const p = plan('prose-only', {});
   const [open] = deriveBoard([p], [ledger(p, [wrap('started')])], NOW);
