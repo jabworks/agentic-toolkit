@@ -41,6 +41,18 @@ for p in dist/plugins/*/; do
   # Codex-only by design. Drop the block, from its header to the next
   # unindented line, before counting.
   verdict=$(echo "$out" | awk '/^ℹ Advice/ { skip = 1; next } skip && /^[^ ]/ { skip = 0 } !skip')
+  # Newer CLIs also print "Plugin directory checks for <path>" — what the marketplace
+  # catalog wants (an icon, ICON_MISSING, as of 2026-10-21) — and say themselves that
+  # those checks "do not change the result below". They are catalog advice, not a
+  # finding on this manifest, and an unpinned CLI turned them into a red job on every
+  # plugin overnight. Drop the block, from its header to its own closing line. If a
+  # later CLI rewords that closing line, the block ends at the next section marker
+  # instead, so the skip can never swallow a real finding that follows it.
+  verdict=$(echo "$verdict" | awk '
+    /^Plugin directory checks for / { dir = 1; next }
+    dir && /^These plugin directory checks do not change the result/ { dir = 0; next }
+    dir && /^(✔|✘|Validating )/ { dir = 0 }
+    !dir')
   # A function-hooks plugin (docket's /docket pane) also gets a report: what its
   # types file declares and what its hooks module hooks, calls, reads and writes.
   # Those lines carry ❯ too but are facts, not findings — the verdict still says
