@@ -245,6 +245,17 @@ const PILL: Record<PlanStatus, { label: string; hex: string }> = {
 
 const DAY_MS = 86_400_000;
 
+// The desktop row's right-hand columns, in cells.
+const BAR_CELLS = 12;
+const COUNT_CELLS = 13;
+const PILL_CELLS = 13;
+const AGE_CELLS = 6;
+
+// A graph past this many tasks is a tangle; it sits behind a toggle instead of opening with the plan.
+const GRAPH_OPEN_MAX = 15;
+
+const ageText = (days: number): string => (days === 0 ? 'today' : `${days}d`);
+
 const stageGlyph = (stage: Stage): string => {
   if (stage.isDone) {
     return '●';
@@ -470,7 +481,10 @@ export const registerBoard = (on: On): void => {
       const alive = activity(entry);
       const facts = badges(entry);
       const stages = stepperStages(entry);
-      const graph = Svg !== undefined && hasGraph(entry) ? graphSvg(entry, 560) : null;
+      const graphKey = `graph:${entry.plan.file}`;
+      const isBig = entry.tasks.length > GRAPH_OPEN_MAX;
+      const isGraphShown = !isBig || open.includes(graphKey);
+      const graph = Svg !== undefined && hasGraph(entry) && isGraphShown ? graphSvg(entry, 560) : null;
 
       return (
         <Box
@@ -511,9 +525,18 @@ export const registerBoard = (on: On): void => {
               ))}
             </Box>
           )}
+          {Svg !== undefined && hasGraph(entry) && isBig && (
+            <Button
+              key={graphKey}
+              plain
+              onPress={() => toggle($, graphKey)}
+            >
+              <Text color='claude'>{isGraphShown ? '▾ ' : '▸ '}</Text>
+              <Text color='subtle'>{`dependency graph · ${entry.tasks.length} tasks`}</Text>
+            </Button>
+          )}
           {graph !== null && Svg !== undefined && (
             <Svg
-              key={`graph:${entry.plan.file}`}
               source={graph.svg}
               alt={`Task dependencies of ${entry.plan.title}`}
               width={graph.width}
@@ -568,22 +591,36 @@ export const registerBoard = (on: On): void => {
             gap={2}
             alignItems='center'
           >
-            {entry.status !== 'no-ledger' && total > 0 && (
-              <Svg
-                source={barSvg(shares, 100, 10)}
-                alt={`${entry.doneCount} of ${total} tasks done`}
-                width={100}
-                height={10}
-              />
-            )}
-            <Text color='subtle'>{planCount(entry).replace(/ · $/, '')}</Text>
+            {/* Fixed-width columns, so the bars, counts and pills line up from one row to the next. */}
+            <Box width={BAR_CELLS}>
+              {entry.status !== 'no-ledger' && total > 0 && (
+                <Svg
+                  source={barSvg(shares, 100, 10)}
+                  alt={`${entry.doneCount} of ${total} tasks done`}
+                  width={100}
+                  height={10}
+                />
+              )}
+            </Box>
             <Box
+              width={COUNT_CELLS}
+              justifyContent='flex-end'
+            >
+              <Text color='subtle'>{planCount(entry).replace(/ · $/, '')}</Text>
+            </Box>
+            <Box
+              width={PILL_CELLS}
               backgroundColor={pill.hex}
-              paddingX={1}
+              justifyContent='center'
             >
               <Text color='#ffffff'>{pill.label}</Text>
             </Box>
-            {age !== null && <Text color='subtle'>{age === 0 ? 'today' : `${age}d`}</Text>}
+            <Box
+              width={AGE_CELLS}
+              justifyContent='flex-end'
+            >
+              <Text color='subtle'>{age === null ? '' : ageText(age)}</Text>
+            </Box>
           </Box>
         </Box>
       );

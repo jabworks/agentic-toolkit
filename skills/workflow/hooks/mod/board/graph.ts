@@ -52,6 +52,53 @@ const layersOf = (plan: BoardPlan): Map<number, number> => {
   return layers;
 };
 
+// Rows within each column, ordered by the average row of a task's neighbours (dependencies on the way in, dependants on
+// the way back), so edges cross less. Two sweeps each way settle a plan of this size.
+const orderRows = (plan: BoardPlan, layers: Map<number, number>): Map<number, number> => {
+  const columns = new Map<number, number[]>();
+  const dependants = new Map<number, number[]>();
+  const rowOf = new Map<number, number>();
+
+  for (const entry of plan.tasks) {
+    const layer = layers.get(entry.task.number) ?? 0;
+
+    columns.set(layer, [...(columns.get(layer) ?? []), entry.task.number]);
+
+    for (const dep of entry.task.dependsOn) {
+      dependants.set(dep, [...(dependants.get(dep) ?? []), entry.task.number]);
+    }
+  }
+
+  const settle = (): void => columns.forEach(column => column.forEach((number, row) => rowOf.set(number, row)));
+
+  const sweep = (order: number[], neighbours: (number: number) => number[]): void => {
+    for (const layer of order) {
+      const column = columns.get(layer) ?? [];
+      const keyed = column.map(number => {
+        const rows = neighbours(number).map(other => rowOf.get(other) ?? 0);
+        const key = rows.length === 0 ? (rowOf.get(number) ?? 0) : rows.reduce((sum, row) => sum + row, 0) / rows.length;
+
+        return { number, key };
+      });
+
+      columns.set(layer, keyed.sort((a, b) => a.key - b.key).map(item => item.number));
+      settle();
+    }
+  };
+
+  const byDepth = [...columns.keys()].sort((a, b) => a - b);
+  const byEntry = new Map(plan.tasks.map(entry => [entry.task.number, entry]));
+
+  settle();
+
+  for (let round = 0; round < 2; round += 1) {
+    sweep(byDepth, number => byEntry.get(number)?.task.dependsOn ?? []);
+    sweep([...byDepth].reverse(), number => dependants.get(number) ?? []);
+  }
+
+  return rowOf;
+};
+
 // Only a plan whose tasks depend on each other has a graph worth drawing.
 export const hasGraph = (plan: BoardPlan): boolean =>
   plan.tasks.length > 1 && plan.tasks.some(entry => entry.task.dependsOn.length > 0);
@@ -62,14 +109,15 @@ export const hasGraph = (plan: BoardPlan): boolean =>
 export const graphSvg = (plan: BoardPlan, maxWidth = 640): { svg: string; width: number; height: number } => {
   const layers = layersOf(plan);
   const isUnknown = plan.status === 'no-ledger';
+  const rowOf = orderRows(plan, layers);
   const rowsInLayer = new Map<number, number>();
   const spots = new Map<number, { x: number; y: number }>();
 
   for (const entry of plan.tasks) {
     const layer = layers.get(entry.task.number) ?? 0;
-    const row = rowsInLayer.get(layer) ?? 0;
+    const row = rowOf.get(entry.task.number) ?? 0;
 
-    rowsInLayer.set(layer, row + 1);
+    rowsInLayer.set(layer, Math.max(rowsInLayer.get(layer) ?? 0, row + 1));
     spots.set(entry.task.number, { x: PAD + layer * (NODE_W + GAP_X), y: PAD + row * (NODE_H + GAP_Y) });
   }
 

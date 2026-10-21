@@ -95,11 +95,18 @@ test('"finalize" counts as the preflight step and "verification" as verify', () 
   expect(labels).toEqual(['1', 'preflight', 'verify', 'review', 'commit']);
 });
 
-test('a plan with no ledger gets task stages only, none done, and no invented wrap-up', () => {
-  const stages = stepperStages(board(plan([[], [1]]), null));
+test('a plan with no ledger has no stepper: there is no progress to step through', () => {
+  expect(stepperStages(board(plan([[], [1]]), null))).toEqual([]);
+});
 
-  expect(stages.map(stage => stage.label)).toEqual(['1', '2']);
-  expect(stages.some(stage => stage.isDone || stage.isGhost)).toBe(false);
+test('rows are ordered by their neighbours so a fan-in does not cross itself', () => {
+  // 1 -> 2, 1 -> 3, 3 -> 4, 2 -> 5, 4 and 5 meet in 6; numbered so a plain order would cross 4 and 5.
+  const entry = board(plan([[], [1], [1], [3], [2], [4, 5]]), null);
+  const { svg } = graphSvg(entry);
+  const y = (n: number) => Number(new RegExp(`<title>Task ${n}:[^]*?<rect x="\\d+" y="(\\d+)"`).exec(svg)?.[1]);
+
+  // Layer 2 holds 4 and 5; 5 hangs off 2 (row 0), 4 off 3 (row 1), so 5 sits above 4.
+  expect(y(5)).toBeLessThan(y(4));
 });
 
 test('badges read what the ledger says and leave out what it does not', () => {

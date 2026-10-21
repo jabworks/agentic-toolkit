@@ -111,3 +111,33 @@ test('the filter field narrows the plans by title on the desktop', async ($, on)
 
   expect(await ui.find({ text: /No plan matches/ })).toBeDefined();
 });
+
+test('a plan with many tasks keeps its dependency graph behind a toggle, and a small one opens with it', async ($, on) => {
+  answerBeneath(on, now => ({
+    ...files(now),
+    [`${PLANS}/2026-10-12-big.md`]: { text: planText('Big plan', 20), mtimeMs: now },
+    [`${PROGRESS}/big.md`]: { text: ledgerText('2026-10-12-big.md', ['- [x] Task 1: step 1 — done']), mtimeMs: now },
+  }));
+  await $.command.run(run(''));
+
+  const ui = await mountPane('desktop', $);
+  const graphs = async () =>
+    (await ui.findAll({ type: 'Svg' })).filter(svg => /^Task dependencies of/.test(String(svg.props.alt)));
+
+  expect((await graphs()).map(svg => svg.props.alt)).toEqual(['Task dependencies of Active work']);
+
+  await ui.press({ key: 'graph:2026-10-12-big.md' });
+
+  expect(await graphs()).toHaveLength(2);
+});
+
+test('no-ledger plans show no stepper', async ($, on) => {
+  answerBeneath(on, files);
+  await $.command.run(run(''));
+
+  const ui = await mountPane('desktop', $);
+
+  await ui.press({ key: 'plan:2026-08-01-quiet.md' });
+
+  expect(await ui.find({ key: 'stepper:2026-08-01-quiet.md' })).toBe(undefined);
+});

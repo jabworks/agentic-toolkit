@@ -10,12 +10,17 @@ const GHOSTS: { label: string; match: RegExp }[] = [
   { label: 'commit', match: /commit/i },
 ];
 
+// A plan with no ledger has no progress to step through: its tasks are already listed below.
 // One stage per task, then the ledger's wrap-up lines in file order (a recognised one under its short name, any other
 // verbatim), then a ghost for each of the four steps the ledger has not reached.
 export const stepperStages = (plan: BoardPlan): Stage[] => {
+  if (plan.status === 'no-ledger') {
+    return [];
+  }
+
   const tasks = plan.tasks.map(entry => ({
     label: String(entry.task.number),
-    isDone: entry.state === 'done' && plan.status !== 'no-ledger',
+    isDone: entry.state === 'done',
     isGhost: false,
   }));
 
@@ -31,5 +36,5 @@ export const stepperStages = (plan: BoardPlan): Stage[] => {
     isGhost: true,
   }));
 
-  return plan.status === 'no-ledger' ? tasks : [...tasks, ...wrap, ...ghosts];
+  return [...tasks, ...wrap, ...ghosts];
 };
