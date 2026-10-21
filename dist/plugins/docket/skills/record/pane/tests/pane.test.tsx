@@ -40,6 +40,10 @@ type Fill = { text: string; mode: PromptFillMode };
 type World = {
   hasDocket: boolean;
   text: string;
+  // The archive's text: what the desktop's close sparkline reads.
+  archive: string;
+  // docket.json's text; `null` plays a board with none.
+  config: string | null;
   mtimeMs: number;
   isPaneUp: boolean;
   // How `ui.open` answers: placed, waiting for room, or never (a surface that drops the request).
@@ -55,6 +59,8 @@ const answerBeneath = (on: On, hasDocket: boolean) => {
   const world: World = {
     hasDocket,
     text: FIXTURE,
+    archive: '## 3. Shipped — ✅ DONE 2026-10-19\n',
+    config: '{ "next_id": 11 }',
     mtimeMs: 1,
     isPaneUp: true,
     open: 'placed',
@@ -80,7 +86,18 @@ const answerBeneath = (on: On, hasDocket: boolean) => {
 
     return { value: { kind: 'file', size: world.text.length, mtimeMs: world.mtimeMs, isLink: false } };
   });
-  on('fs.read', () => ({ value: world.text }));
+  on('fs.list', () => ({ value: [{ name: '2026.md', kind: 'file', size: 1, mtimeMs: 1, isLink: false }] }));
+  on('fs.read', (_$, e) => {
+    if (e.path.includes('/archive/')) {
+      return { value: world.archive };
+    }
+
+    if (e.path.endsWith('docket.json')) {
+      return world.config === null ? { deny: 'ENOENT' } : { value: world.config };
+    }
+
+    return { value: world.text };
+  });
   on('ui.open', () => {
     if (world.open === 'silent') {
       return new Promise(() => undefined);
@@ -99,7 +116,7 @@ const answerBeneath = (on: On, hasDocket: boolean) => {
   return { world, clock };
 };
 
-const mountPane = (surface: RenderSurface, $: Engine) =>
+const mountPane = <S extends RenderSurface>(surface: S, $: Engine) =>
   $.ui.mount({
     plugin: 'docket',
     surface,
@@ -273,3 +290,105 @@ test('a surface that never answers ui.open does not hang /docket', async ($, on)
 
   expect((await running).text).toContain('this surface did not answer');
 });
+
+for (const surface of SURFACES) {
+  test(`shows done and each section's share of everything logged on ${surface}`, async ($, on) => {
+    answerBeneath(on, true);
+
+    await $.command.run(RUN_DOCKET);
+
+    const ui = await mountPane(surface, $);
+
+    // FIXTURE: Committed 0, Someday 1 (#7), Loose threads 1; next_id 11 means 10 ids logged, 1 open item, so 9 done.
+    expect(await ui.find({ text: /9 done/ })).toBeDefined();
+    expect(await ui.find({ text: /0 committed/ })).toBeDefined();
+    expect(await ui.find({ text: /1 someday/ })).toBeDefined();
+    expect(await ui.find({ text: /1 loose threads/ })).toBeDefined();
+    expect(await ui.find({ text: /of 11 logged/ })).toBeDefined();
+  });
+
+  test(`leaves Done out when docket.json is unreadable on ${surface}`, async ($, on) => {
+    const { world } = answerBeneath(on, true);
+
+    world.config = null;
+
+    await $.command.run(RUN_DOCKET);
+
+    const ui = await mountPane(surface, $);
+
+    expect(await ui.find({ text: /done/ })).toBe(undefined);
+    expect(await ui.find({ text: /of 2 logged/ })).toBeDefined();
+  });
+}
+
+test('the desktop draws the ring, the close sparkline and a filter; the terminal draws none of them', async ($, on) => {
+  answerBeneath(on, true);
+
+  await $.command.run(RUN_DOCKET);
+
+  const desktop = await mountPane('desktop', $);
+
+  expect(await desktop.find({ key: 'filter' })).toBeDefined();
+  expect(await desktop.find({ text: /closed in the last 4 weeks/ })).toBeDefined();
+  // The bar is a rounded vector drawing here, not the terminal's block segments.
+  expect(await desktop.find({ key: 'share:Someday' })).toBe(undefined);
+
+  const terminal = await mountPane('terminal', $);
+
+  expect(await terminal.find({ key: 'filter' })).toBe(undefined);
+  expect(await terminal.find({ key: 'share:Someday' })).toBeDefined();
+  expect(await terminal.find({ text: /closed in the last 4 weeks/ })).toBe(undefined);
+});
+
+test('typing in the desktop filter hides items that do not match and says so', async ($, on) => {
+  answerBeneath(on, true);
+
+  await $.command.run(RUN_DOCKET);
+
+  const ui = await mountPane('desktop', $);
+
+  expect(await ui.find({ key: 'item:7' })).toBeDefined();
+
+  await ui.input({ key: 'filter', text: 'zzz-nothing' });
+
+  expect(await ui.find({ key: 'item:7' })).toBe(undefined);
+  expect(await ui.find({ text: /no matches/ })).toBeDefined();
+
+  await ui.input({ key: 'filter', text: 'fix the' });
+
+  expect(await ui.find({ key: 'item:7' })).toBeDefined();
+});
+
+test('every Svg the desktop draws is given an explicit height, or the app boxes it far taller than it is', async ($, on) => {
+  answerBeneath(on, true);
+
+  await $.command.run(RUN_DOCKET);
+
+  const ui = await mountPane('desktop', $);
+  const svgs = await ui.findAll({ type: 'Svg' });
+
+  // The bar, the ring and the sparkline.
+  expect(svgs.length).toBe(3);
+
+  for (const svg of svgs) {
+    expect(typeof svg.props.height).toBe('number');
+  }
+});
+
+for (const surface of SURFACES) {
+  test(`puts the key hints above the list, where a long board does not scroll them away, on ${surface}`, async ($, on) => {
+    answerBeneath(on, true);
+
+    await $.command.run(RUN_DOCKET);
+
+    const ui = await mountPane(surface, $);
+    // Document order. A container's `text` holds all its descendants', so only the hint's own Text node counts.
+    const tree = await ui.findAll({});
+    const hintsAt = tree.findIndex(node => node.type === 'Text' && /tab move/.test(node.text));
+    const firstItemAt = tree.findIndex(node => node.key === 'item:7');
+
+    expect(hintsAt).toBeGreaterThanOrEqual(0);
+    expect(firstItemAt).toBeGreaterThanOrEqual(0);
+    expect(hintsAt).toBeLessThan(firstItemAt);
+  });
+}

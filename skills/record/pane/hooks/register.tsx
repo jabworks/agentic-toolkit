@@ -10,7 +10,8 @@ import {
 } from 'claude-code';
 
 import { type DocketBoard, type DocketItem, type DocketSection } from '../types';
-import { ageInDays, ancestors, baseName, joinPath, parseDocket } from './docket';
+import { type Share, BAR_HEIGHT, PALETTE, barSvg, colorFor, ringSvg, sparklineSvg } from './charts';
+import { ageInDays, ancestors, baseName, closesByWeek, joinPath, parseDocket } from './docket';
 
 const PANE = 'docket';
 const POLL_MS = 3000;
@@ -20,6 +21,7 @@ const OPEN_TIMEOUT_MS = 2000;
 
 const board = atom({ plugin: 'docket', key: 'board' } as const, null);
 const expanded = atom({ plugin: 'docket', key: 'expanded' } as const, []);
+const filter = atom({ plugin: 'docket', key: 'filter' } as const, '');
 
 type Located = { root: string; file: string; layout: 'docket' | 'legacy' };
 
@@ -44,6 +46,33 @@ const locate = async ($: EngineInterface, cwd: string): Promise<Located | null> 
   }
 
   return null;
+};
+
+// A board without a readable docket.json just has no Done segment; it is never an error.
+const readNextId = async ($: EngineInterface, root: string): Promise<number | null> => {
+  try {
+    const config: unknown = JSON.parse(await $.fs.read(joinPath(root, 'docket', 'docket.json')));
+    const nextId = (config as { next_id?: unknown } | null)?.next_id;
+
+    return typeof nextId === 'number' && Number.isInteger(nextId) && nextId > 0 ? nextId : null;
+  } catch {
+    return null;
+  }
+};
+
+// The archive's weekly closes feed the desktop's sparkline; a board with no archive just has none.
+const readWeeklyCloses = async ($: EngineInterface, root: string): Promise<number[] | null> => {
+  try {
+    const dir = joinPath(root, 'docket', 'archive');
+    const entries = await $.fs.list(dir);
+    const texts = await Promise.all(
+      entries.filter(entry => entry.kind === 'file' && entry.name.endsWith('.md')).map(entry => $.fs.read(joinPath(dir, entry.name))),
+    );
+
+    return closesByWeek(texts, await $.clock.now());
+  } catch {
+    return null;
+  }
 };
 
 // Missing and unreadable boards are rewritten on every poll; skipping identical writes keeps the pane from redrawing.
@@ -87,6 +116,8 @@ const startWork = async ($: EngineInterface, item: DocketItem): Promise<void> =>
   // A slash command only runs from the start of the prompt, so the draft goes after it rather than before.
   await fillPrompt($, draft === '' ? line : `${line}\n${draft}`, 'replace', `Ready to start #${item.id}.`);
 };
+
+const setFilter = ($: EngineInterface, value: string): Promise<unknown> => update($, filter, () => value);
 
 const toggle = ($: EngineInterface, idPart: string): Promise<unknown> =>
   update($, expanded, list => (list.includes(idPart) ? list.filter(id => id !== idPart) : [...list, idPart]));
@@ -164,7 +195,9 @@ const load = async ($: EngineInterface, isForced: boolean): Promise<void> => {
 
     const text = await $.fs.read(file);
     const sections = parseDocket(text);
-    const loaded: DocketBoard = { kind: 'found', root, file, layout, mtimeMs, sections };
+    const nextId = layout === 'docket' ? await readNextId($, root) : null;
+    const weeklyCloses = layout === 'docket' ? await readWeeklyCloses($, root) : null;
+    const loaded: DocketBoard = { kind: 'found', root, file, layout, mtimeMs, sections, nextId, weeklyCloses };
 
     failures = 0;
     lastMtime = mtimeMs;
@@ -311,7 +344,17 @@ export const register: Register = on => {
   });
 
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
-    const { Box, Button, Markdown, Text } = $.ui.resolve(e);
+    const elements = $.ui.resolve(e);
+    const { Box, Button, Markdown, Text } = elements;
+    // The terminal draws no vector charts, and typing in a field there would swallow the r / w / c hotkeys; the desktop
+    // gets both. (`in` cannot tell the tables apart: the engine's resolved table answers for every element name.)
+    const isTerminal = e.surface === 'terminal';
+    const Svg = isTerminal ? undefined : (elements as Extract<typeof elements, { Svg: unknown }>).Svg;
+    const Input =
+      e.surface === 'desktop' || e.surface === 'vscode'
+        ? (elements as Extract<typeof elements, { Svg: unknown; Input: unknown }>).Input
+        : undefined;
+    const filterText = await read($, filter);
     const current = await read($, board);
     const openIds = await read($, expanded);
     const now = await $.clock.now();
@@ -319,9 +362,21 @@ export const register: Register = on => {
     // Window frame (2) + its padding (2); each section box spends the same again inside it.
     const windowWidth = Math.max(20, e.props.bodyColumns - 4);
     const rowWidth = Math.max(16, windowWidth - 4);
-    const rule = <Text color='subtle'>{'─'.repeat(windowWidth)}</Text>;
+    // Drawn twice as wide as the pane and clipped to one row: a proportional font (the desktop) makes `─` narrower or
+    // wider than a cell, and an exact-width string wrapped into a second, partial line there.
+    const divider = (glyph: string, width: number) => (
+      <Box
+        height={1}
+        overflow='hidden'
+      >
+        <Text color='subtle'>{glyph.repeat(width * 2)}</Text>
+      </Box>
+    );
+    const rule = divider('─', windowWidth);
 
-    const frame = (title: string, count: string, body: RenderChildren, footer: string) => (
+    // The hints sit under the header, not below the list: a pane has no fixed footer, its whole body scrolls as one, and
+    // a hint line at the bottom is out of sight until the end of a long list.
+    const frame = (title: string, count: string, body: RenderChildren, hints: string) => (
       <Box
         flexDirection='column'
         borderStyle='round'
@@ -346,10 +401,9 @@ export const register: Register = on => {
             onPress={() => refresh($, true)}
           />
         </Box>
+        <Text color='subtle'>{hints}</Text>
         {rule}
         {body}
-        {rule}
-        <Text color='subtle'>{footer}</Text>
       </Box>
     );
 
@@ -389,7 +443,7 @@ export const register: Register = on => {
     const editedAt = `${String(edited.getHours()).padStart(2, '0')}:${String(edited.getMinutes()).padStart(2, '0')}`;
 
     // Dashed and indented under #N, so it reads as part of the item rather than a section break.
-    const detailRule = <Text color='subtle'>{'┄'.repeat(Math.max(8, rowWidth - 2))}</Text>;
+    const detailRule = divider('┄', Math.max(8, rowWidth - 2));
 
     const renderItem = (item: DocketItem) => {
       const isOpen = openIds.includes(item.idPart);
@@ -454,16 +508,122 @@ export const register: Register = on => {
       );
     };
 
+    // Done leads, then one colour per section in board order; a segment holding nothing takes no share of the bar.
+    // Ids are never reused, so `next_id - 1` is every item ever logged and what is no longer open is done.
+    const done = current.nextId === null ? 0 : Math.max(0, current.nextId - 1 - total);
+    const shares: Share[] = [
+      { name: 'Done', count: done, color: PALETTE[0] ?? '#3f8f5b' },
+      ...current.sections.map((section, index) => ({
+        name: section.name,
+        count: section.items.length + section.threads.length,
+        color: colorFor(index + 1),
+      })),
+    ];
+    const shareTotal = shares.reduce((sum, share) => sum + share.count, 0);
+    const recentCloses = (current.weeklyCloses ?? []).slice(-4).reduce((sum, count) => sum + count, 0);
+
+    const progress =
+      shareTotal === 0 ? null : (
+        <Box
+          flexDirection='column'
+          gap={1}
+        >
+          {Svg === undefined ? (
+            <Box
+              width='100%'
+              height={1}
+            >
+              {shares
+                .filter(share => share.count > 0)
+                .map(share => (
+                  <Box
+                    key={`share:${share.name}`}
+                    flexGrow={share.count}
+                    backgroundColor={share.color}
+                  />
+                ))}
+            </Box>
+          ) : (
+            // Rounded segments are a vector drawing; the terminal's cells cannot round a block. The height is passed as well
+            // as drawn into the markup: the desktop ignores the markup's own size and boxes an unsized Svg far taller than it.
+            <Svg
+              source={barSvg(shares)}
+              alt={`${done} of ${shareTotal} items done`}
+              height={BAR_HEIGHT}
+              isInteractive
+            />
+          )}
+          <Box
+            gap={2}
+            flexWrap='wrap'
+          >
+            {shares
+              .filter(share => share.name !== 'Done' || share.count > 0)
+              .map(share => (
+                <Text key={`legend:${share.name}`}>
+                  <Text color={share.color}>{Svg === undefined ? '■ ' : '● '}</Text>
+                  {`${share.count} ${share.name.toLowerCase()}`}
+                </Text>
+              ))}
+            <Text color='subtle'>{`of ${shareTotal} logged`}</Text>
+          </Box>
+        </Box>
+      );
+
     const body = (
       <Box
         flexDirection='column'
         marginY={1}
         gap={1}
       >
+        {progress}
+        {Svg !== undefined && shareTotal > 0 && (
+          <Box
+            gap={3}
+            alignItems='center'
+          >
+            <Svg
+              source={ringSvg(shares, done)}
+              alt={`${done} of ${shareTotal} items done`}
+              width={96}
+              height={96}
+              isInteractive
+            />
+            {current.weeklyCloses !== null && (
+              <Box
+                flexDirection='column'
+                gap={1}
+              >
+                <Svg
+                  source={sparklineSvg(current.weeklyCloses, PALETTE[0] ?? '#3f8f5b')}
+                  alt={`${recentCloses} items closed in the last 4 weeks`}
+                  width={168}
+                  height={36}
+                  isInteractive
+                />
+                <Text color='subtle'>{`${recentCloses} closed in the last 4 weeks`}</Text>
+              </Box>
+            )}
+          </Box>
+        )}
+        {Input !== undefined && (
+          <Input
+            key='filter'
+            label='Filter'
+            placeholder='id or title'
+            value={filterText}
+            onInput={value => setFilter($, value)}
+            onSubmit={value => setFilter($, value)}
+          />
+        )}
         {current.sections.map(section => {
           // Loose threads are entries too: a section holding only threads is not empty.
           const count = section.items.length + section.threads.length;
           const tone = count > 0 ? 'suggestion' : 'subtle';
+          const needle = filterText.trim().toLowerCase();
+          const items = section.items.filter(item => `#${item.idPart} ${item.title}`.toLowerCase().includes(needle));
+          const threads = section.threads.filter(thread => thread.toLowerCase().includes(needle));
+          const shown = items.length + threads.length;
 
           return (
             <Box
@@ -479,19 +639,19 @@ export const register: Register = on => {
                 >
                   {section.name.toUpperCase()}
                 </Text>
-                <Text color='subtle'>{count}</Text>
+                <Text color='subtle'>{needle === '' ? count : `${shown} of ${count}`}</Text>
               </Box>
-              {count === 0 && (
+              {shown === 0 && (
                 <Text
                   color='subtle'
                   italic
                 >
-                  nothing here
+                  {count === 0 ? 'nothing here' : 'no matches'}
                 </Text>
               )}
-              {section.items.map(renderItem)}
+              {items.map(renderItem)}
               {/* Markdown drawn dim printed list markers literally, so the bullet is ours and each thread its own row. */}
-              {section.threads.map(thread => (
+              {threads.map(thread => (
                 <Box gap={1}>
                   <Text color='claude'>•</Text>
                   <Markdown text={thread} />

@@ -12,6 +12,10 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## docket 0.12.2 — 2026-10-20
+
+- fix(docket): pane dividers no longer wrap into a stub line on the desktop app; feat: a progress bar of done / committed / someday / loose threads over everything ever logged; on the desktop also an SVG done-ring, a 12-week sparkline of closes and a filter box, rounded, non-overlapping progress segments and donut, and section colours that no longer repeat
+
 ## docket 0.12.1 — 2026-10-20
 
 - fix(docket): /docket no longer hangs where the surface never answers ui.open — it times out and prints the board as text

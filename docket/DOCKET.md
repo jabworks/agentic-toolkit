@@ -9,6 +9,14 @@ Stale open markers cost real sessions — closing means moving.
 
 ## Committed
 
+### 107. /docket pane desktop: thin segments overlapped in the ring and bar; the bar's Svg still had a tall box (2026-10-20)
+
+Follow-up to #106, rides in PR #189 (docket 0.12.2). (1) A share thinner than a round-capped segment is wide (3 of 175 in a ring) was centred nowhere near its slice and spilled over its neighbours. `allot()` now gives every segment a minimum span (stroke+gap) taken proportionally from the large ones, and each arc/line is centred in its span; tests parse the drawn arcs and lines and assert no overlap, mutation-checked (min span 0 fails both). (2) The bar still sat in a tall box after it was given width/height attributes: the app ignores the markup's own size, the ring and sparkline only looked right because they pass explicit width/height props. The bar now passes `height` too (a test asserts every desktop Svg has one). NOT verified in the app: height-only is a guess; fallback is an explicit width as well (slot looked ~800 CSS px), at the cost of overflow risk in narrow panes.
+
+### 110. condux-mod slice 1: plan and progress board + status line (a Claude Code mod inside condux) (2026-10-20)
+
+Design signed off and spec written (specs/condux-mod, PR #190); reviewed by an independent Opus 5.5 agent first. Slice 1 = a read-only /condux board pane (terminal + desktop chrome) and an always-visible status line, nested under skills/workflow/hooks/mod/. Shipping plan: two PRs after docket #189 merges — (1) scaffold + packaging, parsers + state, terminal board with text fallback, status line; (2) desktop chrome (ring, dependency graph, stepper, activity/stall, badges, filter). Extra plan tasks from the review: a live Codex session after adding `modules`, a deliberately broken module to confirm skills and the routing hook survive. Follow-up already filed: #109 (inline execution writes no ledger). Next step: /draft-plan.
+
 ## Someday
 
 ### 65. toolkit-debugging-playbook applied-but-cold — evaluate for a routing nudge next period (2026-08-28)
@@ -280,5 +288,9 @@ Found 2026-09-22 in the mobile eval (`skills/toolkit-research-frontier/reference
 ### 100. Re-evaluate explorer on Haiku 5.5 (2026-10-08)
 
 condux moved explorer off haiku in #177 (2026-10-07): sonnet at low effort finished in fewer turns than Haiku 4.5, and turn count costs more than token price. Haiku 5.5 shipped 2026-10-07 (`claude-haiku-5-5`, $0.10/$0.50 per MTok up to 100K), and the `haiku` alias now resolves to it. That reasoning predates the model, so re-measure. explorer has no quality harness yet, so this needs a small one (fixed codebase questions, turn count and answer accuracy) before any switch. The scout A/B under #98 is the template.
+
+### 109. Inline execution leaves no progress ledger — only subagent-execution writes one, so most plans are invisible to a board (2026-10-20)
+
+Found by the Opus review of the condux-mod design (2026-10-20): 7 plans in .condux/plans, 1 ledger in .condux/progress. Only subagent-execution writes `.condux/progress/<slug>.md`, and condux's default is to implement inline, so a read-only plan/progress board can say nothing about most shipped plans (the board will show them as "no ledger, state unknown"). Decide whether inline execution (the workflow's MEDIUM/LARGE implement step) should append ledger lines too — a change to workflow/draft-plan/subagent-execution, outside the mod itself. The mod design handles the gap without it.
 
 ## Loose threads

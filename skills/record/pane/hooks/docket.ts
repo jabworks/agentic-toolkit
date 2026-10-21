@@ -198,3 +198,37 @@ export const ageInDays = (date: string, nowMs: number): number | null => {
 
   return Math.max(0, Math.floor((nowMs - then.getTime()) / DAY_MS));
 };
+
+const DONE_RE = /\bDONE\s+(\d{4}-\d{2}-\d{2})/;
+const HEADING_RE = /^##\s+(.+)$/;
+
+// Items closed per week, oldest first, the last entry being this week. A combined entry ("## 2 + 17.") closed two items.
+export const closesByWeek = (archives: string[], nowMs: number, weeks = 12): number[] => {
+  const counts = new Array<number>(weeks).fill(0);
+
+  for (const text of archives) {
+    for (const line of text.replace(/\r/g, '').split('\n')) {
+      const heading = line.match(HEADING_RE)?.[1];
+      const date = heading?.match(DONE_RE)?.[1];
+
+      if (heading === undefined || date === undefined) {
+        continue;
+      }
+
+      const age = ageInDays(date, nowMs);
+      const ids = (heading.match(/^(\d[\d\s+]*)\./)?.[1] ?? '').split('+').filter(part => part.trim() !== '').length;
+
+      if (age === null || ids === 0) {
+        continue;
+      }
+
+      const week = Math.floor(age / 7);
+
+      if (week < weeks) {
+        counts[weeks - 1 - week] = (counts[weeks - 1 - week] ?? 0) + ids;
+      }
+    }
+  }
+
+  return counts;
+};
