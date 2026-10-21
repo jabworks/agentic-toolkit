@@ -1,6 +1,6 @@
 import { type BoardPlan, type BoardSnapshot, type PlanStatus, type TaskState } from '../types';
 
-// How many finished plans the board keeps in view; older ones are reached with `/condux all`.
+// How many plans each finished, stale and no-ledger group keeps in view; older ones are reached with `/condux all`.
 export const MAX_FINISHED = 5;
 
 export const glyphFor = (state: TaskState): string => {
@@ -35,22 +35,34 @@ export type BoardGroups = {
   // Finished plans past the window; reachable only through `/condux all`.
   olderComplete: BoardPlan[];
   stale: BoardPlan[];
+  olderStale: BoardPlan[];
   noLedger: BoardPlan[];
+  olderNoLedger: BoardPlan[];
 };
 
 // The board arrives sorted (active, complete, stale, no-ledger, newest first); this only cuts it into the groups
-// the pane and the text both draw.
-export const groupPlans = (board: BoardPlan[]): BoardGroups => {
+// the pane and the text both draw. Each of the three old groups keeps its newest few in view, the rest counted: a
+// repository's years of unledgered plans would otherwise bury the one running. `isCapped` false (a filter is typed)
+// shows every match, since a person searching is asking for the old ones.
+export const groupPlans = (board: BoardPlan[], isCapped = true): BoardGroups => {
+  const room = isCapped ? MAX_FINISHED : board.length;
   const finished = board.filter(entry => entry.status === 'complete');
+  const stale = board.filter(entry => entry.status === 'stale');
+  const noLedger = board.filter(entry => entry.status === 'no-ledger');
 
   return {
     active: board.filter(isActive),
-    complete: finished.slice(0, MAX_FINISHED),
-    olderComplete: finished.slice(MAX_FINISHED),
-    stale: board.filter(entry => entry.status === 'stale'),
-    noLedger: board.filter(entry => entry.status === 'no-ledger'),
+    complete: finished.slice(0, room),
+    olderComplete: finished.slice(room),
+    stale: stale.slice(0, room),
+    olderStale: stale.slice(room),
+    noLedger: noLedger.slice(0, room),
+    olderNoLedger: noLedger.slice(room),
   };
 };
+
+// How many plans have no ledger at all: the pile that never moves on its own.
+export const unledgered = (board: BoardPlan[]): number => board.filter(entry => entry.status === 'no-ledger').length;
 
 // A plan with no ledger has no recorded progress, so its tasks get a neutral mark: claiming "ready" or "0 done" would
 // state something the board does not know.
@@ -128,14 +140,26 @@ export const boardText = (snapshot: BoardSnapshot | null, isAll: boolean): strin
     blocks.push(`+${groups.olderComplete.length} older finished plans (run /condux all)`);
   }
 
-  if (groups.stale.length > 0) {
-    blocks.push(['STALE', ...groups.stale.flatMap(entry => describePlan(entry, isAll))].join('\n'));
+  const stale = isAll ? [...groups.stale, ...groups.olderStale] : groups.stale;
+
+  if (stale.length > 0) {
+    blocks.push(['STALE', ...stale.flatMap(entry => describePlan(entry, isAll))].join('\n'));
   }
 
-  if (groups.noLedger.length > 0) {
-    const rows = groups.noLedger.flatMap(entry => describePlan(entry, isAll));
+  if (!isAll && groups.olderStale.length > 0) {
+    blocks.push(`+${groups.olderStale.length} older stale plans (run /condux all)`);
+  }
+
+  const noLedger = isAll ? [...groups.noLedger, ...groups.olderNoLedger] : groups.noLedger;
+
+  if (noLedger.length > 0) {
+    const rows = noLedger.flatMap(entry => describePlan(entry, isAll));
 
     blocks.push(['NO LEDGER (state unknown)', ...rows].join('\n'));
+  }
+
+  if (!isAll && groups.olderNoLedger.length > 0) {
+    blocks.push(`+${groups.olderNoLedger.length} older plans with no ledger (run /condux all)`);
   }
 
   return blocks.length === 0 ? 'No plans found.' : blocks.join('\n\n');

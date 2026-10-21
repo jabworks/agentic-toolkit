@@ -9,7 +9,8 @@ The mod has no network endpoints. Its surface is one slash command, one status-l
 | Slash command | `/condux` | No argument opens the board pane (id `condux`). |
 | Slash command | `/condux all` | Lists every finished plan, including the ones past the five the pane shows (terminal has no filter). |
 | Slash command | `/condux <unknown>` | Prints the list of subcommands. |
-| Pane | `condux` | Read-only; Refresh is its only button. Desktop adds a filter `Input` (state `condux.filter`) and `Svg` drawings: a mini progress bar per plan row and a dependency graph in an open plan. Both surfaces show a heartbeat line (ledger updated Nm ago, quiet from 10 minutes, stalled from 30), badges and a pipeline stepper. |
+| Pane | `condux` | Read-only; Refresh is its only button. Desktop adds a filter `Input` (state `condux.filter`) and `Svg` drawings: a mini progress bar per plan row and a dependency graph in an open plan. The stale and no-ledger groups show their newest five (as the finished group does) with a `+N older` line, and a typed filter lifts the cap; the header counts unledgered plans. Both surfaces show a heartbeat line (ledger updated Nm ago, quiet from 10 minutes, stalled from 30), badges and a pipeline stepper. |
+| Auto-open | `tool.call` on Write, Edit and Bash | Opens the pane once per session, without `focus`, on the first write into `.condux/progress/*.md` (a Write or Edit path, or a shell redirect or tee naming it; a `cat` does not count). Never reopens a closed pane; `CONDUX_AUTO_OPEN=0` disables it; every failure is swallowed and the call always goes on. |
 | Status line | `$.ui.status` | One entry for the open plan whose ledger changed most recently; none when no plan is open. |
 
 ## Key Types / Schemas

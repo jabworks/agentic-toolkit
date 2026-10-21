@@ -12,6 +12,10 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## condux 2.41.0 — 2026-10-21
+
+- feat(condux): the `/condux` board opens itself once, without taking the keyboard, the first time an agent writes a progress ledger (set `CONDUX_AUTO_OPEN=0` to turn it off), and its stale and no-ledger groups keep their newest five with the rest counted, so years of unledgered plans no longer bury the one running; Claude Code only
+
 ## condux 2.40.0 — 2026-10-21
 
 - feat(workflow): inline execution keeps the progress ledger — the ledger contract moves into /workflow and both inline and subagent execution write task lines after each commit and wrap-up lines (preflight, finalize, review, commit or PR) at each checkpoint, so the /condux board sees every saved plan

@@ -8,6 +8,7 @@
 | 4 | Add four kinds of chrome: dependency graph, pipeline stepper, activity and stall, badges | Each is derivable from the real plan and ledger files | accepted |
 | 5 | One module whose `register` calls one `registerX(on)` per feature, a shared `kit/`, one `/condux` command | It is docket's proven shape and keeps each slice self-contained | accepted |
 | 6 | Verify in layers and ship in two PRs after the docket PR | Structure-only tests passed while the docket picture was wrong | accepted |
+| 7 | Open the board once, unfocused, on the first progress-ledger write; cap the old groups at five | A saved plan being implemented is the moment the board earns its place, and years of unledgered plans buried the one running | accepted |
 
 ## 1. Home and packaging — 2026-10-20
 
@@ -85,3 +86,15 @@
 - Read-only is pinned through the "calls" list that `claude plugin validate` prints.
 
 **Context:** The design was reviewed by an independent Opus 5.5 agent before sign-off; its findings R1 to R12 are folded into the decisions above.
+
+## 6. Slice 2 — auto-open and a tidier board — 2026-10-21
+
+**Decided:** a `tool.call` hook on Write, Edit and Bash opens the board once per session, without `focus`, the first time a progress ledger is written; `CONDUX_AUTO_OPEN=0` turns it off. The stale and no-ledger groups keep their newest five.
+**Because:** a ledger write is the first signal that a saved plan is being implemented (docket #109 made inline execution write one); a skill load or `/workflow` may only be confirming a tier. Verified firing on real model Write and Bash calls, with the absolute path and the full command visible.
+
+| Alternative | Why not |
+|---|---|
+| Open on `/condux:workflow` or a skill load | Too early: the router may only be confirming a tier, and a typo fix would open a pane |
+| Open on every ledger write | A pane the person closed would come back |
+| Focus the pane on open | `focus` is a request that takes the keyboard; an open the person did not ask for must not |
+| Archive or move old plans from the mod | The mod is read-only by design; a person moves old plans into `.condux/plans/archive/`, which the board does not read |
