@@ -1,5 +1,15 @@
 # @jabworks/condux
 
+## 0.31.0
+
+### Minor Changes
+
+- [#195](https://github.com/jabworks/agentic-toolkit/pull/195) [`65ad73c`](https://github.com/jabworks/agentic-toolkit/commit/65ad73c82df865ee24f25a2ea11bb4ae4d7a03a3) Thanks [@vi-hieu](https://github.com/vi-hieu)! - The Progress Ledger is now one contract in `/workflow`, kept by inline execution as well as by `subagent-execution`: task lines after each commit and wrap-up lines (preflight, finalize, review, commit/PR) as the checkpoints finish, so a tool reading `.condux/progress/` sees every saved plan, not only the ones agents ran.
+
+### Patch Changes
+
+- [#191](https://github.com/jabworks/agentic-toolkit/pull/191) [`5ca7ef3`](https://github.com/jabworks/agentic-toolkit/commit/5ca7ef38c5f35b33f98233930cf90f3011b0ef12) Thanks [@vi-hieu](https://github.com/vi-hieu)! - The Claude Code plugin gains a mod: `/condux` opens a live, read-only board of plans and their progress, and a status line shows the open plan and its next task. It is Claude Code only, so nothing changes for OpenCode: the mod is not shipped in this package, and the one mirrored change is a `modules` key in `hooks/hooks.json` that OpenCode never reads.
+
 ## 0.30.0
 
 ### Minor Changes
