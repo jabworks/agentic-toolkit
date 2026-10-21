@@ -201,12 +201,17 @@ export function transformRouting(text, label) {
 export const FOLD_ONLY = Object.freeze({ 'SKILL.md': transformSkill });
 export const OPENCODE_TRANSFORMS = Object.freeze({ ...FOLD_ONLY, 'hooks/routing.md': transformRouting });
 
+// Claude Code mods ride inside a skill dir so composition needs no new pair, but no other host loads them: shipping the
+// source to OpenCode, Cursor or the npm package is dead weight, and every edit would force an @jabworks/condux release.
+export const CLAUDE_ONLY_DIRS = Object.freeze(['hooks/mod']);
+
 export function copyTransformed(srcDir, dstDir, label, transforms = FOLD_ONLY, rel = '') {
   fs.mkdirSync(dstDir, { recursive: true });
   for (const entry of fs.readdirSync(srcDir, { withFileTypes: true })) {
     const src = path.join(srcDir, entry.name);
     const dst = path.join(dstDir, entry.name);
     const entryRel = rel ? `${rel}/${entry.name}` : entry.name;
+    if (entry.isDirectory() && CLAUDE_ONLY_DIRS.includes(entryRel)) continue;
     if (entry.isDirectory()) {
       copyTransformed(src, dst, label, transforms, entryRel);
     } else if (Object.hasOwn(transforms, entryRel)) {

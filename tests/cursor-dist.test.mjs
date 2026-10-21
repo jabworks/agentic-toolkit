@@ -6,7 +6,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import { SKILLS_DIR, splitFrontmatter, decodeScalar, transformSkill } from '../scripts/build-opencode.mjs';
+import { CLAUDE_ONLY_DIRS, SKILLS_DIR, splitFrontmatter, decodeScalar, transformSkill } from '../scripts/build-opencode.mjs';
 import { CURSOR_SKILLS_DIR } from '../scripts/build-cursor.mjs';
 
 const skillNames = fs.readdirSync(SKILLS_DIR, { withFileTypes: true })
@@ -31,7 +31,8 @@ test('dist/cursor/skills matches the generator output for every skill', () => {
       mismatches.push(`${name}: missing from dist/cursor/skills`);
       continue;
     }
-    const srcFiles = listFilesRelative(src);
+    // Claude-only dirs (a mod riding inside the skill) are deliberately not shipped to this host.
+    const srcFiles = listFilesRelative(src).filter((f) => !CLAUDE_ONLY_DIRS.some((d) => f.startsWith(`${d}/`)));
     const dstFiles = listFilesRelative(dst);
     if (JSON.stringify(srcFiles) !== JSON.stringify(dstFiles)) {
       mismatches.push(`${name}: file lists differ`);

@@ -15,6 +15,7 @@ import {
   decodeScalar,
   transformRouting,
   translateAgent,
+  CLAUDE_ONLY_DIRS,
 } from '../scripts/build-opencode.mjs';
 import { CURSOR_SKILLS_DIR } from '../scripts/build-cursor.mjs';
 
@@ -40,7 +41,8 @@ test('dist/opencode/skills matches the generator output for every skill', () => 
       mismatches.push(`${name}: missing from dist/opencode/skills`);
       continue;
     }
-    const srcFiles = listFilesRelative(src);
+    // Claude-only dirs (a mod riding inside the skill) are deliberately not shipped to this host.
+    const srcFiles = listFilesRelative(src).filter((f) => !CLAUDE_ONLY_DIRS.some((d) => f.startsWith(`${d}/`)));
     const dstFiles = listFilesRelative(dst);
     if (JSON.stringify(srcFiles) !== JSON.stringify(dstFiles)) {
       mismatches.push(`${name}: file lists differ`);
