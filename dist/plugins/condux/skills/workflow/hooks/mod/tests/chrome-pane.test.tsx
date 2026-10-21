@@ -141,3 +141,19 @@ test('no-ledger plans show no stepper', async ($, on) => {
 
   expect(await ui.find({ key: 'stepper:2026-08-01-quiet.md' })).toBe(undefined);
 });
+
+test('a long title is clipped to leave the right-hand columns their room, so the row cannot squeeze them', async ($, on) => {
+  const long = 'A very long plan title that would run into the progress bar, the count, the pill and the age';
+
+  answerBeneath(on, now => ({
+    ...files(now),
+    [`${PLANS}/2026-10-12-long.md`]: { text: planText(long, 2), mtimeMs: now },
+  }));
+  await $.command.run(run(''));
+
+  const ui = await mountPane('desktop', $);
+  const title = (await ui.findAll({ type: 'Text' })).find(node => node.text.startsWith('A very long'));
+
+  expect(title?.text.endsWith('…')).toBe(true);
+  expect(title?.text.length).toBeLessThan(50);
+});

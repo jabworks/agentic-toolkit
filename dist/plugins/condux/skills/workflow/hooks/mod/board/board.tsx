@@ -250,6 +250,8 @@ const BAR_CELLS = 12;
 const COUNT_CELLS = 13;
 const PILL_CELLS = 13;
 const AGE_CELLS = 6;
+// Those four plus the gaps between them: what the title must leave free.
+const CLUSTER_CELLS = BAR_CELLS + COUNT_CELLS + PILL_CELLS + AGE_CELLS + 6;
 
 // A graph past this many tasks is a tangle; it sits behind a toggle instead of opening with the plan.
 const GRAPH_OPEN_MAX = 15;
@@ -585,14 +587,18 @@ export const registerBoard = (on: On): void => {
             onPress={() => toggle($, key)}
           >
             <Text color='claude'>{isOpen ? '▾ ' : '▸ '}</Text>
-            <Text bold>{clip(entry.plan.title, 52)}</Text>
+            <Text bold>{clip(entry.plan.title, Math.max(12, rowWidth - CLUSTER_CELLS - 4))}</Text>
           </Button>
           <Box
             gap={2}
             alignItems='center'
+            flexShrink={0}
           >
             {/* Fixed-width columns, so the bars, counts and pills line up from one row to the next. */}
-            <Box width={BAR_CELLS}>
+            <Box
+              width={BAR_CELLS}
+              flexShrink={0}
+            >
               {entry.status !== 'no-ledger' && total > 0 && (
                 <Svg
                   source={barSvg(shares, 100, 10)}
@@ -604,12 +610,14 @@ export const registerBoard = (on: On): void => {
             </Box>
             <Box
               width={COUNT_CELLS}
+              flexShrink={0}
               justifyContent='flex-end'
             >
               <Text color='subtle'>{planCount(entry).replace(/ · $/, '')}</Text>
             </Box>
             <Box
               width={PILL_CELLS}
+              flexShrink={0}
               backgroundColor={pill.hex}
               justifyContent='center'
             >
@@ -617,6 +625,7 @@ export const registerBoard = (on: On): void => {
             </Box>
             <Box
               width={AGE_CELLS}
+              flexShrink={0}
               justifyContent='flex-end'
             >
               <Text color='subtle'>{age === null ? '' : ageText(age)}</Text>
