@@ -16,7 +16,7 @@
 | Q12 | The status line needs a session-long poll; docket polls only while its pane is open | Copying docket's `tick`, which stops when the pane is gone | medium | yes |
 | Q13 | The validator rejects two hooks on one event without a matcher | Two features each registering `session.start` | medium | yes |
 | Q14 | Past an import, `$` is followed only into function declarations | An exported helper that takes `$` written as an arrow constant | medium | yes |
-| Q15 | A ledger's `Plan:` header is prose, and its file name may carry the plan's date | A header like ``Plan: `.condux/plans/x.md` (signed off …; do not edit). Mode chosen …`` | high | yes |
+| Q15 | A ledger's `Plan:` header is prose, and its file name may carry the plan's date | A header whose path sits in backticks and is followed by commentary on the same line | high | yes |
 
 ## Q1 — Plans with no ledger
 
