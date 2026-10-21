@@ -1,12 +1,25 @@
 import { type EngineInterface, type On, type RenderChildren, type Timer, atom, read, update } from 'claude-code';
 
+import { barSvg } from '../kit/charts';
 import { locateWorkingState, type WorkingState } from '../kit/locate';
 import { joinPath } from '../kit/paths';
-import { type BoardPlan, type BoardSnapshot, type Ledger, type Plan } from '../types';
+import { type BoardPlan, type BoardSnapshot, type Ledger, type Plan, type PlanStatus } from '../types';
+import { badges } from './badges';
+import { graphSvg, hasGraph, STATE_HEX } from './graph';
 import { parseLedger } from './parse-ledger';
 import { parsePlan } from './parse-plan';
 import { deriveBoard, statusText } from './state';
-import { boardText, groupPlans, isActive, planCount, statusLabel, taskGlyph, waitLabel } from './text';
+import { type Stage, stepperStages } from './stepper';
+import {
+  activity,
+  boardText,
+  groupPlans,
+  isActive,
+  planCount,
+  statusLabel,
+  taskGlyph,
+  waitLabel,
+} from './text';
 
 const PANE = 'condux';
 const POLL_MS = 3000;
@@ -15,6 +28,7 @@ const OPEN_TIMEOUT_MS = 2000;
 
 const board = atom({ plugin: 'condux', key: 'board' } as const, null);
 const toggled = atom({ plugin: 'condux', key: 'toggled' } as const, []);
+const filter = atom({ plugin: 'condux', key: 'filter' } as const, '');
 
 type WorkingFile = { kind: 'plan' | 'ledger'; name: string; mtimeMs: number };
 
@@ -204,6 +218,10 @@ function toggle($: EngineInterface, key: string): Promise<unknown> {
   return update($, toggled, list => (list.includes(key) ? list.filter(item => item !== key) : [...list, key]));
 }
 
+function setFilter($: EngineInterface, value: string): Promise<unknown> {
+  return update($, filter, () => value);
+}
+
 const USAGE = [
   'Usage:',
   '  /condux       open the plan and progress board',
@@ -214,6 +232,39 @@ const clip = (text: string, room: number): string =>
   text.length > room ? `${text.slice(0, Math.max(1, room - 1))}…` : text;
 
 const STATE_COLOR = { done: 'success', 'next-ready': 'claude', ready: 'text', blocked: 'subtle' } as const;
+
+// The status pill on the desktop's plan row: a short word on a mid-tone fill.
+const PILL: Record<PlanStatus, { label: string; hex: string }> = {
+  'no-ledger': { label: 'no ledger', hex: '#8a8a85' },
+  'not-started': { label: 'not started', hex: '#2f6db5' },
+  'in-progress': { label: 'in progress', hex: '#c8643c' },
+  'tasks-done': { label: 'wrapping up', hex: '#b8860b' },
+  complete: { label: 'complete', hex: '#3f8f5b' },
+  stale: { label: 'stale', hex: '#8a8a85' },
+};
+
+const DAY_MS = 86_400_000;
+
+// The desktop row's right-hand columns, in cells.
+const BAR_CELLS = 12;
+const COUNT_CELLS = 13;
+const PILL_CELLS = 13;
+const AGE_CELLS = 6;
+// Those four plus the gaps between them: what the title must leave free.
+const CLUSTER_CELLS = BAR_CELLS + COUNT_CELLS + PILL_CELLS + AGE_CELLS + 6;
+
+// A graph past this many tasks is a tangle; it sits behind a toggle instead of opening with the plan.
+const GRAPH_OPEN_MAX = 15;
+
+const ageText = (days: number): string => (days === 0 ? 'today' : `${days}d`);
+
+const stageGlyph = (stage: Stage): string => {
+  if (stage.isDone) {
+    return '●';
+  }
+
+  return stage.isGhost ? '◌' : '○';
+};
 
 // A task's mark colour: neutral for a plan with no ledger, red for a cycle, otherwise by state.
 const glyphColor = (plan: BoardPlan, boardTask: BoardPlan['tasks'][number]): string => {
@@ -306,9 +357,20 @@ export const registerBoard = (on: On): void => {
   });
 
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
-    const { Box, Button, Markdown, Text } = $.ui.resolve(e);
+    const elements = $.ui.resolve(e);
+    const { Box, Button, Markdown, Text } = elements;
+    // Vector drawings and a filter field are the desktop's; the terminal's cells cannot round a block, and typing in a
+    // field there would swallow the hotkeys. (`in` cannot tell the tables apart: key on the surface.)
+    const Svg =
+      e.surface === 'terminal' ? undefined : (elements as Extract<typeof elements, { Svg: unknown }>).Svg;
+    const Input =
+      e.surface === 'desktop' || e.surface === 'vscode'
+        ? (elements as Extract<typeof elements, { Svg: unknown; Input: unknown }>).Input
+        : undefined;
     const snapshot = await read($, board);
     const open = await read($, toggled);
+    const filterText = await read($, filter);
+    const now = await $.clock.now();
     // Drawn twice as wide as the pane and clipped to one row: a proportional font makes the glyph narrower or wider
     // than a cell, and an exact-width string wrapped into a second, partial line there.
     const windowWidth = Math.max(20, e.props.bodyColumns - 4);
@@ -372,7 +434,12 @@ export const registerBoard = (on: On): void => {
 
     const updated = new Date(snapshot.updatedMs);
     const updatedAt = `${String(updated.getHours()).padStart(2, '0')}:${String(updated.getMinutes()).padStart(2, '0')}`;
-    const groups = groupPlans(snapshot.plans);
+    const needle = filterText.trim().toLowerCase();
+    const shown =
+      needle === ''
+        ? snapshot.plans
+        : snapshot.plans.filter(entry => `${entry.plan.title} ${entry.plan.slug}`.toLowerCase().includes(needle));
+    const groups = groupPlans(shown);
 
     const renderTask = (entry: BoardPlan, boardTask: BoardPlan['tasks'][number]) => {
       const key = `task:${entry.plan.file}:${boardTask.task.number}`;
@@ -410,14 +477,82 @@ export const registerBoard = (on: On): void => {
       );
     };
 
-    const renderPlan = (entry: BoardPlan) => {
-      const key = `plan:${entry.plan.file}`;
-      // An active plan is open by default and a finished one closed; a toggle flips whichever default applies.
-      const isOpen = isActive(entry) !== open.includes(key);
-      const count = planCount(entry);
+    // Plan chrome, shared by both surfaces: how alive the agent looks, the facts best read from the ledger, and the
+    // pipeline from the first task to the commit.
+    const renderChrome = (entry: BoardPlan) => {
+      const alive = activity(entry);
+      const facts = badges(entry);
+      const stages = stepperStages(entry);
+      const graphKey = `graph:${entry.plan.file}`;
+      const isBig = entry.tasks.length > GRAPH_OPEN_MAX;
+      const isGraphShown = !isBig || open.includes(graphKey);
+      const graph = Svg !== undefined && hasGraph(entry) && isGraphShown ? graphSvg(entry, 560) : null;
 
       return (
-        <Box flexDirection='column'>
+        <Box
+          flexDirection='column'
+          gap={1}
+          marginY={1}
+        >
+          {alive !== null && (
+            <Text
+              key={`activity:${entry.plan.file}`}
+              color={alive.tone}
+            >
+              {alive.label}
+            </Text>
+          )}
+          {facts.length > 0 && (
+            <Text
+              key={`badges:${entry.plan.file}`}
+              color='subtle'
+            >
+              {facts.join(' · ')}
+            </Text>
+          )}
+          {stages.length > 0 && (
+            <Box
+              key={`stepper:${entry.plan.file}`}
+              gap={2}
+              flexWrap='wrap'
+            >
+              {stages.map(stage => (
+                <Text
+                  key={`stage:${entry.plan.file}:${stage.label}`}
+                  color={stage.isDone ? 'success' : 'subtle'}
+                  dimColor={stage.isGhost}
+                >
+                  {`${stageGlyph(stage)} ${stage.label}`}
+                </Text>
+              ))}
+            </Box>
+          )}
+          {Svg !== undefined && hasGraph(entry) && isBig && (
+            <Button
+              key={graphKey}
+              plain
+              onPress={() => toggle($, graphKey)}
+            >
+              <Text color='claude'>{isGraphShown ? '▾ ' : '▸ '}</Text>
+              <Text color='subtle'>{`dependency graph · ${entry.tasks.length} tasks`}</Text>
+            </Button>
+          )}
+          {graph !== null && Svg !== undefined && (
+            <Svg
+              source={graph.svg}
+              alt={`Task dependencies of ${entry.plan.title}`}
+              width={graph.width}
+              height={graph.height}
+              isInteractive
+            />
+          )}
+        </Box>
+      );
+    };
+
+    const renderPlanHeader = (entry: BoardPlan, key: string, isOpen: boolean) => {
+      if (Svg === undefined) {
+        return (
           <Button
             key={key}
             plain
@@ -425,13 +560,95 @@ export const registerBoard = (on: On): void => {
           >
             <Text color='claude'>{isOpen ? '▾ ' : '▸ '}</Text>
             <Text bold>{clip(entry.plan.title, Math.max(12, rowWidth - 36))}</Text>
-            <Text color='subtle'>{`  ${count}${statusLabel(entry.status)}`}</Text>
+            <Text color='subtle'>{`  ${planCount(entry)}${statusLabel(entry.status)}`}</Text>
           </Button>
+        );
+      }
+
+      // Title on the left; what you scan for on the right: progress, count, status, age.
+      const total = entry.plan.tasks.length;
+      const pill = PILL[entry.status];
+      const dated = entry.plan.date === null ? Number.NaN : Date.parse(`${entry.plan.date}T00:00:00Z`);
+      const age = Number.isNaN(dated) ? null : Math.max(0, Math.floor((now - dated) / DAY_MS));
+      const shares = [
+        { name: 'Done', count: entry.doneCount, color: STATE_HEX.done },
+        { name: 'Left', count: Math.max(0, total - entry.doneCount), color: STATE_HEX.blocked },
+      ];
+
+      return (
+        <Box
+          key={`planrow:${entry.plan.file}`}
+          justifyContent='space-between'
+          alignItems='center'
+        >
+          <Button
+            key={key}
+            plain
+            onPress={() => toggle($, key)}
+          >
+            <Text color='claude'>{isOpen ? '▾ ' : '▸ '}</Text>
+            <Text bold>{clip(entry.plan.title, Math.max(12, rowWidth - CLUSTER_CELLS - 4))}</Text>
+          </Button>
+          <Box
+            gap={2}
+            alignItems='center'
+            flexShrink={0}
+          >
+            {/* Fixed-width columns, so the bars, counts and pills line up from one row to the next. */}
+            <Box
+              width={BAR_CELLS}
+              flexShrink={0}
+            >
+              {entry.status !== 'no-ledger' && total > 0 && (
+                <Svg
+                  source={barSvg(shares, 100, 10)}
+                  alt={`${entry.doneCount} of ${total} tasks done`}
+                  width={100}
+                  height={10}
+                />
+              )}
+            </Box>
+            <Box
+              width={COUNT_CELLS}
+              flexShrink={0}
+              justifyContent='flex-end'
+            >
+              <Text color='subtle'>{planCount(entry).replace(/ · $/, '')}</Text>
+            </Box>
+            <Box
+              width={PILL_CELLS}
+              flexShrink={0}
+              backgroundColor={pill.hex}
+              justifyContent='center'
+            >
+              <Text color='#ffffff'>{pill.label}</Text>
+            </Box>
+            <Box
+              width={AGE_CELLS}
+              flexShrink={0}
+              justifyContent='flex-end'
+            >
+              <Text color='subtle'>{age === null ? '' : ageText(age)}</Text>
+            </Box>
+          </Box>
+        </Box>
+      );
+    };
+
+    const renderPlan = (entry: BoardPlan) => {
+      const key = `plan:${entry.plan.file}`;
+      // An active plan is open by default and a finished one closed; a toggle flips whichever default applies.
+      const isOpen = isActive(entry) !== open.includes(key);
+
+      return (
+        <Box flexDirection='column'>
+          {renderPlanHeader(entry, key, isOpen)}
           {isOpen && (
             <Box
               flexDirection='column'
               marginLeft={2}
             >
+              {renderChrome(entry)}
               {entry.plan.tasks.length === 0 && entry.wrapUp.length === 0 && (
                 <Text
                   color='subtle'
@@ -480,6 +697,17 @@ export const registerBoard = (on: On): void => {
         {snapshot.plans.length === 0 && (
           <Text color='subtle'>No plans yet: /draft-plan writes them under .condux/plans.</Text>
         )}
+        {Input !== undefined && snapshot.plans.length > 0 && (
+          <Input
+            key='filter'
+            label='Filter'
+            placeholder='plan title'
+            value={filterText}
+            onInput={value => setFilter($, value)}
+            onSubmit={value => setFilter($, value)}
+          />
+        )}
+        {shown.length === 0 && snapshot.plans.length > 0 && <Text color='subtle'>No plan matches the filter.</Text>}
         {section('ACTIVE', groups.active)}
         {section('COMPLETE', groups.complete)}
         {groups.olderComplete.length > 0 && (

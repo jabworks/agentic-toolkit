@@ -81,3 +81,10 @@ test('the state contract exports types and nothing else', () => {
 
   assert.deepEqual(bad, []);
 });
+
+test("the mod's chart drawing is docket's byte for byte, so the two panes cannot drift apart", () => {
+  const ours = fs.readFileSync(path.join(ROOT, 'skills/workflow/hooks/mod/kit/charts.ts'), 'utf8');
+  const docket = fs.readFileSync(path.join(ROOT, 'skills/record/pane/hooks/charts.ts'), 'utf8');
+
+  assert.equal(ours, docket);
+});

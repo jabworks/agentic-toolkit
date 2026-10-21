@@ -103,6 +103,8 @@ declare module 'claude-code' {
       // Keys the person has toggled: a plan (`plan:<file>`) or a task card (`task:<file>:<n>`). An active plan is open by
       // default and a finished one closed, so a toggle flips whichever default applies.
       toggled: string[];
+      // The desktop's filter box text; the terminal has none, where typing would swallow the hotkeys.
+      filter: string;
     };
   }
 }
