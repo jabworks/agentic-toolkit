@@ -16,6 +16,9 @@ import {
   type VFile,
 } from './harness';
 
+// The desktop's plan row carries its figures beside the title button; the terminal's button holds them all.
+const rowKey = (surface: string, file: string): string => `${surface === 'desktop' ? 'planrow' : 'plan'}:${file}`;
+
 for (const surface of SURFACES) {
   test(`lists active plans with glyph rows, and the key hints sit above the list on ${surface}`, async ($, on) => {
     answerBeneath(on, sampleFiles);
@@ -24,7 +27,7 @@ for (const surface of SURFACES) {
     const ui = await mountPane(surface, $);
 
     expect((await ui.find({ key: 'plan:2026-10-10-active.md' }))?.text).toContain('Active work');
-    expect((await ui.find({ key: 'plan:2026-10-10-active.md' }))?.text).toContain('1/3 done');
+    expect((await ui.find({ key: rowKey(surface, '2026-10-10-active.md') }))?.text).toContain('1/3 done');
     expect((await ui.find({ key: 'task:2026-10-10-active.md:1' }))?.text).toContain('✓');
     expect((await ui.find({ key: 'task:2026-10-10-active.md:2' }))?.text).toContain('▶');
     expect((await ui.find({ key: 'task:2026-10-10-active.md:3' }))?.text).toContain('waits on 2');
@@ -61,12 +64,12 @@ for (const surface of SURFACES) {
 
     const ui = await mountPane(surface, $);
 
-    expect((await ui.find({ key: 'plan:2026-09-01-shipped.md' }))?.text).toContain('complete');
-    expect((await ui.find({ key: 'plan:2026-08-01-quiet.md' }))?.text).toContain('no ledger, state unknown');
+    expect((await ui.find({ key: rowKey(surface, '2026-09-01-shipped.md') }))?.text).toContain('complete');
+    expect((await ui.find({ key: rowKey(surface, '2026-08-01-quiet.md') }))?.text).toMatch(/no ledger/);
     // No ledger means no recorded progress: the row reports a task count, never "0/2 done".
-    expect((await ui.find({ key: 'plan:2026-08-01-quiet.md' }))?.text).toContain('2 tasks');
-    expect((await ui.find({ key: 'plan:2026-08-01-quiet.md' }))?.text).not.toContain('done');
-    expect((await ui.find({ key: 'plan:2026-07-01-abandoned.md' }))?.text).toContain('stale');
+    expect((await ui.find({ key: rowKey(surface, '2026-08-01-quiet.md') }))?.text).toContain('2 tasks');
+    expect((await ui.find({ key: rowKey(surface, '2026-08-01-quiet.md') }))?.text).not.toContain('done');
+    expect((await ui.find({ key: rowKey(surface, '2026-07-01-abandoned.md') }))?.text).toContain('stale');
     expect(await ui.find({ key: 'task:2026-09-01-shipped.md:1' })).toBe(undefined);
 
     await ui.press({ key: 'plan:2026-09-01-shipped.md' });

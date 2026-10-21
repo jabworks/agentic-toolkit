@@ -16,7 +16,15 @@ Built in PR 1 (condux 2.38.0). Everything lives under `skills/workflow/hooks/mod
 | `tests/*.test.tsx`, `tests/harness.tsx`, `tests/fixtures.ts` | Unit and pane tests (`.test.tsx` only, Q7), a fake host with a virtual filesystem and a `ui.status` recorder, and fixtures taken from the real plans and ledger |
 
 Differences from the plan: the poll and the status line share module state, so they sit in `board/board.tsx` instead of
-a `kit/poll.ts` and a `board/status.ts`; `kit/charts.ts` arrives with the desktop chrome in PR 2.
+a `kit/poll.ts` and a `board/status.ts`.
+
+PR 2 (the desktop chrome) added `kit/charts.ts` (docket's file byte for byte, pinned by a test), `board/graph.ts` (a
+layered DAG, one column per dependency depth; a loop is cut where it is re-entered; scaled into the pane by its
+viewBox), `board/stepper.ts` (task stages, the ledger's wrap-up, then ghosts for review / preflight|finalize / verify /
+commit until reached), `board/badges.ts` (tier, branch, PR, BASE, commit count, each only when the ledger says it) and the
+heartbeat in `board/text.ts`. The desktop plan row is a `planrow:<file>` box: the title button on the left, a mini bar,
+count, status pill and plan age on the right. Differences from the plan: the stepper, badges and heartbeat draw on both
+surfaces (they are text); only the graph and the bars are desktop-only.
 
 ## Data flow
 

@@ -140,3 +140,41 @@ export const boardText = (snapshot: BoardSnapshot | null, isAll: boolean): strin
 
   return blocks.length === 0 ? 'No plans found.' : blocks.join('\n\n');
 };
+
+// Minutes as the shortest honest age: "5m", "3h", "2d".
+export const ageLabel = (minutes: number): string => {
+  if (minutes < 1) {
+    return '<1m';
+  }
+
+  if (minutes < 60) {
+    return `${Math.floor(minutes)}m`;
+  }
+
+  return minutes < 1440 ? `${Math.floor(minutes / 60)}h` : `${Math.floor(minutes / 1440)}d`;
+};
+
+// Whether an unattended agent looks alive: the ledger is the heartbeat. Only a plan with a ledger and unfinished work
+// has one.
+export const QUIET_MINUTES = 10;
+export const STALLED_MINUTES = 30;
+
+export type Activity = { label: string; tone: 'subtle' | 'warning' | 'error' };
+
+export const activity = (entry: BoardPlan): Activity | null => {
+  if (entry.idleMinutes === null) {
+    return null;
+  }
+
+  const age = ageLabel(entry.idleMinutes);
+
+  if (entry.idleMinutes >= STALLED_MINUTES) {
+    return { label: `stalled · ledger ${age} ago`, tone: 'error' };
+  }
+
+  if (entry.idleMinutes >= QUIET_MINUTES) {
+    return { label: `quiet · ledger ${age} ago`, tone: 'warning' };
+  }
+
+  return { label: `ledger updated ${age} ago`, tone: 'subtle' };
+};
