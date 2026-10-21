@@ -154,11 +154,12 @@ an agent requires a concrete justification.
 ## The Claude Code mod
 
 On Claude Code (terminal and desktop app) condux also ships a **mod**: a small module that draws in the session instead
-of asking you to open a file. It is read-only: it never writes to `.condux/`, runs a command or fills your prompt.
+of asking you to open a file. It is read-only: it never writes to `.condux/`, runs a command or fills your prompt (it does open itself once; see below).
 
 | | |
 |---|---|
-| `/condux` | Opens a live board of your plans: each task as done, next ready, ready or blocked, the ledger's wrap-up lines, and a task's card on expand. Plans with no progress ledger show as "state unknown" rather than guessing. `/condux all` lists every plan, including older finished ones. |
+| `/condux` | Opens a live board of your plans: each task as done, next ready, ready or blocked, the ledger's wrap-up lines, and a task's card on expand. Plans with no progress ledger show as "state unknown" rather than guessing. `/condux all` lists every plan, including older finished ones. The stale and no-ledger groups show their newest five and count the rest. |
+| Opens itself | The first time an agent writes a progress ledger in a session (the moment a saved plan starts being implemented) the board opens beside the chat without taking your keyboard. Once per session; close it and it stays closed. Set `CONDUX_AUTO_OPEN=0` to turn it off. |
 | Status line | One line under the prompt, such as `plan: my-feature · 4/6 · next: Task 5`, for the open plan whose ledger changed most recently. It appears only in repositories that have a `.condux/` directory, and clears when nothing is open. |
 
 The board reads the plans and progress ledgers under `.condux/` in the repository you are in, and polls them every few

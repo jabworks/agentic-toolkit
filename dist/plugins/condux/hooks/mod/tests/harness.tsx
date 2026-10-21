@@ -47,6 +47,10 @@ export type World = {
   exists: number;
   // Every `$.ui.status` call, in order: undefined is the line being cleared.
   statuses: (string | undefined)[];
+  // Every `$.ui.open`: whether it asked for the keyboard.
+  opens: { isFocused: boolean }[];
+  // Environment variables the module may read.
+  env: Record<string, string>;
 };
 
 // The kit runs with no fs, so the test answers every `$` call the module makes from beneath it.
@@ -61,6 +65,8 @@ export const answerBeneath = (on: On, build: (now: number) => Record<string, VFi
     lists: 0,
     exists: 0,
     statuses: [],
+    opens: [],
+    env: {},
   };
   const children = (dir: string) =>
     Object.entries(world.files).filter(
@@ -79,7 +85,12 @@ export const answerBeneath = (on: On, build: (now: number) => Record<string, VFi
 
     return { value: undefined };
   });
-  on('ui.open', () => {
+  on('env.get', (_$, e) => ({ value: world.env[e.name] }));
+  // A tool call that reaches the host is simply answered: the module under test only watches it go by.
+  on('tool.call', () => ({ result: {}, text: 'ok' }) as never);
+  on('ui.open', (_$, e) => {
+    world.opens.push({ isFocused: e.focus === true });
+
     if (world.open === 'silent') {
       return new Promise(() => undefined);
     }

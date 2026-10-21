@@ -18,6 +18,7 @@ import {
   planCount,
   statusLabel,
   taskGlyph,
+  unledgered,
   waitLabel,
 } from './text';
 
@@ -207,9 +208,11 @@ function startPolling($: EngineInterface): void {
 
 type OpenOutcome = { isPlaced: true } | { isPlaced: false; reason: string };
 
-function openPane($: EngineInterface): Promise<OpenOutcome> {
+// `focus` is a request the surface may refuse; left out, the pane opens without taking the keyboard, which is what an
+// open the person did not ask for must do.
+function openPane($: EngineInterface, isFocused: boolean): Promise<OpenOutcome> {
   return Promise.race<OpenOutcome>([
-    $.ui.open({ id: PANE, title: 'condux', focus: true }),
+    $.ui.open(isFocused ? { id: PANE, title: 'condux', focus: true } : { id: PANE, title: 'condux' }),
     $.clock.sleep(OPEN_TIMEOUT_MS).then(() => ({ isPlaced: false, reason: 'this surface did not answer' })),
   ]);
 }
@@ -275,6 +278,43 @@ const glyphColor = (plan: BoardPlan, boardTask: BoardPlan['tasks'][number]): str
   return boardTask.inCycle ? 'error' : STATE_COLOR[boardTask.state];
 };
 
+// The board opens itself once, the first time an agent writes a progress ledger: that is the moment a saved plan starts
+// being implemented, so a typo fix or a chat never opens anything. A person who closes it is not asked again, and
+// CONDUX_AUTO_OPEN=0 turns it off. Every failure is swallowed: this runs beside a tool call and must never touch it.
+let hasAutoOpened = false;
+
+async function autoOpen($: EngineInterface): Promise<void> {
+  if (hasAutoOpened) {
+    return;
+  }
+
+  hasAutoOpened = true;
+
+  try {
+    if ((await $.env.get('CONDUX_AUTO_OPEN')) === '0') {
+      return;
+    }
+
+    const panes = await $.ui.panes().catch(() => []);
+
+    if (panes.some(pane => pane.id === PANE)) {
+      return;
+    }
+
+    const opened = await openPane($, false);
+
+    if (!opened.isPlaced) {
+      return;
+    }
+
+    await refresh($, true);
+    await armStatus($);
+    startPolling($);
+  } catch {
+    // The board is an extra; the agent's write goes on.
+  }
+}
+
 // Called from register.tsx's one session.start hook (the validator rejects two un-matchered hooks on one event): a pane
 // that survived a hot reload resumes its polling.
 // A function declaration, not an arrow: past an import the validator follows `$` only into declarations.
@@ -316,7 +356,27 @@ export function disarmStatus($: EngineInterface, reason: string): void {
   stopPolling();
 }
 
+const LEDGER_FILE_RE = /(?:^|[\\/])\.condux[\\/]progress[\\/][^\\/]+\.md$/;
+// A shell write into the ledger: a redirect or tee naming it, not a `cat` that only reads it.
+const LEDGER_SHELL_RE = /(?:>>?|\btee\b)[^\n|;&]*\.condux\/progress\/\S+\.md/;
+
 export const registerBoard = (on: On): void => {
+  on('tool.call', { tool: ['Write', 'Edit'] }, ($, e, next) => {
+    if (typeof e.file_path === 'string' && LEDGER_FILE_RE.test(e.file_path)) {
+      void autoOpen($);
+    }
+
+    return next(e);
+  });
+
+  on('tool.call', { tool: 'Bash' }, ($, e, next) => {
+    if (typeof e.command === 'string' && LEDGER_SHELL_RE.test(e.command)) {
+      void autoOpen($);
+    }
+
+    return next(e);
+  });
+
   on('command.run', { command: 'condux' }, async ($, e) => {
     const argument = e.args.trim();
 
@@ -330,7 +390,7 @@ export const registerBoard = (on: On): void => {
       return { text: USAGE };
     }
 
-    const opened = await openPane($);
+    const opened = await openPane($, true);
 
     await refresh($, true);
     await armStatus($);
@@ -439,7 +499,7 @@ export const registerBoard = (on: On): void => {
       needle === ''
         ? snapshot.plans
         : snapshot.plans.filter(entry => `${entry.plan.title} ${entry.plan.slug}`.toLowerCase().includes(needle));
-    const groups = groupPlans(shown);
+    const groups = groupPlans(shown, needle === '');
 
     const renderTask = (entry: BoardPlan, boardTask: BoardPlan['tasks'][number]) => {
       const key = `task:${entry.plan.file}:${boardTask.task.number}`;
@@ -714,12 +774,22 @@ export const registerBoard = (on: On): void => {
           <Text color='subtle'>{`+${groups.olderComplete.length} older finished plans · /condux all`}</Text>
         )}
         {section('STALE', groups.stale)}
+        {groups.olderStale.length > 0 && (
+          <Text color='subtle'>{`+${groups.olderStale.length} older stale plans · /condux all`}</Text>
+        )}
         {section('NO LEDGER · state unknown', groups.noLedger)}
+        {groups.olderNoLedger.length > 0 && (
+          <Text color='subtle'>{`+${groups.olderNoLedger.length} older plans with no ledger · /condux all`}</Text>
+        )}
       </Box>
     );
 
+    const unknown = unledgered(snapshot.plans);
+
     return frame(
-      `${snapshot.plans.length} ${snapshot.plans.length === 1 ? 'plan' : 'plans'} · ${groups.active.length} active`,
+      `${snapshot.plans.length} ${snapshot.plans.length === 1 ? 'plan' : 'plans'} · ${groups.active.length} active${
+        unknown > 0 ? ` · ${unknown} unledgered` : ''
+      }`,
       body,
       `tab move · ⏎ expand · r refresh · updated ${updatedAt}`,
     );
