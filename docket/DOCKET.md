@@ -285,4 +285,8 @@ Found 2026-09-22 in the mobile eval (`skills/toolkit-research-frontier/reference
 
 condux moved explorer off haiku in #177 (2026-10-07): sonnet at low effort finished in fewer turns than Haiku 4.5, and turn count costs more than token price. Haiku 5.5 shipped 2026-10-07 (`claude-haiku-5-5`, $0.10/$0.50 per MTok up to 100K), and the `haiku` alias now resolves to it. That reasoning predates the model, so re-measure. explorer has no quality harness yet, so this needs a small one (fixed codebase questions, turn count and answer accuracy) before any switch. The scout A/B under #98 is the template.
 
+### 114. Evaluate claude plugin eval and /skill-doctor against our trigger harness (2026-10-28)
+
+Claude Code 2.1.261 added /skill-doctor and 2.1.269 added `claude plugin eval` (with `--disallow-tools` in 2.1.299). Decide whether they can replace or cross-check scripts/eval-invocations.mjs (docket #68). There's no public docs page yet, so start from the changelog: https://code.claude.com/docs/en/changelog.md
+
 ## Loose threads
