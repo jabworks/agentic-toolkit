@@ -161,8 +161,7 @@ its own files. Three rungs:
   reference phrasing is record's: "prefer the MCP tools when registered,
   otherwise run the bundled CLI."
 - **Cross-plugin dependencies are banned at every rung.** A docket skill that
-  needs condux — or any skill that leans on a third-party MCP like
-  context-mode — breaks silently for everyone without that plugin, and no
+  needs condux — or any skill that leans on a third-party MCP server or plugin — breaks silently for everyone without that plugin, and no
   installer or doctor can fix a dependency the bundle doesn't ship.
 - What makes rung 3 a first-class preferred path rather than a lucky bonus:
   `INSTALL.md` (detect → register → verify → report) makes it reliable to

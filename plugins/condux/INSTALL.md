@@ -180,8 +180,8 @@ fix on an indented continuation line:
 claude     skipped  the plugin manifest registers the SessionStart hook — nothing to do
 codex      done     set [features] hooks = true — restart Codex for it to take effect
 opencode   done     added @jabworks/condux to opencode.json
-conflicts  warn     superpowers — installed as superpowers@claude-plugins-official on claude; 11 skills overlap condux
-                    ↳ /plugin uninstall superpowers@claude-plugins-official — or … (run one library or the other; condux does not remove it for you)
+conflicts  warn     <library> — installed as <library>@<marketplace> on claude; 11 skills overlap condux
+                    ↳ /plugin uninstall <library>@<marketplace> — or … (run one library or the other; condux does not remove it for you)
 ```
 
 | Status | Meaning |

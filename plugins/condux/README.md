@@ -57,66 +57,21 @@ install rather than change it, run `/condux:condux-doctor` — or
 
 ## Compatibility
 
-**condux conflicts with [superpowers](https://github.com/obra/superpowers). Run one or the other.**
+**Run one workflow router at a time.** condux registers a `SessionStart` hook
+that tells the agent every dev task starts at `/workflow`. Another workflow
+library that does the same thing on the same matcher puts two competing
+contracts in context. Nothing errors: the agent follows whichever it read
+last, and that can change between sessions.
 
-This is stated plainly because condux owes it a debt: condux reworks
-superpowers' skill-orchestration ideas around proportional effort — tiered
-routing, lazy loading, soft gates — instead of always-on maximalism. The
-consequence of a rework is that the two are near-complete functional twins.
+Both `install.mjs` and `/condux:condux-doctor` detect known conflicting
+libraries, whether installed as a plugin or as loose skills under
+`~/.claude/skills`, `~/.agents/skills`, `$CODEX_HOME/skills` or OpenCode's
+`skills/`, and print the removal command. **Neither runs it.** Uninstalling a
+plugin you chose is not a decision an installer gets to make.
 
-They collide hardest at the point neither can yield. Both register a
-`SessionStart` hook on the same matcher, and each injects a router telling the
-agent that every dev task starts with it:
-
-```
-superpowers  SessionStart  startup|clear|compact  →  using-superpowers/SKILL.md
-condux       SessionStart  startup|clear|compact  →  routing.md
-```
-
-Nothing errors. The agent simply follows whichever contract it read last, and
-which one that is can change between sessions. Below that, 11 of superpowers'
-14 skills answer the same question as 8 of condux's 14:
-
-| superpowers | condux |
-|---|---|
-| `using-superpowers` | `workflow` |
-| `brainstorming` | `discovery` |
-| `writing-plans` | `draft-plan` |
-| `executing-plans` · `subagent-driven-development` | `subagent-execution` |
-| `dispatching-parallel-agents` | `subagent-deployment` |
-| `test-driven-development` | `test-first-development` |
-| `systematic-debugging` | `root-cause-analysis` |
-| `verification-before-completion` | `preflight` |
-| `requesting-code-review` · `receiving-code-review` | `code-review` |
-
-*(Verified against superpowers 6.2.0. `using-git-worktrees` and
-`finishing-a-development-branch` are the part you would actually lose —
-elsewhere in this toolkit, `git-operations` and `release` cover that ground,
-and `writing-skills` is answered by `toolkit-ops`.)*
-
-Both `install.mjs` and `/condux:condux-doctor` detect this and print the
-removal command. **Neither runs it.** Uninstalling a plugin you chose is not a
-decision an installer gets to make:
-
-```bash
-/plugin uninstall superpowers@claude-plugins-official
-```
-
-The same check covers loose skills under `~/.claude/skills`, `~/.agents/skills`,
-`$CODEX_HOME/skills` and OpenCode's `skills/` — a machine can carry the
-overlap through `npx skills add` without the plugin ever being installed.
-
-### Other lineage
-
-The `plan-review` skill is an independent reimplementation inspired by
-[Plannotator](https://github.com/backnotprop/plannotator) — no shared code and
-no third-party runtime dependency. It is **not** in the conflict registry:
-running both is untidy rather than harmful, and no detection surface for it was
-verified. Adding an entry needs one, checked against a real install — a wrong
-name in a shipped warning is worse than no warning.
-
-The registry lives at `skills/condux-doctor/conflicts.json`. Additions are a
-data edit.
+The registry lives at `skills/condux-doctor/conflicts.json`. Adding an entry is
+a data edit, but it needs a detection surface checked against a real install —
+a wrong name in a shipped warning is worse than no warning.
 
 ---
 

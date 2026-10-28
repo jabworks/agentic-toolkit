@@ -12,7 +12,7 @@
   { "query": "reject this plan, dont build it", "should_trigger": true, "expected_skill": "plan-review" },
   { "query": "send my notes on section 3 back to the agent", "should_trigger": true, "expected_skill": "plan-review" },
   { "query": "why didnt the review tab reload after the revision", "should_trigger": true, "expected_skill": "plan-review", "kind": "in-context" },
-  { "query": "something like plannotator?", "should_trigger": true, "expected_skill": "plan-review" },
+  { "query": "something like an annotation UI for plans?", "should_trigger": true, "expected_skill": "plan-review" },
   { "query": "review this code diff", "should_trigger": true, "expected_skill": "code-review" },
   { "query": "review pr #42 on github", "should_trigger": true, "expected_skill": "code-review" },
   { "query": "write the plan first", "should_trigger": true, "expected_skill": "draft-plan", "accept": ["workflow"] },

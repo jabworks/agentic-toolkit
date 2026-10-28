@@ -23,7 +23,7 @@ Codex, OpenCode, Cursor and the agent-assisted install are under [Install](#inst
 
 ## Contents
 
-- [Install](#install) — [ask an agent](#ask-an-agent-to-install-it) · [conflicts](#compatibility-with-other-skill-libraries) · [Claude Code](#claude-code--plugin-marketplace) · [Codex](#codex--plugin-manifests) · [OpenCode](#opencode--condux-plugin--merged-trigger-skill-variants) · [Cursor](#cursor--merged-trigger-skill-variants) · [manual](#manual-fallback)
+- [Install](#install) — [ask an agent](#ask-an-agent-to-install-it) · [conflicts](#compatibility-with-other-workflow-routers) · [Claude Code](#claude-code--plugin-marketplace) · [Codex](#codex--plugin-manifests) · [OpenCode](#opencode--condux-plugin--merged-trigger-skill-variants) · [Cursor](#cursor--merged-trigger-skill-variants) · [manual](#manual-fallback)
 - [Skills](#skills) — the standalone skills table
   - [Condux](#condux) — the agentic workflow bundle
   - [Concord](#concord) — continuous memory for Codex
@@ -31,7 +31,6 @@ Codex, OpenCode, Cursor and the agent-assisted install are under [Install](#inst
   - [Toolkit Ops](#toolkit-ops) — maintaining this repo
 - [Where artifacts land](#where-artifacts-land) — what gets written to your project, and where
 - [Evals](#evals) — how trigger routing is measured
-- [Acknowledgments](#acknowledgments)
 - [Structure](#structure) — repo layout and the four distribution channels
 
 ## Install
@@ -80,9 +79,9 @@ Install plugins from the jabworks/agentic-toolkit marketplace on this machine.
 
 Every step is safe to re-run, and each installer is read-modify-write on one key — none of them rewrites config another plugin owns.
 
-### Compatibility with other skill libraries
+### Compatibility with other workflow routers
 
-**`condux` conflicts with [obra/superpowers](https://github.com/obra/superpowers)** — the library it reworks. Both register a `SessionStart` hook on the same matcher, each injecting a router claiming every dev task, and 11 of superpowers' 14 skills overlap 8 of condux's. Run one or the other. `install.mjs` and `/condux:condux-doctor` both detect it and print the removal command without running it; the overlap table and reasoning are in [the condux README](plugins/condux/README.md#compatibility), and the registry driving the check is [`skills/condux-doctor/conflicts.json`](skills/condux-doctor/conflicts.json).
+**Run one workflow router at a time.** `condux` registers a `SessionStart` hook that routes every dev task through `/workflow`; another library doing the same leaves the agent with two competing contracts. `install.mjs` and `/condux:condux-doctor` detect known conflicting libraries and print the removal command without running it — details in [the condux README](plugins/condux/README.md#compatibility), registry in [`skills/condux-doctor/conflicts.json`](skills/condux-doctor/conflicts.json).
 
 No other conflict is currently detected. The rest of the toolkit's skills — git, release, spec, session — occupy their own ground.
 
@@ -263,8 +262,6 @@ Lean agentic workflow plugin (`condux`). Install the full workflow bundle as a u
 ```bash
 /plugin install condux@jabworks-agentic-toolkit
 ```
-
-> Inspired by [obra/superpowers](https://github.com/obra/superpowers) — condux reworks its skill-orchestration ideas around a lean, proportional-effort philosophy (tiered routing, lazy loading, soft gates) rather than always-on maximalism.
 
 Installing is the whole setup: condux ships a `SessionStart` hook (Claude Code
 and Codex both) that puts its routing rule in context before your first prompt,
@@ -458,12 +455,6 @@ Latest run (2026-07-09, claude-haiku-4-5, 394 cold-trigger cases, 3 trials):
 This measures whether skills *activate correctly* — not end-to-end workflow
 quality. Structural invariants (dist mirror, manifests, frontmatter budgets,
 no-egress guarantees) are separately enforced by `node --test` in CI.
-
-## Acknowledgments
-
-The **plan-review** skill is inspired by [Plannotator](https://github.com/backnotprop/plannotator) — its interactive plan-review workflow served as the design reference. plan-review is an independent in-house reimplementation with no shared code and no third-party runtime dependency.
-
-**condux** reworks [obra/superpowers](https://github.com/obra/superpowers)' skill-orchestration ideas around proportional effort. Reworking a library that thoroughly makes the two direct alternatives rather than companions — see [Compatibility](#compatibility-with-other-skill-libraries) before installing both.
 
 ## Structure
 

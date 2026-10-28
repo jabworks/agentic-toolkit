@@ -25,7 +25,7 @@ and no way to improve across sessions.
 
 **The exception: another skill's mandated spawn.** When a different installed
 skill tells you to spawn a specific agent type *and* ships that worker's contract
-as a file the worker reads first — `anthropic-skills:deep-research` spawns
+as a file the worker reads first — say, a research skill that spawns
 `general-purpose` workers whose first step is reading its own worker
 reference — run it as written. That contract is reviewable; it
 lives in the skill. Substituting a named agent breaks both sides: condux's agents

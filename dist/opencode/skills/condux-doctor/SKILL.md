@@ -1,6 +1,6 @@
 ---
 name: condux-doctor
-description: "Health check for the condux plugin on the host it is installed on. Runs the SessionStart routing hook on both hosts and checks each wire format, confirms Codex's hooks flag is on and plan-review's Stop hook resolves, checks the OpenCode registration and its bundled agents and skills, verifies the five specialist agents shipped, compares the installed version against the marketplace clone, and flags conflicting skill libraries installed. Offline; read-only unless --fix. Checking whether condux itself works on this machine: is condux working, the routing rule stopped appearing, /workflow is not being reached, did the SessionStart hook fire, check my condux install, the agents are missing, does condux clash with superpowers. Run it after installing or updating. Not for routing a dev task (that is workflow); not for diagnosing this repo's own build or dist drift (that is toolkit-debugging-playbook)."
+description: "Health check for the condux plugin on the host it is installed on. Runs the SessionStart routing hook on both hosts and checks each wire format, confirms Codex's hooks flag is on and plan-review's Stop hook resolves, checks the OpenCode registration and its bundled agents and skills, verifies the five specialist agents shipped, compares the installed version against the marketplace clone, and flags conflicting skill libraries installed. Offline; read-only unless --fix. Checking whether condux itself works on this machine: is condux working, the routing rule stopped appearing, /workflow is not being reached, did the SessionStart hook fire, check my condux install, the agents are missing, does condux clash with another workflow plugin. Run it after installing or updating. Not for routing a dev task (that is workflow); not for diagnosing this repo's own build or dist drift (that is toolkit-debugging-playbook)."
 argument-hint: "[--host claude|codex|opencode] [--fix]"
 ---
 
@@ -57,9 +57,8 @@ else on the machine competes with it. Only `broken` affects the exit code.
   clone's own last-fetch date printed beside it. Never fetches.
 - **Conflicting skill libraries** — anything in
   `conflicts.json` that is already on this machine, matched by name against
-  the host plugin registrations and the loose skill directories. The one entry
-  today is `superpowers`, which condux is derived from and which registers a
-  competing `SessionStart` router. Reported `warn`, never `broken`: condux is
+  the host plugin registrations and the loose skill directories. Entries are
+  libraries that register a competing `SessionStart` router. Reported `warn`, never `broken`: condux is
   fine, and the removal command is printed rather than run.
 
 ## Why running the hook matters
