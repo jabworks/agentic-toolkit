@@ -124,6 +124,15 @@ CP-1, "(or say done)" for CP-3. Never merge two rows into one button to make
 room — "Use agents" for the two agent rows is exactly the erosion this rule
 prevents. A host with no cap, or a plain-text menu, shows every row.
 
+**When the question tool doesn't block.** Codex's `request_user_input` queues
+the question beside the turn: the model keeps working, the host may answer it
+on a timer (`autoResolutionMs`), and an unanswered question is dropped when the
+turn ends. Every checkpoint therefore ends the turn with the full menu as a
+numbered plain-text list in the final message (the user replies with a number
+or a row name). The picker may be shown as well, but the final message is the
+menu of record. Never treat a picker answer you didn't see the user give as
+their choice.
+
 ### CP-1 — Plan ready
 
 *After draft-plan sign-off (LARGE) or the inline plan (MEDIUM). Plan review already
@@ -342,6 +351,7 @@ Stop if you catch yourself doing any of these:
 | Auto-running code-review, commits, or agents | They're checkpoint choices; run only when picked |
 | Verifying live without loading `live-verification` | Load it — its `report.md` is the evidence (9 of 11 ad-hoc runs in a mobile eval left none) |
 | Auto-advancing past a checkpoint on MEDIUM/LARGE | The user owns every transition |
+| A checkpoint asked only through a non-blocking picker (Codex) | End the turn with the numbered menu in plain text — the picker disappears when the turn ends |
 | Absorbing a workaround silently so the change lands | Name it — that's a hardening trigger, and preflight asks for it anyway |
 | Expanding scope past the confirmed tier | Stop, report, re-confirm |
 
