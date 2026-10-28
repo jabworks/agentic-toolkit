@@ -5,7 +5,21 @@
 [![npm](https://img.shields.io/npm/v/%40jabworks%2Fcondux?style=flat-square&label=%40jabworks%2Fcondux)](https://www.npmjs.com/package/@jabworks/condux)
 [![Trigger routing](https://img.shields.io/badge/trigger_routing-88.6%25_%C2%B1_3.8pp-blue?style=flat-square)](./skills/toolkit-research-frontier/references/eval-trials-2026-07-09-post-foundry.md)
 
-Personal collection of agentic coding skills. Compatible with Claude Code, Codex, OpenCode, Cursor, Gemini CLI, and [40+ other tools](https://github.com/vercel-labs/skills) via `npx skills add`.
+**Agentic workflow that scales to the task — on Claude Code, Codex, OpenCode, and Cursor.**
+
+Most agent workflows run the same heavy pipeline on every task, so people stop using them for small work. [**condux**](./plugins/condux/README.md) does the opposite: it sizes each task (Small / Medium / Large), confirms the size with you, and runs only the steps that size needs. No design doc for a typo, no test run in the middle of a two-line fix, and on bigger work you approve every phase change.
+
+- **Same workflow on every host.** One source, four channels — Claude Code and Codex plugin marketplaces, an OpenCode npm plugin, and Cursor skills. The host differences are found, tested, and [written down](./specs/agent-plugins-conformance/quirks.md).
+- **Measured, not vibes.** Skill routing is checked by an eval harness (badge above) and every distribution channel is byte-checked in CI.
+- **Bring only what you want.** condux is the headline; [docket](#docket) (a file-based backlog), [concord](#concord) (memory for Codex), and the standalone skills install separately.
+
+```bash
+# Claude Code
+/plugin marketplace add jabworks/agentic-toolkit
+/plugin install condux@jabworks-agentic-toolkit
+```
+
+Codex, OpenCode, Cursor and the agent-assisted install are under [Install](#install). The standalone skills also work in Gemini CLI and [40+ other tools](https://github.com/vercel-labs/skills) via `npx skills add`.
 
 ## Contents
 
@@ -51,8 +65,8 @@ Install plugins from the jabworks/agentic-toolkit marketplace on this machine.
 3. Three plugins need a step the marketplace cannot do. Read the INSTALL.md
    next to each one you installed, then run its installer:
      condux    <plugin-root>/install.mjs
-     docket    <plugin-root>/skills/docket/record/server/install.sh
-     concord   <plugin-root>/skills/concord/remember/references/install-codex-hook.sh
+     docket    <plugin-root>/server/install.sh
+     concord   <plugin-root>/skills/remember/references/install-codex-hook.sh
    Show me the --dry-run plan before writing anything.
 
 4. Verify rather than assume — run the doctor for each plugin and show me the
