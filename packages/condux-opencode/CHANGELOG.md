@@ -1,5 +1,15 @@
 # @jabworks/condux
 
+## 0.32.0
+
+### Minor Changes
+
+- [#200](https://github.com/jabworks/agentic-toolkit/pull/200) [`0f7bc46`](https://github.com/jabworks/agentic-toolkit/commit/0f7bc464af9529083a1aacf703fded86c1a5ba8c) Thanks [@vi-hieu](https://github.com/vi-hieu)! - Workflow checkpoints end the turn with a plain-text numbered menu, since Codex's question picker doesn't block and is dropped when the turn ends.
+
+### Patch Changes
+
+- [#197](https://github.com/jabworks/agentic-toolkit/pull/197) [`1a0da78`](https://github.com/jabworks/agentic-toolkit/commit/1a0da78be640df35d20c0a9f5f76343c1470a936) Thanks [@vi-hieu](https://github.com/vi-hieu)! - Name every hook with `statusMessage` so the Codex hooks menu stops listing them as unnamed.
+
 ## 0.31.0
 
 ### Minor Changes
