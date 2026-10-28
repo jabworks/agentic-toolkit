@@ -5,8 +5,6 @@ description: Use when creating a new skill for jabworks/agentic-toolkit, registe
 
 # Toolkit Foundry
 
-> Adapted from [softaworks/agent-toolkit `plugin-forge`](https://github.com/softaworks/agent-toolkit/tree/main/skills/plugin-forge)
-
 ## Purpose
 
 Create and maintain skills in `jabworks/agentic-toolkit`. Covers scaffolding, marketplace registration, generation of the dist trees, the npm package, and publishing.
