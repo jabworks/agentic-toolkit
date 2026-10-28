@@ -13,6 +13,10 @@ Stale open markers cost real sessions — closing means moving.
 
 Follow-up to #106, rides in PR #189 (docket 0.12.2). (1) A share thinner than a round-capped segment is wide (3 of 175 in a ring) was centred nowhere near its slice and spilled over its neighbours. `allot()` now gives every segment a minimum span (stroke+gap) taken proportionally from the large ones, and each arc/line is centred in its span; tests parse the drawn arcs and lines and assert no overlap, mutation-checked (min span 0 fails both). (2) The bar still sat in a tall box after it was given width/height attributes: the app ignores the markup's own size, the ring and sparkline only looked right because they pass explicit width/height props. The bar now passes `height` too (a test asserts every desktop Svg has one). NOT verified in the app: height-only is a guess; fallback is an explicit width as well (slot looked ~800 CSS px), at the cost of overflow risk in narrow panes.
 
+### 115. Verify whether Codex reads when_to_use in SKILL.md frontmatter (2026-10-28)
+
+Codex release notes 0.147–0.165 never mention `when_to_use`. If Codex ignores it, condux skills reach Codex with only their `description`, and the trigger wording in `when_to_use` is lost. Also, since 0.156 (#46070) Codex shortens long descriptions without warning. Check on the installed Codex (0.165+): load a condux skill and see whether the `when_to_use` text reaches the model. If it doesn't, consider folding it into the Codex channel the way build-opencode.mjs does.
+
 ## Someday
 
 ### 65. toolkit-debugging-playbook applied-but-cold — evaluate for a routing nudge next period (2026-08-28)
@@ -288,5 +292,9 @@ condux moved explorer off haiku in #177 (2026-10-07): sonnet at low effort finis
 ### 114. Evaluate claude plugin eval and /skill-doctor against our trigger harness (2026-10-28)
 
 Claude Code 2.1.261 added /skill-doctor and 2.1.269 added `claude plugin eval` (with `--disallow-tools` in 2.1.299). Decide whether they can replace or cross-check scripts/eval-invocations.mjs (docket #68). There's no public docs page yet, so start from the changelog: https://code.claude.com/docs/en/changelog.md
+
+### 116. Concord: capture interrupted turns via Codex Interrupt hook (2026-10-28)
+
+Codex 0.150.0 (#40511) added an `Interrupt` hook event. Concord captures on UserPromptSubmit and SessionEnd, so a turn the user interrupts may be missed. Optional; decide whether it's worth a capture.mjs mode.
 
 ## Loose threads
