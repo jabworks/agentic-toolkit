@@ -6,6 +6,7 @@
           {
             "type": "command",
             "command": "node \"${PLUGIN_ROOT}/skills/remember/bin/recall.mjs\"",
+            "statusMessage": "Concord: recall memories",
             "additionalContextLimit": 8000
           }
         ]
@@ -16,7 +17,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${PLUGIN_ROOT}/skills/remember/bin/capture.mjs\" --prompt"
+            "command": "node \"${PLUGIN_ROOT}/skills/remember/bin/capture.mjs\" --prompt",
+            "statusMessage": "Concord: capture prompt"
           }
         ]
       }
@@ -26,7 +28,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${PLUGIN_ROOT}/skills/remember/bin/capture.mjs\" --session-end"
+            "command": "node \"${PLUGIN_ROOT}/skills/remember/bin/capture.mjs\" --session-end",
+            "statusMessage": "Concord: capture session"
           }
         ]
       }

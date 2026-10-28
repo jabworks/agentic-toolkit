@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { loadComposition } from '../scripts/composition.mjs';
 import { renderMarketplace, renderBlock } from '../scripts/generate-catalogs.mjs';
@@ -82,6 +83,10 @@ test('nothing undeclared exists at any plugin root in dist/', () => {
     pluginFiles.add('plugin.json');
 
     for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
+      // Gitignored entries never ship — Claude Code writes a tsconfig.json
+      // into any plugin dir it dev-loads (3bff3dd). Only judge what git sees.
+      const rel = path.join('dist', 'plugins', name, entry.name);
+      if (spawnSync('git', ['check-ignore', '-q', rel], { cwd: REPO_ROOT }).status === 0) continue;
       if (entry.isDirectory()) {
         if (!declaredDirs.has(entry.name)) {
           problems.push(`dist/plugins/${name}/${entry.name}/: undeclared plugin-level dir`);

@@ -6,6 +6,7 @@
           {
             "type": "command",
             "command": "node \"${PLUGIN_ROOT}/hooks/session-start.mjs\" --codex",
+            "statusMessage": "Condux: load workflow routing",
             "additionalContextLimit": 4000
           }
         ]
@@ -17,6 +18,7 @@
           {
             "type": "command",
             "command": "node \"${PLUGIN_ROOT}/skills/plan-review/references/annotate-server.js\" --codex-stop",
+            "statusMessage": "Condux: wait for plan-review annotations",
             "timeout": 345600
           }
         ]
