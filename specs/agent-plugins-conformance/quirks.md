@@ -35,6 +35,7 @@
 **Trigger:** a plugin shipping both a root `plugin.json` and `hooks` in `.codex-plugin/plugin.json`.
 **Cause:** Codex picks its plugin loader by root-manifest *presence*. With the file on disk the Agent Plugins loader takes the plugin, and that loader has no hooks support at all — the Codex manifest's `hooks` field is never read. Claude Code is the opposite: it reads `.claude-plugin/plugin.json` and ignores the root manifest (`claude plugin validate --strict` passed with it present; checked during implementation, re-check on Claude CLI updates).
 **Mitigation:** yes — the invariant: a plugin ships a root `plugin.json` **or** declares `hooks`, never both. `scripts/generate-agent-manifests.mjs` derives the exclusion from the Codex manifest; `tests/agent-plugins.test.mjs` asserts the coupling so a fourteenth plugin gaining hooks fails the build instead of the field.
+**Upstream:** [openai/codex#39895](https://github.com/openai/codex/issues/39895), filed 2026-08-21. Still open and unfixed as of 2026-10-28 (codex-cli 0.165.0): no linked Codex PR or commit, no release note between 0.147 and 0.165, and the latest comment reproduces it on 0.154. The other cross-references are plugin authors dropping their root manifests. Re-check here before relaxing the invariant.
 
 Every workaround is closed (Codex 0.149.0):
 
