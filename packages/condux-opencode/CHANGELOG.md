@@ -1,5 +1,11 @@
 # @jabworks/condux
 
+## 0.32.1
+
+### Patch Changes
+
+- [#204](https://github.com/jabworks/agentic-toolkit/pull/204) [`2c657b9`](https://github.com/jabworks/agentic-toolkit/commit/2c657b9a1b426e45852bd69491d41cf0c14594e3) Thanks [@vi-hieu](https://github.com/vi-hieu)! - Drop references to third-party libraries from the bundled skills; conflict detection is unchanged.
+
 ## 0.32.0
 
 ### Minor Changes
