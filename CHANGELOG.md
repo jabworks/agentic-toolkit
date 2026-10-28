@@ -12,13 +12,17 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## condux 2.42.0 — 2026-10-28
+
+- chore(condux): version 2.42.0
+
 ## condux 2.41.1 — 2026-10-28
 
-- chore(condux): version 2.41.1
+- feat(hooks): name every hook with statusMessage — condux 2.41.1, concord 0.6.2 (#197)
 
 ## concord 0.6.2 — 2026-10-28
 
-- chore(concord): version 0.6.2
+- feat(hooks): name every hook with statusMessage — condux 2.41.1, concord 0.6.2 (#197)
 
 ## condux 2.41.0 — 2026-10-22
 
