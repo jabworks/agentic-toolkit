@@ -14,11 +14,15 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## toolkit-ops 1.7.25 — 2026-10-28
 
-- chore(toolkit-ops): version 1.7.25
+- chore: drop third-party references from the shipped surface — condux 2.42.1 (#204)
+
+## condux 2.42.2 — 2026-10-28
+
+- chore(condux): version 2.42.2
 
 ## condux 2.42.1 — 2026-10-28
 
-- chore(condux): version 2.42.1
+- chore: drop third-party references from the shipped surface — condux 2.42.1 (#204)
 
 ## condux 2.42.0 — 2026-10-28
 
@@ -34,11 +38,11 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## coding-directive 1.4.1 — 2026-10-28
 
-- chore(coding-directive): version 1.4.1
+- chore: drop third-party references from the shipped surface — condux 2.42.1 (#204)
 
 ## adapting-skills 1.4.2 — 2026-10-28
 
-- chore(adapting-skills): version 1.4.2
+- chore: drop third-party references from the shipped surface — condux 2.42.1 (#204)
 
 ## condux 2.41.0 — 2026-10-22
 
