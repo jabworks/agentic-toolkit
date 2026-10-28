@@ -130,7 +130,3 @@ paths. Offer to move them once — `git mv handoffs/ .session-handoff/` if
 tracked, plain `mv` otherwise — but never move them silently.
 
 If continuing prior work, set `continues-from` in the metadata header and reference the predecessor filename.
-
----
-
-*Adapted from [softaworks/agent-toolkit `session-handoff`](https://github.com/softaworks/agent-toolkit/tree/main/skills/session-handoff)*
