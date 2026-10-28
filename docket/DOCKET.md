@@ -297,4 +297,11 @@ Claude Code 2.1.261 added /skill-doctor and 2.1.269 added `claude plugin eval` (
 
 Codex 0.150.0 (#40511) added an `Interrupt` hook event. Concord captures on UserPromptSubmit and SessionEnd, so a turn the user interrupts may be missed. Optional; decide whether it's worth a capture.mjs mode.
 
+### 118. Traction: quirk posts, directory listings, condux demo GIF (2026-10-28)
+
+Deferred 2026-10-28; the README pitch shipped in #202. Remaining:
+- First quirk post: a root plugin.json silently kills Codex hooks (openai/codex#39895; 13 repos cross-referenced it). Standalone Markdown, venue TBD.
+- Listings: Claude Code plugin directory, Codex marketplace listings, agent-plugins.org registry, skills.sh, awesome-claude-code and awesome-codex.
+- A ~15s demo GIF of the condux board and a checkpoint, placed under the README tagline. Needs a screen recording from Harvey.
+
 ## Loose threads
