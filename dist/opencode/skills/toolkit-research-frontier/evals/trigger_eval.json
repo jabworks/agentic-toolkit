@@ -20,5 +20,5 @@
   { "query": "what should we improve next in my saas product", "should_trigger": false, "expected_skill": null },
   { "query": "whats the roadmap for my nextjs app", "should_trigger": false, "expected_skill": null },
   { "query": "research react server components for me", "should_trigger": false, "expected_skill": null },
-  { "query": "what open source alternatives exist for plannotator", "should_trigger": false, "expected_skill": null }
+  { "query": "what open source alternatives exist for plan annotation tools", "should_trigger": false, "expected_skill": null }
 ]

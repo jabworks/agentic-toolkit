@@ -12,9 +12,17 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## toolkit-ops 1.7.25 — 2026-10-28
+
+- chore(toolkit-ops): version 1.7.25
+
+## condux 2.42.1 — 2026-10-28
+
+- chore(condux): version 2.42.1
+
 ## condux 2.42.0 — 2026-10-28
 
-- chore(condux): version 2.42.0
+- feat(workflow): checkpoints end the turn with a plain-text menu — condux 2.42.0 (#200)
 
 ## condux 2.41.1 — 2026-10-28
 
@@ -23,6 +31,14 @@ The `@jabworks/condux` npm package has its own changelog at
 ## concord 0.6.2 — 2026-10-28
 
 - feat(hooks): name every hook with statusMessage — condux 2.41.1, concord 0.6.2 (#197)
+
+## coding-directive 1.4.1 — 2026-10-28
+
+- chore(coding-directive): version 1.4.1
+
+## adapting-skills 1.4.2 — 2026-10-28
+
+- chore(adapting-skills): version 1.4.2
 
 ## condux 2.41.0 — 2026-10-22
 

@@ -1,6 +1,6 @@
 [
   { "query": "adapt this generic skill template to my stack", "should_trigger": true, "expected_skill": "adapting-skills" },
-  { "query": "convert this superpowers skill for our toolkit", "should_trigger": true, "expected_skill": "adapting-skills" },
+  { "query": "convert this third-party skill for our toolkit", "should_trigger": true, "expected_skill": "adapting-skills" },
   { "query": "clone this skill and make it match our conventions", "should_trigger": true, "expected_skill": "adapting-skills" },
   { "query": "scaffold the new module the way we usually structure things", "should_trigger": true, "expected_skill": "adapting-skills" },
   { "query": "improve the description of the skill in my api gateway repo", "should_trigger": true, "expected_skill": "adapting-skills" },

@@ -82,8 +82,7 @@ hold regardless:
 ## Shipped-artifact portability _(High)_
 
 - Anything distributed (skills, plugins, viewers) must run on a bare host:
-  **assume no MCP server or plugin is installed** (context-mode explicitly
-  included). A skill that leans on one silently breaks for everyone without
+  **assume no MCP server or plugin is installed**. A skill that leans on one silently breaks for everyone without
   it.
 - For agent-facing reference/search needs, ship a portable artifact any agent
   can read or grep — a plain-markdown catalog — over an MCP dependency.

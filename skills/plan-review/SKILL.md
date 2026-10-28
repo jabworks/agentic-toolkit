@@ -12,8 +12,7 @@ The decision flows back to the agent — **Approve** lets it proceed, **Request
 Revisions** sends your notes back so it revises and re-presents, and **Reject**
 tells it not to implement — reconsider whether the feature should be built.
 
-Inspired by [Plannotator](https://github.com/backnotprop/plannotator), rebuilt
-in-house so it carries **no third-party runtime dependency** and makes **no
+Built in-house, so it carries **no third-party runtime dependency** and makes **no
 network calls** — safe for strict environments.
 
 ## Ways in
