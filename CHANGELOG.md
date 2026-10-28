@@ -12,13 +12,21 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## toolkit-ops 1.7.26 — 2026-10-28
+
+- chore: drop the last two third-party credits — session-handoff 2.0.1, toolkit-ops 1.7.26
+
 ## toolkit-ops 1.7.25 — 2026-10-28
 
 - chore: drop third-party references from the shipped surface — condux 2.42.1 (#204)
 
+## session-handoff 2.0.1 — 2026-10-28
+
+- chore: drop the last two third-party credits — session-handoff 2.0.1, toolkit-ops 1.7.26
+
 ## condux 2.42.2 — 2026-10-28
 
-- chore(condux): version 2.42.2
+- feat(condux): directory icon — condux 2.42.2 (#206)
 
 ## condux 2.42.1 — 2026-10-28
 
