@@ -12,9 +12,54 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## toolkit-ops 1.7.27 — 2026-10-29
+
+- chore: patch-bump the nine plugins whose dist trees fold when_to_use
+- fix(sync): fold when_to_use into description in dist/plugins
+
+## spec-browser 1.1.3 — 2026-10-29
+
+- chore: patch-bump the nine plugins whose dist trees fold when_to_use
+- fix(sync): fold when_to_use into description in dist/plugins
+
+## session-report 1.11.2 — 2026-10-29
+
+- chore: patch-bump the nine plugins whose dist trees fold when_to_use
+- fix(sync): fold when_to_use into description in dist/plugins
+
+## session-handoff 2.0.2 — 2026-10-29
+
+- chore: patch-bump the nine plugins whose dist trees fold when_to_use
+- fix(sync): fold when_to_use into description in dist/plugins
+
+## release 1.3.3 — 2026-10-29
+
+- chore: patch-bump the nine plugins whose dist trees fold when_to_use
+- fix(sync): fold when_to_use into description in dist/plugins
+
+## docket 0.12.3 — 2026-10-29
+
+- chore: patch-bump the nine plugins whose dist trees fold when_to_use
+- fix(sync): fold when_to_use into description in dist/plugins
+
+## condux 2.42.3 — 2026-10-29
+
+- chore: patch-bump the nine plugins whose dist trees fold when_to_use
+- fix(sync): fold when_to_use into description in dist/plugins
+
+## concord 0.6.3 — 2026-10-29
+
+- chore: patch-bump the nine plugins whose dist trees fold when_to_use
+- fix(sync): fold when_to_use into description in dist/plugins
+
+## coding-directive 1.4.2 — 2026-10-29
+
+- chore: patch-bump the nine plugins whose dist trees fold when_to_use
+- fix(sync): fold when_to_use into description in dist/plugins
+
 ## toolkit-ops 1.7.26 — 2026-10-28
 
-- chore: drop the last two third-party credits — session-handoff 2.0.1, toolkit-ops 1.7.26
+- chore: drop the last two third-party credits — session-handoff 2.0.1, toolkit-ops 1.7.26 (#207)
 
 ## toolkit-ops 1.7.25 — 2026-10-28
 
@@ -22,7 +67,7 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## session-handoff 2.0.1 — 2026-10-28
 
-- chore: drop the last two third-party credits — session-handoff 2.0.1, toolkit-ops 1.7.26
+- chore: drop the last two third-party credits — session-handoff 2.0.1, toolkit-ops 1.7.26 (#207)
 
 ## condux 2.42.2 — 2026-10-28
 
