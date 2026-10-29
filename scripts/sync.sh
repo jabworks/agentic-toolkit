@@ -205,6 +205,7 @@ check_generated() {
 if [[ $# -gt 0 ]]; then
   sync_skill "$1"
   sync_plugin_files
+  node "$REPO_ROOT/scripts/fold-plugins.mjs"
   node "$REPO_ROOT/scripts/generate-catalogs.mjs"
   node "$REPO_ROOT/scripts/generate-agent-manifests.mjs"
   node "$REPO_ROOT/scripts/build-opencode.mjs"
@@ -224,6 +225,7 @@ else
     fi
   done
   sync_plugin_files
+  node "$REPO_ROOT/scripts/fold-plugins.mjs"
   node "$REPO_ROOT/scripts/generate-catalogs.mjs"
   node "$REPO_ROOT/scripts/generate-agent-manifests.mjs"
   node "$REPO_ROOT/scripts/build-opencode.mjs"

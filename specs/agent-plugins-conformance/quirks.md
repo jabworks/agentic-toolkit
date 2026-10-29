@@ -54,3 +54,17 @@ Debugging note: `[hooks.state]` entries prove only what was last *approved*. Edi
 **Trigger:** adding both a root `plugin.json` and a `.cursor-plugin/plugin.json`.
 **Cause:** Cursor detects the format from the plugin manifest — a root plugin.json makes it an Agent Plugin; `.cursor-plugin/plugin.json` would make it a Cursor Plugin.
 **Mitigation:** yes — never add both.
+
+## Q6 — Codex ignores `when_to_use`
+
+**Symptom:** a skill whose trigger phrases live in `when_to_use` never fires on Codex, though it routes fine on Claude Code.
+**Trigger:** any SKILL.md that splits its trigger contract between `description` and `when_to_use`, as 28 toolkit skills do.
+**Cause:** Codex builds its skill list from `description` alone. Probed on codex-cli 0.163 (docket #115) with a scratch skill carrying a separate marker in each field: the description's marker was quoted word for word, and the `when_to_use` marker was reported not present. Claude Code is the opposite: its docs say `when_to_use` is "Appended to `description` in the skill listing and counts toward the 1,536-character cap" (code.claude.com/docs/en/skills).
+**Mitigation:** yes. Decision 6: sync folds `when_to_use` into `description` in every `dist/plugins` tree, for every host. `tests/dist-mirror.test.mjs` fails if a `when_to_use` survives into dist. The `npx skills add` channel still serves `skills/` raw.
+
+## Q7 — Codex cuts each skill entry to a shared budget
+
+**Symptom:** the tail of a skill's description, often its "Not for…" boundary or its trigger phrases, missing on Codex with no ellipsis.
+**Trigger:** many skills installed. The cut scales with the count.
+**Cause:** Codex divides a listing budget across all installed skills. On codex-cli 0.163 a lone skill kept a 1000-char description whole; with the 38 toolkit skills installed alongside Harvey's plugins, every entry was cut mid-word at 372–374 chars (verbatim quotes of toolkit-foundry 450 → 372, finalize 467 → 374, remember 965 → 374).
+**Mitigation:** partial. Folding (Q6) still adds `when_to_use` text up to the cut, so 17 of the 28 skills gain 100+ chars of trigger text. A skill whose `description` alone reaches about 374 chars gains nothing. The lever left is wording: put the trigger first, within the first ~370 chars. That is a separate docket item, because it changes trigger text the evals measured.

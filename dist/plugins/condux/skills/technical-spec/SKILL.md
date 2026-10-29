@@ -1,7 +1,6 @@
 ---
 name: technical-spec
-description: Persists feature requirements, decisions, API contracts, implementation details, and quirks into a structured, queryable spec tree — one folder per feature, one file per concern.
-when_to_use: Invoke-only — discovery runs it at design sign-off and preflight's drift check reads its output; the user runs it via /technical-spec when they say "save spec", "document this", "write up what we decided", "record the decision rationale", "spec this out", "save this PRD", or "write up the requirements" — recording decisions for the future is spec work even when phrased as remembering. Not for turning a rough idea into a design first — that's discovery.
+description: "Persists feature requirements, decisions, API contracts, implementation details, and quirks into a structured, queryable spec tree — one folder per feature, one file per concern. Invoke-only — discovery runs it at design sign-off and preflight's drift check reads its output; the user runs it via /technical-spec when they say \"save spec\", \"document this\", \"write up what we decided\", \"record the decision rationale\", \"spec this out\", \"save this PRD\", or \"write up the requirements\" — recording decisions for the future is spec work even when phrased as remembering. Not for turning a rough idea into a design first — that's discovery."
 disable-model-invocation: true
 ---
 

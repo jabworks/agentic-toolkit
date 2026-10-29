@@ -1,7 +1,6 @@
 ---
 name: groom
-description: Whole-backlog passes over a project docket — the file-based backlog under docket/ (or a legacy root BACKLOG.md). Runs the stale-item sweep, interprets the id-space integrity check, and recommends what to work on next from the open board. Reports candidates and reasons; never closes or edits items itself — item-level changes route through record.
-when_to_use: "Whole-backlog verbs: groom the backlog, anything stale, check the ids, what should I work on next, what is on the docket. Also when a session discovers an already-shipped item still sitting open. Not for adding, closing, splitting, or annotating a single item, and not for capturing new ideas (that is record)."
+description: "Whole-backlog passes over a project docket — the file-based backlog under docket/ (or a legacy root BACKLOG.md). Runs the stale-item sweep, interprets the id-space integrity check, and recommends what to work on next from the open board. Reports candidates and reasons; never closes or edits items itself — item-level changes route through record. Whole-backlog verbs: groom the backlog, anything stale, check the ids, what should I work on next, what is on the docket. Also when a session discovers an already-shipped item still sitting open. Not for adding, closing, splitting, or annotating a single item, and not for capturing new ideas (that is record)."
 argument-hint: "[sweep | check | next]"
 ---
 

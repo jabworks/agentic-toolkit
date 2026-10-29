@@ -1,7 +1,6 @@
 ---
 name: research
-description: Multi-source dev research with parallel scouts. Scales effort to the question's shape, writes a plan and per-angle notes to a run folder, then synthesizes a cited report with a recommendation first. Every claim traces to a note finding with a URL. Inferred triggers are confirmed before a deep run.
-when_to_use: Comparing libraries, frameworks or approaches; surveying how others solve X; "research X"; ecosystem or standards surveys that need several sources. Not for a single API or signature lookup (researcher agent, or answer directly); not for implementation tasks (/workflow); not for explaining code (answer directly).
+description: "Multi-source dev research with parallel scouts. Scales effort to the question's shape, writes a plan and per-angle notes to a run folder, then synthesizes a cited report with a recommendation first. Every claim traces to a note finding with a URL. Inferred triggers are confirmed before a deep run. Comparing libraries, frameworks or approaches; surveying how others solve X; \"research X\"; ecosystem or standards surveys that need several sources. Not for a single API or signature lookup (researcher agent, or answer directly); not for implementation tasks (/workflow); not for explaining code (answer directly)."
 argument-hint: "[question to research]"
 ---
 

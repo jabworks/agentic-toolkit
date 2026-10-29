@@ -44,3 +44,19 @@
 
 **Decided:** both files ship, sourced from `plugins/docket/`.
 **Because:** Claude Code reads `.mcp.json` with `${CLAUDE_PLUGIN_ROOT}`; the spec reads `mcp.json` with `${PLUGIN_ROOT}` — different consumers, different variable grammars, and two small files beat one file that neither host fully accepts.
+
+## 6. Fold `when_to_use` into `description` in every `dist/plugins` tree — 2026-10-29
+
+**Decided:** `sync.sh` byte-copies each skill tree into `dist/plugins/`, then folds the top-level `SKILL.md` with the `build-opencode.mjs` transform, for every host. The byte-equality checks compare against `fold(source)`. A folded `description` stays within 1024 chars. Source `skills/` keeps the split fields and the 500-char cap.
+**Because:** Codex never shows the model `when_to_use` (docket #115, probed on codex-cli 0.163), and 11 of 13 plugins load through the Agent Plugins loader, which discovers `skills/` by convention with no path override (Q1, Q2). A Codex-only tree is therefore unreachable for most plugins. Claude Code already appends `when_to_use` to `description` in its skill listing, under one combined cap, so folding changes only what Codex sees. Cursor's plugin path, which also hides `when_to_use` (decision 4's consequences), gains the trigger text for free.
+
+| Alternative | Why not |
+|---|---|
+| Folded `skills/` plus an unfolded `claude-skills/` for Claude | Doubles every plugin to preserve a field split Claude Code does not use |
+| Drop root `plugin.json` so Codex manifests can set a skills path | Undoes this spec's conformance, and decision 4's invariant returns the moment a plugin gains hooks |
+| Fold in source `skills/` | 24 of 28 skills exceed the 500-char cap once folded, so trigger wording measured at ~93% would have to change |
+
+**Consequences**
+- `dist/` is no longer a verbatim mirror of `skills/`. It is a mirror through the fold, as the OpenCode and Cursor trees already are.
+- Patch bump for every plugin whose `dist/` tree changes. Skills behave the same; only Codex's view of them is fixed.
+- The `npx skills add` channel still serves `skills/` raw, so Codex users on it still lose `when_to_use`. That is a separate docket item.

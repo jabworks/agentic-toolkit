@@ -6,6 +6,7 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { loadComposition } from '../scripts/composition.mjs';
 import { renderMarketplace, renderBlock } from '../scripts/generate-catalogs.mjs';
+import { expectedBytes } from '../scripts/fold-plugins.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, '..');
@@ -35,7 +36,9 @@ test('composition.json is valid against the working tree', () => {
   assert.ok(syncPairs.length > Object.keys(plugins).length, 'expected pairs for skills and pluginDirs');
 });
 
-test('every declared source→dest pair mirrors byte-for-byte', () => {
+// A pair's top-level SKILL.md is the one file compared through the fold
+// (specs/agent-plugins-conformance decision 6); everything else is verbatim.
+test('every declared source→dest pair mirrors byte-for-byte through the fold', () => {
   const { syncPairs } = loadComposition(REPO_ROOT);
   const problems = [];
   for (const { src, dest } of syncPairs) {
@@ -52,7 +55,7 @@ test('every declared source→dest pair mirrors byte-for-byte', () => {
       continue;
     }
     for (const rel of srcFiles) {
-      if (!fs.readFileSync(path.join(srcDir, rel)).equals(fs.readFileSync(path.join(destDir, rel)))) {
+      if (!expectedBytes(path.join(srcDir, rel), rel).equals(fs.readFileSync(path.join(destDir, rel)))) {
         problems.push(`${dest}/${rel}: drifted from ${src}/${rel} — run scripts/sync.sh`);
       }
     }

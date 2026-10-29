@@ -1,7 +1,6 @@
 ---
 name: toolkit-debugging-playbook
-description: Use when a skill or plugin from jabworks/agentic-toolkit misbehaves — a skill doesn't trigger, a plugin doesn't show up after install, dist looks out of date, the installed copy differs from the repo, or a manifest fails to parse. Symptom → first discriminating command → root cause, with false friends and stop-and-ask points. Triggers include "why isn't my skill triggering", "why isn't X showing up", "plugin not showing up", "dist drift", "stale plugin", "skill broken".
-when_to_use: The toolkit's own distribution machinery is the suspect, and you have the repo. Not for ordinary bugs in the app you're building — that's root-cause-analysis. Not for whether an installed plugin is registered and working on this machine — that's the plugin's own doctor (docket-doctor), which needs no checkout.
+description: "Use when a skill or plugin from jabworks/agentic-toolkit misbehaves — a skill doesn't trigger, a plugin doesn't show up after install, dist looks out of date, the installed copy differs from the repo, or a manifest fails to parse. Symptom → first discriminating command → root cause, with false friends and stop-and-ask points. Triggers include \"why isn't my skill triggering\", \"why isn't X showing up\", \"plugin not showing up\", \"dist drift\", \"stale plugin\", \"skill broken\". The toolkit's own distribution machinery is the suspect, and you have the repo. Not for ordinary bugs in the app you're building — that's root-cause-analysis. Not for whether an installed plugin is registered and working on this machine — that's the plugin's own doctor (docket-doctor), which needs no checkout."
 ---
 
 # Toolkit Debugging Playbook
