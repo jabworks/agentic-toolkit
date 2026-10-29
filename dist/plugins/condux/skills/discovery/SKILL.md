@@ -1,7 +1,6 @@
 ---
 name: discovery
-description: Refine a rough idea into a signed-off design, presented in sections for sign-off before any planning or code begins. Opens with the requirements — the feature PRD — and feeds the tech spec, written via technical-spec at sign-off.
-when_to_use: "Trigger for LARGE tasks, when scope is unclear, or when the user wants to brainstorm or explore a rough idea — or to pin requirements first: \"write a PRD\", \"product requirements\", \"what are we building and why\". Also when resuming an existing design or design doc — the existing-design check offers resume-or-fresh. A soft gate before /draft-plan: if discovery has not run, ask whether to skip it consciously."
+description: "Refine a rough idea into a signed-off design, presented in sections for sign-off before any planning or code begins. Opens with the requirements — the feature PRD — and feeds the tech spec, written via technical-spec at sign-off. Trigger for LARGE tasks, when scope is unclear, or when the user wants to brainstorm or explore a rough idea — or to pin requirements first: \"write a PRD\", \"product requirements\", \"what are we building and why\". Also when resuming an existing design or design doc — the existing-design check offers resume-or-fresh. A soft gate before /draft-plan: if discovery has not run, ask whether to skip it consciously."
 argument-hint: "<rough idea or feature description>"
 effort: high
 ---

@@ -1,7 +1,6 @@
 ---
 name: plan-review
-description: Render a plan in a local browser for inline annotation, then return an approve / request-revisions / deny decision to the agent. Auto-captured via a Claude Code ExitPlanMode or Codex Stop hook, or run manually on a markdown file or spec directory.
-when_to_use: "When the agent finishes planning and you want to review or annotate before it implements, or on /plan-review for a markdown plan or spec directory. Also owns its machinery — steer-mode loops, the live spec preview, and installing or troubleshooting the ExitPlanMode / Codex Stop hooks. Phrases: \"let's review the plan\", \"walk me through the plan\", \"annotate the plan\". Not for cataloging a whole specs tree (spec-browser); not for the implemented diff (code-review)."
+description: "Render a plan in a local browser for inline annotation, then return an approve / request-revisions / deny decision to the agent. Auto-captured via a Claude Code ExitPlanMode or Codex Stop hook, or run manually on a markdown file or spec directory. When the agent finishes planning and you want to review or annotate before it implements, or on /plan-review for a markdown plan or spec directory. Also owns its machinery — steer-mode loops, the live spec preview, and installing or troubleshooting the ExitPlanMode / Codex Stop hooks. Phrases: \"let's review the plan\", \"walk me through the plan\", \"annotate the plan\". Not for cataloging a whole specs tree (spec-browser); not for the implemented diff (code-review)."
 ---
 
 # /plan-review

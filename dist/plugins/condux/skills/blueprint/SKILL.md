@@ -1,7 +1,6 @@
 ---
 name: blueprint
-description: Produce dependency-free visual clarity artifacts at design time — HTML wireframes and full renders for UI screens and flows in the house design language (surface-kit tokens), and inline-SVG system diagrams (data models, flows, architecture, state machines) for backend work.
-when_to_use: During /discovery when a section turns on what entities exist, what happens in what order, what talks to what, what states are legal, or what goes where on a screen; from /draft-plan task cards; or standalone on "mock this up", "wireframe this screen", "visualize the data model", "sketch the architecture", "diagram the flow". Not for aesthetic or brand direction, editable design canvases or Figma, charts from real data, or generating code from a mockup.
+description: "Produce dependency-free visual clarity artifacts at design time — HTML wireframes and full renders for UI screens and flows in the house design language (surface-kit tokens), and inline-SVG system diagrams (data models, flows, architecture, state machines) for backend work. During /discovery when a section turns on what entities exist, what happens in what order, what talks to what, what states are legal, or what goes where on a screen; from /draft-plan task cards; or standalone on \"mock this up\", \"wireframe this screen\", \"visualize the data model\", \"sketch the architecture\", \"diagram the flow\". Not for aesthetic or brand direction, editable design canvases or Figma, charts from real data, or generating code from a mockup."
 argument-hint: "[surface or model to visualize — optional; defaults to the current design context]"
 ---
 

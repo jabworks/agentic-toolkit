@@ -1,7 +1,6 @@
 ---
 name: code-review
-description: One-shot code review. Produces a diagnostic report categorized by severity (Critical / Important / Minor). Never fixes issues automatically.
-when_to_use: "On-request only — never auto-triggers. At workflow CP-2 or after /finalize, ask once: \"Want a code review before merging?\" Trigger phrases: \"review this\", \"review before merge\", \"check this PR\". Not for a plan or spec before implementation (plan-review); not for running the change to watch it work (live-verification)."
+description: "One-shot code review. Produces a diagnostic report categorized by severity (Critical / Important / Minor). Never fixes issues automatically. On-request only — never auto-triggers. At workflow CP-2 or after /finalize, ask once: \"Want a code review before merging?\" Trigger phrases: \"review this\", \"review before merge\", \"check this PR\". Not for a plan or spec before implementation (plan-review); not for running the change to watch it work (live-verification)."
 argument-hint: "<PR URL, diff, branch, or file path>"
 ---
 
