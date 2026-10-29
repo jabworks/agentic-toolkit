@@ -13,9 +13,9 @@ Stale open markers cost real sessions — closing means moving.
 
 Follow-up to #106, rides in PR #189 (docket 0.12.2). (1) A share thinner than a round-capped segment is wide (3 of 175 in a ring) was centred nowhere near its slice and spilled over its neighbours. `allot()` now gives every segment a minimum span (stroke+gap) taken proportionally from the large ones, and each arc/line is centred in its span; tests parse the drawn arcs and lines and assert no overlap, mutation-checked (min span 0 fails both). (2) The bar still sat in a tall box after it was given width/height attributes: the app ignores the markup's own size, the ring and sparkline only looked right because they pass explicit width/height props. The bar now passes `height` too (a test asserts every desktop Svg has one). NOT verified in the app: height-only is a guess; fallback is an explicit width as well (slot looked ~800 CSS px), at the cost of overflow risk in narrow panes.
 
-### 115. Verify whether Codex reads when_to_use in SKILL.md frontmatter (2026-10-28)
+### 120. Front-load trigger text into the first ~370 chars for Codex's per-entry budget (2026-10-29)
 
-Codex release notes 0.147–0.165 never mention `when_to_use`. If Codex ignores it, condux skills reach Codex with only their `description`, and the trigger wording in `when_to_use` is lost. Also, since 0.156 (#46070) Codex shortens long descriptions without warning. Check on the installed Codex (0.165+): load a condux skill and see whether the `when_to_use` text reaches the model. If it doesn't, consider folding it into the Codex channel the way build-opencode.mjs does.
+With the full toolkit installed, Codex cuts each skill entry mid-word at about 374 chars (quirk Q7, specs/agent-plugins-conformance). Folding `when_to_use` (decision 6) only helps up to that cut: 17 of the 28 split-contract skills gain 100+ chars, but a skill whose `description` alone reaches ~374 chars gains nothing (e.g. release 442, toolkit-change-control 486, docket-doctor 486). The remaining lever is wording. Each skill's routing-critical trigger should sit in the first ~370 chars of the folded text. This changes trigger text the evals measured, so re-run `scripts/eval-triggers.mjs` before and after, and decide whether the cut scales with install size enough to fix a target number.
 
 ## Someday
 
@@ -303,5 +303,9 @@ Deferred 2026-10-28; the README pitch shipped in #202. Remaining:
 - First quirk post: a root plugin.json silently kills Codex hooks (openai/codex#39895; 13 repos cross-referenced it). Standalone Markdown, venue TBD.
 - Listings: Claude Code plugin directory, Codex marketplace listings, agent-plugins.org registry, skills.sh, awesome-claude-code and awesome-codex.
 - A ~15s demo GIF of the condux board and a checkpoint, placed under the README tagline. Needs a screen recording from Harvey.
+
+### 121. npx skills add channel still serves when_to_use raw to Codex (2026-10-29)
+
+Decision 6 folds `when_to_use` into `description` only in `dist/plugins/` (the marketplace). `npx skills add` installs top-level `skills/` raw for every agent, so Codex users on that channel still lose the `when_to_use` half (quirk Q6). Options: a folded tree the npx installer can target, or documenting the marketplace as the Codex install path.
 
 ## Loose threads

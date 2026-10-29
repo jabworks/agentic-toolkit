@@ -96,7 +96,11 @@ The `condux` and `toolkit-ops` bundles live at `dist/plugins/<bundle>/` and thei
 
 ## Key invariants
 
-- `dist/` is a verbatim mirror of `skills/` — never diverge them
+- `dist/` mirrors `skills/` through one fold: each skill's top-level `SKILL.md`
+  in `dist/plugins/` has `when_to_use` folded into `description`, because Codex
+  never reads `when_to_use` (quirks Q6/Q7 in `specs/agent-plugins-conformance/`).
+  Every other file is byte-identical. `scripts/fold-plugins.mjs` (run by sync)
+  owns the fold — never diverge them by hand
 - Plugin-level FILES (`dist/plugins/*/README.md`, `dist/plugins/*/LICENSE`) are not
   reached by the skill-tree copy either. READMEs are sourced from `plugins/<name>/`
   and LICENSE from the repo root, both copied by `sync_plugin_files` in sync.sh and
@@ -154,6 +158,8 @@ committing — it fails the build otherwise. The suite now needs
 `pnpm install` (the `yaml` devDependency backs the frontmatter oracle):
 
 - `dist-mirror.test.mjs` — `dist/` skill trees match `skills/` byte-for-byte
+  through the fold, no `when_to_use` survives into `dist/plugins`, and every
+  folded description stays within 1024 chars
 - `composition.test.mjs` — every pair `composition.json` declares mirrors
   byte-for-byte, nothing undeclared exists at any `dist/plugins/` root,
   marketplace.json and the doc catalog blocks match the generator output, and
