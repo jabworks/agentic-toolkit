@@ -14,7 +14,11 @@ The `@jabworks/condux` npm package has its own changelog at
 
 ## usage-trace 0.1.0 — 2026-10-30
 
-- feat(usage-trace): add durable local usage capture — usage-trace 0.1.0
+- feat(usage-trace): add durable local usage capture — usage-trace 0.1.0 (#209)
+
+## session-report 1.12.0 — 2026-10-30
+
+- feat(session-report): read the usage-trace store with dated prices — session-report 1.12.0
 
 ## toolkit-ops 1.7.27 — 2026-10-29
 
