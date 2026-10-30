@@ -3,7 +3,7 @@
 > Durable, local usage tracking: a `usage-trace` plugin copies Claude and Codex session data into a private store, and session-report measures against it.
 
 **Last updated:** 2026-10-30
-**Commit:** PR #pending
+**Commit:** PR #209
 **Status:** draft
 
 ## Contents
@@ -16,4 +16,4 @@
 | [Quirks](quirks.md) | what will bite you, and whether it is mitigated |
 
 ## Changelog
-- 2026-10-30 (PR #pending): Initial spec
+- 2026-10-30 (PR #209): Initial spec
