@@ -116,6 +116,15 @@
       "category": "development"
     },
     {
+      "name": "usage-trace",
+      "description": "Durable, local usage tracking for Claude Code and Codex: copies session metrics into a private store that survives transcript pruning, with limit snapshots and no prompt text by default.",
+      "author": {
+        "name": "Hieu Vi"
+      },
+      "source": "./dist/plugins/usage-trace",
+      "category": "development"
+    },
+    {
       "name": "concord",
       "description": "Continuous memory for Codex: three hooks share one idempotent rollout sync, so capture is exactly-once regardless of hook order and a hard-killed session is recovered at next start. Memory ages through buffer, daily, recent, and archive tiers; explicitly pinned facts are never auto-compressed.",
       "author": {

@@ -77,6 +77,7 @@ See `skills/toolkit-foundry/SKILL.md` for the canonical checklist. Short version
 <!-- catalog:begin claude-md-skills -->
 | Skill | Purpose |
 |---|---|
+| `usage-trace` | Capture durable, local usage history — tokens, tools, friction, limits |
 | `session-handoff` | Preserve/restore session context at context limits |
 | `session-report` | Generate HTML usage report from session transcripts |
 | `adapting-skills` | Adapt generic skills to the jabworks stack and conventions |

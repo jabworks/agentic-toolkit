@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${PLUGIN_ROOT}/skills/usage-trace/hooks/session-start.mjs\"",
+            "statusMessage": "usage-trace: start capture"
+          }
+        ]
+      }
+    ]
+  }
+}
