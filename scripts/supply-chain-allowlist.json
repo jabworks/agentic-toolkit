@@ -35,6 +35,7 @@
     "skills/record/server/mcp-server.mjs": "docket's MCP server — rung 3 of the ladder, registered via .mcp.json.",
     "skills/record/server/install.sh": "docket's installer; verifies what it registers.",
 
+    "skills/session-report/lib/read-store.mjs": "session-report internals — reads the local usage-trace store and transcripts; no network.",
     "skills/usage-trace/bin/snapshot.mjs": "usage-trace status line snapshot, copied into the store home by setup; local files only.",
     "skills/usage-trace/bin/usage-trace.mjs": "usage-trace CLI: ingest, status, setup; local files only.",
     "skills/usage-trace/hooks/session-start.mjs": "usage-trace SessionStart hook; spawns a detached local ingest.",

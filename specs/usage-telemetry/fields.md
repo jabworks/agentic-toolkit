@@ -7,7 +7,7 @@ Files: `<store>/events/YYYY-MM.jsonl`, or `.jsonl.gz` for closed months, one JSO
 | Rule | Detail |
 |---|---|
 | Absent, not zero | A field a host lacks is left out |
-| Hashes | `h:` plus 16 hex characters: `project`, `file`, `branch`, `pr`, `agent`, and any custom name |
+| Hashes | `h:` plus the first 16 hex characters of HMAC-SHA256 over the raw value, keyed with `<store>/salt`: `project`, `file`, `branch`, `pr`, `agent`, and any custom name |
 | Repeated `api_call` | One response can appear several times with growing `output`. Readers keep the largest per `id` |
 | Unknown `v` | Readers must not interpret it |
 
