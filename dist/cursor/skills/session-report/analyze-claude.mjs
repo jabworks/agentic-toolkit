@@ -32,6 +32,7 @@ import os from 'os'
 import path from 'path'
 import readline from 'readline'
 import { createRequire } from 'module'
+import { applyStoreEvents, defaultStoreHome, priceAt, projectNames, resolveSource, setCurrentRates } from './lib/read-store.mjs'
 const require = createRequire(import.meta.url)
 const LOCAL_PRICES = require('./model-prices.json')
 const LITELLM_URL = 'https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json'
@@ -44,6 +45,7 @@ const PRICE_CACHE = path.join(
 // Which price table actually priced this run — surfaced in the report footer so a
 // wrong number is attributable instead of silently authoritative.
 const PRICING = { source: 'bundled', fetched_at: null, models_priced: 0 }
+const REPORT_SOURCE = { source: 'transcripts', coverage: null }
 
 function normalizeUpstream(raw) {
   const out = {}
@@ -65,7 +67,7 @@ function normalizeUpstream(raw) {
 function applyUpstream(prices, source, fetchedAt) {
   let n = 0
   for (const [key, val] of Object.entries(prices)) {
-    LOCAL_PRICES[key] = val
+    setCurrentRates(LOCAL_PRICES, key, val)
     n++
   }
   PRICING.source = source
@@ -95,13 +97,8 @@ async function refreshPricesFromLiteLLM() {
   } catch { /* no usable cache — bundled prices, which is already the default */ }
 }
 
-function lookupPrice(model) {
-  if (!model) return null
-  if (LOCAL_PRICES[model]) return LOCAL_PRICES[model]
-  for (const [key, val] of Object.entries(LOCAL_PRICES)) {
-    if (model.startsWith(key) || key.startsWith(model)) return val
-  }
-  return null
+function lookupPrice(model, ts) {
+  return priceAt(model, ts, LOCAL_PRICES)
 }
 
 function computeCost(rawUsage, prices) {
@@ -163,6 +160,8 @@ function flag(name, dflt) {
 }
 const ROOT = flag('--dir', path.join(os.homedir(), '.claude', 'projects'))
 const AS_JSON = argv.includes('--json')
+const SOURCE = flag('--source', 'auto')
+const STORE_HOME = flag('--store', defaultStoreHome())
 const TOP_N = parseInt(flag('--top', '15'), 10)
 const SINCE = parseSince(flag('--since', null))
 const CACHE_BREAK_THRESHOLD = parseInt(flag('--cache-break', '100000'), 10)
@@ -496,7 +495,7 @@ async function processFile(p, info, buckets) {
     }
     for (const s of targets) addUsage(s, usage)
 
-    const prices = lookupPrice(model)
+    const prices = lookupPrice(model, ts)
     let callCostTotal = 0
     if (prices) {
       const cost = computeCost(usage, prices)
@@ -679,13 +678,22 @@ async function main() {
   const perProject = new Map() // project -> stats
   const perSubagent = new Map() // agentType -> stats
   const perSkill = new Map() // skill -> stats (token-attributed)
+  const store = await resolveSource({
+    source: SOURCE,
+    explicitDir: argv.includes('--dir'),
+    home: STORE_HOME,
+    host: 'claude',
+    since: SINCE ? SINCE.toISOString() : null,
+  })
+  REPORT_SOURCE.source = store.source
+  REPORT_SOURCE.coverage = store.coverage
 
   // Classify, then sort main files before subagent files. Fork-style subagents
   // replay parent entries with identical uuids; processing parents first ensures
   // the global uuid-dedupe attributes those entries to the parent, not the fork.
   // Among subagents, sort by birthtime so a parent subagent is processed before
   // any nested children it spawned (needed for prompt-attribution propagation).
-  const files = [...walk(ROOT)]
+  const files = (store.events ? [] : [...walk(ROOT)])
     .map(p => ({ p, info: classifyFile(p) }))
     .sort((a, b) => {
       const ka = a.info.kind === 'main' ? 0 : 1
@@ -724,6 +732,23 @@ async function main() {
   }
   if (!AS_JSON)
     process.stderr.write(`\r  scanned ${n}/${files.length} files.\n`)
+
+  if (store.events) {
+    applyStoreEvents(store.events, {
+      overall,
+      perProject,
+      perSubagent,
+      perSkill,
+      prompts,
+      sessionSpans,
+      newStats,
+      prices: LOCAL_PRICES,
+      names: projectNames({ home: STORE_HOME, roots: [ROOT] }),
+      breakThreshold: CACHE_BREAK_THRESHOLD,
+      topN: 100,
+      roots: [ROOT],
+    })
+  }
 
   // Drop empty buckets (created for files that had no in-range entries under --since)
   for (const m of [perProject, perSubagent, perSkill]) {
@@ -821,6 +846,8 @@ function printJson({ overall, perProject, perSubagent, perSkill }) {
     root: ROOT,
     generated_at: new Date().toISOString(),
     pricing: PRICING,
+    source: REPORT_SOURCE.source,
+    coverage: REPORT_SOURCE.coverage,
     overall: summarize(overall),
     cache_breaks: overall.cacheBreaks
       .sort((a, b) => b.uncached - a.uncached)

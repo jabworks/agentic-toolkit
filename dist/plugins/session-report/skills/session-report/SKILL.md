@@ -42,6 +42,7 @@ Produce a self-contained HTML report of session usage and save it to
    # All-time:
    node <skill-dir>/$ANALYZER --json > "$OUT_DIR/session-report-${TOOL}.json"
    ```
+   The analyzers read the usage-trace store when one exists and fall back to transcripts when it doesn't (`--source store|transcripts|auto`, default `auto`). The JSON's `source` and `coverage` fields say which one priced the report and why.
 
 4. **Read** `$OUT_DIR/session-report-${TOOL}.json`. Skim `overall`, `by_project`, `by_subagent_type`, `by_skill`, `cache_breaks`, `top_prompts`.
 

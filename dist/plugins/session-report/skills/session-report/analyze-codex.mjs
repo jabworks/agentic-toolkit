@@ -29,8 +29,10 @@ import os from 'os';
 import path from 'path';
 import readline from 'readline';
 import { createRequire } from 'module';
+import { applyStoreEvents, defaultStoreHome, priceAt, projectNames, resolveSource, setCurrentRates } from './lib/read-store.mjs';
 const require = createRequire(import.meta.url);
 const LOCAL_PRICES = require('./model-prices.json');
+const REPORT_SOURCE = { source: 'transcripts', coverage: null };
 const LITELLM_URL = 'https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json';
 const PRICE_CACHE = path.join(
   process.env.XDG_CACHE_HOME || path.join(os.homedir(), '.cache'),
@@ -62,7 +64,7 @@ function normalizeUpstream(raw) {
 function applyUpstream(prices, source, fetchedAt) {
   let n = 0;
   for (const [key, val] of Object.entries(prices)) {
-    LOCAL_PRICES[key] = val;
+    setCurrentRates(LOCAL_PRICES, key, val);
     n++;
   }
   PRICING.source = source;
@@ -92,13 +94,8 @@ async function refreshPricesFromLiteLLM() {
   } catch { /* no usable cache — bundled prices, which is already the default */ }
 }
 
-function lookupPrice(model) {
-  if (!model) return null;
-  if (LOCAL_PRICES[model]) return LOCAL_PRICES[model];
-  for (const [key, val] of Object.entries(LOCAL_PRICES)) {
-    if (model.startsWith(key) || key.startsWith(model)) return val;
-  }
-  return null;
+function lookupPrice(model, ts) {
+  return priceAt(model, ts, LOCAL_PRICES);
 }
 
 function computeCostFromNormalized(tok, prices) {
@@ -132,6 +129,8 @@ function flag(name, dflt) {
 }
 const ROOT = flag('--dir', path.join(os.homedir(), '.codex', 'sessions'));
 const AS_JSON = argv.includes('--json');
+const SOURCE = flag('--source', 'auto');
+const STORE_HOME = flag('--store', defaultStoreHome());
 const TOP_N = parseInt(flag('--top', '15'), 10);
 const SINCE = parseSince(flag('--since', null));
 const CACHE_BREAK_THRESHOLD = parseInt(flag('--cache-break', '100000'), 10);
@@ -606,7 +605,34 @@ async function main() {
   const perSubagent = new Map();
   const perSkill = new Map();
 
-  const files = [...walk(ROOT)];
+  const store = await resolveSource({
+    source: SOURCE,
+    explicitDir: argv.includes('--dir'),
+    home: STORE_HOME,
+    host: 'codex',
+    since: SINCE ? SINCE.toISOString() : null,
+  });
+  REPORT_SOURCE.source = store.source;
+  REPORT_SOURCE.coverage = store.coverage;
+
+  if (store.events) {
+    applyStoreEvents(store.events, {
+      overall,
+      perProject,
+      perSubagent,
+      perSkill,
+      prompts,
+      sessionSpans,
+      newStats,
+      prices: LOCAL_PRICES,
+      names: projectNames({ home: STORE_HOME, roots: [ROOT] }),
+      breakThreshold: CACHE_BREAK_THRESHOLD,
+      topN: 100,
+      roots: [ROOT],
+    });
+  }
+
+  const files = store.events ? [] : [...walk(ROOT)];
   if (!AS_JSON) process.stderr.write(`scanning ${files.length} files in ${ROOT}…\n`);
 
   let n = 0;
@@ -718,7 +744,7 @@ async function main() {
       }
 
       const resolvedModel = eventModel || model;
-      const prices = lookupPrice(resolvedModel);
+      const prices = lookupPrice(resolvedModel, ts);
       let callCostTotal = 0;
       if (prices) {
         const cost = computeCostFromNormalized({ inputUncached, cacheCreate, cacheRead, output }, prices);
@@ -789,6 +815,8 @@ async function main() {
       root: ROOT,
       generated_at: new Date().toISOString(),
       pricing: PRICING,
+      source: REPORT_SOURCE.source,
+      coverage: REPORT_SOURCE.coverage,
       since: SINCE ? SINCE.toISOString() : null,
       overall: summarize(overall),
       cache_breaks: overall.cacheBreaks.sort((a, b) => b.uncached - a.uncached).slice(0, 100),
