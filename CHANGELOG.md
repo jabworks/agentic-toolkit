@@ -12,50 +12,45 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## usage-trace 0.1.0 — 2026-10-30
+
+- feat(usage-trace): add durable local usage capture — usage-trace 0.1.0
+
 ## toolkit-ops 1.7.27 — 2026-10-29
 
-- chore: patch-bump the nine plugins whose dist trees fold when_to_use
-- fix(sync): fold when_to_use into description in dist/plugins
+- fix: fold when_to_use into description for Codex — 9 plugin patch releases (#115) (#208)
 
 ## spec-browser 1.1.3 — 2026-10-29
 
-- chore: patch-bump the nine plugins whose dist trees fold when_to_use
-- fix(sync): fold when_to_use into description in dist/plugins
+- fix: fold when_to_use into description for Codex — 9 plugin patch releases (#115) (#208)
 
 ## session-report 1.11.2 — 2026-10-29
 
-- chore: patch-bump the nine plugins whose dist trees fold when_to_use
-- fix(sync): fold when_to_use into description in dist/plugins
+- fix: fold when_to_use into description for Codex — 9 plugin patch releases (#115) (#208)
 
 ## session-handoff 2.0.2 — 2026-10-29
 
-- chore: patch-bump the nine plugins whose dist trees fold when_to_use
-- fix(sync): fold when_to_use into description in dist/plugins
+- fix: fold when_to_use into description for Codex — 9 plugin patch releases (#115) (#208)
 
 ## release 1.3.3 — 2026-10-29
 
-- chore: patch-bump the nine plugins whose dist trees fold when_to_use
-- fix(sync): fold when_to_use into description in dist/plugins
+- fix: fold when_to_use into description for Codex — 9 plugin patch releases (#115) (#208)
 
 ## docket 0.12.3 — 2026-10-29
 
-- chore: patch-bump the nine plugins whose dist trees fold when_to_use
-- fix(sync): fold when_to_use into description in dist/plugins
+- fix: fold when_to_use into description for Codex — 9 plugin patch releases (#115) (#208)
 
 ## condux 2.42.3 — 2026-10-29
 
-- chore: patch-bump the nine plugins whose dist trees fold when_to_use
-- fix(sync): fold when_to_use into description in dist/plugins
+- fix: fold when_to_use into description for Codex — 9 plugin patch releases (#115) (#208)
 
 ## concord 0.6.3 — 2026-10-29
 
-- chore: patch-bump the nine plugins whose dist trees fold when_to_use
-- fix(sync): fold when_to_use into description in dist/plugins
+- fix: fold when_to_use into description for Codex — 9 plugin patch releases (#115) (#208)
 
 ## coding-directive 1.4.2 — 2026-10-29
 
-- chore: patch-bump the nine plugins whose dist trees fold when_to_use
-- fix(sync): fold when_to_use into description in dist/plugins
+- fix: fold when_to_use into description for Codex — 9 plugin patch releases (#115) (#208)
 
 ## toolkit-ops 1.7.26 — 2026-10-28
 

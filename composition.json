@@ -106,6 +106,14 @@
         "description": "File-based project backlog in committed files: open items in docket/DOCKET.md, closed items archived per year with verification records, ids never reused. The record skill captures and closes items, groom sweeps for stale and ghost work and picks what to do next; a dependency-free CLI, bundled MCP server, and self-contained HTML board keep the mechanics byte-exact."
       }
     },
+    "usage-trace": {
+      "pluginDirs": {
+        "skills/usage-trace/hooks": "hooks"
+      },
+      "marketplace": {
+        "description": "Durable, local usage tracking for Claude Code and Codex: copies session metrics into a private store that survives transcript pruning, with limit snapshots and no prompt text by default."
+      }
+    },
     "concord": {
       "bundle": true,
       "skills": [
@@ -123,6 +131,10 @@
         {
           "skill": "session-report",
           "blurb": "Generate an explorable HTML report of session usage — tokens, cache, cost, subagents, skills"
+        },
+        {
+          "skill": "usage-trace",
+          "blurb": "Capture durable, local usage history — tokens, tools, friction, limits — with no prompt text by default"
         },
         {
           "skill": "session-handoff",
@@ -276,6 +288,10 @@
     },
     "claude-md-skills": {
       "rows": [
+        {
+          "entry": "`usage-trace`",
+          "blurb": "Capture durable, local usage history — tokens, tools, friction, limits"
+        },
         {
           "entry": "`session-handoff`",
           "blurb": "Preserve/restore session context at context limits"

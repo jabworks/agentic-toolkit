@@ -1,0 +1,18 @@
+{
+  "name": "usage-trace",
+  "version": "0.1.0",
+  "description": "Durable, local usage tracking: copies session metrics into a private store that survives transcript pruning, with no prompt text by default.",
+  "author": {
+    "name": "jabworks"
+  },
+  "repository": "https://github.com/jabworks/agentic-toolkit",
+  "license": "MIT",
+  "keywords": [
+    "usage",
+    "telemetry",
+    "tokens",
+    "limits",
+    "analytics"
+  ],
+  "skills": "./skills/usage-trace"
+}
