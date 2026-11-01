@@ -10,6 +10,7 @@
  *
  * Usage:
  *   node scripts/analyze-sessions.js [--dir <projects-dir>] [--json] [--since <ISO|7d|24h>] [--top N]
+ *                                   [--compare <weekly|Nd|Nh> [--periods N] [--compare-end <ISO>]]
  *
  * Notes on JSONL structure (discovered empirically):
  *  - One API response is split into MULTIPLE `type:"assistant"` entries (one per
@@ -33,6 +34,7 @@ import path from 'path'
 import readline from 'readline'
 import { createRequire } from 'module'
 import { applyStoreEvents, defaultStoreHome, priceAt, projectNames, resolveSource, setCurrentRates } from './lib/read-store.mjs'
+import { formatPeriods, periodAt, periodsFromFlags, summarizePeriods, widenSince } from './lib/periods.mjs'
 const require = createRequire(import.meta.url)
 const LOCAL_PRICES = require('./model-prices.json')
 const LITELLM_URL = 'https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json'
@@ -163,7 +165,24 @@ const AS_JSON = argv.includes('--json')
 const SOURCE = flag('--source', 'auto')
 const STORE_HOME = flag('--store', defaultStoreHome())
 const TOP_N = parseInt(flag('--top', '15'), 10)
-const SINCE = parseSince(flag('--since', null))
+const COMPARE = flag('--compare', null)
+let PERIODS = null
+try {
+  PERIODS = periodsFromFlags({
+    compare: COMPARE,
+    periods: flag('--periods', null),
+    compareEnd: flag('--compare-end', null),
+    newStats,
+  })
+} catch (error) {
+  process.stderr.write(`${error.message}\n`)
+  process.exit(2)
+}
+// --compare widens the report window to cover every period, so --since can never cut one short
+const SINCE = widenSince(parseSince(flag('--since', null)), PERIODS)
+const periodStats = ts => (PERIODS ? periodAt(PERIODS, ts) : null)
+// Oldest timestamp the transcripts hold, read before --since so it says where the data begins, not where the window does
+const DATA_START = { ts: null }
 const CACHE_BREAK_THRESHOLD = parseInt(flag('--cache-break', '100000'), 10)
 const IDLE_GAP_MS = 5 * 60 * 1000 // gaps >5min don't count toward "active" time
 
@@ -359,11 +378,16 @@ async function processFile(p, info, buckets) {
     if (e.timestamp) {
       const ts = Date.parse(e.timestamp)
       if (!isNaN(ts)) {
+        if (DATA_START.ts === null || ts < DATA_START.ts) DATA_START.ts = ts
         if (SINCE && ts < SINCE.getTime()) continue
         if (firstTs === null) firstTs = ts
         if (prevTs !== null) {
           const gap = ts - prevTs
-          if (gap > 0 && gap < IDLE_GAP_MS) activeMs += gap
+          if (gap > 0 && gap < IDLE_GAP_MS) {
+            activeMs += gap
+            const period = periodStats(ts)
+            if (period) period.activeMs += gap
+          }
         }
         prevTs = ts
         lastTs = ts
@@ -493,6 +517,11 @@ async function processFile(p, info, buckets) {
       if (!skillStats.has(skill)) skillStats.set(skill, newStats())
       targets.push(skillStats.get(skill))
     }
+    const period = periodStats(ts)
+    if (period) {
+      period.sessions.add(info.sessionId)
+      targets.push(period)
+    }
     for (const s of targets) addUsage(s, usage)
 
     const prices = lookupPrice(model, ts)
@@ -541,6 +570,7 @@ async function processFile(p, info, buckets) {
       overall.cacheBreaks.push(cb)
       project.cacheBreaks.push(cb)
       if (subagent) subagent.cacheBreaks.push(cb)
+      if (period) period.cacheBreaks.push(cb)
     }
   }
 
@@ -605,6 +635,11 @@ function handleUser(
   if (info.kind === 'main' && !e.isSidechain) {
     overall.humanMessages++
     project.humanMessages++
+    const period = periodStats(e.timestamp)
+    if (period) {
+      period.humanMessages++
+      period.sessions.add(info.sessionId)
+    }
     const pk = e.uuid || `${info.sessionId}:${e.timestamp}`
     promptRecord(pk, {
       text: promptPreview(text, slashCmd),
@@ -747,6 +782,7 @@ async function main() {
       breakThreshold: CACHE_BREAK_THRESHOLD,
       topN: 100,
       roots: [ROOT],
+      periodAt: periodStats,
     })
   }
 
@@ -869,7 +905,14 @@ function printJson({ overall, perProject, perSubagent, perSkill }) {
     by_day: buildByDay(),
     prompt_size_histogram: buildPromptHistogram(),
   }
+  if (PERIODS) out.periods = periodRows()
   process.stdout.write(JSON.stringify(out, null, 2).replace(/</g, '\\u003c') + '\n')
+}
+
+function periodRows() {
+  const fromStore = REPORT_SOURCE.coverage && REPORT_SOURCE.coverage.earliest
+  const earliest = REPORT_SOURCE.source === 'store' ? Date.parse(fromStore) : DATA_START.ts
+  return summarizePeriods(PERIODS, { summarize, earliest: Number.isNaN(earliest) ? null : earliest })
 }
 
 // Group sessions into local-date buckets for the timeline view. A session is
@@ -966,6 +1009,12 @@ function printText({ overall, perProject, perSubagent, perSkill }) {
   if (SINCE) line(`(since ${SINCE.toISOString()})`)
   hr()
   printBlock('OVERALL', overall)
+
+  if (PERIODS) {
+    hr()
+    line(`PERIOD COMPARISON (${COMPARE}, oldest first)`)
+    for (const row of formatPeriods(periodRows())) line(`  ${row}`)
+  }
 
   hr()
   line(

@@ -47,9 +47,12 @@ const surface = outsideKitRegions(html);
 const stripComments = (source) => source.replace(/<!--[\s\S]*?-->/g, '');
 const markup = stripComments(html.slice(html.indexOf('<body>'), html.indexOf('<script id="report-data"')));
 
+// 'period comparison' joined the D9 set with usage-telemetry Task 10. It ships in the markup and removes itself
+// at render time when the JSON has no `periods`, so the nav only ever shows it for a --compare run.
 const SECTION_ORDER = [
   'findings',
   'summary',
+  'period comparison',
   'tokens by project',
   'session timeline by day',
   'most expensive prompts',
