@@ -29,6 +29,13 @@ Nothing is sent anywhere.
 
 The `usage-trace` skill runs these for you: `status`, `ingest`, `setup`, `setup --apply` and `setup --undo`.
 
+## Reading the history
+
+Install [session-report](https://github.com/jabworks/agentic-toolkit/tree/main/plugins/session-report)
+to turn the store into a report, including week-over-week comparison (`--compare weekly`).
+It reads the store when one exists and falls back to transcripts otherwise. usage-trace
+works without it, and it works without usage-trace.
+
 ## Uninstall
 
 Run `setup --undo` first if you applied it, remove the plugin, then delete `~/.usage-trace/` if you don't want the history.
