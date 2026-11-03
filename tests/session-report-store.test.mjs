@@ -8,6 +8,7 @@ import path from 'node:path';
 import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { priceAt, readStore, setCurrentRates, StoreVersionError } from '../skills/session-report/lib/read-store.mjs';
+import { buildPeriods, formatPeriods, parseWindow, periodAt, summarizePeriods, widenSince } from '../skills/session-report/lib/periods.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CLAUDE = path.resolve(__dirname, '../skills/session-report/analyze-claude.mjs');
@@ -214,6 +215,200 @@ test('an explicit --dir with auto never reads the store', () =>
       assert.equal(report.overall.api_calls, 0);
     }
   }));
+
+// ---------------------------------------------------------------------------
+// Period comparison (plan Task 10). Windows end at --compare-end so no test depends on today's date.
+// ---------------------------------------------------------------------------
+const END = '2026-10-29T00:00:00.000Z';
+const DAY = 24 * 60 * 60 * 1000;
+const COMPARE = ['--compare', 'weekly', '--periods', '2', '--compare-end', END];
+
+// Two weekly windows: [Oct 15, Oct 22) and [Oct 22, Oct 29]. One session spans both.
+const periodFixture = (host = 'claude') => {
+  const call = (id, ts, extra) => event('api_call', { id, ts, host, model: 'claude-sonnet-5', output: 10, ...extra });
+
+  return [
+    event('turn', { id: 'p1', host, ts: '2026-10-16T10:00:00.000Z', prompt_chars: 5, prompt_source: 'typed' }),
+    call('c1', '2026-10-16T10:01:00.000Z', { input: 150000 }),
+    event('turn', { id: 'p2', host, ts: '2026-10-23T10:00:00.000Z', prompt_chars: 5, prompt_source: 'typed' }),
+    event('turn', { id: 'p3', host, ts: '2026-10-23T10:02:00.000Z', prompt_chars: 5, prompt_source: 'typed' }),
+    call('c2', '2026-10-23T10:03:00.000Z', { input: 100 }),
+    call('c3', '2026-10-24T10:00:00.000Z', { input: 200 }),
+  ];
+};
+
+test('windows are [start, end) with the newest also taking its end', () => {
+  const periods = buildPeriods({ spec: 'weekly', count: 2, now: Date.parse(END), newStats: () => ({}) });
+
+  assert.equal(parseWindow('weekly'), 7 * DAY);
+  assert.equal(parseWindow('36h'), 36 * 60 * 60 * 1000);
+  assert.deepEqual(periods.map(period => period.end - period.start), [7 * DAY, 7 * DAY]);
+  assert.equal(periods[0].end, periods[1].start);
+  assert.equal(periodAt(periods, periods[0].start), periods[0].stats);
+  assert.equal(periodAt(periods, periods[1].start), periods[1].stats);
+  assert.equal(periodAt(periods, periods[1].end), periods[1].stats);
+  assert.equal(periodAt(periods, periods[0].start - 1), null);
+  assert.equal(periodAt(periods, periods[1].end + 1), null);
+  assert.equal(periodAt(periods, 'not a date'), null);
+});
+
+test('a bad window or count is rejected', () => {
+  for (const spec of ['monthly', '0d', '7', 'd7']) assert.throws(() => parseWindow(spec), /--compare expects/);
+
+  assert.throws(() => buildPeriods({ spec: 'weekly', count: 0, now: 1, newStats: () => ({}) }), /--periods expects/);
+  assert.throws(() => buildPeriods({ spec: 'weekly', count: 'x', now: 1, newStats: () => ({}) }), /--periods expects/);
+});
+
+test('--compare widens a narrower --since and keeps an older one', () => {
+  const periods = buildPeriods({ spec: '7d', count: 2, now: Date.parse(END), newStats: () => ({}) });
+  const first = new Date(periods[0].start);
+
+  assert.equal(widenSince(null, null), null);
+  assert.deepEqual(widenSince(null, periods), first);
+  assert.deepEqual(widenSince(new Date(END), periods), first);
+  assert.deepEqual(widenSince(new Date(first.getTime() - DAY), periods), new Date(first.getTime() - DAY));
+});
+
+test('a period is partial exactly when the data begins after its start', () => {
+  const periods = buildPeriods({ spec: 'weekly', count: 2, now: Date.parse(END), newStats: () => ({}) });
+  const summary = {
+    input_tokens: { total: 3, cache_read: 1, cache_create: 1, pct_cached: 33.3 },
+    output_tokens: 2,
+    cost_usd: null,
+    sessions: 1,
+    human_messages: 1,
+    api_calls: 1,
+    by_model: {},
+    hours: { active: 0.5 },
+    cache_breaks_over_100k: 0,
+  };
+  const rows = earliest => summarizePeriods(periods, { summarize: () => summary, earliest });
+
+  assert.deepEqual(rows(periods[0].start).map(row => row.partial), [false, false]);
+  assert.deepEqual(rows(periods[0].start + 1).map(row => row.partial), [true, false]);
+  assert.deepEqual(rows(periods[1].start + 1).map(row => row.partial), [true, true]);
+  assert.deepEqual(rows(null).map(row => row.partial), [true, true]);
+  assert.equal(rows(0)[0].tokens, 5);
+  assert.equal(rows(0)[0].cost, null);
+  assert.match(formatPeriods(rows(periods[0].start + 1)).join('\n'), /\(partial\)[\s\S]*do not sum/);
+});
+
+for (const [name, script, host] of [
+  ['claude', CLAUDE, 'claude'],
+  ['codex', CODEX, 'codex'],
+]) {
+  test(`the store buckets ${name} calls by period, and a session spanning both counts once in each`, () =>
+    withTmp(tmp => {
+      const home = makeStore(tmp, { open: periodFixture(host) });
+      const report = analyze(script, '--source', 'store', '--store', home, ...COMPARE);
+      const [older, newer] = report.periods;
+
+      assert.equal(report.periods.length, 2);
+      assert.equal(older.start, '2026-10-15T00:00:00.000Z');
+      assert.equal(newer.end, END);
+      assert.deepEqual([older.api_calls, newer.api_calls], [1, 2]);
+      assert.deepEqual([older.human_messages, newer.human_messages], [1, 2]);
+      assert.deepEqual([older.tokens, newer.tokens], [150010, 320]);
+      assert.deepEqual([older.cache_breaks, newer.cache_breaks], [1, 0]);
+      assert.deepEqual([older.sessions, newer.sessions], [1, 1]);
+      assert.equal(report.overall.sessions, 1);
+      assert.ok(older.cost > 0 && newer.cost > 0);
+      assert.deepEqual(Object.keys(newer.by_model), ['claude-sonnet-5']);
+      // Capture began Oct 16, after the older window opened on Oct 15.
+      assert.deepEqual([older.partial, newer.partial], [true, false]);
+      assert.equal(report.coverage.earliest, '2026-10-16T10:00:00.000Z');
+      assert.equal(report.overall.api_calls, older.api_calls + newer.api_calls);
+    }));
+}
+
+test('the store reports the true earliest event even when --since cuts the window shorter', () =>
+  withTmp(tmp => {
+    const home = makeStore(tmp, { open: periodFixture() });
+    const report = analyze(CLAUDE, '--source', 'store', '--store', home, '--since', '2026-10-23T00:00:00.000Z');
+
+    assert.equal(report.coverage.earliest, '2026-10-16T10:00:00.000Z');
+    assert.equal(report.coverage.from > report.coverage.earliest, true);
+  }));
+
+test('transcripts bucket by period and read the data start from before the window', () =>
+  withTmp(tmp => {
+    const root = path.join(tmp, 'projects');
+    const dir = path.join(root, 'fixture');
+    const assistant = (id, timestamp) =>
+      JSON.stringify({
+        type: 'assistant',
+        timestamp,
+        requestId: id,
+        message: { id: `msg_0${id}${id}${id}${id}${id}${id}`, model: 'claude-sonnet-5', usage: { input_tokens: 100, output_tokens: 10 } },
+      });
+    const human = (uuid, timestamp) => JSON.stringify({ type: 'user', uuid, cwd: CWD, timestamp, message: { content: 'hello' } });
+
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(
+      path.join(dir, `${SESSION}.jsonl`),
+      [
+        human('u1', '2026-10-16T10:00:00.000Z'),
+        assistant('r1', '2026-10-16T10:00:30.000Z'),
+        human('u2', '2026-10-23T10:00:00.000Z'),
+        assistant('r2', '2026-10-23T10:00:30.000Z'),
+        assistant('r3', '2026-10-24T10:00:30.000Z'),
+      ].join('\n') + '\n',
+    );
+
+    const report = analyze(CLAUDE, '--source', 'transcripts', '--dir', root, ...COMPARE);
+    const [older, newer] = report.periods;
+
+    assert.equal(report.source, 'transcripts');
+    assert.deepEqual([older.api_calls, newer.api_calls], [1, 2]);
+    assert.deepEqual([older.human_messages, newer.human_messages], [1, 1]);
+    assert.deepEqual([older.tokens, newer.tokens], [110, 220]);
+    assert.deepEqual([older.sessions, newer.sessions], [1, 1]);
+    assert.equal(report.overall.sessions, 1);
+    assert.deepEqual([older.partial, newer.partial], [true, false]);
+  }));
+
+test('a run without --compare carries no periods, and a bad flag exits 2 with a message', () =>
+  withTmp(tmp => {
+    const home = makeStore(tmp, { open: periodFixture() });
+
+    assert.equal('periods' in analyze(CLAUDE, '--source', 'store', '--store', home), false);
+
+    for (const [args, message] of [
+      [['--compare'], /--compare needs a value/],
+      [['--compare', 'monthly'], /--compare expects/],
+      [['--compare', 'weekly', '--periods', '0'], /--periods expects/],
+      [['--compare', 'weekly', '--compare-end', 'soon'], /--compare-end expects/],
+    ]) {
+      for (const script of [CLAUDE, CODEX]) {
+        const result = spawnSync(process.execPath, ['--import', OFFLINE, script, '--json', '--store', home, ...args], { encoding: 'utf8' });
+
+        assert.equal(result.status, 2, `${path.basename(script)} ${args.join(' ')}`);
+        assert.match(result.stderr, message);
+      }
+    }
+  }));
+
+test('the text report prints the comparison table', () =>
+  withTmp(tmp => {
+    const home = makeStore(tmp, { open: periodFixture() });
+    const text = execFileSync(process.execPath, ['--import', OFFLINE, CLAUDE, '--source', 'store', '--store', home, ...COMPARE], {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    });
+
+    assert.match(text, /PERIOD COMPARISON \(weekly, oldest first\)/);
+    assert.match(text, /2026-10-15 \(partial\)/);
+    assert.match(text, /do not sum/);
+  }));
+
+test('the template carries the comparison section and keeps the hidden histogram container', () => {
+  const template = fs.readFileSync(path.resolve(__dirname, '../skills/session-report/template.html'), 'utf8');
+
+  assert.match(template, /<section id="periods-section"/);
+  assert.match(template, /id="tbl-periods"/);
+  assert.match(template, /\$\("periods-section"\)\.remove\(\)/);
+  assert.match(template, /<div id="prompt-histogram" hidden><\/div>/);
+});
 
 test('the codex analyzer reads only codex events', () =>
   withTmp(tmp => {

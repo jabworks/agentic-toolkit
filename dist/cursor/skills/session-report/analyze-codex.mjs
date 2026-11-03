@@ -30,6 +30,7 @@ import path from 'path';
 import readline from 'readline';
 import { createRequire } from 'module';
 import { applyStoreEvents, defaultStoreHome, priceAt, projectNames, resolveSource, setCurrentRates } from './lib/read-store.mjs';
+import { formatPeriods, periodAt, periodsFromFlags, summarizePeriods, widenSince } from './lib/periods.mjs';
 const require = createRequire(import.meta.url);
 const LOCAL_PRICES = require('./model-prices.json');
 const REPORT_SOURCE = { source: 'transcripts', coverage: null };
@@ -132,7 +133,24 @@ const AS_JSON = argv.includes('--json');
 const SOURCE = flag('--source', 'auto');
 const STORE_HOME = flag('--store', defaultStoreHome());
 const TOP_N = parseInt(flag('--top', '15'), 10);
-const SINCE = parseSince(flag('--since', null));
+const COMPARE = flag('--compare', null);
+let PERIODS = null;
+try {
+  PERIODS = periodsFromFlags({
+    compare: COMPARE,
+    periods: flag('--periods', null),
+    compareEnd: flag('--compare-end', null),
+    newStats,
+  });
+} catch (error) {
+  process.stderr.write(`${error.message}\n`);
+  process.exit(2);
+}
+// --compare widens the report window to cover every period, so --since can never cut one short
+const SINCE = widenSince(parseSince(flag('--since', null)), PERIODS);
+const periodStats = (ts) => (PERIODS ? periodAt(PERIODS, ts) : null);
+// Oldest timestamp the transcripts hold, read before --since so it says where the data begins, not where the window does
+const DATA_START = { ts: null };
 const CACHE_BREAK_THRESHOLD = parseInt(flag('--cache-break', '100000'), 10);
 const IDLE_GAP_MS = 5 * 60 * 1000;
 
@@ -366,6 +384,8 @@ async function processFile(filePath) {
     // timestamps that predate the subagent's own session_meta.timestamp.
     if (ts && sessionStartTs && ts < sessionStartTs - 5000) continue;
 
+    if (ts && (DATA_START.ts === null || ts < DATA_START.ts)) DATA_START.ts = ts;
+
     // --since filter
     if (SINCE && ts && ts < SINCE.getTime()) continue;
 
@@ -374,7 +394,11 @@ async function processFile(filePath) {
       if (firstTs === null) firstTs = ts;
       if (prevTs !== null) {
         const gap = ts - prevTs;
-        if (gap > 0 && gap < IDLE_GAP_MS) activeMs += gap;
+        if (gap > 0 && gap < IDLE_GAP_MS) {
+          activeMs += gap;
+          const period = periodStats(ts);
+          if (period) period.activeMs += gap;
+        }
       }
       prevTs = ts;
       lastTs = ts;
@@ -598,6 +622,11 @@ function summarize(s) {
 // ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
+function periodRows() {
+  const earliest = REPORT_SOURCE.source === 'store' ? Date.parse(REPORT_SOURCE.coverage?.earliest) : DATA_START.ts;
+  return summarizePeriods(PERIODS, { summarize, earliest: Number.isNaN(earliest) ? null : earliest });
+}
+
 async function main() {
   await refreshPricesFromLiteLLM();
   const overall = newStats();
@@ -629,6 +658,7 @@ async function main() {
       breakThreshold: CACHE_BREAK_THRESHOLD,
       topN: 100,
       roots: [ROOT],
+      periodAt: periodStats,
     });
   }
 
@@ -702,6 +732,11 @@ async function main() {
       promptRecord(key, { text: promptPreview(text), ts, project: proj, sessionId });
       overall.humanMessages++;
       projStats.humanMessages++;
+      const turnPeriod = periodStats(ts);
+      if (turnPeriod) {
+        turnPeriod.humanMessages++;
+        turnPeriod.sessions.add(sessionId);
+      }
       let turns = sessionTurns.get(sessionId);
       if (!turns) sessionTurns.set(sessionId, (turns = []));
       turns.push(key);
@@ -734,6 +769,8 @@ async function main() {
       const currentSkill = currentPromptKey ? promptSkills.get(currentPromptKey) : null;
       const skillStats = currentSkill ? perSkill.get(currentSkill) : null;
       if (skillStats) targets.push(skillStats);
+      const period = periodStats(ts);
+      if (period) targets.push(period);
       for (const s of targets) {
         s.sessions.add(sessionId);
         s.apiCalls++;
@@ -779,6 +816,7 @@ async function main() {
         overall.cacheBreaks.push(cb);
         projStats.cacheBreaks.push(cb);
         if (subStats) subStats.cacheBreaks.push(cb);
+        if (period) period.cacheBreaks.push(cb);
       }
 
       // Attribute to current prompt
@@ -827,6 +865,7 @@ async function main() {
       by_day: buildByDay(),
       prompt_size_histogram: buildPromptHistogram(),
     };
+    if (PERIODS) out.periods = periodRows();
     process.stdout.write(JSON.stringify(out, null, 2).replace(/</g, '\\u003c') + '\n');
   } else {
     printText({ overall, perProject, perSubagent, perSkill });
@@ -872,6 +911,12 @@ function printText({ overall, perProject, perSubagent, perSkill }) {
   if (SINCE) line(`(since ${SINCE.toISOString()})`);
   hr();
   printBlock('OVERALL', overall);
+
+  if (PERIODS) {
+    hr();
+    line(`PERIOD COMPARISON (${COMPARE}, oldest first)`);
+    for (const row of formatPeriods(periodRows())) line(`  ${row}`);
+  }
 
   hr();
   line('BY PROJECT');

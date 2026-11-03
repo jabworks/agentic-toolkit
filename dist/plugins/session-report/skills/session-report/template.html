@@ -1675,6 +1675,19 @@
             </details>
           </section>
 
+          <!-- Present only when the run passed --compare (DATA.periods); the render removes it otherwise,
+               before the section nav is built from the DOM. -->
+          <section id="periods-section" data-kit-section>
+            <div class="hr"></div>
+            <details class="fold" open>
+              <summary><h2>period comparison<span class="hint">click a header to sort</span></h2></summary>
+              <div class="section-body scroll">
+                <table id="tbl-periods" aria-label="Period comparison"></table>
+                <p class="cost-note" id="periods-note"></p>
+              </div>
+            </details>
+          </section>
+
           <section data-kit-section>
             <div class="hr"></div>
             <details class="fold" open>
@@ -2789,6 +2802,47 @@
         table($("tbl-projects"), statCols, statRows(DATA.by_project));
         table($("tbl-subagents"), statCols, statRows(DATA.by_subagent_type));
         table($("tbl-skills"), statCols, statRows(DATA.by_skill));
+
+        // period comparison: only a run that passed --compare carries DATA.periods
+        (function () {
+          const periods = DATA.periods;
+          if (!Array.isArray(periods) || periods.length === 0) {
+            $("periods-section").remove();
+            return;
+          }
+          table(
+            $("tbl-periods"),
+            [
+              { h: "period start", sort: 1 },
+              { h: "tokens", num: 1, fmt: fmt },
+              { h: "est. cost", num: 1, fmt: fc3 },
+              { h: "sessions*", num: 1 },
+              { h: "msgs", num: 1 },
+              { h: "calls", num: 1 },
+              { h: "active h", num: 1 },
+              { h: "%cached", num: 1, fmt: (v) => v + "%" },
+              { h: "breaks", num: 1 },
+              { h: "top model" },
+            ],
+            periods.map((p) => [
+              p.start.slice(0, 10) + (p.partial ? " (partial)" : ""),
+              p.tokens,
+              p.cost ?? 0,
+              p.sessions,
+              p.human_messages,
+              p.api_calls,
+              p.active_hours,
+              p.cache_hit,
+              p.cache_breaks,
+              topModel(p.by_model),
+            ]),
+          );
+          const cov = DATA.coverage || {};
+          const span = cov.from && cov.to ? ` · ${cov.from.slice(0, 10)} → ${cov.to.slice(0, 10)}` : "";
+          const why = cov.fallback ? ` (${cov.fallback})` : "";
+          $("periods-note").textContent =
+            `source: ${DATA.source || "transcripts"}${span}${why} · * a session spanning periods counts once in each, so sessions do not sum · partial = the source has nothing at the start of the period`;
+        })();
 
         // model usage table
         (function () {

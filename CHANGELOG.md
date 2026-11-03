@@ -12,13 +12,17 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## session-report 1.13.0 — 2026-11-01
+
+- feat(session-report): period comparison — session-report 1.13.0
+
+## session-report 1.12.0 — 2026-10-31
+
+- feat(session-report): read the usage-trace store with dated prices — session-report 1.12.0 (#210)
+
 ## usage-trace 0.1.0 — 2026-10-30
 
 - feat(usage-trace): add durable local usage capture — usage-trace 0.1.0 (#209)
-
-## session-report 1.12.0 — 2026-10-30
-
-- feat(session-report): read the usage-trace store with dated prices — session-report 1.12.0
 
 ## toolkit-ops 1.7.27 — 2026-10-29
 

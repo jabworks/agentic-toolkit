@@ -42,9 +42,11 @@ Produce a self-contained HTML report of session usage and save it to
    # All-time:
    node <skill-dir>/$ANALYZER --json > "$OUT_DIR/session-report-${TOOL}.json"
    ```
+   **Period comparison.** When the user asks to compare weeks or periods ("how did this week compare", "week over week"), add `--compare weekly` (or `7d`, `24h`, any `<N>d|<N>h`) and, optionally, `--periods N` (default 4, trailing windows ending now, oldest first; `--compare-end <ISO>` ends them at a past date instead). The JSON then carries `periods[]` and the report gains a "period comparison" section; without `--compare` neither exists. The comparison widens the report window to cover every period, so `--since` is not needed alongside it.
+
    The analyzers read the usage-trace store when one exists and fall back to transcripts when it doesn't (`--source store|transcripts|auto`, default `auto`). The JSON's `source` and `coverage` fields say which one priced the report and why.
 
-4. **Read** `$OUT_DIR/session-report-${TOOL}.json`. Skim `overall`, `by_project`, `by_subagent_type`, `by_skill`, `cache_breaks`, `top_prompts`.
+4. **Read** `$OUT_DIR/session-report-${TOOL}.json`. Skim `overall`, `by_project`, `by_subagent_type`, `by_skill`, `cache_breaks`, `top_prompts`, and `periods` when present (a `partial` period had no data at its start, so do not read its totals as a drop).
 
 5. **Copy the template** into the report directory:
    ```sh
@@ -84,7 +86,7 @@ Produce a self-contained HTML report of session usage and save it to
 
      Skip a row rather than inventing one: an empty checklist entry is a healthy report, not a gap to fill. If nothing fires, say so in a single callout.
    - HTML-escape every transcript-derived project, prompt, model, skill, and tool label inserted into either agent-authored block.
-   - Do not restructure existing sections. Each section's body now sits inside a `<details class="fold" open>` with its `<h2>` in the `<summary>` — the two `<!-- AGENT: … -->` markers moved with it, so edit **by marker**, never by line number. Do not add, remove or reorder sections, and do not delete the hidden `#prompt-histogram` container: the render writes to it without a null guard, and removing it kills every render step that follows, including the section nav.
+   - Do not restructure existing sections. Each section's body now sits inside a `<details class="fold" open>` with its `<h2>` in the `<summary>` — the two `<!-- AGENT: … -->` markers moved with it, so edit **by marker**, never by line number. Do not add, remove or reorder sections (the "period comparison" section is the template's own and removes itself when the JSON has no `periods`), and do not delete the hidden `#prompt-histogram` container: the render writes to it without a null guard, and removing it kills every render step that follows, including the section nav.
 
 7. **Report** the saved file path. Do not open it or render it.
 

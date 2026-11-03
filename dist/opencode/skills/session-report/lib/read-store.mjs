@@ -130,6 +130,22 @@ export const readStore = async function* ({ home, since, until }) {
   }
 };
 
+// The first event of a host, whatever window the report asked for: a comparison needs it to tell a quiet
+// period from one that predates capture, and the windowed read cannot say.
+const earliestTs = (home, host) => {
+  for (const month of listMonths(home)) {
+    let earliest = null;
+
+    for (const event of parseLines(readMonth(home, month))) {
+      if (event.host === host && (earliest === null || event.ts < earliest)) earliest = event.ts;
+    }
+
+    if (earliest !== null) return earliest;
+  }
+
+  return null;
+};
+
 // ---------------------------------------------------------------------------
 // Source selection
 // ---------------------------------------------------------------------------
@@ -174,6 +190,7 @@ export const resolveSource = async ({ source, explicitDir, home, host, since }) 
       events: events.length,
       from: events[0].ts,
       to: events.at(-1).ts,
+      earliest: earliestTs(home, host),
       last_ingest: lastRun?.ts ?? null,
       failures: lastRun?.failures ?? null,
     },
@@ -338,7 +355,7 @@ const newPrompt = (event, project) => ({
 const promptTokens = r => r.inputUncached + r.inputCacheCreate + r.inputCacheRead + r.outputTokens;
 
 export const applyStoreEvents = (events, state) => {
-  const { overall, perProject, perSubagent, perSkill, prompts, sessionSpans, newStats, prices, names, breakThreshold, topN, roots } = state;
+  const { overall, perProject, perSubagent, perSkill, prompts, sessionSpans, newStats, prices, names, breakThreshold, topN, roots, periodAt } = state;
   const statsIn = (map, key) => {
     if (!map.has(key)) map.set(key, newStats());
 
@@ -366,12 +383,23 @@ export const applyStoreEvents = (events, state) => {
 
     const gap = ms - session.lastTs;
 
-    if (gap > 0 && gap < IDLE_GAP_MS) session.activeMs += gap;
+    const period = periodAt ? periodAt(ms) : null;
+
+    if (gap > 0 && gap < IDLE_GAP_MS) {
+      session.activeMs += gap;
+      if (period) period.activeMs += gap;
+    }
+
     session.lastTs = Math.max(session.lastTs, ms);
 
     if (isHumanTurn(event)) {
       overall.humanMessages++;
       session.projectStats.humanMessages++;
+
+      if (period) {
+        period.humanMessages++;
+        period.sessions.add(event.session);
+      }
 
       const key = `${event.session}:${event.id}`;
 
@@ -412,6 +440,7 @@ export const applyStoreEvents = (events, state) => {
     const targets = [overall, session.projectStats];
 
     if (event.sidechain) targets.push(statsIn(perSubagent, event.agent ?? 'fork'));
+    if (period) targets.push(period);
 
     const skillStats = event.skill ? statsIn(perSkill, event.skill) : null;
 
@@ -481,6 +510,7 @@ export const applyStoreEvents = (events, state) => {
 
       overall.cacheBreaks.push(entry);
       session.projectStats.cacheBreaks.push(entry);
+      if (period) period.cacheBreaks.push(entry);
     }
 
     if (session.prompt) {

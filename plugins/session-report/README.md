@@ -44,6 +44,31 @@ codex plugin add session-report@jabworks-agentic-toolkit
 
 ---
 
+## Where the numbers come from
+
+When a [usage-trace](https://github.com/jabworks/agentic-toolkit/tree/main/plugins/usage-trace)
+store exists on the machine, the report reads it; otherwise it reads the transcripts still
+on disk. Transcripts get pruned and the store does not, so older weeks keep their numbers.
+usage-trace is optional — nothing here requires it. Force a source with
+`--source store|transcripts|auto` (default `auto`); the report says which one it used.
+
+---
+
+## Comparing periods
+
+Ask for a comparison — "how did this week compare" — or pass `--compare weekly` (also
+`<N>d` or `<N>h`, with `--periods N`, default 4). The report gains a period comparison
+table, oldest window first: tokens, cost, sessions, messages, calls, active hours, cache
+hit rate and cache breaks. `--compare-end <ISO>` ends the windows at a past date.
+
+- Each API call lands in the window its timestamp falls in, so a session that straddles a
+  boundary is split correctly. It still counts once in each window it touches, which means
+  the sessions column does not sum.
+- A window marked **partial** had no data at its start — transcripts were pruned or
+  capture began mid-window — so read its totals as a floor, not a drop.
+
+---
+
 ## Reading it
 
 The report is exploratory, not a dashboard: it opens on the summary and lets you drill
