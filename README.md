@@ -5,7 +5,7 @@
 [![docket plugin](https://img.shields.io/github/v/release/jabworks/agentic-toolkit?filter=docket--v*&style=flat-square&label=docket)](https://github.com/jabworks/agentic-toolkit/releases?q=docket--v)
 [![usage-trace plugin](https://img.shields.io/github/v/release/jabworks/agentic-toolkit?filter=usage-trace--v*&style=flat-square&label=usage-trace)](https://github.com/jabworks/agentic-toolkit/releases?q=usage-trace--v)
 [![npm](https://img.shields.io/npm/v/%40jabworks%2Fcondux?style=flat-square&label=%40jabworks%2Fcondux)](https://www.npmjs.com/package/@jabworks/condux)
-[![Trigger routing](https://img.shields.io/badge/trigger_routing-88.6%25_%C2%B1_3.8pp-blue?style=flat-square)](./skills/toolkit-research-frontier/references/eval-trials-2026-07-09-post-foundry.md)
+[![Trigger routing](https://img.shields.io/badge/trigger_routing-93.1%25_%C2%B1_0.2pp-blue?style=flat-square)](./skills/toolkit-research-frontier/references/eval-remember-seam-2026-08-26.md)
 
 **Agentic workflow that scales to the task — on Claude Code, Codex, OpenCode, and Cursor.**
 
@@ -30,6 +30,7 @@ Codex, OpenCode, Cursor and the agent-assisted install are under [Install](#inst
   - [Condux](#condux) — the agentic workflow bundle
   - [Concord](#concord) — continuous memory for Codex
   - [Docket](#docket) — file-based project backlog
+  - [Usage-trace](#usage-trace) — durable, local usage history
   - [Toolkit Ops](#toolkit-ops) — maintaining this repo
 - [Where artifacts land](#where-artifacts-land) — what gets written to your project, and where
 - [Evals](#evals) — how trigger routing is measured
@@ -396,6 +397,26 @@ registers it for Codex/OpenCode), and `docket.mjs browse` renders a
 self-contained HTML board. Legacy root `BACKLOG.md` layouts are detected and
 work in place — migration is offered, never forced.
 
+### Usage-trace
+
+Durable, local usage history (`usage-trace`) — agent transcripts get pruned, so
+it copies session metrics into a private store while they still exist:
+
+```bash
+/plugin install usage-trace@jabworks-agentic-toolkit
+```
+
+Capture starts at your next session, and the first run backfills whatever
+transcripts are still on disk. The store holds token counts by model, tool
+calls and outcomes, and turn timing and prompt size — never prompts, responses,
+tool input or output, or file contents, and paths, branches and PR URLs are
+salted hashes. Nothing leaves the machine. Limit percentages are opt-in: the
+`usage-trace` skill shows the status line change before applying it, and
+`setup --undo` reverses it. [session-report](./plugins/session-report/README.md)
+reads the store (falling back to transcripts without it), so older weeks keep
+their numbers and `--compare weekly` can line periods up. Details and
+uninstall are in the [plugin README](./plugins/usage-trace/README.md).
+
 ### Toolkit Ops
 
 Repo-maintenance bundle (`toolkit-ops`) for working on this toolkit itself:
@@ -448,12 +469,14 @@ An `AGENTS.md` path override always wins.
 
 The skills are eval-tested for **trigger routing** — given a user query, does
 the right skill activate (and does nothing activate when nothing should)?
-Latest run (2026-07-09, claude-haiku-4-5, 394 cold-trigger cases, 3 trials):
+Latest full-pool run (2026-08-26, claude-haiku-4-5, 599 cold-trigger cases, 3 trials):
 
-- **88.6% ± 3.8pp** mean routing accuracy (95% CI, t-distribution); per-run
-  87.1% / 90.1% / 88.6%, 37 flaky cases recorded
+- **93.1% ± 0.2pp** mean routing accuracy (95% CI, t-distribution); per-run
+  93.0% / 93.2% / 93.2%, 58 flaky cases recorded
+- **0/19** cases carrying a `disallowed` skill fired one (reported separately,
+  not counted in the accuracy)
 - Per-skill breakdown and the full miss list live in the
-  [trial record](./skills/toolkit-research-frontier/references/eval-trials-2026-07-09-post-foundry.md)
+  [trial record](./skills/toolkit-research-frontier/references/eval-remember-seam-2026-08-26.md)
 
 This measures whether skills *activate correctly* — not end-to-end workflow
 quality. Structural invariants (dist mirror, manifests, frontmatter budgets,
