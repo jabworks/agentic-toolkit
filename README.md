@@ -2,6 +2,8 @@
 
 [![CI](https://img.shields.io/github/actions/workflow/status/jabworks/agentic-toolkit/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/jabworks/agentic-toolkit/actions/workflows/ci.yml)
 [![condux plugin](https://img.shields.io/github/v/release/jabworks/agentic-toolkit?filter=condux--v*&style=flat-square&label=condux)](https://github.com/jabworks/agentic-toolkit/releases)
+[![docket plugin](https://img.shields.io/github/v/release/jabworks/agentic-toolkit?filter=docket--v*&style=flat-square&label=docket)](https://github.com/jabworks/agentic-toolkit/releases?q=docket--v)
+[![usage-trace plugin](https://img.shields.io/github/v/release/jabworks/agentic-toolkit?filter=usage-trace--v*&style=flat-square&label=usage-trace)](https://github.com/jabworks/agentic-toolkit/releases?q=usage-trace--v)
 [![npm](https://img.shields.io/npm/v/%40jabworks%2Fcondux?style=flat-square&label=%40jabworks%2Fcondux)](https://www.npmjs.com/package/@jabworks/condux)
 [![Trigger routing](https://img.shields.io/badge/trigger_routing-88.6%25_%C2%B1_3.8pp-blue?style=flat-square)](./skills/toolkit-research-frontier/references/eval-trials-2026-07-09-post-foundry.md)
 
@@ -11,7 +13,7 @@ Most agent workflows run the same heavy pipeline on every task, so people stop u
 
 - **Same workflow on every host.** One source, four channels — Claude Code and Codex plugin marketplaces, an OpenCode npm plugin, and Cursor skills. The host differences are found, tested, and [written down](./specs/agent-plugins-conformance/quirks.md).
 - **Measured, not vibes.** Skill routing is checked by an eval harness (badge above) and every distribution channel is byte-checked in CI.
-- **Bring only what you want.** condux is the headline; [docket](#docket) (a file-based backlog), [concord](#concord) (memory for Codex), and the standalone skills install separately.
+- **Bring only what you want.** condux is the headline; [docket](#docket) (a file-based backlog), [usage-trace](./plugins/usage-trace/README.md) (durable, local usage history), [concord](#concord) (memory for Codex), and the standalone skills install separately.
 
 ```bash
 # Claude Code
