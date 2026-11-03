@@ -130,7 +130,7 @@
       "rows": [
         {
           "skill": "session-report",
-          "blurb": "Generate an explorable HTML report of session usage — tokens, cache, cost, subagents, skills"
+          "blurb": "Generate an explorable HTML report of session usage — tokens, cache, cost, subagents, skills — from the usage-trace store or transcripts, with week-over-week comparison"
         },
         {
           "skill": "usage-trace",
@@ -298,7 +298,7 @@
         },
         {
           "entry": "`session-report`",
-          "blurb": "Generate HTML usage report from session transcripts"
+          "blurb": "Generate HTML usage report from the usage-trace store or session transcripts"
         },
         {
           "entry": "`adapting-skills`",

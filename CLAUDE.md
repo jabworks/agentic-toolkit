@@ -79,7 +79,7 @@ See `skills/toolkit-foundry/SKILL.md` for the canonical checklist. Short version
 |---|---|
 | `usage-trace` | Capture durable, local usage history — tokens, tools, friction, limits |
 | `session-handoff` | Preserve/restore session context at context limits |
-| `session-report` | Generate HTML usage report from session transcripts |
+| `session-report` | Generate HTML usage report from the usage-trace store or session transcripts |
 | `adapting-skills` | Adapt generic skills to the jabworks stack and conventions |
 | `git-commit` | Conventional-commit message from the diff, run safely |
 | `git-operations` | Decision router for git operations with undo paths |

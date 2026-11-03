@@ -240,7 +240,7 @@ cp -r /tmp/agentic-toolkit/skills/<name> <skills-directory>/
 <!-- catalog:begin readme-skills -->
 | Skill | Description |
 |---|---|
-| [session-report](./skills/session-report/) | Generate an explorable HTML report of session usage — tokens, cache, cost, subagents, skills |
+| [session-report](./skills/session-report/) | Generate an explorable HTML report of session usage — tokens, cache, cost, subagents, skills — from the usage-trace store or transcripts, with week-over-week comparison |
 | [usage-trace](./skills/usage-trace/) | Capture durable, local usage history — tokens, tools, friction, limits — with no prompt text by default |
 | [session-handoff](./skills/session-handoff/) | Preserve and restore session context across agentic coding sessions |
 | [adapting-skills](./skills/adapting-skills/) | Stack and style priors for adapting skills to the jabworks conventions _(opinionated — fork the priors for your own stack)_ |
