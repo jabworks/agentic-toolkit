@@ -1,9 +1,9 @@
 # agentic-toolkit
 
 [![CI](https://img.shields.io/github/actions/workflow/status/jabworks/agentic-toolkit/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/jabworks/agentic-toolkit/actions/workflows/ci.yml)
-[![condux plugin](https://img.shields.io/github/v/release/jabworks/agentic-toolkit?filter=condux--v*&style=flat-square&label=)](https://github.com/jabworks/agentic-toolkit/releases?q=condux--v)
-[![docket plugin](https://img.shields.io/github/v/release/jabworks/agentic-toolkit?filter=docket--v*&style=flat-square&label=)](https://github.com/jabworks/agentic-toolkit/releases?q=docket--v)
-[![usage-trace plugin](https://img.shields.io/github/v/release/jabworks/agentic-toolkit?filter=usage-trace--v*&style=flat-square&label=)](https://github.com/jabworks/agentic-toolkit/releases?q=usage-trace--v)
+[![condux plugin](https://img.shields.io/github/v/release/jabworks/agentic-toolkit?filter=condux%20v*&display_name=release&style=flat-square&label=)](https://github.com/jabworks/agentic-toolkit/releases?q=condux--v)
+[![docket plugin](https://img.shields.io/github/v/release/jabworks/agentic-toolkit?filter=docket%20v*&display_name=release&style=flat-square&label=)](https://github.com/jabworks/agentic-toolkit/releases?q=docket--v)
+[![usage-trace plugin](https://img.shields.io/github/v/release/jabworks/agentic-toolkit?filter=usage-trace%20v*&display_name=release&style=flat-square&label=)](https://github.com/jabworks/agentic-toolkit/releases?q=usage-trace--v)
 [![npm](https://img.shields.io/npm/v/%40jabworks%2Fcondux?style=flat-square&label=%40jabworks%2Fcondux)](https://www.npmjs.com/package/@jabworks/condux)
 [![Trigger routing](https://img.shields.io/badge/trigger_routing-93.1%25_%C2%B1_0.2pp-blue?style=flat-square)](./skills/toolkit-research-frontier/references/eval-remember-seam-2026-08-26.md)
 
