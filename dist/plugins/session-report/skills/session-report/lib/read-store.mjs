@@ -288,6 +288,21 @@ const textOf = record => {
 
   if (record.payload?.type === 'user_message') return record.payload.message ?? null;
 
+  // Current Codex writes the typed prompt here instead of user_message.
+  if (record.payload?.type === 'item_completed' && record.payload.item?.type === 'UserMessage') {
+    const content = record.payload.item.content;
+
+    // Every text block, joined as parse-codex does, so the text matches prompt_chars.
+    if (Array.isArray(content)) {
+      const text = content
+        .filter(block => block?.type === 'text' && typeof block.text === 'string')
+        .map(block => block.text)
+        .join('\n');
+
+      return text || null;
+    }
+  }
+
   return null;
 };
 
@@ -364,6 +379,13 @@ export const applyStoreEvents = (events, state) => {
   const labelOf = project => names.get(project) ?? project ?? 'unknown';
   const sessionState = new Map();
   const pricedModels = new Set();
+  // A Codex subagent event names the subagent's own session (Claude's names the parent's). Before
+  // usage-trace 0.1.1 those sessions could still log turns, and dedupe never removes them.
+  const codexSubagentSessions = new Set(
+    events.filter(event => event.type === 'subagent' && event.host === 'codex').map(event => event.session),
+  );
+  const isPersonTurn = event =>
+    isHumanTurn(event) && !(event.host === 'codex' && codexSubagentSessions.has(event.session));
 
   for (const event of events) {
     const project = labelOf(event.project);
@@ -392,7 +414,7 @@ export const applyStoreEvents = (events, state) => {
 
     session.lastTs = Math.max(session.lastTs, ms);
 
-    if (isHumanTurn(event)) {
+    if (isPersonTurn(event)) {
       overall.humanMessages++;
       session.projectStats.humanMessages++;
 

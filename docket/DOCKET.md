@@ -17,6 +17,10 @@ Follow-up to #106, rides in PR #189 (docket 0.12.2). (1) A share thinner than a 
 
 With the full toolkit installed, Codex cuts each skill entry mid-word at about 374 chars (quirk Q7, specs/agent-plugins-conformance). Folding `when_to_use` (decision 6) only helps up to that cut: 17 of the 28 split-contract skills gain 100+ chars, but a skill whose `description` alone reaches ~374 chars gains nothing (e.g. release 442, toolkit-change-control 486, docket-doctor 486). The remaining lever is wording. Each skill's routing-critical trigger should sit in the first ~370 chars of the folded text. This changes trigger text the evals measured, so re-run `scripts/eval-triggers.mjs` before and after, and decide whether the cut scales with install size enough to fix a target number.
 
+### 123. concord: Codex rollout reader misses item_completed UserMessage/AgentMessage (2026-11-17)
+
+`skills/remember/lib/rollout.mjs` reads only `event_msg`/`user_message` and `agent_message`. In one WSL machine's rollouts (2026-11-17), current Codex (0.118–0.169, every originator) writes prompts as `event_msg`/`item_completed` with `item.type: "UserMessage"`, which appears in 971 of 1,145 rollouts; `user_message` appears in only 9 TUI rollouts from September. Agent replies are `item.type: "AgentMessage"`: 1,049 rollouts carry it, and 867 carry no `agent_message` at all. Concord therefore likely captures almost no Codex messages, which may be the "concord inert capture" open since the 2026-08-04 re-eval. Fix: read both forms, keep skipping the `response_item` message mirror, and check the double-count rule against files holding both `agent_message` and `AgentMessage` (182 files do). Same root cause as usage-trace quirk Q8.
+
 ## Someday
 
 ### 65. toolkit-debugging-playbook applied-but-cold — evaluate for a routing nudge next period (2026-08-28)

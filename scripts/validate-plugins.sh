@@ -41,6 +41,11 @@ for p in dist/plugins/*/; do
   # Codex-only by design. Drop the block, from its header to the next
   # unindented line, before counting.
   verdict=$(echo "$out" | awk '/^ℹ Advice/ { skip = 1; next } skip && /^[^ ]/ { skip = 0 } !skip')
+  # CLI 2.1.326 (seen 2026-11-17) adds a "Provides:" block, an inventory of what the
+  # plugin ships ("❯ hooks: SessionStart …", "❯ skills: <plugin>:<skill>"). Same ❯
+  # marker, but a fact, not a finding, and it turned every plugin red at once. Drop
+  # it the same way, from its header to the next unindented line.
+  verdict=$(echo "$verdict" | awk '/^Provides:$/ { skip = 1; next } skip && /^[^ ]/ { skip = 0 } !skip')
   # Newer CLIs also print "Plugin directory checks for <path>" — what the marketplace
   # catalog wants (an icon, ICON_MISSING, as of 2026-10-21) — and say themselves that
   # those checks "do not change the result below". They are catalog advice, not a

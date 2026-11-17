@@ -215,6 +215,106 @@ test('codex: replayed history is dropped, cached tokens split out, null limits e
   assert.deepEqual([limited[0].five_hour, limited[0].seven_day], [12, 34]);
 });
 
+// Current Codex writes the typed prompt as item_completed/UserMessage; the response_item
+// user messages around it carry injected AGENTS.md and environment blocks instead.
+const codexRollout = ({ id = 'c2', meta = {} } = {}) => [
+  { type: 'session_meta', timestamp: '2026-10-02T00:00:00Z', payload: { id, cwd: MARKER_PATH, timestamp: '2026-10-02T00:00:00Z', ...meta } },
+  {
+    type: 'response_item',
+    timestamp: '2026-10-02T00:00:01Z',
+    payload: { type: 'message', role: 'user', content: [{ type: 'input_text', text: '# AGENTS.md instructions' }] },
+  },
+  {
+    type: 'event_msg',
+    timestamp: '2026-10-02T00:00:02Z',
+    payload: { type: 'item_completed', item: { type: 'UserMessage', id: 'item-1', content: [{ type: 'text', text: MARKER_PROMPT }] } },
+  },
+  {
+    type: 'event_msg',
+    timestamp: '2026-10-02T00:00:03Z',
+    payload: { type: 'item_completed', item: { type: 'AgentMessage', id: 'item-2', content: [{ type: 'Text', text: 'ok' }] } },
+  },
+  {
+    type: 'event_msg',
+    timestamp: '2026-10-02T00:00:04Z',
+    payload: { type: 'token_count', info: { last_token_usage: { input_tokens: 10, cached_input_tokens: 0, output_tokens: 1 } } },
+  },
+];
+
+const parseAll = (records, privacy) => {
+  const ctx = {};
+
+  return records.flatMap(record => parseCodexRecord(record, ctx, privacy).events);
+};
+
+test('codex: the typed prompt in item_completed/UserMessage is a turn; injected context is not', () => {
+  const privacy = loadPrivacy(tempDir(), { plugins: new Set() });
+  const turns = parseAll(codexRollout(), privacy).filter(event => event.type === 'turn');
+
+  assert.equal(turns.length, 1);
+  assert.equal(turns[0].prompt_chars, MARKER_PROMPT.length);
+  assert.equal(turns[0].prompt_text, undefined);
+  assert.equal(turns[0].ts, '2026-10-02T00:00:02Z');
+});
+
+test('codex: the older user_message form still counts', () => {
+  const privacy = loadPrivacy(tempDir(), { plugins: new Set() });
+  const turns = parseAll(
+    [
+      codexRollout()[0],
+      { type: 'event_msg', timestamp: '2026-10-02T00:00:02Z', payload: { type: 'user_message', message: MARKER_PROMPT } },
+    ],
+    privacy,
+  ).filter(event => event.type === 'turn');
+
+  assert.equal(turns.length, 1);
+  assert.equal(turns[0].prompt_chars, MARKER_PROMPT.length);
+});
+
+for (const [label, meta, agentType] of [
+  ['parent_thread_id', { parent_thread_id: 'p1', source: { subagent: { thread_spawn: {} } } }, 'subagent'],
+  ['agent_role', { agent_role: 'explorer' }, /^h:/],
+]) {
+  test(`codex: a subagent marked only by ${label} yields no human turn and sidechain calls`, () => {
+    const privacy = loadPrivacy(tempDir(), { plugins: new Set() });
+    const events = parseAll(codexRollout({ meta }), privacy);
+
+    assert.equal(events.filter(event => event.type === 'turn').length, 0);
+    assert.equal(events.find(event => event.type === 'api_call').sidechain, true);
+    // An unnamed subagent keeps the fixed readable label; a custom role is hashed.
+    assert.match(events.find(event => event.type === 'subagent').agent_type, agentType instanceof RegExp ? agentType : /^subagent$/);
+  });
+}
+
+test('a codex parser version change rereads codex files once and adds only the missing events', () => {
+  const home = tempDir();
+  const root = path.join(tempDir(), 'sessions');
+  const privacy = loadPrivacy(home, { plugins: new Set() });
+
+  fs.mkdirSync(root, { recursive: true });
+  fs.writeFileSync(path.join(root, 'rollout.jsonl'), `${codexRollout().map(record => JSON.stringify(record)).join('\n')}\n`);
+
+  // Version 1 stands in for the parser that never saw item_completed.
+  const blind = (record, ctx, active) =>
+    record.payload?.type === 'item_completed' ? { events: [], known: true } : parseCodexRecord(record, ctx, active);
+
+  runIngest({ home, sources: [{ host: 'codex', root, parse: blind }], privacy });
+
+  const stored = () => [...readEvents({ home })].filter(event => event.type !== 'coverage');
+  const before = stored();
+
+  assert.equal(before.filter(event => event.type === 'turn').length, 0);
+
+  const fixed = [{ host: 'codex', root, parse: parseCodexRecord, version: 2 }];
+  const reread = runIngest({ home, sources: fixed, privacy });
+
+  assert.equal(reread.files, 1);
+  assert.equal(reread.events, 1);
+  assert.equal(stored().filter(event => event.type === 'turn').length, 1);
+  assert.equal(stored().length, before.length + 1);
+  assert.equal(runIngest({ home, sources: fixed, privacy }).files, 0);
+});
+
 test('a custom name is hashed; a plugin name stays readable', () => {
   const privacy = loadPrivacy(tempDir(), { plugins: new Set(['condux']) });
 
