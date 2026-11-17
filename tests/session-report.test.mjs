@@ -50,6 +50,29 @@ test('session-report analyzers emit script-safe JSON', () => {
   }
 });
 
+test('codex transcripts count the item_completed prompt, and no subagent prompt', () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ci-session-report-codex-turns-'));
+  // Distinct output per file: the analyzer drops token events with the same ts and amounts across files.
+  const rollout = (id, meta, usage = { input_tokens: 10, cached_input_tokens: 0, output_tokens: meta.agent_role ? 7 : 5 }) => [
+    { type: 'session_meta', payload: { id, cwd: '/tmp/project', timestamp: '2026-01-01T00:00:00Z', ...meta } },
+    { timestamp: '2026-01-01T00:00:01Z', type: 'response_item', payload: { type: 'message', role: 'user', content: [{ type: 'input_text', text: '# AGENTS.md instructions' }] } },
+    { timestamp: '2026-01-01T00:00:02Z', type: 'event_msg', payload: { type: 'item_completed', item: { type: 'UserMessage', id: `${id}-item`, content: [{ type: 'text', text: 'fix the parser' }] } } },
+    { timestamp: '2026-01-01T00:00:03Z', type: 'event_msg', payload: { type: 'token_count', info: { last_token_usage: usage } } },
+  ].map(record => JSON.stringify(record)).join('\n') + '\n';
+
+  try {
+    fs.writeFileSync(path.join(tmp, 'main.jsonl'), rollout('codex-main', {}));
+    fs.writeFileSync(path.join(tmp, 'agent.jsonl'), rollout('codex-agent', { agent_role: 'explorer' }));
+
+    const report = JSON.parse(analyze(CODEX, tmp));
+
+    assert.equal(report.overall.human_messages, 1);
+    assert.equal(report.top_prompts[0].text, 'fix the parser');
+  } finally {
+    fs.rmSync(tmp, { recursive: true, force: true });
+  }
+});
+
 test('session-report analyzers do not score an empty dataset', () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ci-session-report-empty-'));
   try {

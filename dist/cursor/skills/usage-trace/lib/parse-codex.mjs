@@ -2,11 +2,42 @@ import crypto from 'node:crypto';
 
 import { makeEvent } from './schema.mjs';
 
+// Bump when a fix changes what existing rollouts parse into; ingest then rereads every Codex file.
+export const CODEX_PARSER_VERSION = 2;
+
 const KNOWN_TYPES = new Set(['world_state', 'token_usage_record', 'compacted', 'inter_agent_communication_metadata']);
 
 const eventId = (...parts) => crypto.createHash('sha1').update(parts.join('|')).digest('hex').slice(0, 20);
 
 const percent = window => (typeof window?.used_percent === 'number' ? window.used_percent : undefined);
+
+// Names a subagent that has no role; fixed and not sensitive, so it stays readable.
+const UNNAMED_SUBAGENT = 'subagent';
+
+// Spawned agents carry any one of these; many carry only parent_thread_id.
+const isSubagentMeta = payload =>
+  Boolean(payload.parent_thread_id || payload.source?.subagent || payload.agent_role || payload.agent_nickname);
+
+// The typed prompt only, never the injected AGENTS.md or environment blocks.
+const typedPrompt = payload => {
+  if (payload.type === 'user_message') {
+    const text = typeof payload.message === 'string' ? payload.message : '';
+
+    return { text, key: text.length };
+  }
+
+  if (payload.type === 'item_completed' && payload.item?.type === 'UserMessage') {
+    const blocks = Array.isArray(payload.item.content) ? payload.item.content : [];
+    const text = blocks
+      .filter(block => block?.type === 'text' && typeof block.text === 'string')
+      .map(block => block.text)
+      .join('\n');
+
+    return { text, key: payload.item.id };
+  }
+
+  return null;
+};
 
 export const parseCodexRecord = (record, ctx, privacy) => {
   const payload = record.payload || {};
@@ -23,7 +54,7 @@ export const parseCodexRecord = (record, ctx, privacy) => {
     ctx.session = payload.id;
     ctx.cwd = payload.cwd;
     ctx.startedAt = payload.timestamp || ts;
-    ctx.subagent = payload.agent_role || payload.agent_nickname || undefined;
+    ctx.subagent = isSubagentMeta(payload) ? payload.agent_role || payload.agent_nickname || UNNAMED_SUBAGENT : undefined;
 
     const events = [
       makeEvent('session', {
@@ -47,7 +78,7 @@ export const parseCodexRecord = (record, ctx, privacy) => {
           host: 'codex',
           session: payload.id,
           project: privacy.hash(payload.cwd),
-          agent_type: privacy.publicName(ctx.subagent),
+          agent_type: ctx.subagent === UNNAMED_SUBAGENT ? UNNAMED_SUBAGENT : privacy.publicName(ctx.subagent),
         }),
       );
     }
@@ -116,16 +147,21 @@ export const parseCodexRecord = (record, ctx, privacy) => {
     return { events: [], known: false };
   }
 
-  if (payload.type === 'user_message') {
-    const text = typeof payload.message === 'string' ? payload.message : '';
+  const prompt = typedPrompt(payload);
 
+  // A subagent's prompt is the parent's delegation, not a person's turn (as parse-claude skips sidechains).
+  if (prompt && ctx.subagent) {
+    return { events: [], known: true };
+  }
+
+  if (prompt) {
     return {
       events: [
         makeEvent('turn', {
           ...base,
-          id: eventId('codex', 'prompt', ctx.session, ts, text.length),
-          prompt_chars: text.length,
-          prompt_text: privacy.isAllowlisted(ctx.cwd) ? text : undefined,
+          id: eventId('codex', 'prompt', ctx.session, ts, prompt.key),
+          prompt_chars: prompt.text.length,
+          prompt_text: privacy.isAllowlisted(ctx.cwd) ? prompt.text : undefined,
         }),
       ],
       known: true,

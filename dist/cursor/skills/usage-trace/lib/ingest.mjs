@@ -4,7 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 
 import { parseClaudeRecord } from './parse-claude.mjs';
-import { parseCodexRecord } from './parse-codex.mjs';
+import { CODEX_PARSER_VERSION, parseCodexRecord } from './parse-codex.mjs';
 import { loadPrivacy } from './privacy.mjs';
 import { makeEvent } from './schema.mjs';
 import { compressClosedMonths, createWriter, readJson, writeJson } from './store.mjs';
@@ -40,8 +40,33 @@ export const defaultSources = () => {
 
   return [
     { host: 'claude', root: path.join(claude, 'projects'), parse: parseClaudeRecord },
-    { host: 'codex', root: path.join(codex, 'sessions'), parse: parseCodexRecord },
+    { host: 'codex', root: path.join(codex, 'sessions'), parse: parseCodexRecord, version: CODEX_PARSER_VERSION },
   ];
+};
+
+// A state written before parser versions existed read everything at version 1.
+const BASELINE_PARSER_VERSION = 1;
+
+// A parser fix only reaches history if its host's files are read again from the start;
+// the store drops events it already holds by id, so only the newly parsed ones land.
+const rereadOnParserChange = (state, source) => {
+  const version = source.version || BASELINE_PARSER_VERSION;
+
+  state.parsers ??= {};
+
+  if ((state.parsers[source.host] || BASELINE_PARSER_VERSION) === version) {
+    return;
+  }
+
+  const prefix = source.root + path.sep;
+
+  for (const file of Object.keys(state.files)) {
+    if (file.startsWith(prefix)) {
+      state.files[file] = { pos: 0, ctx: {} };
+    }
+  }
+
+  state.parsers[source.host] = version;
 };
 
 const acquireLock = home => {
@@ -160,6 +185,8 @@ export const runIngest = ({ home, sources = defaultSources(), privacy, now = new
     const totals = { events: 0, failures: 0, files: 0 };
 
     for (const source of sources) {
+      rereadOnParserChange(state, source);
+
       for (const file of walk(source.root)) {
         let size;
 

@@ -16,6 +16,7 @@
 | [Quirks](quirks.md) | what will bite you, and whether it is mitigated |
 
 ## Changelog
+- 2026-11-17: Codex prompts parsed from `item_completed` and subagents recognised by `parent_thread_id`; a parser version change rereads that host's files (quirk Q8)
 - 2026-11-02 (PR #211): Period comparison (plan Task 10) — report JSON gains `periods[]`, the store's coverage gains `earliest`
 - 2026-10-30 (PR #210): session-report reads the store, with dated prices (plan Task 9)
 - 2026-10-30 (PR #209): Initial spec

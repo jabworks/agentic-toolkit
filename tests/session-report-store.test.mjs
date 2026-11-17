@@ -171,6 +171,54 @@ test('transcripts supply the project name and prompt text when they still exist'
     assert.equal(report.top_prompts[0].text, 'hello');
   }));
 
+test('codex prompt text comes from the item_completed record a turn was parsed from', () =>
+  withTmp(tmp => {
+    const ts = '2026-10-05T10:00:00.000Z';
+    const home = makeStore(tmp, {
+      open: [
+        event('session', { id: 'cs', host: 'codex' }),
+        event('turn', { id: 'ct', host: 'codex', prompt_chars: 14 }),
+        event('api_call', { id: 'ca', host: 'codex', model: 'gpt-5.5', input: 10, output: 1, ts: '2026-10-05T10:00:01.000Z' }),
+      ],
+    });
+    const root = path.join(tmp, 'sessions');
+
+    fs.mkdirSync(root, { recursive: true });
+    fs.writeFileSync(
+      path.join(root, `rollout-2026-10-05T10-00-00-${SESSION}.jsonl`),
+      JSON.stringify({
+        timestamp: ts,
+        type: 'event_msg',
+        // Two text blocks: joined, as parse-codex measured them for prompt_chars.
+        payload: {
+          type: 'item_completed',
+          item: { type: 'UserMessage', id: 'i1', content: [{ type: 'text', text: 'fix the' }, { type: 'text', text: 'parser' }] },
+        },
+      }) + '\n',
+    );
+
+    const report = analyze(CODEX, '--source', 'store', '--store', home, '--dir', root);
+
+    assert.equal(report.overall.human_messages, 1);
+    assert.equal(report.top_prompts[0].text, 'fix the\nparser');
+  }));
+
+test('a codex subagent session logs no human turn, even one stored by the old parser', () =>
+  withTmp(tmp => {
+    const call = (id, host, model) => event('api_call', { id, host, model, input: 10, output: 1, ts: '2026-10-05T10:00:01.000Z' });
+    // Old-parser turns from a guardian rollout, plus the subagent event the reread adds.
+    const codexHome = makeStore(path.join(tmp, 'codex-store'), {
+      open: [event('turn', { id: 'ct', host: 'codex', prompt_chars: 9 }), event('subagent', { id: 'cs', host: 'codex', agent_type: 'subagent' }), call('ca', 'codex', 'gpt-5.5')],
+    });
+    // A Claude subagent event names the parent session, whose turn is a person's.
+    const claudeHome = makeStore(path.join(tmp, 'claude-store'), {
+      open: [event('turn', { id: 'lt', prompt_chars: 9 }), event('subagent', { id: 'ls', agent_type: 'Explore' }), call('la', 'claude', 'claude-sonnet-5')],
+    });
+
+    assert.equal(analyze(CODEX, '--source', 'store', '--store', codexHome).overall.human_messages, 0);
+    assert.equal(analyze(CLAUDE, '--source', 'store', '--store', claudeHome).overall.human_messages, 1);
+  }));
+
 test('auto falls back to transcripts on an unknown version and says so', () =>
   withTmp(tmp => {
     const home = makeStore(tmp, { open: [event('turn', { id: 't', v: 2 })] });

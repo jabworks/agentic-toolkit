@@ -348,7 +348,8 @@ async function processFile(filePath) {
       const p = e.payload;
       metaParsed = true;
       sessionId = p.id || sessionId;
-      isSubagent = !!p.parent_thread_id;
+      // Spawned agents carry any one of these; many carry only parent_thread_id.
+      isSubagent = Boolean(p.parent_thread_id || (p.source && p.source.subagent) || p.agent_role || p.agent_nickname);
       project = cwdToProject(p.cwd);
       agentType = p.agent_nickname || p.agent_role || (isSubagent ? 'subagent' : 'main');
       model = p.model || null;
@@ -436,10 +437,13 @@ async function processFile(filePath) {
       continue;
     }
 
-    // User turn — extract text for prompt tracking and slash command detection
+    // User turn — extract text for prompt tracking and slash command detection.
+    // Current Codex writes the typed prompt as item_completed/UserMessage; older
+    // rollouts used user_message.
+    const typed = pl.type === 'item_completed' && pl.item && pl.item.type === 'UserMessage';
     const role = pl.role || pl.type;
-    if ((role === 'user' || role === 'user_message') && !isSubagent) {
-      const text = extractText(pl);
+    if ((typed || role === 'user' || role === 'user_message') && !isSubagent) {
+      const text = typed ? typedPromptText(pl.item) : extractText(pl);
       if (text) {
         const key = `${sessionId}:${ts}:${text.slice(0, 40)}`;
         userTurns.push({ text, ts, key });
@@ -460,6 +464,18 @@ async function processFile(filePath) {
     tokenEvents,
     userTurns,
   };
+}
+
+// Every text block of a UserMessage, joined as usage-trace's parse-codex does, so
+// sizes agree between the store and transcript paths.
+function typedPromptText(item) {
+  if (!Array.isArray(item.content)) return null;
+  const text = item.content
+    .filter((c) => c && c.type === 'text' && typeof c.text === 'string')
+    .map((c) => c.text)
+    .join('\n')
+    .trim();
+  return text ? text.slice(0, 500) : null;
 }
 
 function extractText(pl) {

@@ -9,6 +9,7 @@
 | Q5 | The skill reaches OpenCode and Cursor without capture hooks | Sync generates those trees for every skill | low | no |
 | Q6 | Store and analyzer totals differ slightly | Rows with no `requestId` | low | partial |
 | Q7 | A few transcript lines are invalid JSON | Torn lines in host transcripts | low | yes |
+| Q8 | Codex prompts read as zero human messages | Codex writes prompts as `item_completed` | high | yes |
 
 ## Q1 — Transcript format can change without notice
 
@@ -72,3 +73,12 @@
 **Trigger:** invalid lines in host transcripts: 8 across all files in a recount.
 **Cause:** they fail `JSON.parse`, and no parser error occurred. The host writes them; why isn't established.
 **Mitigation:** they're skipped and counted in `coverage`.
+
+## Q8 — Codex prompts read as zero human messages
+
+**Discovered:** 2026-11-17
+
+**Symptom:** every Codex report showed `human msgs: 0`, on the store and on transcripts. The WSL store held 50 Codex `turn` events against 37,562 `api_call` events.
+**Trigger:** Codex writes the typed prompt as `event_msg` / `item_completed` with `item.type: "UserMessage"`. On one WSL machine that form was in 971 of 1,145 rollouts from codex-cli 0.118 to 0.169 (165 held no prompt at all), across every originator (TUI, exec, SDK, VS Code, Desktop). The `event_msg` / `user_message` form the parsers read was in 9 rollouts from September, and no file held both. All 9 are `guardian` subagents (the auto-approval reviewer, `parent_thread_id` set), so every one of the 50 stored turns was non-human.
+**Cause:** the parsers were written against the rare form. Q1's coverage check never fired, because every `event_msg` subtype is counted as known whether or not it's parsed. A second gap: `parse-codex.mjs` recognised a subagent only by `agent_role` / `agent_nickname`, but 214 of 437 subagent rollouts carry only `parent_thread_id` and `source.subagent`. Their delegation prompts would have counted as human turns.
+**Mitigation:** usage-trace 0.1.1 and session-report 1.13.1 read both forms and recognise a subagent by any of the four markers. A subagent's prompt yields no `turn`, matching how Claude sidechains are handled. `CODEX_PARSER_VERSION` makes ingest reread every Codex rollout once, and the store's id dedupe keeps only the missing events. On a copy of the real store, the reread took turns from 50 to 2,843 and `subagent` events from 223 to 437, left tool counts unchanged, and a second run read no Codex file. Dedupe never removes anything, so session-report drops any Codex turn whose session has a `subagent` event, which a Codex subagent's own session always has. That removes the 50 stale guardian turns. Over 28 days, store and transcripts both read 41 human messages, where both had read 0. Not recovered: stored `api_call` and `session` events from the 214 misread subagent rollouts keep `sidechain` unset, and prompts from pruned transcripts are lost. **Upgrade both hosts together.** Claude and Codex each run their own installed copy of `ingest` against one store. Once a 0.1.1 copy records the new parser version, a 0.1.0 copy on the other host can still move file offsets forward with the old parser, and the turns it skips are never reread.
