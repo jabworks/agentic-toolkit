@@ -392,3 +392,75 @@ for (const surface of SURFACES) {
     expect(hintsAt).toBeLessThan(firstItemAt);
   });
 }
+
+// Motion: chart entrances in the desktop's vector drawings, and a brief flash on an item that just arrived.
+const FLASH_MS = 1600;
+
+const flashKeys = async (ui: { findAll: (q: object) => Promise<{ key?: string | null }[]> }): Promise<string[]> =>
+  (await ui.findAll({}))
+    .map(node => node.key ?? '')
+    .filter(key => key.startsWith('flash:'));
+
+test('every vector drawing on the desktop carries a CSS entrance that reduced motion switches off', async ($, on) => {
+  answerBeneath(on, true);
+
+  await $.command.run(RUN_DOCKET);
+
+  const ui = await mountPane('desktop', $);
+  const svgs = await ui.findAll({ type: 'Svg' });
+
+  expect(svgs.length).toBe(3);
+
+  for (const svg of svgs) {
+    const source = String(svg.props.source);
+
+    expect(source).toContain('@keyframes');
+    expect(source).toContain('prefers-reduced-motion: reduce');
+    // Only an interactive Svg plays an entrance once; an image replays it on every redraw.
+    expect(svg.props.isInteractive).toBe(true);
+  }
+});
+
+for (const surface of SURFACES) {
+  test(`the first load flashes nothing on ${surface}`, async ($, on) => {
+    answerBeneath(on, true);
+
+    await $.command.run(RUN_DOCKET);
+
+    const ui = await mountPane(surface, $);
+
+    expect(await flashKeys(ui)).toEqual([]);
+  });
+
+  test(`an item that arrives flashes briefly, then settles, on ${surface}`, async ($, on) => {
+    const { world, clock } = answerBeneath(on, true);
+
+    await $.command.run(RUN_DOCKET);
+
+    const ui = await mountPane(surface, $);
+
+    world.text = WITH_ITEM_8;
+    world.mtimeMs = 2;
+    await clock.advance(3000);
+
+    expect(await ui.find({ key: 'flash:item:8' })).toBeDefined();
+    expect(await ui.find({ key: 'flash:item:7' })).toBe(undefined);
+
+    await clock.advance(FLASH_MS);
+
+    expect(await flashKeys(ui)).toEqual([]);
+  });
+
+  test(`a forced refresh with nothing new flashes nothing on ${surface}`, async ($, on) => {
+    const { world, clock } = answerBeneath(on, true);
+
+    await $.command.run(RUN_DOCKET);
+
+    const ui = await mountPane(surface, $);
+
+    world.mtimeMs = 2;
+    await clock.advance(3000);
+
+    expect(await flashKeys(ui)).toEqual([]);
+  });
+}

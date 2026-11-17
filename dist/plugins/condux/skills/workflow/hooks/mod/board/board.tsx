@@ -3,12 +3,12 @@ import { type EngineInterface, type On, type RenderChildren, type Timer, atom, r
 import { barSvg } from '../kit/charts';
 import { locateWorkingState, type WorkingState } from '../kit/locate';
 import { joinPath } from '../kit/paths';
-import { type BoardPlan, type BoardSnapshot, type Ledger, type Plan, type PlanStatus } from '../types';
+import { type BoardFlash, type BoardPlan, type BoardSnapshot, type Ledger, type Plan, type PlanStatus } from '../types';
 import { badges } from './badges';
 import { graphSvg, hasGraph, STATE_HEX } from './graph';
 import { parseLedger } from './parse-ledger';
 import { parsePlan } from './parse-plan';
-import { deriveBoard, statusText } from './state';
+import { deriveBoard, statusText, workedPlan } from './state';
 import { type Stage, stepperStages } from './stepper';
 import {
   activity,
@@ -30,6 +30,15 @@ const OPEN_TIMEOUT_MS = 2000;
 const board = atom({ plugin: 'condux', key: 'board' } as const, null);
 const toggled = atom({ plugin: 'condux', key: 'toggled' } as const, []);
 const filter = atom({ plugin: 'condux', key: 'filter' } as const, '');
+const NO_FLASH: BoardFlash = { keys: [], at: 0, tick: 0 };
+const flash = atom({ plugin: 'condux', key: 'flash' } as const, NO_FLASH);
+const working = atom({ plugin: 'condux', key: 'working' } as const, false);
+
+// A changed task is tinted bright, eases to a dim tint at the halfway mark, then clears.
+const FLASH_MS = 1600;
+// The status line's spinner: one braille glyph per step while a main-loop turn runs.
+const SPIN_FRAMES = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+const SPIN_MS = 250;
 
 type WorkingFile = { kind: 'plan' | 'ledger'; name: string; mtimeMs: number };
 
@@ -56,6 +65,11 @@ let failures = 0;
 // The status line rides the same poll as the pane: one timer, two reasons to keep it running.
 let isStatusOn = false;
 let lastStatus: string | null | undefined;
+// Each task's state as last drawn, by task key; undefined until the first board, which only seeds it, so opening the
+// pane or a hot reload lights nothing.
+let knownStates: Map<string, string> | undefined;
+let spin: Timer | undefined;
+let spinFrame = 0;
 
 // Missing and unreadable boards are rewritten on every poll; skipping identical writes keeps the pane from redrawing.
 async function setBoard($: EngineInterface, value: BoardSnapshot): Promise<void> {
@@ -66,6 +80,45 @@ async function setBoard($: EngineInterface, value: BoardSnapshot): Promise<void>
   }
 
   await update($, board, () => value);
+  await noteChanges($, value);
+}
+
+// Lights the tasks whose state moved since the last board: a tick in the ledger, or a task that became next.
+async function noteChanges($: EngineInterface, value: BoardSnapshot): Promise<void> {
+  if (value.kind !== 'found') {
+    return;
+  }
+
+  const states = new Map(
+    value.plans.flatMap(entry =>
+      entry.tasks.map(boardTask => [`task:${entry.plan.file}:${boardTask.task.number}`, boardTask.state] as const),
+    ),
+  );
+  const previous = knownStates;
+
+  knownStates = states;
+
+  if (previous === undefined) {
+    return;
+  }
+
+  // A task the board has not shown before is new, not changed: a fresh plan arrives without a flash.
+  const changed = [...states].filter(([key, state]) => previous.has(key) && previous.get(key) !== state).map(([key]) => key);
+
+  if (changed.length === 0) {
+    return;
+  }
+
+  const at = await $.clock.now();
+
+  await update($, flash, () => ({ keys: changed, at, tick: 0 }));
+  $.clock.after(FLASH_MS / 2, () => stepFlash($, at));
+  $.clock.after(FLASH_MS, () => stepFlash($, at));
+}
+
+// Redraws the flash at each step of its fade, but only while it is still the latest: a newer change owns the tint.
+function stepFlash($: EngineInterface, at: number): void {
+  void update($, flash, current => (current.at === at ? { ...current, tick: current.tick + 1 } : current));
 }
 
 async function load($: EngineInterface, isForced: boolean): Promise<void> {
@@ -171,7 +224,8 @@ async function publishStatus($: EngineInterface): Promise<void> {
   }
 
   const snapshot = await read($, board);
-  const text = snapshot?.kind === 'found' ? statusText(snapshot.plans) : null;
+  const plain = snapshot?.kind === 'found' ? statusText(snapshot.plans) : null;
+  const text = plain !== null && spin !== undefined ? `${SPIN_FRAMES[spinFrame] ?? ''} ${plain}` : plain;
 
   if (text === lastStatus) {
     return;
@@ -352,8 +406,42 @@ export function disarmStatus($: EngineInterface, reason: string): void {
 
   isStatusOn = false;
   lastStatus = undefined;
+  stopSpinning();
   $.ui.status(undefined);
   stopPolling();
+}
+
+function stopSpinning(): void {
+  spin?.cancel();
+  spin = undefined;
+  spinFrame = 0;
+}
+
+// A main-loop turn began: the task being worked pulses on the pane and the status line spins, both until it ends. A
+// subagent's turn carries an agentId and changes neither.
+async function startWorking($: EngineInterface): Promise<void> {
+  await update($, working, () => true);
+
+  if (!isStatusOn || spin !== undefined) {
+    return;
+  }
+
+  spin = $.clock.every(SPIN_MS, () => {
+    spinFrame = (spinFrame + 1) % SPIN_FRAMES.length;
+    void publishStatus($);
+  });
+  await publishStatus($);
+}
+
+async function stopWorking($: EngineInterface): Promise<void> {
+  await update($, working, () => false);
+
+  if (spin === undefined) {
+    return;
+  }
+
+  stopSpinning();
+  await publishStatus($);
 }
 
 const LEDGER_FILE_RE = /(?:^|[\\/])\.condux[\\/]progress[\\/][^\\/]+\.md$/;
@@ -408,6 +496,22 @@ export const registerBoard = (on: On): void => {
     return {};
   });
 
+  on('turn.start', async ($, e, next) => {
+    if (e.agentId === undefined) {
+      await startWorking($).catch(() => undefined);
+    }
+
+    return next(e);
+  });
+
+  on('turn.complete', async ($, e, next) => {
+    if (e.agentId === undefined) {
+      await stopWorking($).catch(() => undefined);
+    }
+
+    return next(e);
+  });
+
   on('ui.close', ($, e, next) => {
     if (e.id === PANE && !isStatusOn) {
       stopPolling();
@@ -430,7 +534,17 @@ export const registerBoard = (on: On): void => {
     const snapshot = await read($, board);
     const open = await read($, toggled);
     const filterText = await read($, filter);
+    const lit = await read($, flash);
+    const isWorking = await read($, working);
     const now = await $.clock.now();
+    // The terminal and the desktop run a surface module; elsewhere the worked task keeps its still glyph.
+    const Client =
+      e.surface === 'terminal' || e.surface === 'desktop'
+        ? (elements as Extract<typeof elements, { Client: unknown }>).Client
+        : undefined;
+    const flashAge = now - lit.at;
+    const tint = flashAge < FLASH_MS / 2 ? 'diffAdded' : 'diffAddedDimmed';
+    const isLit = (key: string): boolean => lit.keys.includes(key) && flashAge >= 0 && flashAge < FLASH_MS;
     // Drawn twice as wide as the pane and clipped to one row: a proportional font makes the glyph narrower or wider
     // than a cell, and an exact-width string wrapped into a second, partial line there.
     const windowWidth = Math.max(20, e.props.bodyColumns - 4);
@@ -500,26 +614,48 @@ export const registerBoard = (on: On): void => {
         ? snapshot.plans
         : snapshot.plans.filter(entry => `${entry.plan.title} ${entry.plan.slug}`.toLowerCase().includes(needle));
     const groups = groupPlans(shown, needle === '');
+    const worked = isWorking ? workedPlan(snapshot.plans) : null;
 
     const renderTask = (entry: BoardPlan, boardTask: BoardPlan['tasks'][number]) => {
       const key = `task:${entry.plan.file}:${boardTask.task.number}`;
       const isOpen = open.includes(key);
       const wait = waitLabel(entry, boardTask);
       const nameRoom = Math.max(8, rowWidth - 14 - wait.length);
+      const isPulsing =
+        Client !== undefined && worked?.plan.file === entry.plan.file && boardTask.state === 'next-ready';
+      const glyph = <Text color={glyphColor(entry, boardTask)}>{`${taskGlyph(entry, boardTask)} `}</Text>;
 
       return (
-        <Box flexDirection='column'>
-          <Button
-            key={key}
-            plain
-            onPress={() => toggle($, key)}
-          >
-            <Text color={glyphColor(entry, boardTask)}>{`${taskGlyph(entry, boardTask)} `}</Text>
-            <Text bold={boardTask.state === 'next-ready'}>
-              {`Task ${boardTask.task.number}  ${clip(boardTask.task.name, nameRoom)}`}
-            </Text>
-            <Text color='subtle'>{wait === '' ? '' : `  ${wait}`}</Text>
-          </Button>
+        // Keyed while lit: the tint sits inside a Button, whose children carry no keys of their own.
+        <Box
+          key={isLit(key) ? `flash:${key}` : undefined}
+          flexDirection='column'
+        >
+          <Box>
+            {/* A surface module cannot sit inside a Button, so the pulsing glyph stands just before it. */}
+            {isPulsing && Client !== undefined && (
+              <Client
+                key={`pulse:${entry.plan.file}:${boardTask.task.number}`}
+                module='./pulse.tsx'
+                props={{ glyph: taskGlyph(entry, boardTask), color: glyphColor(entry, boardTask) }}
+                width={2}
+              />
+            )}
+            <Button
+              key={key}
+              plain
+              onPress={() => toggle($, key)}
+            >
+              {!isPulsing && glyph}
+              <Text
+                bold={boardTask.state === 'next-ready'}
+                backgroundColor={isLit(key) ? tint : undefined}
+              >
+                {`Task ${boardTask.task.number}  ${clip(boardTask.task.name, nameRoom)}`}
+              </Text>
+              <Text color='subtle'>{wait === '' ? '' : `  ${wait}`}</Text>
+            </Button>
+          </Box>
           {isOpen && (
             <Box
               marginLeft={2}
@@ -665,6 +801,8 @@ export const registerBoard = (on: On): void => {
                   alt={`${entry.doneCount} of ${total} tasks done`}
                   width={100}
                   height={10}
+                  // An image replays its entrance on every redraw; an interactive Svg plays it once per new source.
+                  isInteractive
                 />
               )}
             </Box>

@@ -9,7 +9,7 @@ import {
   update,
 } from 'claude-code';
 
-import { type DocketBoard, type DocketItem, type DocketSection } from '../types';
+import { type DocketBoard, type DocketFlash, type DocketItem, type DocketSection } from '../types';
 import { type Share, BAR_HEIGHT, PALETTE, barSvg, colorFor, ringSvg, sparklineSvg } from './charts';
 import { ageInDays, ancestors, baseName, closesByWeek, joinPath, parseDocket } from './docket';
 
@@ -22,6 +22,11 @@ const OPEN_TIMEOUT_MS = 2000;
 const board = atom({ plugin: 'docket', key: 'board' } as const, null);
 const expanded = atom({ plugin: 'docket', key: 'expanded' } as const, []);
 const filter = atom({ plugin: 'docket', key: 'filter' } as const, '');
+const NO_FLASH: DocketFlash = { ids: [], at: 0, tick: 0 };
+const flash = atom({ plugin: 'docket', key: 'flash' } as const, NO_FLASH);
+
+// An arrival is tinted bright, eases to a dim tint at the halfway mark, then clears.
+const FLASH_MS = 1600;
 
 type Located = { root: string; file: string; layout: 'docket' | 'legacy' };
 
@@ -160,6 +165,30 @@ let lastCwd: string | undefined;
 let located: Located | null | undefined;
 let lastMtime: number | undefined;
 let failures = 0;
+// Every idPart the pane has shown, so the next load can tell what arrived. Undefined until the first load, which only
+// seeds it: opening the pane, or a hot reload, lights nothing.
+let knownIds: Set<string> | undefined;
+
+const noteArrivals = async ($: EngineInterface, sections: DocketSection[]): Promise<void> => {
+  const ids = sections.flatMap(section => section.items.map(item => item.idPart));
+  const arrived = knownIds === undefined ? [] : ids.filter(id => !knownIds?.has(id));
+
+  knownIds = new Set(ids);
+
+  if (arrived.length === 0) {
+    return;
+  }
+
+  const at = await $.clock.now();
+  // Each step bumps `tick` to redraw, but only while this flash is still the latest: a newer arrival owns the tint.
+  const step = (): void => {
+    void update($, flash, current => (current.at === at ? { ...current, tick: current.tick + 1 } : current));
+  };
+
+  await update($, flash, () => ({ ids: arrived, at, tick: 0 }));
+  $.clock.after(FLASH_MS / 2, step);
+  $.clock.after(FLASH_MS, step);
+};
 
 const load = async ($: EngineInterface, isForced: boolean): Promise<void> => {
   try {
@@ -171,6 +200,8 @@ const load = async ($: EngineInterface, isForced: boolean): Promise<void> => {
 
       if (found?.file !== located?.file) {
         lastMtime = undefined;
+        // Another docket entirely: its items are not arrivals.
+        knownIds = undefined;
       }
 
       lastCwd = cwd;
@@ -203,6 +234,7 @@ const load = async ($: EngineInterface, isForced: boolean): Promise<void> => {
     lastMtime = mtimeMs;
     await update($, board, () => loaded);
     await pruneExpanded($, sections);
+    await noteArrivals($, sections);
   } catch (error) {
     const reason = error instanceof Error ? error.message : String(error);
     const file = located?.file ?? '';
@@ -357,6 +389,7 @@ export const register: Register = on => {
     const filterText = await read($, filter);
     const current = await read($, board);
     const openIds = await read($, expanded);
+    const lit = await read($, flash);
     const now = await $.clock.now();
 
     // Window frame (2) + its padding (2); each section box spends the same again inside it.
@@ -453,6 +486,9 @@ export const register: Register = on => {
       const titleRoom = Math.max(8, rowWidth - 2 - idWidth - 1 - 5);
       const title = item.title.length > titleRoom ? `${item.title.slice(0, titleRoom - 1)}…` : item.title;
       let ageColor = 'text';
+      const flashAge = now - lit.at;
+      const isLit = lit.ids.includes(item.idPart) && flashAge >= 0 && flashAge < FLASH_MS;
+      const tint = flashAge < FLASH_MS / 2 ? 'diffAdded' : 'diffAddedDimmed';
 
       if (age !== null && age <= 7) {
         ageColor = 'success';
@@ -461,7 +497,11 @@ export const register: Register = on => {
       }
 
       return (
-        <Box flexDirection='column'>
+        // Keyed while lit: the tint sits inside a Button, whose children carry no keys of their own.
+        <Box
+          key={isLit ? `flash:item:${item.idPart}` : undefined}
+          flexDirection='column'
+        >
           <Button
             key={`item:${item.idPart}`}
             plain
@@ -469,7 +509,12 @@ export const register: Register = on => {
           >
             <Text color='claude'>{isOpen ? '▾ ' : '▸ '}</Text>
             <Text color='suggestion'>{`#${item.idPart}`.padEnd(idWidth + 1)}</Text>
-            <Text bold={isOpen}>{title.padEnd(titleRoom)}</Text>
+            <Text
+              bold={isOpen}
+              backgroundColor={isLit ? tint : undefined}
+            >
+              {title.padEnd(titleRoom)}
+            </Text>
             <Text color={ageColor}>{ageText.padStart(5)}</Text>
           </Button>
           {isOpen && (

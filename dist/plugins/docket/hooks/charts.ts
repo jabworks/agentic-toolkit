@@ -12,6 +12,15 @@ export const colorFor = (index: number): string => PALETTE[index % PALETTE.lengt
 
 const GAP = 3;
 
+// Entrances, timed on the surface-kit's motion scale (--dur-slow, --ease-out). Each drawing plays its own once: the pane
+// draws an interactive Svg, which a redraw with the same source leaves alone, so a drawing replays only when its data
+// changes it. An image Svg would replay on every redraw. SMIL is not used: the desktop does not run it.
+export const ENTRANCE_MS = 480;
+export const EASE_OUT = 'cubic-bezier(0.22, 1, 0.36, 1)';
+
+export const motionStyle = (rules: string): string =>
+  `<style>${rules}@media (prefers-reduced-motion: reduce){*{animation:none !important}}</style>`;
+
 // Each share's span along a track of `length`, proportional to its count except that none is shorter than `minSpan`: a
 // round-capped segment is at least as wide as it is thick, so a thinner share would spill over its neighbours. What the
 // small ones are lent is taken from the large ones in proportion.
@@ -69,11 +78,20 @@ export const ringSvg = (shares: Share[], doneCount: number): string => {
     })
     .join('');
 
+  // The arcs turn into place from a quarter back while they fade up; the figure fades in behind them.
   return [
     '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">',
-    arcs,
+    motionStyle(
+      `.arcs{transform-origin:50px 50px;animation:turn ${ENTRANCE_MS * 1.5}ms ${EASE_OUT} both}` +
+        '@keyframes turn{from{opacity:0;transform:rotate(-90deg) scale(0.9)}to{opacity:1;transform:none}}' +
+        `.figure{animation:fade ${ENTRANCE_MS}ms ${EASE_OUT} both}` +
+        '@keyframes fade{from{opacity:0}to{opacity:1}}',
+    ),
+    `<g class="arcs">${arcs}</g>`,
+    '<g class="figure">',
     `<text x="50" y="47" text-anchor="middle" dominant-baseline="central" font-size="20" font-weight="600" fill="#888888">${percent}%</text>`,
     '<text x="50" y="65" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#888888">done</text>',
+    '</g>',
     '</svg>',
   ].join('');
 };
@@ -87,7 +105,13 @@ export const barSvg = (shares: Share[], width = 1200, height = BAR_HEIGHT): stri
   const total = shares.reduce((sum, share) => sum + share.count, 0);
   const visibleShares = shares.filter(share => share.count > 0);
   const middle = height / 2;
-  const open = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">`;
+  // The segments grow together from the left edge.
+  const open =
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">` +
+    motionStyle(
+      `.grow{transform-origin:0 50%;animation:grow ${ENTRANCE_MS}ms ${EASE_OUT} both}` +
+        '@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}',
+    );
 
   if (total === 0) {
     return `${open}</svg>`;
@@ -114,7 +138,7 @@ export const barSvg = (shares: Share[], width = 1200, height = BAR_HEIGHT): stri
     })
     .join('');
 
-  return `${open}${segments}</svg>`;
+  return `${open}<g class="grow">${segments}</g></svg>`;
 };
 
 export const sparklineSvg = (counts: number[], color: string): string => {
@@ -130,9 +154,15 @@ export const sparklineSvg = (counts: number[], color: string): string => {
       const weeksAgo = counts.length - 1 - index;
       const when = weeksAgo === 0 ? 'this week' : `${weeksAgo} ${weeksAgo === 1 ? 'week' : 'weeks'} ago`;
 
-      return `<rect x="${index * (barWidth + gap)}" y="${(height - barHeight).toFixed(1)}" width="${barWidth}" height="${barHeight.toFixed(1)}" rx="2" fill="${color}" fill-opacity="${count === 0 ? 0.25 : 1}"><title>${count} closed ${when}</title></rect>`;
+      return `<rect class="rise" style="animation-delay:${index * 40}ms" x="${index * (barWidth + gap)}" y="${(height - barHeight).toFixed(1)}" width="${barWidth}" height="${barHeight.toFixed(1)}" rx="2" fill="${color}" fill-opacity="${count === 0 ? 0.25 : 1}"><title>${count} closed ${when}</title></rect>`;
     })
     .join('');
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}">${bars}</svg>`;
+  // Each bar rises from the baseline, oldest week first.
+  const style = motionStyle(
+    `.rise{transform-box:fill-box;transform-origin:50% 100%;animation:rise ${ENTRANCE_MS}ms ${EASE_OUT} both}` +
+      '@keyframes rise{from{transform:scaleY(0)}to{transform:scaleY(1)}}',
+  );
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}">${style}${bars}</svg>`;
 };

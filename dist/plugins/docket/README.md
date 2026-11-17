@@ -45,6 +45,8 @@ section, aged and colour-coded by staleness, refreshing on its own when
 `DOCKET.md` changes. Expand an item to read it, then **Start work** (`w`) puts
 `/condux:workflow #N — <title>` in your prompt, or **Cite** (`c`) inserts
 `#N`. It only reads the docket and adds nothing to the model's context.
+On the desktop app its ring, bar and sparkline ease in when the numbers
+change, and an item that just arrived is tinted for a moment.
 
 It is a Claude Code function-hooks module (early access; built on Claude Code
 2.1.296, which auto-update keeps you past). Codex, OpenCode and Cursor never

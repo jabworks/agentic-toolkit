@@ -22,6 +22,8 @@ BACKLOG.md conventions.
 - [board-direction-a.html](board-direction-a.html) — the signed-off board render (2026-08-21, docket #45)
 
 ## Changelog
+- 2026-11-17: the `/docket` pane gains motion — CSS entrances on the ring, bar
+  and sparkline, and a brief tint on an item that arrives (quirks Q12)
 - 2026-08-25: `mdLite()` gains pipe tables (docket #43). Detection is by
   lookahead to a delimiter row, so prose containing pipes still renders as the
   paragraph it always did; escaped `\|` stays cell content; ragged rows pad

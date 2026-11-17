@@ -13,6 +13,7 @@
 | Q9 | Board-column interactions each break a different way | deep links, filters, scroll, date stamps | medium | yes — per-interaction fixes, pinned by the render-contract test |
 | Q10 | The close stamp defeats the trailing-date strip | any archived item with a filed-date parenthetical | low | yes — positional strip, only before the close stamp or at true end |
 | Q11 | mdLite renders a pipe table as literal text | a pipe table in an item body | medium | yes — lookahead table support; ragged rows pad; escaped pipes stay content |
+| Q12 | An image `Svg` replays its entrance on every redraw; SMIL never runs | animating the pane's ring, bar or sparkline | medium | yes — interactive `Svg`s with CSS `@keyframes`, as condux-mod Q16 records |
 
 ## Q1 — The ghost-work lesson (why close is strict)
 
@@ -114,3 +115,10 @@ reports none and `docket check` exits 0, which is what lets it be wired into a p
 The output is wrapped in `<div class="tbl">` because a card column is ~450px and a table does not reflow — the wrapper scrolls so the column never stretches and the page never gains a horizontal scrollbar. `board-shell.html` had no table CSS at all before this, which the item did not scope: emitting `<table>` without it renders a browser-default table into a designed surface.
 
 A 4-space-indented line beginning with `|` is still prose — `mdLite` has no indented-code-block support, and #43's own body quotes the broken output that way. That is correct: it is an illustration, not a table.
+
+## Q12 — Pane chart motion (2026-11-17)
+
+**Symptom:** the ring, bar and sparkline would replay their entrance on each poll or filter keystroke.
+**Trigger:** animating the pane's vector drawings.
+**Cause and mitigation:** the shared chart kit, as condux-mod Q16 records. The pane's three drawings were already interactive for their tooltips, so they play once per data change. An arriving item's row is tinted for 1.6 s. The first load, a forced refresh and a switch to another docket seed what the pane knows and light nothing.
+

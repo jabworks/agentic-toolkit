@@ -17,6 +17,8 @@
 | Q13 | The validator rejects two hooks on one event without a matcher | Two features each registering `session.start` | medium | yes |
 | Q14 | Past an import, `$` is followed only into function declarations | An exported helper that takes `$` written as an arrow constant | medium | yes |
 | Q15 | A ledger's `Plan:` header is prose, and its file name may carry the plan's date | A header whose path sits in backticks and is followed by commentary on the same line | high | yes |
+| Q16 | An image `Svg` replays a CSS entrance on every redraw, and SMIL does not run at all | Animating the board's vector drawings | medium | yes |
+| Q17 | A Button's children carry no keys, and a surface module cannot sit inside one | Keying a flash or a pulse on part of a `plain` Button row | low | yes |
 
 ## Q1 — Plans with no ledger
 
@@ -152,3 +154,22 @@
 **Trigger:** a `Plan:` header with the path in backticks and commentary after it, in a ledger named exactly like its plan (date prefix included).
 **Cause:** an agent writes the header as it likes. The first parser took everything after the last slash as the file name, and the name fallback compared the ledger to the plan's slug without the date.
 **Mitigation:** the plan is the first Markdown file path in the header line (backticks, quotes and angle brackets stripped, the whole text if it names none), and the fallback also matches the plan's file name without the extension. Both are pinned by the real header as a fixture.
+
+## Q16 — SVG motion on the desktop
+
+**Discovered:** 2026-11-17, with a throwaway probe pane in the desktop app.
+
+**Symptom:** a chart entrance would replay on every poll, filter keystroke or toggle, or never play at all.
+**Trigger:** animating an `Svg`'s markup.
+**Cause:** the desktop draws an `Svg` without `isInteractive` as an image, and a redraw replaces the image, so its CSS `@keyframes` replay each time. With `isInteractive` the drawing sits in a sandboxed frame that a redraw with the same `source` leaves alone. A SMIL `<animate>` did not run at all, even in the frame.
+**Mitigation:** every animated `Svg` is interactive, and the motion is CSS `@keyframes` behind a `prefers-reduced-motion` block. A drawing then animates once each time its data changes its source, with no extra bookkeeping. The condux row bar was an image before this and gained `isInteractive` for this reason. Whether the reduced-motion block takes effect in the frame is untested.
+
+## Q17 — Keys inside a Button
+
+**Discovered:** 2026-11-17, writing the flash tests.
+
+**Symptom:** `ui.find` returned nothing for a `Text` keyed inside a `plain` Button row.
+**Trigger:** keying part of a row that a Button draws.
+**Cause:** the kit indexes the Button by its own key and its children as its text only.
+**Mitigation:** the flash keys the row's outer `Box`, only while it is lit. The pulsing glyph is a `Client` drawn just before the Button, not inside it, while the row's glyph is left out of the Button for that span.
+

@@ -163,12 +163,14 @@ export const deriveBoard = (plans: Plan[], ledgers: Ledger[], nowMs: number): Bo
 };
 
 // One line for the always-visible status entry: the open plan whose ledger changed most recently, or nothing.
+// The plan being worked: the open one whose ledger moved last. The status line names it and the pane pulses its next task.
+export const workedPlan = (board: BoardPlan[]): BoardPlan | null =>
+  board
+    .filter(entry => entry.ledger !== null && OPEN.includes(entry.status))
+    .reduce<BoardPlan | null>((best, entry) => (best === null || recency(entry) > recency(best) ? entry : best), null);
+
 export const statusText = (board: BoardPlan[]): string | null => {
-  const open = board.filter(entry => entry.ledger !== null && OPEN.includes(entry.status));
-  const latest = open.reduce<BoardPlan | null>(
-    (best, entry) => (best === null || recency(entry) > recency(best) ? entry : best),
-    null,
-  );
+  const latest = workedPlan(board);
 
   if (latest === null) {
     return null;
