@@ -103,6 +103,13 @@ test('a hooks module that reads the environment reports `env reads` and `env wri
   assert.equal(result.status, 0, result.stdout + result.stderr);
 });
 
+test('a hooks module that draws a surface module reports `surface modules`, which is a fact, not a finding', () => {
+  const report = `${HOOKS_REPORT}  ❯ ./mod/register.tsx surface modules: hooks/mod/board/pulse.tsx\n`;
+  const result = run(`${MANIFEST_WITH_KNOWN_WARNING}\n${report}\n${DIRECTORY_BLOCK}`);
+
+  assert.equal(result.status, 0, result.stdout + result.stderr);
+});
+
 test('a report-shaped line the script does not know still counts as a finding', () => {
   const unknown = HOOKS_REPORT.replace('env writes: nothing', 'network writes: somewhere');
   const result = run(`${MANIFEST_WITH_KNOWN_WARNING}\n${unknown}\n${DIRECTORY_BLOCK}`);
