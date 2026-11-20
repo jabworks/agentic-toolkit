@@ -1,10 +1,13 @@
+import { EASE_OUT, ENTRANCE_MS, HOVER_MS, motionStyle } from '../kit/charts';
 import { type BoardPlan, type TaskState } from '../types';
 
 // Mid-tone, so one drawing reads in both themes (the same family as the shared charts).
 export const STATE_HEX: Record<TaskState, string> = {
   done: '#3f8f5b',
-  'next-ready': '#c8643c',
-  ready: '#2f6db5',
+  // The task under way takes the in-progress pill's blue; a ready task waiting its turn takes a quiet slate, so the
+  // two stay apart.
+  'next-ready': '#2f6db5',
+  ready: '#5f6b7a',
   blocked: '#8a8a85',
 };
 
@@ -156,26 +159,50 @@ export const graphSvg = (plan: BoardPlan, maxWidth = 640): { svg: string; width:
       const stroke = entry.inCycle ? CYCLE_HEX : idle;
 
       return [
-        `<path d="M${x1} ${y1} C${x1 + bend} ${y1} ${x2 - bend} ${y2} ${x2} ${y2}" fill="none" stroke="${stroke}" stroke-width="1.5" stroke-opacity="0.8"/>`,
+        // Classed by both its ends, so hovering either node finds it; a unit pathLength lets one dash draw it in.
+        `<path class="edge e-${dep} e-${entry.task.number}" pathLength="1" d="M${x1} ${y1} C${x1 + bend} ${y1} ${x2 - bend} ${y2} ${x2} ${y2}" fill="none" stroke="${stroke}" stroke-width="1.5" stroke-opacity="0.8"/>`,
       ];
     }),
   );
 
-  const nodes = plan.tasks.map(entry => {
+  const nodes = plan.tasks.map((entry, index) => {
     const spot = spots.get(entry.task.number) ?? { x: PAD, y: PAD };
     const title = escapeXml(`Task ${entry.task.number}: ${entry.task.name}`);
+    // Nodes settle in plan order, the stagger capped so a long plan is not still arriving.
+    const delay = Math.min(index * 30, 300);
 
     return [
-      `<g><title>${title}</title>`,
+      `<g class="node n-${entry.task.number}" style="animation-delay:${delay}ms"><title>${title}</title>`,
       `<rect x="${spot.x}" y="${spot.y}" width="${NODE_W}" height="${NODE_H}" rx="${NODE_H / 2}" fill="${colorOf(entry)}"/>`,
       `<text x="${spot.x + NODE_W / 2}" y="${spot.y + NODE_H / 2}" text-anchor="middle" dominant-baseline="central" font-size="11" font-weight="600" fill="#ffffff">${entry.task.number}</text>`,
       '</g>',
     ].join('');
   });
 
+  const hoverRules = plan.tasks
+    .map(entry => {
+      const n = entry.task.number;
+
+      return `svg:has(.n-${n}:hover) .edge:not(.e-${n}){opacity:0.15}svg:has(.n-${n}:hover) .e-${n}{stroke-width:2.5}`;
+    })
+    .join('');
+
   const svg = [
     `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${naturalWidth} ${naturalHeight}">`,
+    // Nodes fade and lift into place, then each edge draws from its source to its target. Under the pointer a node
+    // brightens, its own edges thicken and every other edge fades back.
+    motionStyle(
+      `.node{animation:settle ${ENTRANCE_MS}ms ${EASE_OUT} both}` +
+        '@keyframes settle{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}' +
+        `.edge{stroke-dasharray:1;animation:draw ${ENTRANCE_MS}ms ${EASE_OUT} ${ENTRANCE_MS / 2}ms both;` +
+        `transition:opacity ${HOVER_MS}ms ${EASE_OUT},stroke-width ${HOVER_MS}ms ${EASE_OUT}}` +
+        '@keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}' +
+        `.node rect{transition:filter ${HOVER_MS}ms ${EASE_OUT}}.node:hover rect{filter:brightness(1.15)}` +
+        hoverRules,
+    ),
+    '<g class="edges">',
     ...edges,
+    '</g>',
     ...nodes,
     '</svg>',
   ].join('');

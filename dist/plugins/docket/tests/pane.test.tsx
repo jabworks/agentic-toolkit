@@ -1,6 +1,8 @@
 import { type CommandRunInput, type On, type PromptFillMode, type RenderSurface } from 'claude-code';
 import { type Engine, expect, mock, test } from 'claude-code/testing';
 
+import { PANE_EDGE, TRAY, TRAY_EDGE } from '../hooks/charts';
+
 const FIXTURE = [
   '# TEST DOCKET',
   '',
@@ -366,9 +368,10 @@ test('every Svg the desktop draws is given an explicit height, or the app boxes 
 
   const ui = await mountPane('desktop', $);
   const svgs = await ui.findAll({ type: 'Svg' });
+  // The bar, the ring and the sparkline, picked by their alt text: the tags, pills and rule are Svgs too.
+  const charts = svgs.filter(svg => /items (done|closed)/.test(String(svg.props.alt)));
 
-  // The bar, the ring and the sparkline.
-  expect(svgs.length).toBe(3);
+  expect(charts.length).toBe(3);
 
   for (const svg of svgs) {
     expect(typeof svg.props.height).toBe('number');
@@ -392,3 +395,219 @@ for (const surface of SURFACES) {
     expect(hintsAt).toBeLessThan(firstItemAt);
   });
 }
+
+// Motion: chart entrances in the desktop's vector drawings, and a brief flash on an item that just arrived.
+const FLASH_MS = 1600;
+
+const flashKeys = async (ui: { findAll: (q: object) => Promise<{ key?: string | null }[]> }): Promise<string[]> =>
+  (await ui.findAll({}))
+    .map(node => node.key ?? '')
+    .filter(key => key.startsWith('flash:'));
+
+test('every vector drawing on the desktop carries a CSS entrance that reduced motion switches off', async ($, on) => {
+  answerBeneath(on, true);
+
+  await $.command.run(RUN_DOCKET);
+
+  const ui = await mountPane('desktop', $);
+  const svgs = await ui.findAll({ type: 'Svg' });
+
+  // The bar, the ring and the sparkline, picked by their alt text: the tags and the rule are Svgs too, and carry one.
+  expect(svgs.filter(svg => /items (done|closed)/.test(String(svg.props.alt))).length).toBe(3);
+
+  for (const svg of svgs) {
+    const source = String(svg.props.source);
+
+    expect(source).toContain('@keyframes');
+    expect(source).toContain('prefers-reduced-motion: reduce');
+    // Only an interactive Svg plays an entrance once; an image replays it on every redraw.
+    expect(svg.props.isInteractive).toBe(true);
+  }
+});
+
+for (const surface of SURFACES) {
+  test(`the first load flashes nothing on ${surface}`, async ($, on) => {
+    answerBeneath(on, true);
+
+    await $.command.run(RUN_DOCKET);
+
+    const ui = await mountPane(surface, $);
+
+    expect(await flashKeys(ui)).toEqual([]);
+  });
+
+  test(`an item that arrives flashes briefly, then settles, on ${surface}`, async ($, on) => {
+    const { world, clock } = answerBeneath(on, true);
+
+    await $.command.run(RUN_DOCKET);
+
+    const ui = await mountPane(surface, $);
+
+    world.text = WITH_ITEM_8;
+    world.mtimeMs = 2;
+    await clock.advance(3000);
+
+    expect(await ui.find({ key: 'flash:item:8' })).toBeDefined();
+    expect(await ui.find({ key: 'flash:item:7' })).toBe(undefined);
+
+    await clock.advance(FLASH_MS);
+
+    expect(await flashKeys(ui)).toEqual([]);
+  });
+
+  test(`a forced refresh with nothing new flashes nothing on ${surface}`, async ($, on) => {
+    const { world, clock } = answerBeneath(on, true);
+
+    await $.command.run(RUN_DOCKET);
+
+    const ui = await mountPane(surface, $);
+
+    world.mtimeMs = 2;
+    await clock.advance(3000);
+
+    expect(await flashKeys(ui)).toEqual([]);
+  });
+}
+
+// Chrome: each section a tinted tray with a rim in its own tone, a rounded tag, and a solid neutral rule under the
+// masthead, all inside a neutral frame. The desktop draws it; the terminal keeps its plain bordered cards.
+test('on the desktop each section is a tray whose border follows its fill', async ($, on) => {
+  answerBeneath(on, true);
+
+  await $.command.run(RUN_DOCKET);
+
+  const ui = await mountPane('desktop', $);
+  const card = await ui.find({ key: 'card:Someday' });
+
+  expect(card?.props.backgroundColor).toBe(TRAY);
+  expect(card?.props.borderColor).toBe(TRAY_EDGE);
+  // The hover restyle is the surface's alone: the kit does not hand it back, so it is checked live.
+});
+
+test('on the desktop the pane frame is neutral and a tray insets its tag evenly from its corner', async ($, on) => {
+  answerBeneath(on, true);
+
+  await $.command.run(RUN_DOCKET);
+
+  const ui = await mountPane('desktop', $);
+  const frames = (await ui.findAll({ type: 'Box' })).filter(box => box.props.borderColor === PANE_EDGE);
+  const card = await ui.find({ key: 'card:Someday' });
+
+  expect(frames.length).toBe(1);
+  // The frame insets its content by the same step down as across, like the trays inside it.
+  expect(frames[0]?.props.padding).toBe('xs');
+  expect(frames[0]?.props.paddingX).toBe(undefined);
+  // One step on every side, so the tag's rounded end sits concentric with the tray's corner.
+  expect(card?.props.padding).toBe('xs');
+  expect(card?.props.paddingX).toBe(undefined);
+});
+
+test('on the desktop an item row spans the card: fixed marker and id columns, a title the surface cuts, the age flush right', async ($, on) => {
+  answerBeneath(on, true);
+
+  await $.command.run(RUN_DOCKET);
+
+  const ui = await mountPane('desktop', $);
+  const row = await ui.find({ key: 'row:7' });
+  const title = (await ui.findAll({ type: 'Text' })).find(node => node.text === 'Fix the thing');
+
+  expect(row).toBeDefined();
+  expect(title?.props.wrap).toBe('truncate-end');
+  expect((await ui.find({ key: 'item:7' }))?.text).toBe('Fix the thing');
+});
+
+test('on the desktop a section tag is solid, in its section colour from the bar and the legend', async ($, on) => {
+  answerBeneath(on, true);
+
+  await $.command.run(RUN_DOCKET);
+
+  const ui = await mountPane('desktop', $);
+  const svgs = await ui.findAll({ type: 'Svg' });
+  const tagSource = (alt: string) => String(svgs.find(svg => svg.props.alt === alt)?.props.source);
+
+  expect(tagSource('COMMITTED · 0')).toContain('fill="#c8643c" fill-opacity="1"');
+  expect(tagSource('SOMEDAY · 1')).toContain('fill="#2f6db5" fill-opacity="1"');
+});
+
+test('on the desktop an item row\'s marker is a chevron drawing that turns as the row opens', async ($, on) => {
+  answerBeneath(on, true);
+
+  await $.command.run(RUN_DOCKET);
+
+  const ui = await mountPane('desktop', $);
+  const chevrons = async () =>
+    (await ui.findAll({ type: 'Svg' })).map(svg => String(svg.props.alt)).filter(alt => /^(collapsed|expanded)$/.test(alt));
+
+  expect(await chevrons()).toEqual(['collapsed']);
+  await ui.press({ key: 'item:7' });
+  expect(await chevrons()).toEqual(['expanded']);
+});
+
+test('on the desktop an opened item\'s detail is framed by rules that draw in as it opens', async ($, on) => {
+  answerBeneath(on, true);
+
+  await $.command.run(RUN_DOCKET);
+
+  const ui = await mountPane('desktop', $);
+  const detailRules = async () =>
+    (await ui.findAll({ type: 'Svg' })).filter(svg => svg.props.alt === 'detail divider').length;
+
+  expect(await detailRules()).toBe(0);
+  await ui.press({ key: 'item:7' });
+  expect(await detailRules()).toBe(2);
+});
+
+test('the terminal keeps its plain bordered section cards', async ($, on) => {
+  answerBeneath(on, true);
+
+  await $.command.run(RUN_DOCKET);
+
+  const ui = await mountPane('terminal', $);
+  const card = await ui.find({ key: 'card:Someday' });
+
+  expect(card).toBeDefined();
+  expect(card?.props.backgroundColor).toBe(undefined);
+  expect(await ui.find({ text: /SOMEDAY/ })).toBeDefined();
+});
+
+test('on the desktop a section name is a rounded tag carrying its count', async ($, on) => {
+  answerBeneath(on, true);
+
+  await $.command.run(RUN_DOCKET);
+
+  const ui = await mountPane('desktop', $);
+  const tags = (await ui.findAll({ type: 'Svg' })).map(svg => String(svg.props.alt));
+
+  expect(tags).toContain('SOMEDAY · 1');
+  expect(tags).toContain('COMMITTED · 0');
+});
+
+test('on the desktop a solid neutral rule sits under the masthead in place of the line of dashes', async ($, on) => {
+  answerBeneath(on, true);
+
+  await $.command.run(RUN_DOCKET);
+
+  const ui = await mountPane('desktop', $);
+  const rules = (await ui.findAll({ type: 'Svg' })).filter(svg => svg.props.alt === 'divider');
+
+  expect(rules.length).toBe(1);
+  expect(String(rules[0]?.props.source)).not.toContain('Gradient');
+  // Height and no width, like the bar: the desktop stretches it to the slot.
+  expect(rules[0]?.props.width).toBe(undefined);
+  expect(await ui.find({ text: /─{8}/ })).toBe(undefined);
+});
+
+
+test('on the desktop the masthead count is a quiet chip; the terminal keeps it as text', async ($, on) => {
+  answerBeneath(on, true);
+
+  await $.command.run(RUN_DOCKET);
+
+  const desktop = await mountPane('desktop', $);
+
+  expect((await desktop.findAll({ type: 'Svg' })).map(svg => String(svg.props.alt))).toContain('1 open');
+
+  const terminal = await mountPane('terminal', $);
+
+  expect(await terminal.find({ text: /· 1 open/ })).toBeDefined();
+});

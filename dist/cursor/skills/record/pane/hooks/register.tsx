@@ -9,8 +9,26 @@ import {
   update,
 } from 'claude-code';
 
-import { type DocketBoard, type DocketItem, type DocketSection } from '../types';
-import { type Share, BAR_HEIGHT, PALETTE, barSvg, colorFor, ringSvg, sparklineSvg } from './charts';
+import { type DocketBoard, type DocketFlash, type DocketItem, type DocketSection } from '../types';
+import {
+  BAR_HEIGHT,
+  CHEVRON_SIZE,
+  CHIP_HEX,
+  PALETTE,
+  PANE_EDGE,
+  RULE_HEIGHT,
+  type Share,
+  TRAY,
+  TRAY_EDGE,
+  TRAY_HOVER,
+  barSvg,
+  chevronSvg,
+  colorFor,
+  pillSvg,
+  ringSvg,
+  ruleSvg,
+  sparklineSvg,
+} from './charts';
 import { ageInDays, ancestors, baseName, closesByWeek, joinPath, parseDocket } from './docket';
 
 const PANE = 'docket';
@@ -22,6 +40,11 @@ const OPEN_TIMEOUT_MS = 2000;
 const board = atom({ plugin: 'docket', key: 'board' } as const, null);
 const expanded = atom({ plugin: 'docket', key: 'expanded' } as const, []);
 const filter = atom({ plugin: 'docket', key: 'filter' } as const, '');
+const NO_FLASH: DocketFlash = { ids: [], at: 0, tick: 0 };
+const flash = atom({ plugin: 'docket', key: 'flash' } as const, NO_FLASH);
+
+// An arrival is tinted bright, eases to a dim tint at the halfway mark, then clears.
+const FLASH_MS = 1600;
 
 type Located = { root: string; file: string; layout: 'docket' | 'legacy' };
 
@@ -119,8 +142,14 @@ const startWork = async ($: EngineInterface, item: DocketItem): Promise<void> =>
 
 const setFilter = ($: EngineInterface, value: string): Promise<unknown> => update($, filter, () => value);
 
-const toggle = ($: EngineInterface, idPart: string): Promise<unknown> =>
-  update($, expanded, list => (list.includes(idPart) ? list.filter(id => id !== idPart) : [...list, idPart]));
+// Rows the person has opened or closed this load: closed again, their chevron turns back instead of only fading in.
+const turned = new Set<string>();
+
+const toggle = ($: EngineInterface, idPart: string): Promise<unknown> => {
+  turned.add(idPart);
+
+  return update($, expanded, list => (list.includes(idPart) ? list.filter(id => id !== idPart) : [...list, idPart]));
+};
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -160,6 +189,30 @@ let lastCwd: string | undefined;
 let located: Located | null | undefined;
 let lastMtime: number | undefined;
 let failures = 0;
+// Every idPart the pane has shown, so the next load can tell what arrived. Undefined until the first load, which only
+// seeds it: opening the pane, or a hot reload, lights nothing.
+let knownIds: Set<string> | undefined;
+
+const noteArrivals = async ($: EngineInterface, sections: DocketSection[]): Promise<void> => {
+  const ids = sections.flatMap(section => section.items.map(item => item.idPart));
+  const arrived = knownIds === undefined ? [] : ids.filter(id => !knownIds?.has(id));
+
+  knownIds = new Set(ids);
+
+  if (arrived.length === 0) {
+    return;
+  }
+
+  const at = await $.clock.now();
+  // Each step bumps `tick` to redraw, but only while this flash is still the latest: a newer arrival owns the tint.
+  const step = (): void => {
+    void update($, flash, current => (current.at === at ? { ...current, tick: current.tick + 1 } : current));
+  };
+
+  await update($, flash, () => ({ ids: arrived, at, tick: 0 }));
+  $.clock.after(FLASH_MS / 2, step);
+  $.clock.after(FLASH_MS, step);
+};
 
 const load = async ($: EngineInterface, isForced: boolean): Promise<void> => {
   try {
@@ -171,6 +224,8 @@ const load = async ($: EngineInterface, isForced: boolean): Promise<void> => {
 
       if (found?.file !== located?.file) {
         lastMtime = undefined;
+        // Another docket entirely: its items are not arrivals.
+        knownIds = undefined;
       }
 
       lastCwd = cwd;
@@ -203,6 +258,7 @@ const load = async ($: EngineInterface, isForced: boolean): Promise<void> => {
     lastMtime = mtimeMs;
     await update($, board, () => loaded);
     await pruneExpanded($, sections);
+    await noteArrivals($, sections);
   } catch (error) {
     const reason = error instanceof Error ? error.message : String(error);
     const file = located?.file ?? '';
@@ -357,6 +413,7 @@ export const register: Register = on => {
     const filterText = await read($, filter);
     const current = await read($, board);
     const openIds = await read($, expanded);
+    const lit = await read($, flash);
     const now = await $.clock.now();
 
     // Window frame (2) + its padding (2); each section box spends the same again inside it.
@@ -372,7 +429,41 @@ export const register: Register = on => {
         <Text color='subtle'>{glyph.repeat(width * 2)}</Text>
       </Box>
     );
-    const rule = divider('─', windowWidth);
+    // The desktop's rule is a solid neutral hairline. Given a height and no width, like the bar, it fills its slot edge to
+    // edge.
+    const rule =
+      Svg === undefined ? (
+        divider('─', windowWidth)
+      ) : (
+        <Svg
+          source={ruleSvg()}
+          alt='divider'
+          height={RULE_HEIGHT}
+          isInteractive
+        />
+      );
+
+    // The desktop shows each figure of the count as a quiet grey chip; `· 19 open` and `25 plans · 1 active` alike.
+    const countChips = (count: string) =>
+      Svg === undefined
+        ? null
+        : count
+            .split('·')
+            .map(part => part.trim())
+            .filter(part => part !== '')
+            .map(part => {
+              const chip = pillSvg(part, CHIP_HEX);
+
+              return (
+                <Svg
+                  source={chip.svg}
+                  alt={part}
+                  width={chip.width}
+                  height={chip.height}
+                  isInteractive
+                />
+              );
+            });
 
     // The hints sit under the header, not below the list: a pane has no fixed footer, its whole body scrolls as one, and
     // a hint line at the bottom is out of sight until the end of a long list.
@@ -380,18 +471,24 @@ export const register: Register = on => {
       <Box
         flexDirection='column'
         borderStyle='round'
-        borderColor='claude'
-        paddingX={1}
+        borderColor={Svg === undefined ? 'claude' : PANE_EDGE}
+        padding='xs'
       >
-        <Box justifyContent='space-between'>
-          <Box gap={1}>
+        <Box
+          justifyContent='space-between'
+          alignItems='center'
+        >
+          <Box
+            gap={1}
+            alignItems='center'
+          >
             <Text
               bold
               color='claude'
             >
               {title}
             </Text>
-            <Text color='subtle'>{count}</Text>
+            {Svg === undefined ? <Text color='subtle'>{count}</Text> : countChips(count)}
           </Box>
           <Button
             key='refresh'
@@ -443,7 +540,19 @@ export const register: Register = on => {
     const editedAt = `${String(edited.getHours()).padStart(2, '0')}:${String(edited.getMinutes()).padStart(2, '0')}`;
 
     // Dashed and indented under #N, so it reads as part of the item rather than a section break.
-    const detailRule = divider('┄', Math.max(8, rowWidth - 2));
+    // On the desktop the rules framing an opened item's detail draw in from the left as it opens: a Box cannot animate,
+    // so the opening shows in the drawings around it.
+    const detailRule =
+      Svg === undefined ? (
+        divider('┄', Math.max(8, rowWidth - 2))
+      ) : (
+        <Svg
+          source={ruleSvg()}
+          alt='detail divider'
+          height={RULE_HEIGHT}
+          isInteractive
+        />
+      );
 
     const renderItem = (item: DocketItem) => {
       const isOpen = openIds.includes(item.idPart);
@@ -453,6 +562,9 @@ export const register: Register = on => {
       const titleRoom = Math.max(8, rowWidth - 2 - idWidth - 1 - 5);
       const title = item.title.length > titleRoom ? `${item.title.slice(0, titleRoom - 1)}…` : item.title;
       let ageColor = 'text';
+      const flashAge = now - lit.at;
+      const isLit = lit.ids.includes(item.idPart) && flashAge >= 0 && flashAge < FLASH_MS;
+      const tint = flashAge < FLASH_MS / 2 ? 'diffAdded' : 'diffAddedDimmed';
 
       if (age !== null && age <= 7) {
         ageColor = 'success';
@@ -461,21 +573,88 @@ export const register: Register = on => {
       }
 
       return (
-        <Box flexDirection='column'>
-          <Button
-            key={`item:${item.idPart}`}
-            plain
-            onPress={() => toggle($, item.idPart)}
-          >
-            <Text color='claude'>{isOpen ? '▾ ' : '▸ '}</Text>
-            <Text color='suggestion'>{`#${item.idPart}`.padEnd(idWidth + 1)}</Text>
-            <Text bold={isOpen}>{title.padEnd(titleRoom)}</Text>
-            <Text color={ageColor}>{ageText.padStart(5)}</Text>
-          </Button>
+        // Keyed while lit: the tint sits inside a Button, whose children carry no keys of their own.
+        <Box
+          key={isLit ? `flash:item:${item.idPart}` : undefined}
+          flexDirection='column'
+        >
+          {Svg === undefined ? (
+            <Button
+              key={`item:${item.idPart}`}
+              plain
+              onPress={() => toggle($, item.idPart)}
+            >
+              <Text color='claude'>{isOpen ? '▾ ' : '▸ '}</Text>
+              <Text color='suggestion'>{`#${item.idPart}`.padEnd(idWidth + 1)}</Text>
+              <Text
+                bold={isOpen}
+                backgroundColor={isLit ? tint : undefined}
+              >
+                {title.padEnd(titleRoom)}
+              </Text>
+              <Text color={ageColor}>{ageText.padStart(5)}</Text>
+            </Button>
+          ) : (
+            // A proportional font cannot pad columns with spaces, so the desktop lays the row out in boxes: the marker
+            // and the id in fixed columns, the title growing into the rest and cut by the surface at the same edge on
+            // every row, the age flush right.
+            <Box
+              key={`row:${item.idPart}`}
+              alignItems='center'
+            >
+              <Box
+                width={2}
+                flexShrink={0}
+                alignItems='center'
+              >
+                <Svg
+                  source={chevronSvg(isOpen, turned.has(item.idPart))}
+                  alt={isOpen ? 'expanded' : 'collapsed'}
+                  width={CHEVRON_SIZE}
+                  height={CHEVRON_SIZE}
+                  isInteractive
+                />
+              </Box>
+              <Box
+                width={idWidth + 1}
+                flexShrink={0}
+              >
+                <Text color='suggestion'>{`#${item.idPart}`}</Text>
+              </Box>
+              <Box
+                flexGrow={1}
+                flexShrink={1}
+                overflow='hidden'
+              >
+                <Button
+                  key={`item:${item.idPart}`}
+                  plain
+                  // The one hover: a row Box's own did not draw on the desktop, and the Button's native highlight is darker.
+                  hover={{ backgroundColor: TRAY_HOVER }}
+                  onPress={() => toggle($, item.idPart)}
+                >
+                  <Text
+                    bold={isOpen}
+                    backgroundColor={isLit ? tint : undefined}
+                    wrap='truncate-end'
+                  >
+                    {item.title}
+                  </Text>
+                </Button>
+              </Box>
+              <Box
+                width={5}
+                flexShrink={0}
+                justifyContent='flex-end'
+              >
+                <Text color={ageColor}>{ageText}</Text>
+              </Box>
+            </Box>
+          )}
           {isOpen && (
             <Box
               flexDirection='column'
-              // The marker column is 2 cells ('▾ '), so the detail starts under the row's #N.
+              // The marker column is 2 cells, so the detail starts under the row's #N.
               marginLeft={2}
               marginY={1}
               gap={1}
@@ -570,10 +749,11 @@ export const register: Register = on => {
         </Box>
       );
 
+    // A margin above only: the frame's own padding is the gap below the last card, the same as at its sides.
     const body = (
       <Box
         flexDirection='column'
-        marginY={1}
+        marginTop={1}
         gap={1}
       >
         {progress}
@@ -616,7 +796,7 @@ export const register: Register = on => {
             onSubmit={value => setFilter($, value)}
           />
         )}
-        {current.sections.map(section => {
+        {current.sections.map((section, sectionIndex) => {
           // Loose threads are entries too: a section holding only threads is not empty.
           const count = section.items.length + section.threads.length;
           const tone = count > 0 ? 'suggestion' : 'subtle';
@@ -625,22 +805,39 @@ export const register: Register = on => {
           const threads = section.threads.filter(thread => thread.toLowerCase().includes(needle));
           const shown = items.length + threads.length;
 
+          const countText = needle === '' ? String(count) : `${shown} of ${count}`;
+          // Solid, in the section's own colour from the bar and the legend, so a card names its segment.
+          const tag = pillSvg(`${section.name.toUpperCase()} · ${countText}`, colorFor(sectionIndex + 1), true);
+
+          // The desktop's card is a tray whose rim is its own fill a step stronger; the terminal keeps a plain border.
           return (
             <Box
+              key={`card:${section.name}`}
               flexDirection='column'
               borderStyle='round'
-              borderColor={tone}
-              paddingX={1}
+              borderColor={Svg === undefined ? tone : TRAY_EDGE}
+              backgroundColor={Svg === undefined ? undefined : TRAY}
+              padding='xs'
             >
-              <Box gap={1}>
-                <Text
-                  bold
-                  color={tone}
-                >
-                  {section.name.toUpperCase()}
-                </Text>
-                <Text color='subtle'>{needle === '' ? count : `${shown} of ${count}`}</Text>
-              </Box>
+              {Svg === undefined ? (
+                <Box gap={1}>
+                  <Text
+                    bold
+                    color={tone}
+                  >
+                    {section.name.toUpperCase()}
+                  </Text>
+                  <Text color='subtle'>{countText}</Text>
+                </Box>
+              ) : (
+                <Svg
+                  source={tag.svg}
+                  alt={`${section.name.toUpperCase()} · ${countText}`}
+                  width={tag.width}
+                  height={tag.height}
+                  isInteractive
+                />
+              )}
               {shown === 0 && (
                 <Text
                   color='subtle'

@@ -95,6 +95,15 @@ export type BoardSnapshot =
   | { kind: 'missing'; searchedFrom: string }
   | { kind: 'unreadable'; reason: string };
 
+// Tasks whose state just changed, tinted for a moment. `at` is when the flash started, on `$.clock.now()`'s scale, so a
+// flash that outlived its timers (a hot reload mid-flash) has already expired when it is next drawn; `tick` moves on at
+// each step of the fade so the pane redraws.
+export interface BoardFlash {
+  keys: string[];
+  at: number;
+  tick: number;
+}
+
 declare module 'claude-code' {
   interface PluginState {
     condux: {
@@ -105,6 +114,10 @@ declare module 'claude-code' {
       toggled: string[];
       // The desktop's filter box text; the terminal has none, where typing would swallow the hotkeys.
       filter: string;
+      // The state-change flash; empty keys when nothing is lit.
+      flash: BoardFlash;
+      // True while a main-loop turn runs: the task being worked pulses for that span only.
+      working: boolean;
     };
   }
 }

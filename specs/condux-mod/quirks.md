@@ -17,6 +17,9 @@
 | Q13 | The validator rejects two hooks on one event without a matcher | Two features each registering `session.start` | medium | yes |
 | Q14 | Past an import, `$` is followed only into function declarations | An exported helper that takes `$` written as an arrow constant | medium | yes |
 | Q15 | A ledger's `Plan:` header is prose, and its file name may carry the plan's date | A header whose path sits in backticks and is followed by commentary on the same line | high | yes |
+| Q16 | An image `Svg` replays a CSS entrance on every redraw, and SMIL does not run at all | Animating the board's vector drawings | medium | yes |
+| Q17 | A Button's children carry no keys, and a surface module cannot sit inside one | Keying a flash or a pulse on part of a `plain` Button row | low | yes |
+| Q18 | Pane chrome that reads in a browser can look wrong, or not draw, in a pane | Borders, tints, SVG labels and rules on the desktop | medium | yes |
 
 ## Q1 — Plans with no ledger
 
@@ -152,3 +155,70 @@
 **Trigger:** a `Plan:` header with the path in backticks and commentary after it, in a ledger named exactly like its plan (date prefix included).
 **Cause:** an agent writes the header as it likes. The first parser took everything after the last slash as the file name, and the name fallback compared the ledger to the plan's slug without the date.
 **Mitigation:** the plan is the first Markdown file path in the header line (backticks, quotes and angle brackets stripped, the whole text if it names none), and the fallback also matches the plan's file name without the extension. Both are pinned by the real header as a fixture.
+
+## Q16 — SVG motion on the desktop
+
+**Discovered:** 2026-11-17, with a throwaway probe pane in the desktop app.
+
+**Symptom:** a chart entrance would replay on every poll, filter keystroke or toggle, or never play at all.
+**Trigger:** animating an `Svg`'s markup.
+**Cause:** the desktop draws an `Svg` without `isInteractive` as an image, and a redraw replaces the image, so its CSS `@keyframes` replay each time. With `isInteractive` the drawing sits in a sandboxed frame that a redraw with the same `source` leaves alone. A SMIL `<animate>` did not run at all, even in the frame.
+**Mitigation:** every animated `Svg` is interactive, and the motion is CSS `@keyframes` behind a `prefers-reduced-motion` block. A drawing then animates once each time its data changes its source, with no extra bookkeeping. The condux row bar was an image before this and gained `isInteractive` for this reason. Whether the reduced-motion block takes effect in the frame is untested.
+
+## Q17 — Keys inside a Button
+
+**Discovered:** 2026-11-17, writing the flash tests.
+
+**Symptom:** `ui.find` returned nothing for a `Text` keyed inside a `plain` Button row.
+**Trigger:** keying part of a row that a Button draws.
+**Cause:** the kit indexes the Button by its own key and its children as its text only.
+**Mitigation:** the flash keys the row's outer `Box`, only while it is lit. The pulsing glyph is a `Client` drawn just before the Button, not inside it, while the row's glyph is left out of the Button for that span.
+
+## Q18 — Pane chrome on the desktop
+
+**Discovered:** 2026-11-20, with two rounds of a throwaway probe pane that Harvey watched in the desktop app (light theme).
+
+**Symptom:** several web-style treatments looked wrong or drew nothing in a pane.
+**Trigger:** adding chrome (cards, tags, pills, a rule, hover) to the board and the docket pane.
+**Cause:** what the probe showed:
+- A nested "double bezel" (a tray holding a bordered core) read as clutter.
+- A bordered Box as a tag costs a row above and below its text and dwarfs the heading, and a tinted `Text` spans the whole row, so neither looks like a tag.
+- SVG text placed with `dominant-baseline="central"` sat off-centre in its pill.
+- A gradient rule `Svg` inside a one-row `overflow="hidden"` Box drew nothing. Unwrapped, it draws.
+- A hover border in a contrasting accent looked like a selection.
+- Hover layers stacked: a card's hover, a row's and a Button's own highlight drew as three nested tints. A `hover` on a row Box drew nothing at all; the Button's own `hover` does apply, and a Button cannot be widened (no layout props, text children only), so its highlight spans the title alone.
+- Spaces cannot pad columns in a proportional font, and ✓, ▶ and ⏸ differ in width, so names, ellipses and ages did not line up.
+- A mod cannot read the light or dark scheme, and the SVG frame reported LIGHT in a light-themed app. Dark mode is untested.
+
+**Mitigation:** the shared kit (`charts.ts`) holds the settled chrome:
+- One tray per section, its fill neutral grey at low alpha (`TRAY`) and its rim the same grey a step stronger (`TRAY_EDGE`). A tray does not answer the pointer: the one hover is the row title Button's, in `TRAY_HOVER`.
+- Trays and the pane frame pad by the `'xs'` step on every side, so a tag sits concentric with its tray's corner; the body has a margin above only.
+- Status pills and count chips are tinted `pillSvg` capsules; a section tag is a solid one (`isSolid`) in the colour of its rows' status (condux) or its section's bar colour (docket). All take an explicit text baseline and size to their label.
+- Rows lay out in boxes on the desktop: fixed marker, id and glyph columns, a growing title with `wrap="truncate-end"`, the age flush right.
+- The masthead rule is an unwrapped solid neutral `ruleSvg`, given a height and no width so it fills its slot; the pane frame is the same neutral (`PANE_EDGE`).
+- Work under way is blue (the in-progress pill, the ▶ glyph, the next-ready graph node); the accent's red-orange read as trouble.
+- The terminal keeps plain borders and text.
+- Low-alpha colours were chosen so one value reads on either ground. That rests on the assumption above, not on a dark-mode check.
+
+The kit does not hand `hover` back on found elements, so hover is checked live, not in tests.
+
+## Q19 — Micro-interactions live in drawings
+
+**Discovered:** 2026-11-20, building hover and open/close motion that Harvey watched in the desktop app (light and dark themes).
+
+**Symptom:** motion asked of the layout either never drew or made the pane stutter.
+**Trigger:** adding hover feedback, a pop on a changed count, and motion when a row opens or closes.
+**Cause:** what the live passes showed:
+- A Box or Button has no transition: nothing about the layout can ease. Only an interactive `Svg` runs CSS, `:hover` and `:has()` included.
+- A pop that overshot (`scale(1.06)`) outgrew the drawing's own box and was cut off at its edge.
+- Staging an opening in JS (one more part of the detail per 60ms step, via `$.clock.after`) redraws the whole pane at every step. On the desktop a redraw costs more than the step, so it read as lag, not motion. It was taken out.
+
+**Mitigation:** every micro-interaction lives inside a drawing:
+- Charts focus-dim: under the pointer the arc, segment or bar pointed at stays and its siblings fade back.
+- Pills pop to their size and no further when their label changes, and deepen under the pointer.
+- A row's marker is a chevron drawing that turns open, and turns back once the person has turned it (a row never turned only fades in, so a list does not spin on arrival).
+- Graph edges draw in from their source (`pathLength="1"`, one dash); hovering a node thickens its own edges and fades the rest.
+- Task glyphs are drawn like the app's checklist; only the worked task's arc spins, and only while a main turn runs.
+- Docket's opened detail is framed by two rules that draw in.
+
+Opening and closing a row is otherwise instant.

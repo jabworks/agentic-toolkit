@@ -1,7 +1,7 @@
 import { expect, test } from 'claude-code/testing';
 
 import { ageInDays, ancestors, baseName, closesByWeek, joinPath, parseDocket, splitTitle } from '../hooks/docket';
-import { allot, barSvg, colorFor, ringSvg, sparklineSvg } from '../hooks/charts';
+import { allot, barSvg, chevronSvg, colorFor, motionStyle, pillSvg, ringSvg, sparklineSvg } from '../hooks/charts';
 
 const FIXTURE = [
   '# DOCKET',
@@ -279,4 +279,47 @@ test('bar segments never overlap, even when several shares are far thinner than 
     expect(intervals.length).toBe(shares.length);
     expect(overlaps(intervals)).toBe(false);
   }
+});
+
+// Micro-interactions: CSS that an interactive Svg runs under the pointer or when its source changes. Boxes and Buttons
+// cannot animate, so every one lives inside a drawing.
+const SHARES = [
+  { name: 'Done', count: 6, color: '#3f8f5b' },
+  { name: 'Someday', count: 3, color: '#2f6db5' },
+];
+
+test('hovering one ring arc, bar segment or sparkline bar dims the others', async () => {
+  for (const svg of [ringSvg(SHARES, 6), barSvg(SHARES), sparklineSvg([1, 3, 2], '#3f8f5b')]) {
+    expect(svg).toContain(':hover');
+    expect(svg).toContain(':not(:hover)');
+  }
+});
+
+test('a pill pops in when its label changes and deepens under the pointer, tinted or solid', async () => {
+  for (const pill of [pillSvg('3 open', '#8a8a85'), pillSvg('SOMEDAY · 3', '#2f6db5', true)]) {
+    expect(pill.svg).toContain('@keyframes pop');
+    expect(pill.svg).toContain('.pill:hover');
+  }
+});
+
+test('a chevron turns open when its row opens, and closed only fades in so a list does not spin on arrival', async () => {
+  expect(chevronSvg(true)).toContain('@keyframes turn');
+  expect(chevronSvg(true)).toContain('rotate(90deg)');
+  expect(chevronSvg(false)).not.toContain('@keyframes turn');
+});
+
+test('a chevron the person has turned turns back when its row closes', async () => {
+  expect(chevronSvg(false, true)).toContain('@keyframes turn{from{transform:rotate(90deg)}to{transform:rotate(0deg)}}');
+});
+
+test('a pill pops without overshooting, so it never outgrows its own box and gets cut off', async () => {
+  const { svg } = pillSvg('3 open', '#8a8a85');
+  const scales = [...svg.matchAll(/scale\(([\d.]+)\)/g)].map(match => Number(match[1]));
+
+  expect(scales.length).toBeGreaterThan(0);
+  expect(scales.every(scale => scale <= 1)).toBe(true);
+});
+
+test('reduced motion stills the hover transitions as well as the entrances', async () => {
+  expect(motionStyle('')).toContain('transition:none');
 });

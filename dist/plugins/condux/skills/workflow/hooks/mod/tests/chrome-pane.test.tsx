@@ -25,7 +25,8 @@ test('the desktop plan row carries a rounded mini bar, the count, a status pill 
 
   expect(row?.text).toContain('Active work');
   expect(row?.text).toContain('1/3');
-  expect(row?.text).toContain('in progress');
+  // The status is a rounded vector pill: its word is the drawing's alt text, not the row's.
+  expect((await ui.findAll({ type: 'Svg' })).map(svg => svg.props.alt)).toContain('Active work: in progress');
   expect(row?.text).toMatch(/\d+d|today/);
   expect(await ui.find({ key: `plan:${FILE}` })).toBeDefined();
 });
@@ -41,7 +42,11 @@ test('every Svg the board draws has an explicit height, or the app boxes it far 
 
   for (const svg of svgs) {
     expect(typeof svg.props.height).toBe('number');
-    expect(typeof svg.props.width).toBe('number');
+
+    // The masthead rule alone leaves its width to the slot, so it runs edge to edge; its height still pins its box.
+    if (svg.props.alt !== 'divider') {
+      expect(typeof svg.props.width).toBe('number');
+    }
   }
 });
 
@@ -142,7 +147,7 @@ test('no-ledger plans show no stepper', async ($, on) => {
   expect(await ui.find({ key: 'stepper:2026-08-01-quiet.md' })).toBe(undefined);
 });
 
-test('a long title is clipped to leave the right-hand columns their room, so the row cannot squeeze them', async ($, on) => {
+test('a long title is cut by the surface to leave the right-hand columns their room, so the row cannot squeeze them', async ($, on) => {
   const long = 'A very long plan title that would run into the progress bar, the count, the pill and the age';
 
   answerBeneath(on, now => ({
@@ -154,6 +159,8 @@ test('a long title is clipped to leave the right-hand columns their room, so the
   const ui = await mountPane('desktop', $);
   const title = (await ui.findAll({ type: 'Text' })).find(node => node.text.startsWith('A very long'));
 
-  expect(title?.text.endsWith('…')).toBe(true);
-  expect(title?.text.length).toBeLessThan(50);
+  // Whole, and cut at the title column's edge by the surface: a proportional font puts a character count's ellipsis at
+  // a different place on every row.
+  expect(title?.text).toBe(long);
+  expect(title?.props.wrap).toBe('truncate-end');
 });

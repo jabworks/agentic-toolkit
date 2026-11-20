@@ -38,6 +38,11 @@ export type DocketBoard =
   | { kind: 'missing'; searchedFrom: string }
   | { kind: 'unreadable'; file: string; reason: string };
 
+// Items that just arrived, tinted for a moment. `at` is when the flash started, on `$.clock.now()`'s scale, so a flash
+// that outlived its timers (a hot reload mid-flash) has already expired when it is next drawn; `tick` moves on at each
+// step of the fade so the pane redraws.
+export type DocketFlash = { ids: string[]; at: number; tick: number };
+
 declare module 'claude-code' {
   interface PluginState {
     docket: {
@@ -47,6 +52,8 @@ declare module 'claude-code' {
       expanded: string[];
       // The desktop's filter box: items whose id or title lacks this text are hidden.
       filter: string;
+      // The arrival flash; empty ids when nothing is lit.
+      flash: DocketFlash;
     };
   }
 }

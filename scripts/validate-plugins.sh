@@ -59,10 +59,11 @@ for p in dist/plugins/*/; do
     dir && /^(✔|✘|Validating )/ { dir = 0 }
     !dir')
   # A function-hooks plugin (docket's /docket pane) also gets a report: what its
-  # types file declares and what its hooks module hooks, calls, reads and writes.
+  # types file declares and what its hooks module hooks, calls, reads and writes,
+  # and the surface modules it draws (condux's pulse.tsx).
   # Those lines carry ❯ too but are facts, not findings — the verdict still says
   # "Validation passed". Drop exactly those shapes; anything else still counts.
-  verdict=$(echo "$verdict" | grep -vE "❯ types \./.* declares |❯ \./[^ ]+ (hooks|calls|env reads|env writes|state reads|state writes|answers its own command|gating hook (with|without) \.catch):" || true)
+  verdict=$(echo "$verdict" | grep -vE "❯ types \./.* declares |❯ \./[^ ]+ (hooks|calls|env reads|env writes|state reads|state writes|surface modules|answers its own command|gating hook (with|without) \.catch):" || true)
   findings=$(echo "$verdict" | grep -c '❯' || true)
   known=$(echo "$verdict" | grep -c "Unknown field 'interface'" || true)
   if [ "$findings" != "$known" ]; then
