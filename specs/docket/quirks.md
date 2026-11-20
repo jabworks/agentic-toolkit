@@ -14,6 +14,7 @@
 | Q10 | The close stamp defeats the trailing-date strip | any archived item with a filed-date parenthetical | low | yes — positional strip, only before the close stamp or at true end |
 | Q11 | mdLite renders a pipe table as literal text | a pipe table in an item body | medium | yes — lookahead table support; ragged rows pad; escaped pipes stay content |
 | Q12 | An image `Svg` replays its entrance on every redraw; SMIL never runs | animating the pane's ring, bar or sparkline | medium | yes — interactive `Svg`s with CSS `@keyframes`, as condux-mod Q16 records |
+| Q13 | Web-style chrome looks wrong or draws nothing in a pane | cards, tags, rules and hover on the desktop | medium | yes — the shared kit's tray, `pillSvg` and `ruleSvg`, as condux-mod Q18 records |
 
 ## Q1 — The ghost-work lesson (why close is strict)
 
@@ -121,4 +122,8 @@ A 4-space-indented line beginning with `|` is still prose — `mdLite` has no in
 **Symptom:** the ring, bar and sparkline would replay their entrance on each poll or filter keystroke.
 **Trigger:** animating the pane's vector drawings.
 **Cause and mitigation:** the shared chart kit, as condux-mod Q16 records. The pane's three drawings were already interactive for their tooltips, so they play once per data change. An arriving item's row is tinted for 1.6 s. The first load, a forced refresh and a switch to another docket seed what the pane knows and light nothing.
+
+## Q13 — Pane chrome (2026-11-20)
+
+**Symptom, cause and mitigation:** as condux-mod Q18 records for the shared kit. On the desktop the pane draws each section as a tray whose rim follows its fill, its name as a solid capsule in the section's bar colour, the open count as a grey chip, item rows in fixed id and age columns with a surface-cut title, and a solid neutral rule under the masthead inside a neutral frame. The terminal keeps its plain borders and text.
 

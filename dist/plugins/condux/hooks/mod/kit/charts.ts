@@ -166,3 +166,55 @@ export const sparklineSvg = (counts: number[], color: string): string => {
 
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}">${style}${bars}</svg>`;
 };
+
+// Surface chrome, settled with a probe pane in the desktop app (condux-mod Q18). Neutral grey at low alpha reads on a
+// light and a dark ground alike, which matters because a mod cannot read the scheme. A section is one tray whose rim is
+// its fill a step stronger, so the border reads as the tray's edge, not a line drawn on it. A tray does not answer the
+// pointer: a row's title Button does, in TRAY_HOVER, the one hover on any level.
+export const TRAY = '#8a8a8514';
+export const TRAY_EDGE = '#8a8a8526';
+export const TRAY_HOVER = '#8a8a851f';
+// The masthead's count chips: the same neutral grey as the tray, so they sit back behind the title.
+export const CHIP_HEX = '#8a8a85';
+// The pane's frame and the masthead's rule: the same neutral, stronger than a tray's rim, so the pane reads as one
+// quiet object and only its title carries the accent.
+export const PANE_EDGE = '#8a8a8559';
+const RULE_HEX = '#8a8a85';
+
+export type Pill = { svg: string; width: number; height: number };
+
+const PILL_HEIGHT = 18;
+
+// A rounded label: a tinted capsule with a rim in its own hue, or with `isSolid` a filled one with white text, for a
+// heading that should outrank the pills beneath it. The text sits on an explicit baseline, because `dominant-baseline`
+// did not centre it in the desktop's frame. Width follows the label, so a tag hugs its text.
+export const pillSvg = (label: string, hex: string, isSolid = false): Pill => {
+  const width = Math.round(label.length * 6.2 + 18);
+  const height = PILL_HEIGHT;
+  const svg = [
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">`,
+    motionStyle(`.pill{animation:fade ${ENTRANCE_MS}ms ${EASE_OUT} both}@keyframes fade{from{opacity:0}to{opacity:1}}`),
+    '<g class="pill">',
+    `<rect x="0.5" y="0.5" width="${width - 1}" height="${height - 1}" rx="${(height - 1) / 2}" fill="${hex}" fill-opacity="${isSolid ? 1 : 0.14}" stroke="${hex}" stroke-opacity="${isSolid ? 1 : 0.5}"/>`,
+    `<text x="${width / 2}" y="12.6" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" font-weight="600" fill="${isSolid ? '#ffffff' : hex}">${escapeXml(label)}</text>`,
+    '</g></svg>',
+  ].join('');
+
+  return { svg, width, height };
+};
+
+// The masthead's rule: a solid 1px neutral hairline that draws in from the left. Drawn wide and stretched to its slot,
+// like the bar: the caller passes a height and no width. Unclipped: inside a one-row clipping box the desktop drew
+// nothing at all.
+export const RULE_HEIGHT = 1;
+
+export const ruleSvg = (width = 1200): string =>
+  [
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${RULE_HEIGHT}" viewBox="0 0 ${width} ${RULE_HEIGHT}" preserveAspectRatio="none">`,
+    motionStyle(
+      `.rule{transform-origin:0 50%;animation:grow ${ENTRANCE_MS * 1.5}ms ${EASE_OUT} both}` +
+        '@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}',
+    ),
+    `<rect class="rule" width="${width}" height="${RULE_HEIGHT}" fill="${RULE_HEX}" fill-opacity="0.45"/>`,
+    '</svg>',
+  ].join('');

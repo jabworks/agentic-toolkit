@@ -24,3 +24,4 @@
 - 2026-10-20 (PR #190): Synced api.md and implementation.md to what PR 1 built; added Q13 and Q14
 - 2026-10-21 (PR #190): Added Q15 (the ledger header is prose) from a real board
 - 2026-11-17: Motion: CSS chart entrances, a state-change flash, a pulse on the worked task and a status-line spinner while a turn runs; added Q16 and Q17
+- 2026-11-20: Chrome: tray section cards, solid status-coloured tags, status pills and count chips, aligned row columns, a solid neutral masthead rule and frame, and blue for work under way; added Q18

@@ -1,6 +1,16 @@
 import { type EngineInterface, type On, type RenderChildren, type Timer, atom, read, update } from 'claude-code';
 
-import { barSvg } from '../kit/charts';
+import {
+  PANE_EDGE,
+  RULE_HEIGHT,
+  CHIP_HEX,
+  TRAY,
+  TRAY_EDGE,
+  TRAY_HOVER,
+  barSvg,
+  pillSvg,
+  ruleSvg,
+} from '../kit/charts';
 import { locateWorkingState, type WorkingState } from '../kit/locate';
 import { joinPath } from '../kit/paths';
 import { type BoardFlash, type BoardPlan, type BoardSnapshot, type Ledger, type Plan, type PlanStatus } from '../types';
@@ -288,13 +298,15 @@ const USAGE = [
 const clip = (text: string, room: number): string =>
   text.length > room ? `${text.slice(0, Math.max(1, room - 1))}…` : text;
 
-const STATE_COLOR = { done: 'success', 'next-ready': 'claude', ready: 'text', blocked: 'subtle' } as const;
+// The task under way is blue, as the in-progress pill is: the accent's red-orange read as trouble.
+const STATE_COLOR = { done: 'success', 'next-ready': 'suggestion', ready: 'text', blocked: 'subtle' } as const;
 
 // The status pill on the desktop's plan row: a short word on a mid-tone fill.
 const PILL: Record<PlanStatus, { label: string; hex: string }> = {
   'no-ledger': { label: 'no ledger', hex: '#8a8a85' },
   'not-started': { label: 'not started', hex: '#2f6db5' },
-  'in-progress': { label: 'in progress', hex: '#c8643c' },
+  // Blue for work under way: the red-orange read as trouble beside the stalled line's red.
+  'in-progress': { label: 'in progress', hex: '#2f6db5' },
   'tasks-done': { label: 'wrapping up', hex: '#b8860b' },
   complete: { label: 'complete', hex: '#3f8f5b' },
   stale: { label: 'stale', hex: '#8a8a85' },
@@ -307,8 +319,6 @@ const BAR_CELLS = 12;
 const COUNT_CELLS = 13;
 const PILL_CELLS = 13;
 const AGE_CELLS = 6;
-// Those four plus the gaps between them: what the title must leave free.
-const CLUSTER_CELLS = BAR_CELLS + COUNT_CELLS + PILL_CELLS + AGE_CELLS + 6;
 
 // A graph past this many tasks is a tangle; it sits behind a toggle instead of opening with the plan.
 const GRAPH_OPEN_MAX = 15;
@@ -558,23 +568,51 @@ export const registerBoard = (on: On): void => {
       </Box>
     );
 
+    // The desktop shows each figure of the count as a quiet grey chip; `· 19 open` and `25 plans · 1 active` alike.
+    const countChips = (count: string) =>
+      Svg === undefined
+        ? null
+        : count
+            .split('·')
+            .map(part => part.trim())
+            .filter(part => part !== '')
+            .map(part => {
+              const chip = pillSvg(part, CHIP_HEX);
+
+              return (
+                <Svg
+                  source={chip.svg}
+                  alt={part}
+                  width={chip.width}
+                  height={chip.height}
+                  isInteractive
+                />
+              );
+            });
+
     // The hints sit under the header: a pane has no fixed footer, its whole body scrolls as one.
     const frame = (count: string, body: RenderChildren, hints: string) => (
       <Box
         flexDirection='column'
         borderStyle='round'
-        borderColor='claude'
-        paddingX={1}
+        borderColor={Svg === undefined ? 'claude' : PANE_EDGE}
+        padding='xs'
       >
-        <Box justifyContent='space-between'>
-          <Box gap={1}>
+        <Box
+          justifyContent='space-between'
+          alignItems='center'
+        >
+          <Box
+            gap={1}
+            alignItems='center'
+          >
             <Text
               bold
               color='claude'
             >
               condux
             </Text>
-            <Text color='subtle'>{count}</Text>
+            {Svg === undefined ? <Text color='subtle'>{count}</Text> : countChips(count)}
           </Box>
           <Button
             key='refresh'
@@ -585,7 +623,18 @@ export const registerBoard = (on: On): void => {
           />
         </Box>
         <Text color='subtle'>{hints}</Text>
-        {divider('─', windowWidth)}
+        {/* The desktop's rule is a solid neutral hairline. Given a height and no width, like the bar, it fills its slot
+            edge to edge. */}
+        {Svg === undefined ? (
+          divider('─', windowWidth)
+        ) : (
+          <Svg
+            source={ruleSvg()}
+            alt='divider'
+            height={RULE_HEIGHT}
+            isInteractive
+          />
+        )}
         {body}
       </Box>
     );
@@ -632,7 +681,9 @@ export const registerBoard = (on: On): void => {
           flexDirection='column'
         >
           <Box>
-            {/* A surface module cannot sit inside a Button, so the pulsing glyph stands just before it. */}
+            {/* A surface module cannot sit inside a Button, so the pulsing glyph stands just before it. On the desktop
+                every glyph does, in a two-cell column: ✓, ▶ and ⏸ are not one width in a proportional font, and the
+                task names and the detail under them line up only past a fixed column. */}
             {isPulsing && Client !== undefined && (
               <Client
                 key={`pulse:${entry.plan.file}:${boardTask.task.number}`}
@@ -641,12 +692,21 @@ export const registerBoard = (on: On): void => {
                 width={2}
               />
             )}
+            {!isPulsing && Svg !== undefined && (
+              <Box
+                key={`glyph:${key}`}
+                width={2}
+                flexShrink={0}
+              >
+                <Text color={glyphColor(entry, boardTask)}>{taskGlyph(entry, boardTask)}</Text>
+              </Box>
+            )}
             <Button
               key={key}
               plain
               onPress={() => toggle($, key)}
             >
-              {!isPulsing && glyph}
+              {!isPulsing && Svg === undefined && glyph}
               <Text
                 bold={boardTask.state === 'next-ready'}
                 backgroundColor={isLit(key) ? tint : undefined}
@@ -764,6 +824,7 @@ export const registerBoard = (on: On): void => {
       // Title on the left; what you scan for on the right: progress, count, status, age.
       const total = entry.plan.tasks.length;
       const pill = PILL[entry.status];
+      const statusPill = pillSvg(pill.label, pill.hex);
       const dated = entry.plan.date === null ? Number.NaN : Date.parse(`${entry.plan.date}T00:00:00Z`);
       const age = Number.isNaN(dated) ? null : Math.max(0, Math.floor((now - dated) / DAY_MS));
       const shares = [
@@ -772,23 +833,43 @@ export const registerBoard = (on: On): void => {
       ];
 
       return (
+        // The marker sits in a fixed column, the title grows into the room the cluster leaves and is cut by the surface,
+        // so every row is one width and the ellipses line up.
         <Box
           key={`planrow:${entry.plan.file}`}
-          justifyContent='space-between'
           alignItems='center'
         >
-          <Button
-            key={key}
-            plain
-            onPress={() => toggle($, key)}
+          <Box
+            width={2}
+            flexShrink={0}
           >
-            <Text color='claude'>{isOpen ? '▾ ' : '▸ '}</Text>
-            <Text bold>{clip(entry.plan.title, Math.max(12, rowWidth - CLUSTER_CELLS - 4))}</Text>
-          </Button>
+            <Text color='claude'>{isOpen ? '▾' : '▸'}</Text>
+          </Box>
+          <Box
+            flexGrow={1}
+            flexShrink={1}
+            overflow='hidden'
+          >
+            <Button
+              key={key}
+              plain
+              // The one hover: a row Box's own did not draw on the desktop, and the Button's native highlight is darker.
+              hover={{ backgroundColor: TRAY_HOVER }}
+              onPress={() => toggle($, key)}
+            >
+              <Text
+                bold
+                wrap='truncate-end'
+              >
+                {entry.plan.title}
+              </Text>
+            </Button>
+          </Box>
           <Box
             gap={2}
             alignItems='center'
             flexShrink={0}
+            marginLeft={2}
           >
             {/* Fixed-width columns, so the bars, counts and pills line up from one row to the next. */}
             <Box
@@ -816,10 +897,16 @@ export const registerBoard = (on: On): void => {
             <Box
               width={PILL_CELLS}
               flexShrink={0}
-              backgroundColor={pill.hex}
               justifyContent='center'
             >
-              <Text color='#ffffff'>{pill.label}</Text>
+              <Svg
+                source={statusPill.svg}
+                // Names the plan: a reader moving through the pills hears whose status each is.
+                alt={`${entry.plan.title}: ${pill.label}`}
+                width={statusPill.width}
+                height={statusPill.height}
+                isInteractive
+              />
             </Box>
             <Box
               width={AGE_CELLS}
@@ -856,40 +943,81 @@ export const registerBoard = (on: On): void => {
                 </Text>
               )}
               {entry.tasks.map(boardTask => renderTask(entry, boardTask))}
-              {entry.wrapUp.map(line => (
-                <Text color='subtle'>{`${line.isChecked ? '✓' : '○'} ${clip(line.text, rowWidth - 4)}`}</Text>
-              ))}
+              {entry.wrapUp.map(line =>
+                Svg === undefined ? (
+                  <Text color='subtle'>{`${line.isChecked ? '✓' : '○'} ${clip(line.text, rowWidth - 4)}`}</Text>
+                ) : (
+                  <Box>
+                    <Box
+                      width={2}
+                      flexShrink={0}
+                    >
+                      <Text color='subtle'>{line.isChecked ? '✓' : '○'}</Text>
+                    </Box>
+                    <Text
+                      color='subtle'
+                      wrap='truncate-end'
+                    >
+                      {line.text}
+                    </Text>
+                  </Box>
+                ),
+              )}
             </Box>
           )}
         </Box>
       );
     };
 
-    const section = (title: string, plans: BoardPlan[]) =>
-      plans.length === 0 ? null : (
+    // The desktop's card is a tray whose rim is its own fill a step stronger, its name a rounded tag; the terminal keeps
+    // a plain border and a text heading.
+    // A section's tag is solid, in the colour of the status pill its rows carry, so the heading and its rows read as one.
+    const section = (title: string, plans: BoardPlan[], status: PlanStatus) => {
+      if (plans.length === 0) {
+        return null;
+      }
+
+      const label = `${title} · ${plans.length}`;
+      const tag = pillSvg(label, PILL[status].hex, true);
+
+      return (
         <Box
+          key={`card:${title}`}
           flexDirection='column'
           borderStyle='round'
-          borderColor='suggestion'
-          paddingX={1}
+          borderColor={Svg === undefined ? 'suggestion' : TRAY_EDGE}
+          backgroundColor={Svg === undefined ? undefined : TRAY}
+          padding='xs'
         >
-          <Box gap={1}>
-            <Text
-              bold
-              color='suggestion'
-            >
-              {title}
-            </Text>
-            <Text color='subtle'>{plans.length}</Text>
-          </Box>
+          {Svg === undefined ? (
+            <Box gap={1}>
+              <Text
+                bold
+                color='suggestion'
+              >
+                {title}
+              </Text>
+              <Text color='subtle'>{plans.length}</Text>
+            </Box>
+          ) : (
+            <Svg
+              source={tag.svg}
+              alt={label}
+              width={tag.width}
+              height={tag.height}
+              isInteractive
+            />
+          )}
           {plans.map(renderPlan)}
         </Box>
       );
+    };
 
+    // A margin above only: the frame's own padding is the gap below the last card, the same as at its sides.
     const body = (
       <Box
         flexDirection='column'
-        marginY={1}
+        marginTop={1}
         gap={1}
       >
         {snapshot.plans.length === 0 && (
@@ -906,16 +1034,16 @@ export const registerBoard = (on: On): void => {
           />
         )}
         {shown.length === 0 && snapshot.plans.length > 0 && <Text color='subtle'>No plan matches the filter.</Text>}
-        {section('ACTIVE', groups.active)}
-        {section('COMPLETE', groups.complete)}
+        {section('ACTIVE', groups.active, 'in-progress')}
+        {section('COMPLETE', groups.complete, 'complete')}
         {groups.olderComplete.length > 0 && (
           <Text color='subtle'>{`+${groups.olderComplete.length} older finished plans · /condux all`}</Text>
         )}
-        {section('STALE', groups.stale)}
+        {section('STALE', groups.stale, 'stale')}
         {groups.olderStale.length > 0 && (
           <Text color='subtle'>{`+${groups.olderStale.length} older stale plans · /condux all`}</Text>
         )}
-        {section('NO LEDGER · state unknown', groups.noLedger)}
+        {section('NO LEDGER · state unknown', groups.noLedger, 'no-ledger')}
         {groups.olderNoLedger.length > 0 && (
           <Text color='subtle'>{`+${groups.olderNoLedger.length} older plans with no ledger · /condux all`}</Text>
         )}

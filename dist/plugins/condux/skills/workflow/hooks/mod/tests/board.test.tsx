@@ -19,6 +19,24 @@ import {
 // The desktop's plan row carries its figures beside the title button; the terminal's button holds them all.
 const rowKey = (surface: string, file: string): string => `${surface === 'desktop' ? 'planrow' : 'plan'}:${file}`;
 
+// Where a task's glyph is read: the terminal draws it inside the task's Button, the desktop in a fixed column of its own
+// beside it, so the names line up whatever the glyph's width.
+const glyphKey = (surface: string, task: string): string => `${surface === 'desktop' ? 'glyph:' : ''}task:${task}`;
+
+// What a plan row says, status included: the desktop draws the status as a vector pill whose alt names the plan and
+// its status, `<title>: <status>`.
+const rowSays = async <S extends (typeof SURFACES)[number]>(
+  ui: Awaited<ReturnType<typeof mountPane<S>>>,
+  surface: S,
+  file: string,
+): Promise<string> => {
+  const text = (await ui.find({ key: rowKey(surface, file) }))?.text ?? '';
+  const alts = surface === 'desktop' ? (await ui.findAll({ type: 'Svg' })).map(svg => String(svg.props.alt)) : [];
+  const status = alts.find(alt => alt.includes(': ') && text.includes(alt.slice(0, alt.lastIndexOf(': '))));
+
+  return `${text} ${status ?? ''}`;
+};
+
 for (const surface of SURFACES) {
   test(`lists active plans with glyph rows, and the key hints sit above the list on ${surface}`, async ($, on) => {
     answerBeneath(on, sampleFiles);
@@ -28,8 +46,8 @@ for (const surface of SURFACES) {
 
     expect((await ui.find({ key: 'plan:2026-10-10-active.md' }))?.text).toContain('Active work');
     expect((await ui.find({ key: rowKey(surface, '2026-10-10-active.md') }))?.text).toContain('1/3 done');
-    expect((await ui.find({ key: 'task:2026-10-10-active.md:1' }))?.text).toContain('✓');
-    expect((await ui.find({ key: 'task:2026-10-10-active.md:2' }))?.text).toContain('▶');
+    expect((await ui.find({ key: glyphKey(surface, '2026-10-10-active.md:1') }))?.text).toContain('✓');
+    expect((await ui.find({ key: glyphKey(surface, '2026-10-10-active.md:2') }))?.text).toContain('▶');
     expect((await ui.find({ key: 'task:2026-10-10-active.md:3' }))?.text).toContain('waits on 2');
 
     // Document order. A container's `text` holds all its descendants', so only the hint's own Text node counts.
@@ -64,12 +82,12 @@ for (const surface of SURFACES) {
 
     const ui = await mountPane(surface, $);
 
-    expect((await ui.find({ key: rowKey(surface, '2026-09-01-shipped.md') }))?.text).toContain('complete');
-    expect((await ui.find({ key: rowKey(surface, '2026-08-01-quiet.md') }))?.text).toMatch(/no ledger/);
+    expect(await rowSays(ui, surface, '2026-09-01-shipped.md')).toContain('complete');
+    expect(await rowSays(ui, surface, '2026-08-01-quiet.md')).toMatch(/no ledger/);
     // No ledger means no recorded progress: the row reports a task count, never "0/2 done".
     expect((await ui.find({ key: rowKey(surface, '2026-08-01-quiet.md') }))?.text).toContain('2 tasks');
     expect((await ui.find({ key: rowKey(surface, '2026-08-01-quiet.md') }))?.text).not.toContain('done');
-    expect((await ui.find({ key: rowKey(surface, '2026-07-01-abandoned.md') }))?.text).toContain('stale');
+    expect(await rowSays(ui, surface, '2026-07-01-abandoned.md')).toContain('stale');
     expect(await ui.find({ key: 'task:2026-09-01-shipped.md:1' })).toBe(undefined);
 
     await ui.press({ key: 'plan:2026-09-01-shipped.md' });
@@ -79,8 +97,8 @@ for (const surface of SURFACES) {
     // A plan with no ledger shows neutral marks: no "next ready" glyph and no "waits on" for progress nobody recorded.
     await ui.press({ key: 'plan:2026-08-01-quiet.md' });
 
-    expect((await ui.find({ key: 'task:2026-08-01-quiet.md:1' }))?.text).toContain('·');
-    expect((await ui.find({ key: 'task:2026-08-01-quiet.md:1' }))?.text).not.toContain('▶');
+    expect((await ui.find({ key: glyphKey(surface, '2026-08-01-quiet.md:1') }))?.text).toContain('·');
+    expect((await ui.find({ key: glyphKey(surface, '2026-08-01-quiet.md:1') }))?.text).not.toContain('▶');
     expect((await ui.find({ key: 'task:2026-08-01-quiet.md:2' }))?.text).not.toContain('waits on');
   });
 

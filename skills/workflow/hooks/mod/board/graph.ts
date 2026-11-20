@@ -4,8 +4,10 @@ import { type BoardPlan, type TaskState } from '../types';
 // Mid-tone, so one drawing reads in both themes (the same family as the shared charts).
 export const STATE_HEX: Record<TaskState, string> = {
   done: '#3f8f5b',
-  'next-ready': '#c8643c',
-  ready: '#2f6db5',
+  // The task under way takes the in-progress pill's blue; a ready task waiting its turn takes a quiet slate, so the
+  // two stay apart.
+  'next-ready': '#2f6db5',
+  ready: '#5f6b7a',
   blocked: '#8a8a85',
 };
 

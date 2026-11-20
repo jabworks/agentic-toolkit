@@ -22,6 +22,9 @@ BACKLOG.md conventions.
 - [board-direction-a.html](board-direction-a.html) — the signed-off board render (2026-08-21, docket #45)
 
 ## Changelog
+- 2026-11-20: the `/docket` pane gains chrome — tray section cards, solid
+  tags in each section's colour, a count chip, aligned item columns, and a
+  solid neutral masthead rule and frame (quirks Q13)
 - 2026-11-17: the `/docket` pane gains motion — CSS entrances on the ring, bar
   and sparkline, and a brief tint on an item that arrives (quirks Q12)
 - 2026-08-25: `mdLite()` gains pipe tables (docket #43). Detection is by

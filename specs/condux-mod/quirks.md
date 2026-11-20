@@ -19,6 +19,7 @@
 | Q15 | A ledger's `Plan:` header is prose, and its file name may carry the plan's date | A header whose path sits in backticks and is followed by commentary on the same line | high | yes |
 | Q16 | An image `Svg` replays a CSS entrance on every redraw, and SMIL does not run at all | Animating the board's vector drawings | medium | yes |
 | Q17 | A Button's children carry no keys, and a surface module cannot sit inside one | Keying a flash or a pulse on part of a `plain` Button row | low | yes |
+| Q18 | Pane chrome that reads in a browser can look wrong, or not draw, in a pane | Borders, tints, SVG labels and rules on the desktop | medium | yes |
 
 ## Q1 — Plans with no ledger
 
@@ -172,4 +173,32 @@
 **Trigger:** keying part of a row that a Button draws.
 **Cause:** the kit indexes the Button by its own key and its children as its text only.
 **Mitigation:** the flash keys the row's outer `Box`, only while it is lit. The pulsing glyph is a `Client` drawn just before the Button, not inside it, while the row's glyph is left out of the Button for that span.
+
+## Q18 — Pane chrome on the desktop
+
+**Discovered:** 2026-11-20, with two rounds of a throwaway probe pane that Harvey watched in the desktop app (light theme).
+
+**Symptom:** several web-style treatments looked wrong or drew nothing in a pane.
+**Trigger:** adding chrome (cards, tags, pills, a rule, hover) to the board and the docket pane.
+**Cause:** what the probe showed:
+- A nested "double bezel" (a tray holding a bordered core) read as clutter.
+- A bordered Box as a tag costs a row above and below its text and dwarfs the heading, and a tinted `Text` spans the whole row, so neither looks like a tag.
+- SVG text placed with `dominant-baseline="central"` sat off-centre in its pill.
+- A gradient rule `Svg` inside a one-row `overflow="hidden"` Box drew nothing. Unwrapped, it draws.
+- A hover border in a contrasting accent looked like a selection.
+- Hover layers stacked: a card's hover, a row's and a Button's own highlight drew as three nested tints. A `hover` on a row Box drew nothing at all; the Button's own `hover` does apply, and a Button cannot be widened (no layout props, text children only), so its highlight spans the title alone.
+- Spaces cannot pad columns in a proportional font, and ✓, ▶ and ⏸ differ in width, so names, ellipses and ages did not line up.
+- A mod cannot read the light or dark scheme, and the SVG frame reported LIGHT in a light-themed app. Dark mode is untested.
+
+**Mitigation:** the shared kit (`charts.ts`) holds the settled chrome:
+- One tray per section, its fill neutral grey at low alpha (`TRAY`) and its rim the same grey a step stronger (`TRAY_EDGE`). A tray does not answer the pointer: the one hover is the row title Button's, in `TRAY_HOVER`.
+- Trays and the pane frame pad by the `'xs'` step on every side, so a tag sits concentric with its tray's corner; the body has a margin above only.
+- Status pills and count chips are tinted `pillSvg` capsules; a section tag is a solid one (`isSolid`) in the colour of its rows' status (condux) or its section's bar colour (docket). All take an explicit text baseline and size to their label.
+- Rows lay out in boxes on the desktop: fixed marker, id and glyph columns, a growing title with `wrap="truncate-end"`, the age flush right.
+- The masthead rule is an unwrapped solid neutral `ruleSvg`, given a height and no width so it fills its slot; the pane frame is the same neutral (`PANE_EDGE`).
+- Work under way is blue (the in-progress pill, the ▶ glyph, the next-ready graph node); the accent's red-orange read as trouble.
+- The terminal keeps plain borders and text.
+- Low-alpha colours were chosen so one value reads on either ground. That rests on the assumption above, not on a dark-mode check.
+
+The kit does not hand `hover` back on found elements, so hover is checked live, not in tests.
 

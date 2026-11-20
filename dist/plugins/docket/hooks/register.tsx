@@ -10,7 +10,23 @@ import {
 } from 'claude-code';
 
 import { type DocketBoard, type DocketFlash, type DocketItem, type DocketSection } from '../types';
-import { type Share, BAR_HEIGHT, PALETTE, barSvg, colorFor, ringSvg, sparklineSvg } from './charts';
+import {
+  type Share,
+  BAR_HEIGHT,
+  PALETTE,
+  PANE_EDGE,
+  RULE_HEIGHT,
+  CHIP_HEX,
+  TRAY,
+  TRAY_EDGE,
+  TRAY_HOVER,
+  barSvg,
+  colorFor,
+  pillSvg,
+  ringSvg,
+  ruleSvg,
+  sparklineSvg,
+} from './charts';
 import { ageInDays, ancestors, baseName, closesByWeek, joinPath, parseDocket } from './docket';
 
 const PANE = 'docket';
@@ -405,7 +421,41 @@ export const register: Register = on => {
         <Text color='subtle'>{glyph.repeat(width * 2)}</Text>
       </Box>
     );
-    const rule = divider('─', windowWidth);
+    // The desktop's rule is a solid neutral hairline. Given a height and no width, like the bar, it fills its slot edge to
+    // edge.
+    const rule =
+      Svg === undefined ? (
+        divider('─', windowWidth)
+      ) : (
+        <Svg
+          source={ruleSvg()}
+          alt='divider'
+          height={RULE_HEIGHT}
+          isInteractive
+        />
+      );
+
+    // The desktop shows each figure of the count as a quiet grey chip; `· 19 open` and `25 plans · 1 active` alike.
+    const countChips = (count: string) =>
+      Svg === undefined
+        ? null
+        : count
+            .split('·')
+            .map(part => part.trim())
+            .filter(part => part !== '')
+            .map(part => {
+              const chip = pillSvg(part, CHIP_HEX);
+
+              return (
+                <Svg
+                  source={chip.svg}
+                  alt={part}
+                  width={chip.width}
+                  height={chip.height}
+                  isInteractive
+                />
+              );
+            });
 
     // The hints sit under the header, not below the list: a pane has no fixed footer, its whole body scrolls as one, and
     // a hint line at the bottom is out of sight until the end of a long list.
@@ -413,18 +463,24 @@ export const register: Register = on => {
       <Box
         flexDirection='column'
         borderStyle='round'
-        borderColor='claude'
-        paddingX={1}
+        borderColor={Svg === undefined ? 'claude' : PANE_EDGE}
+        padding='xs'
       >
-        <Box justifyContent='space-between'>
-          <Box gap={1}>
+        <Box
+          justifyContent='space-between'
+          alignItems='center'
+        >
+          <Box
+            gap={1}
+            alignItems='center'
+          >
             <Text
               bold
               color='claude'
             >
               {title}
             </Text>
-            <Text color='subtle'>{count}</Text>
+            {Svg === undefined ? <Text color='subtle'>{count}</Text> : countChips(count)}
           </Box>
           <Button
             key='refresh'
@@ -502,25 +558,76 @@ export const register: Register = on => {
           key={isLit ? `flash:item:${item.idPart}` : undefined}
           flexDirection='column'
         >
-          <Button
-            key={`item:${item.idPart}`}
-            plain
-            onPress={() => toggle($, item.idPart)}
-          >
-            <Text color='claude'>{isOpen ? '▾ ' : '▸ '}</Text>
-            <Text color='suggestion'>{`#${item.idPart}`.padEnd(idWidth + 1)}</Text>
-            <Text
-              bold={isOpen}
-              backgroundColor={isLit ? tint : undefined}
+          {Svg === undefined ? (
+            <Button
+              key={`item:${item.idPart}`}
+              plain
+              onPress={() => toggle($, item.idPart)}
             >
-              {title.padEnd(titleRoom)}
-            </Text>
-            <Text color={ageColor}>{ageText.padStart(5)}</Text>
-          </Button>
+              <Text color='claude'>{isOpen ? '▾ ' : '▸ '}</Text>
+              <Text color='suggestion'>{`#${item.idPart}`.padEnd(idWidth + 1)}</Text>
+              <Text
+                bold={isOpen}
+                backgroundColor={isLit ? tint : undefined}
+              >
+                {title.padEnd(titleRoom)}
+              </Text>
+              <Text color={ageColor}>{ageText.padStart(5)}</Text>
+            </Button>
+          ) : (
+            // A proportional font cannot pad columns with spaces, so the desktop lays the row out in boxes: the marker
+            // and the id in fixed columns, the title growing into the rest and cut by the surface at the same edge on
+            // every row, the age flush right.
+            <Box
+              key={`row:${item.idPart}`}
+              alignItems='center'
+            >
+              <Box
+                width={2}
+                flexShrink={0}
+              >
+                <Text color='claude'>{isOpen ? '▾' : '▸'}</Text>
+              </Box>
+              <Box
+                width={idWidth + 1}
+                flexShrink={0}
+              >
+                <Text color='suggestion'>{`#${item.idPart}`}</Text>
+              </Box>
+              <Box
+                flexGrow={1}
+                flexShrink={1}
+                overflow='hidden'
+              >
+                <Button
+                  key={`item:${item.idPart}`}
+                  plain
+                  // The one hover: a row Box's own did not draw on the desktop, and the Button's native highlight is darker.
+                  hover={{ backgroundColor: TRAY_HOVER }}
+                  onPress={() => toggle($, item.idPart)}
+                >
+                  <Text
+                    bold={isOpen}
+                    backgroundColor={isLit ? tint : undefined}
+                    wrap='truncate-end'
+                  >
+                    {item.title}
+                  </Text>
+                </Button>
+              </Box>
+              <Box
+                width={5}
+                flexShrink={0}
+                justifyContent='flex-end'
+              >
+                <Text color={ageColor}>{ageText}</Text>
+              </Box>
+            </Box>
+          )}
           {isOpen && (
             <Box
               flexDirection='column'
-              // The marker column is 2 cells ('▾ '), so the detail starts under the row's #N.
+              // The marker column is 2 cells, so the detail starts under the row's #N.
               marginLeft={2}
               marginY={1}
               gap={1}
@@ -615,10 +722,11 @@ export const register: Register = on => {
         </Box>
       );
 
+    // A margin above only: the frame's own padding is the gap below the last card, the same as at its sides.
     const body = (
       <Box
         flexDirection='column'
-        marginY={1}
+        marginTop={1}
         gap={1}
       >
         {progress}
@@ -661,7 +769,7 @@ export const register: Register = on => {
             onSubmit={value => setFilter($, value)}
           />
         )}
-        {current.sections.map(section => {
+        {current.sections.map((section, sectionIndex) => {
           // Loose threads are entries too: a section holding only threads is not empty.
           const count = section.items.length + section.threads.length;
           const tone = count > 0 ? 'suggestion' : 'subtle';
@@ -670,22 +778,39 @@ export const register: Register = on => {
           const threads = section.threads.filter(thread => thread.toLowerCase().includes(needle));
           const shown = items.length + threads.length;
 
+          const countText = needle === '' ? String(count) : `${shown} of ${count}`;
+          // Solid, in the section's own colour from the bar and the legend, so a card names its segment.
+          const tag = pillSvg(`${section.name.toUpperCase()} · ${countText}`, colorFor(sectionIndex + 1), true);
+
+          // The desktop's card is a tray whose rim is its own fill a step stronger; the terminal keeps a plain border.
           return (
             <Box
+              key={`card:${section.name}`}
               flexDirection='column'
               borderStyle='round'
-              borderColor={tone}
-              paddingX={1}
+              borderColor={Svg === undefined ? tone : TRAY_EDGE}
+              backgroundColor={Svg === undefined ? undefined : TRAY}
+              padding='xs'
             >
-              <Box gap={1}>
-                <Text
-                  bold
-                  color={tone}
-                >
-                  {section.name.toUpperCase()}
-                </Text>
-                <Text color='subtle'>{needle === '' ? count : `${shown} of ${count}`}</Text>
-              </Box>
+              {Svg === undefined ? (
+                <Box gap={1}>
+                  <Text
+                    bold
+                    color={tone}
+                  >
+                    {section.name.toUpperCase()}
+                  </Text>
+                  <Text color='subtle'>{countText}</Text>
+                </Box>
+              ) : (
+                <Svg
+                  source={tag.svg}
+                  alt={`${section.name.toUpperCase()} · ${countText}`}
+                  width={tag.width}
+                  height={tag.height}
+                  isInteractive
+                />
+              )}
               {shown === 0 && (
                 <Text
                   color='subtle'

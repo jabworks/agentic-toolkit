@@ -1,7 +1,7 @@
 import { expect, test } from 'claude-code/testing';
 
 import { badges } from '../board/badges';
-import { graphSvg, hasGraph } from '../board/graph';
+import { graphSvg, hasGraph, STATE_HEX } from '../board/graph';
 import { deriveBoard } from '../board/state';
 import { stepperStages } from '../board/stepper';
 import { activity } from '../board/text';
@@ -137,4 +137,10 @@ test('the ledger heartbeat reads alive, then quiet at 10 minutes, then stalled a
 test('a finished plan or one with no ledger has no heartbeat', () => {
   expect(activity(board(plan([[]]), null))).toBe(null);
   expect(activity(board(plan([[]]), ledger(['Task 1: done', 'committed abc1234'], 500)))).toBe(null);
+});
+
+test('the task under way is drawn in the in-progress blue, and a ready task waiting its turn in another colour', () => {
+  expect(STATE_HEX['next-ready']).toBe('#2f6db5');
+  expect(STATE_HEX.ready).not.toBe(STATE_HEX['next-ready']);
+  expect(Object.values(STATE_HEX)).not.toContain('#c8643c');
 });
