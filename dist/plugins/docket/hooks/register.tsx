@@ -11,16 +11,18 @@ import {
 
 import { type DocketBoard, type DocketFlash, type DocketItem, type DocketSection } from '../types';
 import {
-  type Share,
   BAR_HEIGHT,
+  CHEVRON_SIZE,
+  CHIP_HEX,
   PALETTE,
   PANE_EDGE,
   RULE_HEIGHT,
-  CHIP_HEX,
+  type Share,
   TRAY,
   TRAY_EDGE,
   TRAY_HOVER,
   barSvg,
+  chevronSvg,
   colorFor,
   pillSvg,
   ringSvg,
@@ -140,8 +142,14 @@ const startWork = async ($: EngineInterface, item: DocketItem): Promise<void> =>
 
 const setFilter = ($: EngineInterface, value: string): Promise<unknown> => update($, filter, () => value);
 
-const toggle = ($: EngineInterface, idPart: string): Promise<unknown> =>
-  update($, expanded, list => (list.includes(idPart) ? list.filter(id => id !== idPart) : [...list, idPart]));
+// Rows the person has opened or closed this load: closed again, their chevron turns back instead of only fading in.
+const turned = new Set<string>();
+
+const toggle = ($: EngineInterface, idPart: string): Promise<unknown> => {
+  turned.add(idPart);
+
+  return update($, expanded, list => (list.includes(idPart) ? list.filter(id => id !== idPart) : [...list, idPart]));
+};
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -532,7 +540,19 @@ export const register: Register = on => {
     const editedAt = `${String(edited.getHours()).padStart(2, '0')}:${String(edited.getMinutes()).padStart(2, '0')}`;
 
     // Dashed and indented under #N, so it reads as part of the item rather than a section break.
-    const detailRule = divider('┄', Math.max(8, rowWidth - 2));
+    // On the desktop the rules framing an opened item's detail draw in from the left as it opens: a Box cannot animate,
+    // so the opening shows in the drawings around it.
+    const detailRule =
+      Svg === undefined ? (
+        divider('┄', Math.max(8, rowWidth - 2))
+      ) : (
+        <Svg
+          source={ruleSvg()}
+          alt='detail divider'
+          height={RULE_HEIGHT}
+          isInteractive
+        />
+      );
 
     const renderItem = (item: DocketItem) => {
       const isOpen = openIds.includes(item.idPart);
@@ -585,8 +605,15 @@ export const register: Register = on => {
               <Box
                 width={2}
                 flexShrink={0}
+                alignItems='center'
               >
-                <Text color='claude'>{isOpen ? '▾' : '▸'}</Text>
+                <Svg
+                  source={chevronSvg(isOpen, turned.has(item.idPart))}
+                  alt={isOpen ? 'expanded' : 'collapsed'}
+                  width={CHEVRON_SIZE}
+                  height={CHEVRON_SIZE}
+                  isInteractive
+                />
               </Box>
               <Box
                 width={idWidth + 1}

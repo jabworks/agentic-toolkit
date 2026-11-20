@@ -117,3 +117,13 @@ test('on the desktop a section tag is solid, in the colour of the status its row
   expect(tagSource('ACTIVE · 1')).toContain('fill="#2f6db5" fill-opacity="1"');
   expect(tagSource('COMPLETE · 1')).toContain('fill="#3f8f5b" fill-opacity="1"');
 });
+
+test('on the desktop a plan row\'s marker is a chevron drawing that turns as the row opens', async ($, on) => {
+  answerBeneath(on, sampleFiles);
+  await $.command.run(run(''));
+
+  const ui = await mountPane('desktop', $);
+  const alts = (await ui.findAll({ type: 'Svg' })).map(svg => String(svg.props.alt));
+
+  expect(alts).toContain('collapsed');
+});

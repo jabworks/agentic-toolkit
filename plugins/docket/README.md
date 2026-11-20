@@ -49,6 +49,8 @@ On the desktop app its ring, bar and sparkline ease in when the numbers
 change, and an item that just arrived is tinted for a moment.
 Its sections are softly tinted cards with name tags in their bar colour,
 and item rows line up in columns.
+Its charts answer the pointer, counts pop when they change, and an item's
+chevron turns as it opens.
 
 It is a Claude Code function-hooks module (early access; built on Claude Code
 2.1.296, which auto-update keeps you past). Codex, OpenCode and Cursor never

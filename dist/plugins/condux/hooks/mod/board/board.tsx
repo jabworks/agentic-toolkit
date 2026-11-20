@@ -1,13 +1,15 @@
 import { type EngineInterface, type On, type RenderChildren, type Timer, atom, read, update } from 'claude-code';
 
 import {
+  CHEVRON_SIZE,
+  CHIP_HEX,
   PANE_EDGE,
   RULE_HEIGHT,
-  CHIP_HEX,
   TRAY,
   TRAY_EDGE,
   TRAY_HOVER,
   barSvg,
+  chevronSvg,
   pillSvg,
   ruleSvg,
 } from '../kit/charts';
@@ -15,6 +17,7 @@ import { locateWorkingState, type WorkingState } from '../kit/locate';
 import { joinPath } from '../kit/paths';
 import { type BoardFlash, type BoardPlan, type BoardSnapshot, type Ledger, type Plan, type PlanStatus } from '../types';
 import { badges } from './badges';
+import { GLYPH_ALT, GLYPH_SIZE, type GlyphKind, glyphSvg } from './glyph-svg';
 import { graphSvg, hasGraph, STATE_HEX } from './graph';
 import { parseLedger } from './parse-ledger';
 import { parsePlan } from './parse-plan';
@@ -281,7 +284,12 @@ function openPane($: EngineInterface, isFocused: boolean): Promise<OpenOutcome> 
   ]);
 }
 
+// Rows the person has opened or closed this load: closed again, their chevron turns back instead of only fading in.
+const turned = new Set<string>();
+
 function toggle($: EngineInterface, key: string): Promise<unknown> {
+  turned.add(key);
+
   return update($, toggled, list => (list.includes(key) ? list.filter(item => item !== key) : [...list, key]));
 }
 
@@ -670,8 +678,12 @@ export const registerBoard = (on: On): void => {
       const isOpen = open.includes(key);
       const wait = waitLabel(entry, boardTask);
       const nameRoom = Math.max(8, rowWidth - 14 - wait.length);
-      const isPulsing =
-        Client !== undefined && worked?.plan.file === entry.plan.file && boardTask.state === 'next-ready';
+      const isWorked = worked?.plan.file === entry.plan.file && boardTask.state === 'next-ready';
+      // The terminal pulses its text glyph; the desktop draws the glyph and spins it instead.
+      const isPulsing = Svg === undefined && Client !== undefined && isWorked;
+      const pulseKey = `pulse:${entry.plan.file}:${boardTask.task.number}`;
+      const kind: GlyphKind =
+        entry.status === 'no-ledger' ? 'unknown' : boardTask.inCycle ? 'cycle' : boardTask.state;
       const glyph = <Text color={glyphColor(entry, boardTask)}>{`${taskGlyph(entry, boardTask)} `}</Text>;
 
       return (
@@ -682,23 +694,31 @@ export const registerBoard = (on: On): void => {
         >
           <Box>
             {/* A surface module cannot sit inside a Button, so the pulsing glyph stands just before it. On the desktop
-                every glyph does, in a two-cell column: ✓, ▶ and ⏸ are not one width in a proportional font, and the
-                task names and the detail under them line up only past a fixed column. */}
+                every glyph does, drawn in a two-cell column like the app's checklist: the task names and the detail
+                under them line up past it, and the worked task's arc spins. */}
             {isPulsing && Client !== undefined && (
               <Client
-                key={`pulse:${entry.plan.file}:${boardTask.task.number}`}
+                key={pulseKey}
                 module='./pulse.tsx'
                 props={{ glyph: taskGlyph(entry, boardTask), color: glyphColor(entry, boardTask) }}
                 width={2}
               />
             )}
-            {!isPulsing && Svg !== undefined && (
+            {Svg !== undefined && (
               <Box
-                key={`glyph:${key}`}
+                key={isWorked ? pulseKey : `glyph:${key}`}
                 width={2}
                 flexShrink={0}
+                alignItems='center'
               >
-                <Text color={glyphColor(entry, boardTask)}>{taskGlyph(entry, boardTask)}</Text>
+                <Svg
+                  source={glyphSvg(kind, isWorked)}
+                  // Names its task, so a reader moving down the glyphs hears whose state each is.
+                  alt={`Task ${boardTask.task.number}: ${isWorked ? 'working' : GLYPH_ALT[kind]}`}
+                  width={GLYPH_SIZE}
+                  height={GLYPH_SIZE}
+                  isInteractive
+                />
               </Box>
             )}
             <Button
@@ -842,8 +862,15 @@ export const registerBoard = (on: On): void => {
           <Box
             width={2}
             flexShrink={0}
+            alignItems='center'
           >
-            <Text color='claude'>{isOpen ? '▾' : '▸'}</Text>
+            <Svg
+              source={chevronSvg(isOpen, turned.has(key))}
+              alt={isOpen ? 'expanded' : 'collapsed'}
+              width={CHEVRON_SIZE}
+              height={CHEVRON_SIZE}
+              isInteractive
+            />
           </Box>
           <Box
             flexGrow={1}

@@ -18,8 +18,16 @@ const GAP = 3;
 export const ENTRANCE_MS = 480;
 export const EASE_OUT = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
+// Under the pointer a drawing answers in HOVER_MS: quick enough to feel attached to the pointer, slow enough to read
+// as a change rather than a flicker.
+export const HOVER_MS = 160;
+
 export const motionStyle = (rules: string): string =>
-  `<style>${rules}@media (prefers-reduced-motion: reduce){*{animation:none !important}}</style>`;
+  `<style>${rules}@media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important}}</style>`;
+
+// Focus-dim: under the pointer the marks inside `group` other than the one pointed at fade back, so the one reads.
+const focusDim = (group: string, mark: string): string =>
+  `${mark}{transition:opacity ${HOVER_MS}ms ${EASE_OUT}}${group}:hover ${mark}:not(:hover){opacity:0.35}`;
 
 // Each share's span along a track of `length`, proportional to its count except that none is shorter than `minSpan`: a
 // round-capped segment is at least as wide as it is thick, so a thinner share would spill over its neighbours. What the
@@ -65,12 +73,12 @@ export const ringSvg = (shares: Share[], doneCount: number): string => {
 
       // One segment is the whole ring: a gap would only be a notch.
       if (visibleShares.length === 1) {
-        return `<circle cx="50" cy="50" r="${radius}" fill="none" stroke="${share.color}" stroke-width="${stroke}">${title}</circle>`;
+        return `<circle class="arc" cx="50" cy="50" r="${radius}" fill="none" stroke="${share.color}" stroke-width="${stroke}">${title}</circle>`;
       }
 
       const visible = Math.max(0.01, span - stroke - GAP);
       const start = offset + (span - visible) / 2;
-      const arc = `<circle cx="50" cy="50" r="${radius}" fill="none" stroke="${share.color}" stroke-width="${stroke}" stroke-linecap="round" stroke-dasharray="${visible.toFixed(2)} ${(circumference - visible).toFixed(2)}" stroke-dashoffset="${(-start).toFixed(2)}" transform="rotate(-90 50 50)">${title}</circle>`;
+      const arc = `<circle class="arc" cx="50" cy="50" r="${radius}" fill="none" stroke="${share.color}" stroke-width="${stroke}" stroke-linecap="round" stroke-dasharray="${visible.toFixed(2)} ${(circumference - visible).toFixed(2)}" stroke-dashoffset="${(-start).toFixed(2)}" transform="rotate(-90 50 50)">${title}</circle>`;
 
       offset += span;
 
@@ -85,7 +93,8 @@ export const ringSvg = (shares: Share[], doneCount: number): string => {
       `.arcs{transform-origin:50px 50px;animation:turn ${ENTRANCE_MS * 1.5}ms ${EASE_OUT} both}` +
         '@keyframes turn{from{opacity:0;transform:rotate(-90deg) scale(0.9)}to{opacity:1;transform:none}}' +
         `.figure{animation:fade ${ENTRANCE_MS}ms ${EASE_OUT} both}` +
-        '@keyframes fade{from{opacity:0}to{opacity:1}}',
+        '@keyframes fade{from{opacity:0}to{opacity:1}}' +
+        focusDim('.arcs', '.arc'),
     ),
     `<g class="arcs">${arcs}</g>`,
     '<g class="figure">',
@@ -110,7 +119,8 @@ export const barSvg = (shares: Share[], width = 1200, height = BAR_HEIGHT): stri
     `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">` +
     motionStyle(
       `.grow{transform-origin:0 50%;animation:grow ${ENTRANCE_MS}ms ${EASE_OUT} both}` +
-        '@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}',
+        '@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}' +
+        focusDim('.grow', '.seg'),
     );
 
   if (total === 0) {
@@ -134,7 +144,7 @@ export const barSvg = (shares: Share[], width = 1200, height = BAR_HEIGHT): stri
 
       cursor += span;
 
-      return `<line x1="${from.toFixed(1)}" y1="${middle}" x2="${to.toFixed(1)}" y2="${middle}" stroke="${share.color}" stroke-width="${height}" stroke-linecap="round"><title>${escapeXml(`${share.count} ${share.name.toLowerCase()}`)}</title></line>`;
+      return `<line x1="${from.toFixed(1)}" y1="${middle}" x2="${to.toFixed(1)}" y2="${middle}" class="seg" stroke="${share.color}" stroke-width="${height}" stroke-linecap="round"><title>${escapeXml(`${share.count} ${share.name.toLowerCase()}`)}</title></line>`;
     })
     .join('');
 
@@ -161,10 +171,11 @@ export const sparklineSvg = (counts: number[], color: string): string => {
   // Each bar rises from the baseline, oldest week first.
   const style = motionStyle(
     `.rise{transform-box:fill-box;transform-origin:50% 100%;animation:rise ${ENTRANCE_MS}ms ${EASE_OUT} both}` +
-      '@keyframes rise{from{transform:scaleY(0)}to{transform:scaleY(1)}}',
+      '@keyframes rise{from{transform:scaleY(0)}to{transform:scaleY(1)}}' +
+      focusDim('.bars', '.rise'),
   );
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}">${style}${bars}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}">${style}<g class="bars">${bars}</g></svg>`;
 };
 
 // Surface chrome, settled with a probe pane in the desktop app (condux-mod Q18). Neutral grey at low alpha reads on a
@@ -187,13 +198,20 @@ const PILL_HEIGHT = 18;
 
 // A rounded label: a tinted capsule with a rim in its own hue, or with `isSolid` a filled one with white text, for a
 // heading that should outrank the pills beneath it. The text sits on an explicit baseline, because `dominant-baseline`
-// did not centre it in the desktop's frame. Width follows the label, so a tag hugs its text.
+// did not centre it in the desktop's frame. Width follows the label, so a tag hugs its text. A new label is a new
+// source, so a count that changes pops in, growing to its size and no further: an overshoot outgrew the drawing's own
+// box and was cut off. Under the pointer the fill deepens.
 export const pillSvg = (label: string, hex: string, isSolid = false): Pill => {
   const width = Math.round(label.length * 6.2 + 18);
   const height = PILL_HEIGHT;
   const svg = [
     `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">`,
-    motionStyle(`.pill{animation:fade ${ENTRANCE_MS}ms ${EASE_OUT} both}@keyframes fade{from{opacity:0}to{opacity:1}}`),
+    motionStyle(
+      `.pill{transform-box:fill-box;transform-origin:50% 50%;animation:pop ${ENTRANCE_MS}ms ${EASE_OUT} both}` +
+        '@keyframes pop{from{opacity:0;transform:scale(0.8)}to{opacity:1;transform:scale(1)}}' +
+        `.pill rect{transition:fill-opacity ${HOVER_MS}ms ${EASE_OUT},filter ${HOVER_MS}ms ${EASE_OUT}}` +
+        (isSolid ? '.pill:hover rect{filter:brightness(1.15)}' : '.pill:hover rect{fill-opacity:0.26}'),
+    ),
     '<g class="pill">',
     `<rect x="0.5" y="0.5" width="${width - 1}" height="${height - 1}" rx="${(height - 1) / 2}" fill="${hex}" fill-opacity="${isSolid ? 1 : 0.14}" stroke="${hex}" stroke-opacity="${isSolid ? 1 : 0.5}"/>`,
     `<text x="${width / 2}" y="12.6" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" font-weight="600" fill="${isSolid ? '#ffffff' : hex}">${escapeXml(label)}</text>`,
@@ -216,5 +234,29 @@ export const ruleSvg = (width = 1200): string =>
         '@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}',
     ),
     `<rect class="rule" width="${width}" height="${RULE_HEIGHT}" fill="${RULE_HEX}" fill-opacity="0.45"/>`,
+    '</svg>',
+  ].join('');
+
+// A row's disclosure marker, drawn so it can turn: open, it rotates from pointing right to pointing down, once, since
+// the open source differs from the closed one. Closed after the person turned it (`wasTurned`), it turns back; a row
+// never turned only fades in, since a whole list drawn closed must not spin on arrival.
+export const CHEVRON_SIZE = 10;
+const CHEVRON_HEX = '#d97757';
+
+const turnStyle = (from: number, to: number): string =>
+  motionStyle(
+    `.chev{transform-origin:5px 5px;transform:rotate(${to}deg);animation:turn ${HOVER_MS * 1.5}ms ${EASE_OUT} both}` +
+      `@keyframes turn{from{transform:rotate(${from}deg)}to{transform:rotate(${to}deg)}}`,
+  );
+
+export const chevronSvg = (isOpen: boolean, wasTurned = false): string =>
+  [
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${CHEVRON_SIZE}" height="${CHEVRON_SIZE}" viewBox="0 0 10 10">`,
+    isOpen
+      ? turnStyle(0, 90)
+      : wasTurned
+        ? turnStyle(90, 0)
+        : motionStyle(`.chev{animation:fade ${ENTRANCE_MS}ms ${EASE_OUT} both}@keyframes fade{from{opacity:0}to{opacity:1}}`),
+    `<path class="chev" d="M3 1.5 L7.5 5 L3 8.5 Z" fill="${CHEVRON_HEX}"/>`,
     '</svg>',
   ].join('');

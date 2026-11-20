@@ -1,4 +1,4 @@
-import { EASE_OUT, ENTRANCE_MS, motionStyle } from '../kit/charts';
+import { EASE_OUT, ENTRANCE_MS, HOVER_MS, motionStyle } from '../kit/charts';
 import { type BoardPlan, type TaskState } from '../types';
 
 // Mid-tone, so one drawing reads in both themes (the same family as the shared charts).
@@ -159,7 +159,8 @@ export const graphSvg = (plan: BoardPlan, maxWidth = 640): { svg: string; width:
       const stroke = entry.inCycle ? CYCLE_HEX : idle;
 
       return [
-        `<path d="M${x1} ${y1} C${x1 + bend} ${y1} ${x2 - bend} ${y2} ${x2} ${y2}" fill="none" stroke="${stroke}" stroke-width="1.5" stroke-opacity="0.8"/>`,
+        // Classed by both its ends, so hovering either node finds it; a unit pathLength lets one dash draw it in.
+        `<path class="edge e-${dep} e-${entry.task.number}" pathLength="1" d="M${x1} ${y1} C${x1 + bend} ${y1} ${x2 - bend} ${y2} ${x2} ${y2}" fill="none" stroke="${stroke}" stroke-width="1.5" stroke-opacity="0.8"/>`,
       ];
     }),
   );
@@ -171,21 +172,33 @@ export const graphSvg = (plan: BoardPlan, maxWidth = 640): { svg: string; width:
     const delay = Math.min(index * 30, 300);
 
     return [
-      `<g class="node" style="animation-delay:${delay}ms"><title>${title}</title>`,
+      `<g class="node n-${entry.task.number}" style="animation-delay:${delay}ms"><title>${title}</title>`,
       `<rect x="${spot.x}" y="${spot.y}" width="${NODE_W}" height="${NODE_H}" rx="${NODE_H / 2}" fill="${colorOf(entry)}"/>`,
       `<text x="${spot.x + NODE_W / 2}" y="${spot.y + NODE_H / 2}" text-anchor="middle" dominant-baseline="central" font-size="11" font-weight="600" fill="#ffffff">${entry.task.number}</text>`,
       '</g>',
     ].join('');
   });
 
+  const hoverRules = plan.tasks
+    .map(entry => {
+      const n = entry.task.number;
+
+      return `svg:has(.n-${n}:hover) .edge:not(.e-${n}){opacity:0.15}svg:has(.n-${n}:hover) .e-${n}{stroke-width:2.5}`;
+    })
+    .join('');
+
   const svg = [
     `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${naturalWidth} ${naturalHeight}">`,
-    // Nodes fade and lift into place, then the edges between them fade in.
+    // Nodes fade and lift into place, then each edge draws from its source to its target. Under the pointer a node
+    // brightens, its own edges thicken and every other edge fades back.
     motionStyle(
       `.node{animation:settle ${ENTRANCE_MS}ms ${EASE_OUT} both}` +
         '@keyframes settle{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}' +
-        `.edges{animation:fade ${ENTRANCE_MS}ms ${EASE_OUT} ${ENTRANCE_MS / 2}ms both}` +
-        '@keyframes fade{from{opacity:0}to{opacity:1}}',
+        `.edge{stroke-dasharray:1;animation:draw ${ENTRANCE_MS}ms ${EASE_OUT} ${ENTRANCE_MS / 2}ms both;` +
+        `transition:opacity ${HOVER_MS}ms ${EASE_OUT},stroke-width ${HOVER_MS}ms ${EASE_OUT}}` +
+        '@keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}' +
+        `.node rect{transition:filter ${HOVER_MS}ms ${EASE_OUT}}.node:hover rect{filter:brightness(1.15)}` +
+        hoverRules,
     ),
     '<g class="edges">',
     ...edges,

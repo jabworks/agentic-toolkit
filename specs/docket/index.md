@@ -22,6 +22,8 @@ BACKLOG.md conventions.
 - [board-direction-a.html](board-direction-a.html) — the signed-off board render (2026-08-21, docket #45)
 
 ## Changelog
+- 2026-11-20: micro-interactions on the `/docket` pane — chart focus-dim,
+  pill pop and hover, turning chevrons, and detail rules that draw in (quirks Q14)
 - 2026-11-20: the `/docket` pane gains chrome — tray section cards, solid
   tags in each section's colour, a count chip, aligned item columns, and a
   solid neutral masthead rule and frame (quirks Q13)

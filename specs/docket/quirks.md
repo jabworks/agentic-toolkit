@@ -127,3 +127,6 @@ A 4-space-indented line beginning with `|` is still prose — `mdLite` has no in
 
 **Symptom, cause and mitigation:** as condux-mod Q18 records for the shared kit. On the desktop the pane draws each section as a tray whose rim follows its fill, its name as a solid capsule in the section's bar colour, the open count as a grey chip, item rows in fixed id and age columns with a surface-cut title, and a solid neutral rule under the masthead inside a neutral frame. The terminal keeps its plain borders and text.
 
+## Q14 — Pane micro-interactions (2026-11-20)
+
+**Symptom, cause and mitigation:** as condux-mod Q19 records for the shared kit. On the desktop the ring, bar and sparkline focus-dim under the pointer, the pills pop on a changed count and deepen on hover, an item's chevron turns as it opens and closes, and its opened detail is framed by rules that draw in. A staged, step-by-step opening was tried and removed: each step redrew the pane, which read as lag.

@@ -89,7 +89,7 @@ for (const surface of SURFACES) {
     expect(await flashKeys(ui)).toEqual([]);
   });
 
-  test(`the task being worked pulses only while a main turn runs on ${surface}`, async ($, on) => {
+  test(`the task being worked pulses, or spins on the desktop, only while a main turn runs on ${surface}`, async ($, on) => {
     answerBeneath(on, sampleFiles);
     answerTurns(on);
     await $.command.run(run(''));
@@ -105,7 +105,14 @@ for (const surface of SURFACES) {
 
     await $.turn.start(turnStart());
 
-    expect((await ui.find(pulse))?.type).toBe('Client');
+    // The terminal pulses its text glyph; the desktop spins the open arc it draws for the task under way.
+    if (surface === 'desktop') {
+      expect((await ui.findAll({ type: 'Svg' })).some(svg => svg.props.alt === 'Task 2: working')).toBe(true);
+    } else {
+      expect((await ui.find(pulse))?.type).toBe('Client');
+    }
+
+    expect(await ui.find(pulse)).toBeDefined();
 
     await $.turn.complete(turnEnd());
 

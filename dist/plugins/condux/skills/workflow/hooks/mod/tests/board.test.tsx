@@ -19,9 +19,25 @@ import {
 // The desktop's plan row carries its figures beside the title button; the terminal's button holds them all.
 const rowKey = (surface: string, file: string): string => `${surface === 'desktop' ? 'planrow' : 'plan'}:${file}`;
 
-// Where a task's glyph is read: the terminal draws it inside the task's Button, the desktop in a fixed column of its own
-// beside it, so the names line up whatever the glyph's width.
-const glyphKey = (surface: string, task: string): string => `${surface === 'desktop' ? 'glyph:' : ''}task:${task}`;
+// What a task's glyph says: the terminal draws a text glyph inside the task's Button; the desktop draws it as a vector
+// in a column of its own, whose alt names the task and its state (`Task 2: under way`).
+const GLYPH_WORD: Record<string, string> = { '✓': 'done', '▶': 'under way', '·': 'state unknown' };
+
+const glyphSays = async <S extends (typeof SURFACES)[number]>(
+  ui: Awaited<ReturnType<typeof mountPane<S>>>,
+  surface: S,
+  task: string,
+  glyph: string,
+): Promise<boolean> => {
+  if (surface !== 'desktop') {
+    return ((await ui.find({ key: `task:${task}` }))?.text ?? '').includes(glyph);
+  }
+
+  const number = task.split(':').at(-1);
+  const alts = (await ui.findAll({ type: 'Svg' })).map(svg => String(svg.props.alt));
+
+  return alts.includes(`Task ${number}: ${GLYPH_WORD[glyph]}`);
+};
 
 // What a plan row says, status included: the desktop draws the status as a vector pill whose alt names the plan and
 // its status, `<title>: <status>`.
@@ -46,8 +62,8 @@ for (const surface of SURFACES) {
 
     expect((await ui.find({ key: 'plan:2026-10-10-active.md' }))?.text).toContain('Active work');
     expect((await ui.find({ key: rowKey(surface, '2026-10-10-active.md') }))?.text).toContain('1/3 done');
-    expect((await ui.find({ key: glyphKey(surface, '2026-10-10-active.md:1') }))?.text).toContain('✓');
-    expect((await ui.find({ key: glyphKey(surface, '2026-10-10-active.md:2') }))?.text).toContain('▶');
+    expect(await glyphSays(ui, surface, '2026-10-10-active.md:1', '✓')).toBe(true);
+    expect(await glyphSays(ui, surface, '2026-10-10-active.md:2', '▶')).toBe(true);
     expect((await ui.find({ key: 'task:2026-10-10-active.md:3' }))?.text).toContain('waits on 2');
 
     // Document order. A container's `text` holds all its descendants', so only the hint's own Text node counts.
@@ -97,8 +113,8 @@ for (const surface of SURFACES) {
     // A plan with no ledger shows neutral marks: no "next ready" glyph and no "waits on" for progress nobody recorded.
     await ui.press({ key: 'plan:2026-08-01-quiet.md' });
 
-    expect((await ui.find({ key: glyphKey(surface, '2026-08-01-quiet.md:1') }))?.text).toContain('·');
-    expect((await ui.find({ key: glyphKey(surface, '2026-08-01-quiet.md:1') }))?.text).not.toContain('▶');
+    expect(await glyphSays(ui, surface, '2026-08-01-quiet.md:1', '·')).toBe(true);
+    expect(await glyphSays(ui, surface, '2026-08-01-quiet.md:1', '▶')).toBe(false);
     expect((await ui.find({ key: 'task:2026-08-01-quiet.md:2' }))?.text).not.toContain('waits on');
   });
 

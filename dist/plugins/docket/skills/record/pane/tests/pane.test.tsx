@@ -529,6 +529,34 @@ test('on the desktop a section tag is solid, in its section colour from the bar 
   expect(tagSource('SOMEDAY · 1')).toContain('fill="#2f6db5" fill-opacity="1"');
 });
 
+test('on the desktop an item row\'s marker is a chevron drawing that turns as the row opens', async ($, on) => {
+  answerBeneath(on, true);
+
+  await $.command.run(RUN_DOCKET);
+
+  const ui = await mountPane('desktop', $);
+  const chevrons = async () =>
+    (await ui.findAll({ type: 'Svg' })).map(svg => String(svg.props.alt)).filter(alt => /^(collapsed|expanded)$/.test(alt));
+
+  expect(await chevrons()).toEqual(['collapsed']);
+  await ui.press({ key: 'item:7' });
+  expect(await chevrons()).toEqual(['expanded']);
+});
+
+test('on the desktop an opened item\'s detail is framed by rules that draw in as it opens', async ($, on) => {
+  answerBeneath(on, true);
+
+  await $.command.run(RUN_DOCKET);
+
+  const ui = await mountPane('desktop', $);
+  const detailRules = async () =>
+    (await ui.findAll({ type: 'Svg' })).filter(svg => svg.props.alt === 'detail divider').length;
+
+  expect(await detailRules()).toBe(0);
+  await ui.press({ key: 'item:7' });
+  expect(await detailRules()).toBe(2);
+});
+
 test('the terminal keeps its plain bordered section cards', async ($, on) => {
   answerBeneath(on, true);
 

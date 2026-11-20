@@ -2,6 +2,7 @@ import { expect, test } from 'claude-code/testing';
 
 import { badges } from '../board/badges';
 import { graphSvg, hasGraph, STATE_HEX } from '../board/graph';
+import { GLYPH_ALT, glyphSvg } from '../board/glyph-svg';
 import { deriveBoard } from '../board/state';
 import { stepperStages } from '../board/stepper';
 import { activity } from '../board/text';
@@ -143,4 +144,30 @@ test('the task under way is drawn in the in-progress blue, and a ready task wait
   expect(STATE_HEX['next-ready']).toBe('#2f6db5');
   expect(STATE_HEX.ready).not.toBe(STATE_HEX['next-ready']);
   expect(Object.values(STATE_HEX)).not.toContain('#c8643c');
+});
+
+test('graph edges draw in from their source, and hovering a node lights its own edges and dims the rest', () => {
+  const entry = board(plan([[], [1], [1], [2, 3]]), ledger(['Task 1: done']));
+  const { svg } = graphSvg(entry);
+
+  expect(svg).toContain('pathLength="1"');
+  expect(svg).toContain('@keyframes draw');
+  // Each edge names both its ends, so a node's hover can find its own.
+  expect(svg).toContain('class="edge e-1 e-2"');
+  expect(svg).toContain(':has(.n-4:hover)');
+  expect(svg).toContain('.edge:not(.e-4)');
+});
+
+test('task glyphs are drawn like the app\'s checklist: a filled check, an open arc, a dashed ring', () => {
+  expect(glyphSvg('done')).toContain('<circle');
+  expect(glyphSvg('done')).toContain('stroke="#ffffff"');
+  expect(glyphSvg('next-ready')).toContain('stroke-dasharray="24 11"');
+  expect(glyphSvg('ready')).toContain('stroke-dasharray="2 2.3"');
+  expect(GLYPH_ALT.done).toBe('done');
+});
+
+test('only the task being worked spins, and reduced motion stills it', () => {
+  expect(glyphSvg('next-ready', true)).toContain('infinite');
+  expect(glyphSvg('next-ready', true)).toContain('prefers-reduced-motion');
+  expect(glyphSvg('next-ready')).not.toContain('infinite');
 });

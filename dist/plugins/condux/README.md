@@ -118,6 +118,7 @@ of asking you to open a file. It is read-only: it never writes to `.condux/`, ru
 | Status line | One line under the prompt, such as `plan: my-feature · 4/6 · next: Task 5`, for the open plan whose ledger changed most recently. It appears only in repositories that have a `.condux/` directory, and clears when nothing is open. While Claude is working, a small spinner leads the line. |
 | Motion | The board's charts ease in when their numbers change, a task that just changed state is tinted for a moment, and the task being worked pulses while Claude is working. Nothing moves when nothing changes, and the charts honour your system's reduced-motion setting. |
 | Chrome | On the desktop app each section is a softly tinted card with a solid tag in its status colour, statuses and counts are rounded pills, rows line up in columns, and a quiet rule sits under the header. The terminal keeps its plain look. |
+| Interactions | On the desktop app charts and graph nodes answer the pointer, counts pop when they change, chevrons turn as rows open and close, tasks show checklist-style marks, and the task being worked spins while Claude is working. |
 
 The board reads the plans and progress ledgers under `.condux/` in the repository you are in, and polls them every few
 seconds, so it follows an agent that is working through a plan on its own. If the mod fails to load, the skills and the

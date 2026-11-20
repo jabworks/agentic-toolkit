@@ -202,3 +202,23 @@
 
 The kit does not hand `hover` back on found elements, so hover is checked live, not in tests.
 
+## Q19 — Micro-interactions live in drawings
+
+**Discovered:** 2026-11-20, building hover and open/close motion that Harvey watched in the desktop app (light and dark themes).
+
+**Symptom:** motion asked of the layout either never drew or made the pane stutter.
+**Trigger:** adding hover feedback, a pop on a changed count, and motion when a row opens or closes.
+**Cause:** what the live passes showed:
+- A Box or Button has no transition: nothing about the layout can ease. Only an interactive `Svg` runs CSS, `:hover` and `:has()` included.
+- A pop that overshot (`scale(1.06)`) outgrew the drawing's own box and was cut off at its edge.
+- Staging an opening in JS (one more part of the detail per 60ms step, via `$.clock.after`) redraws the whole pane at every step. On the desktop a redraw costs more than the step, so it read as lag, not motion. It was taken out.
+
+**Mitigation:** every micro-interaction lives inside a drawing:
+- Charts focus-dim: under the pointer the arc, segment or bar pointed at stays and its siblings fade back.
+- Pills pop to their size and no further when their label changes, and deepen under the pointer.
+- A row's marker is a chevron drawing that turns open, and turns back once the person has turned it (a row never turned only fades in, so a list does not spin on arrival).
+- Graph edges draw in from their source (`pathLength="1"`, one dash); hovering a node thickens its own edges and fades the rest.
+- Task glyphs are drawn like the app's checklist; only the worked task's arc spins, and only while a main turn runs.
+- Docket's opened detail is framed by two rules that draw in.
+
+Opening and closing a row is otherwise instant.
