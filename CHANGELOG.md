@@ -12,19 +12,25 @@ history rather than from the tags.
 The `@jabworks/condux` npm package has its own changelog at
 `packages/condux-opencode/CHANGELOG.md`, maintained by changesets.
 
+## standup 1.0.0 — 2026-11-25
+
+- feat: PRD done-checks, a11y pass, UX copy, standup plugin — condux 2.44.0
+
+## condux 2.44.0 — 2026-11-25
+
+- feat: PRD done-checks, a11y pass, UX copy, standup plugin — condux 2.44.0
+
+## coding-directive 1.5.0 — 2026-11-25
+
+- feat: PRD done-checks, a11y pass, UX copy, standup plugin — condux 2.44.0
+
 ## docket 0.13.0 — 2026-11-20
 
-- chore: bump condux 2.43.0, docket 0.13.0
-- feat(condux,docket): micro-interactions for the /docket pane and the /condux board
-- feat(condux,docket): surface chrome for the /docket pane and the /condux board
-- feat(condux,docket): subtle motion for the /docket pane and the /condux board
+- feat(condux,docket): motion, surface chrome and micro-interactions for the /docket pane and the /condux board (#215)
 
 ## condux 2.43.0 — 2026-11-20
 
-- chore: bump condux 2.43.0, docket 0.13.0
-- feat(condux,docket): micro-interactions for the /docket pane and the /condux board
-- feat(condux,docket): surface chrome for the /docket pane and the /condux board
-- feat(condux,docket): subtle motion for the /docket pane and the /condux board
+- feat(condux,docket): motion, surface chrome and micro-interactions for the /docket pane and the /condux board (#215)
 
 ## usage-trace 0.1.1 — 2026-11-17
 
