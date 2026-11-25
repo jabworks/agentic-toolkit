@@ -1,5 +1,11 @@
 # @jabworks/condux
 
+## 0.33.0
+
+### Minor Changes
+
+- [#216](https://github.com/jabworks/agentic-toolkit/pull/216) [`0aec648`](https://github.com/jabworks/agentic-toolkit/commit/0aec648ee1a737a2e50cb9d3cdb1b17c42dfdac0) Thanks [@vi-hieu](https://github.com/vi-hieu)! - PRD done-checks and an accessibility pass. The `prd.md` template's Scope section now gives every In row a priority (P0/P1) and a "Done when" check, Out is its own table, and open questions say whether they block and who answers them. discovery enforces those rules at §0, and preflight's drift check reads P0 done-checks on feature-completing tasks. live-verification gains a WCAG 2.2 AA accessibility pass (name and role, visible focus, contrast, reflow, target size, plus a native font-scale check), and code-review gains an Accessibility dimension.
+
 ## 0.32.1
 
 ### Patch Changes
