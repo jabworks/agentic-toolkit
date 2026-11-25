@@ -1,0 +1,30 @@
+{
+  "name": "standup",
+  "version": "1.0.0",
+  "description": "Draft a daily standup (Yesterday / Today / Blockers) from the current repo's commits, PRs, docket closes and latest handoff. Read-only, this repo only, nothing invented.",
+  "author": {
+    "name": "jabworks"
+  },
+  "repository": "https://github.com/jabworks/agentic-toolkit",
+  "license": "MIT",
+  "keywords": [
+    "standup",
+    "status",
+    "daily-update",
+    "git",
+    "productivity"
+  ],
+  "skills": "./skills/standup",
+  "interface": {
+    "displayName": "Standup",
+    "shortDescription": "Daily standup drafted from this repo's work.",
+    "longDescription": "Drafts a Yesterday / Today / Blockers update from the current repository's commits, PRs, docket closes and latest session handoff. Read-only, scoped to the repo you are in, and never invents plans or blockers.",
+    "developerName": "jabworks",
+    "category": "Productivity",
+    "defaultPrompt": [
+      "Write my standup.",
+      "What did I do yesterday?",
+      "Draft my standup since Friday."
+    ]
+  }
+}

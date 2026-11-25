@@ -58,7 +58,17 @@ test('technical-spec: the prd.md template carries all six sections, in order', (
 
 test('technical-spec: the prd.md template keeps the table layer the drift check reads', () => {
   const template = prdTemplate();
-  const tables = ['| Section | In one line |', '| Non-goal | Why excluded |', '| In | Out |'];
+  // Scope split into In (with Priority and Done when) and Out tables, and
+  // open questions became a table, in decision 5 (specs/prd-authoring).
+  // preflight reads P0 Done-when checks and the Out column; discovery's sign-off
+  // reads Blocking?.
+  const tables = [
+    '| Section | In one line |',
+    '| Non-goal | Why excluded |',
+    '| In | Priority | Done when |',
+    '| Out |',
+    '| Question | Blocking? | Who answers |',
+  ];
 
   assert.deepEqual(
     tables.filter((header) => !template.includes(header)),
@@ -112,6 +122,7 @@ test('preflight: the drift table has a prd.md row that names scope and non-goals
 
   assert.ok(row, 'preflight drift table has no prd.md row');
   assert.ok(row.includes('Scope') && row.includes('Non-goal'), 'the prd.md drift row no longer names Scope and the Non-goal table');
+  assert.ok(row.includes('Done when') && row.includes('P0'), 'the prd.md drift row no longer reads the P0 Done-when checks');
 });
 
 test('trigger evals: the two corpora agree on who owns a PRD request', () => {

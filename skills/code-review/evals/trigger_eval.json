@@ -4,6 +4,7 @@
   { "query": "check this PR", "should_trigger": true, "expected_skill": "code-review" },
   { "query": "review branch feature/sso", "should_trigger": true, "expected_skill": "code-review" },
   { "query": "any security issues in this change?", "should_trigger": true, "expected_skill": "code-review" },
+  { "query": "any accessibility issues in this diff?", "should_trigger": true, "expected_skill": "code-review" },
   { "query": "give me a severity report on these changes", "should_trigger": true, "expected_skill": "code-review" },
   { "query": "re-review now that I applied the fixes", "should_trigger": true, "expected_skill": "code-review" },
   { "query": "was the approach in this diff right?", "should_trigger": true, "expected_skill": "code-review" },

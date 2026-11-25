@@ -93,13 +93,19 @@ it is worth fixing now}
 
 ## Scope
 
-| In | Out |
-|---|---|
-| {a surface, flow, or platform this covers} | {the adjacent thing it does not} |
+| In | Priority | Done when |
+|---|---|---|
+| {a surface, flow, or platform this covers} | P0 / P1 | {one observable check — given {state}, when {action}, then {result}} |
+
+| Out |
+|---|
+| {the adjacent thing it does not cover} |
 
 ## Open questions
 
-- {a question nobody has answered yet — or "none"}
+| Question | Blocking? | Who answers |
+|---|---|---|
+| {a question nobody has answered yet — or "none"} | yes / no | {role or name} |
 ```
 
 The PRD is the one concern file written *before* the design: it says why the
@@ -110,6 +116,20 @@ check reads **Scope** and the **Non-goal** table as claims: work that lands
 in the Out column, or inside a non-goal, is drift. Write the Out column as
 things someone might plausibly build — an exclusion nobody would attempt
 checks nothing.
+
+**Every In row says when it is done.** *Priority* is P0 when the feature
+does not ship without the row, P1 when it can follow. Anything later than
+that belongs in Out. A PRD whose every row is P0 has not been prioritised,
+so challenge it. *Done when* is one check someone could run and watch pass
+or fail. Use given / when / then when the outcome depends on a starting
+state. A check with no observable result ("works well", "is fast") is a
+wish, and the drift check cannot read it. `preflight` reads the P0 checks
+when a task claims to complete the feature.
+
+**Open questions say who unblocks them.** *Blocking?* is yes when work
+cannot start, or a P0 cannot be written, until the question is answered.
+*Who answers* names a role or a person, never "TBD". A PRD written before
+these columns existed is still valid: a missing column makes no claim.
 
 **An empty section is an open question, not a blank to fill.** When nobody
 has stated the users or a metric, the section says so under *Open questions*

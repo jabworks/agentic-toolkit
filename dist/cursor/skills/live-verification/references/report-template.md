@@ -83,4 +83,5 @@ When nothing could be driven, the report is still written — an absent
 | Evidence files are named for the claim they support and referenced from the claim table | The table is the index — an evidence file it doesn't reference is uncontextualized in a week |
 | Header keys are fixed: Date, Target, Diff, Themes (Themes only for UI surfaces); a native app run adds Device and Build | Two runs of the same surface are diffable only when their headers line up |
 | `device-only` is a verdict, not a pass — it never counts toward verified, and every one lands on the phone checklist | "Never report hardware validation that was not performed": a deferred check written as ✓ is read as done |
+| Accessibility checks are claim rows prefixed `a11y:` — no separate block | One claim table stays the single index; a second block would drift from it |
 | Every run writes `report.md`, including runs where nothing could be driven | Absence of a report must mean absence of a run, nothing else |

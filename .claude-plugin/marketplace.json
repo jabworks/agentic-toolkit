@@ -62,6 +62,15 @@
       "category": "development"
     },
     {
+      "name": "standup",
+      "description": "Draft a daily standup — Yesterday / Today / Blockers — from this repo's commits, PRs, docket closes and latest handoff. Read-only, repo-scoped, never invents plans or blockers.",
+      "author": {
+        "name": "Hieu Vi"
+      },
+      "source": "./dist/plugins/standup",
+      "category": "development"
+    },
+    {
       "name": "git-operations",
       "description": "Decision router for git: given a situation, pick the right operation (undo/discard/stash/merge/push) and run it safely with an undo path. Cross-links to git-commit for committing.",
       "author": {
