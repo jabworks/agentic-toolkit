@@ -42,7 +42,7 @@ Do not ask again. Do not auto-trigger. Do not re-review after fixes unless expli
 │  Understand what the change is trying to do.                    │
 │                                                                  │
 │  Step 2: REVIEW                                                 │
-│  Evaluate across four dimensions (see below).                   │
+│  Evaluate across five dimensions (see below).                   │
 │                                                                  │
 │  Step 3: CATEGORIZE                                             │
 │  Assign each finding to Critical, Important, or Minor.         │
@@ -75,6 +75,21 @@ Do not ask again. Do not auto-trigger. Do not re-review after fixes unless expli
 - Unbounded loops or queries
 - Unnecessary re-renders or allocations
 - Missing indexes
+
+**Accessibility** (UI diffs only)
+
+- Interactive element with no accessible name (icon-only button, unlabeled input)
+- Clickable non-semantic element (a `div` with a click handler) lacking role and keyboard handling
+- Meaningful image with no alt text, or decorative image without empty alt
+- Form field with no associated label
+- Focus outline removed with no replacement
+- Colour as the only carrier of meaning
+- Dialog that doesn't trap focus and return it on close
+- ARIA that contradicts behaviour (`aria-hidden` on something focusable)
+
+A control that keyboard or screen-reader users cannot operate is at least
+🟡 Important, and 🔴 Critical when it blocks a core flow — those users have no
+other way through.
 
 **Maintainability**
 

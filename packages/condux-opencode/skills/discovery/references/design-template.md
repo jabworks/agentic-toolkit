@@ -27,6 +27,8 @@ feature: <slug>
 
 <prd.md's six headings, verbatim — Problem · Users · Goals and non-goals ·
 Success metrics · Scope · Open questions — each a table or short list.
+Scope's In rows carry Priority and Done when; open questions carry
+Blocking? and Who answers.
 technical-spec's references/templates.md has the template. Step 7 copies
 this part into specs/<slug>/prd.md heading for heading.>
 

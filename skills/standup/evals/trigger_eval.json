@@ -1,0 +1,15 @@
+[
+  { "query": "write my standup", "should_trigger": true, "expected_skill": "standup" },
+  { "query": "what did I do yesterday", "should_trigger": true, "expected_skill": "standup" },
+  { "query": "standup pls", "should_trigger": true, "expected_skill": "standup" },
+  { "query": "draft my daily update for the team", "should_trigger": true, "expected_skill": "standup" },
+  { "query": "need a status for standup in 5 mins", "should_trigger": true, "expected_skill": "standup" },
+  { "query": "wrtie my standpu for today", "should_trigger": true, "expected_skill": "standup" },
+  { "query": "standup since friday, include blockers", "should_trigger": true, "expected_skill": "standup" },
+  { "query": "wrap up this session", "should_trigger": true, "expected_skill": "session-handoff" },
+  { "query": "what should I work on next", "should_trigger": true, "expected_skill": "groom" },
+  { "query": "how many tokens did I burn this week", "should_trigger": true, "expected_skill": "session-report" },
+  { "query": "what did we do last time we touched the auth refactor", "should_trigger": true, "expected_skill": "remember" },
+  { "query": "what is a monad", "should_trigger": false, "expected_skill": null },
+  { "query": "add a dark mode toggle to settings", "should_trigger": false, "expected_skill": null, "accept": ["workflow"] }
+]

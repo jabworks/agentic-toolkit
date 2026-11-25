@@ -248,6 +248,7 @@ cp -r /tmp/agentic-toolkit/skills/<name> <skills-directory>/
 | [session-handoff](./skills/session-handoff/) | Preserve and restore session context across agentic coding sessions |
 | [adapting-skills](./skills/adapting-skills/) | Stack and style priors for adapting skills to the jabworks conventions _(opinionated — fork the priors for your own stack)_ |
 | [git-commit](./skills/git-commit/) | Conventional-commit message from the diff, run safely — review before staging, no blind `git add .` |
+| [standup](./skills/standup/) | Daily standup (Yesterday / Today / Blockers) drafted from this repo's commits, PRs, docket closes and handoff — read-only, repo-scoped |
 | [git-operations](./skills/git-operations/) | Decision router for git — pick the right operation (undo/discard/stash/merge/push) with an undo path |
 | [git-worktree](./skills/git-worktree/) | Decision router for git worktrees — isolated workspaces, native-first, with cleanup and recovery paths |
 | [spec-browser](./skills/spec-browser/) | Catalog and browse a specs/ tree — markdown index + folder-grouped doc site |

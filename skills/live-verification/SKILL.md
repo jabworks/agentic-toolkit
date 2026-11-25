@@ -1,7 +1,7 @@
 ---
 name: live-verification
 description: Verify a change by actually running it — drive the real UI or endpoint, check each claim against observed behaviour, and capture evidence before pushing.
-when_to_use: After /finalize, before committing, pushing, or merging a change with a runnable surface — UI, page, component, endpoint, CLI. Triggers include "verify it live", "did this actually work", "check it in the browser", "verify on preview", "live verify before pushing", "does it render right". Not for typecheck/lint/test (finalize), auditing plan completeness (preflight), or reading code to judge it (code-review).
+when_to_use: After /finalize, before committing, pushing, or merging a change with a runnable surface — UI, page, component, endpoint, CLI. Triggers include "verify it live", "did this actually work", "check it in the browser", "verify on preview", "live verify before pushing", "does it render right", "check accessibility", "a11y pass". Not for typecheck/lint/test (finalize), auditing plan completeness (preflight), or reading code to judge it (code-review).
 argument-hint: "[what to verify — optional; defaults to the current diff]"
 ---
 
@@ -89,6 +89,34 @@ Order of checks, because this is where the defects were:
    acted.
 4. **Keyboard.** Tab to it, Escape out of it, confirm focus lands somewhere
    sensible.
+
+**Accessibility pass.** Runs when the change adds or alters an interactive
+element, text or colour, or layout. A logic-only change skips it — say so in
+the report, because a silent skip reads as a pass. It rides the same single
+pass and adds no loop. The bar is WCAG 2.2 AA:
+
+| Check | Bar | Why this way |
+|---|---|---|
+| Name and role | Every control the change added has an accessible name and the right role | Read the browser tool's accessibility-tree snapshot — markup that looks labelled can still compute to no name |
+| Visible focus | Each newly focusable element shows a focus indicator | Keyboard users have no other cue for where they are |
+| Contrast | Text 4.5:1, large text 3:1, UI component boundaries and meaningful icons 3:1, in both themes | Measure computed colours — eyeballing misses near-misses, and the light/dark gate already makes you visit both themes |
+| Reflow | At 200% zoom or a 320 CSS px viewport, nothing clips, overlaps, or needs horizontal scrolling (inherently 2-D content such as data tables excepted) | Low-vision users zoom instead of shrinking the window; clipped content is lost content |
+| Target size | Pointer targets at least 24×24 CSS px, or spaced so a 24 px circle around each doesn't overlap a neighbour | Small adjacent targets cause mis-taps for anyone with imprecise pointing |
+
+Run an automated scan too if the environment has one (a Lighthouse
+accessibility audit through the browser tool, say). A clean scan is not a pass:
+it settles only a minority of these checks, so the rows above still get driven.
+
+Each check that applies becomes a claim row in the existing claim table,
+prefixed `a11y:` — e.g. `a11y: Save button has accessible name "Save"`. No new
+report shape; the prefix keeps the rows filterable without a second table to
+drift.
+
+**Mobile app, accessibility:** names and roles come from the `uiautomator
+dump` `native-app.md` already uses (content descriptions, not the source). For
+text scaling run `adb shell settings put system font_scale 2.0`, then reset it
+to `1.0` afterwards — a device left scaled corrupts the next run. Reflow
+becomes "nothing truncates or overlaps at 2.0 font scale".
 
 **Mobile app:** the same four checks, translated — both themes via
 `cmd uimode night`; pressed, disabled and in-flight states in place of hover;

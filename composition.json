@@ -53,6 +53,11 @@
         "description": "Craft a conventional-commit message from the diff and run the commit safely — review before staging, no blind `git add .`, multiline bodies via -F, branch check first."
       }
     },
+    "standup": {
+      "marketplace": {
+        "description": "Draft a daily standup — Yesterday / Today / Blockers — from this repo's commits, PRs, docket closes and latest handoff. Read-only, repo-scoped, never invents plans or blockers."
+      }
+    },
     "git-operations": {
       "marketplace": {
         "description": "Decision router for git: given a situation, pick the right operation (undo/discard/stash/merge/push) and run it safely with an undo path. Cross-links to git-commit for committing."
@@ -147,6 +152,10 @@
         {
           "skill": "git-commit",
           "blurb": "Conventional-commit message from the diff, run safely — review before staging, no blind `git add .`"
+        },
+        {
+          "skill": "standup",
+          "blurb": "Daily standup (Yesterday / Today / Blockers) drafted from this repo's commits, PRs, docket closes and handoff — read-only, repo-scoped"
         },
         {
           "skill": "git-operations",
@@ -307,6 +316,10 @@
         {
           "entry": "`git-commit`",
           "blurb": "Conventional-commit message from the diff, run safely"
+        },
+        {
+          "entry": "`standup`",
+          "blurb": "Daily standup drafted from this repo's recorded work"
         },
         {
           "entry": "`git-operations`",

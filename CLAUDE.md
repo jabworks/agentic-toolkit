@@ -82,6 +82,7 @@ See `skills/toolkit-foundry/SKILL.md` for the canonical checklist. Short version
 | `session-report` | Generate HTML usage report from the usage-trace store or session transcripts |
 | `adapting-skills` | Adapt generic skills to the jabworks stack and conventions |
 | `git-commit` | Conventional-commit message from the diff, run safely |
+| `standup` | Daily standup drafted from this repo's recorded work |
 | `git-operations` | Decision router for git operations with undo paths |
 | `git-worktree` | Decision router for git worktrees — native-first isolation, cleanup, recovery |
 | `spec-browser` | Catalog and browse a specs/ tree as one doc site |

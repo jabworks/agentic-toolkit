@@ -263,6 +263,9 @@ against that N. Announce §0 separately, first: *"Requirements first (§0), then
 | An unanswered section is asked once, then written under *Open questions* — never filled in | a six-slot shape creates pressure to complete it; invented users and metrics read as facts forever after |
 | Content from the user's document that fits no heading goes under *Open questions*, in its original wording | losing what they wrote to fit the shape is worse than an untidy list |
 | A later design section that changes scope, goals, or users updates §0 visibly, and names the change | `prd.md` and `decisions.md` describe one feature; preflight's drift check reads both |
+| Every *In* row carries a priority (P0 / P1) and a *Done when* check. One the user has not stated is written as `?` and raised under *Open questions* | preflight checks P0 rows against the build. A guessed check passes or fails against the wrong thing |
+| A section that adds an *In* row names what pays for it: a row moved to *Out*, a P0 dropped to P1, or a later date the user accepts. A date trade is written in that section's **Decided** line, and Step 7 carries it into `decisions.md`, since the PRD has no date field | scope that only ever grows is how a signed-off design drifts without anyone deciding it |
+| Blocking open questions are read back at sign-off. Each one is answered there, or kept with its *Who answers* | a design signed off with a silent blocker fails on the first task that hits it |
 | `prd.md` is written at Step 7, never at §0 | a PRD in `specs/` for a discovery nobody signed off is a durable file making unsigned claims |
 | The design's why-line is derived from §0's *Problem* | one fact, one home — never a second copy that can disagree |
 

@@ -6,6 +6,7 @@
 | 2 | Four entry points — author, consume in-tree, consume external, standalone save — each reusing an existing branch | no new trigger surface is needed; the branches exist and only need to know about `prd.md` | accepted |
 | 3 | `prd.md` has six table-first sections and three readers: the router, the drift check, discovery's design template | a section written as a table is a claim the drift check can test | accepted |
 | 4 | Two skills gain trigger phrases, two gain one table row, all shipped as one follow-up item in one PR | the four edits only make sense together | accepted |
+| 5 | Scope's In rows carry Priority and Done when; open questions carry Blocking? and Who answers — amends decision 3's layers, not its six headings | an In row with no done-check is a claim nothing can test, and an open question with no owner is a blocker nobody holds | accepted |
 
 ## 1. Shape: a concern file authored by discovery — 2026-09-15
 
@@ -102,3 +103,20 @@ Docket #83 asked whether the spec-related skills could evolve to write PRDs. As 
 **Consequences**
 - The build is a condux minor bump (a new capability) and needs a minor changeset for `@jabworks/condux`, since any condux skill edit reaches the npm package.
 - The bump commit goes last, then `--write-changelog`.
+
+## 5. Done-checks and owned questions — 2026-11-25
+
+**Decided:** the Scope section splits into an *In* table (`In · Priority · Done when`) and an *Out* table. *Open questions* becomes a table (`Question · Blocking? · Who answers`). discovery gains three §0 rules: every In row has a priority and a done-check, `?` when unstated; an added In row names what pays for it; blocking questions are read back at sign-off. preflight's drift row reads P0 done-checks under the same feature-completing condition as goals.
+**Because:** decision 3 made each section a table so the drift check could test it. Two sections still held nothing testable. An In row said what was covered but not when it was finished, and an open question said what was unknown but not who could answer it or whether work had to wait.
+
+| Alternative | Why not |
+|---|---|
+| A seventh `## Requirements` section with P0/P1/P2 rows | breaks the six-heading contract every reader and the guard test are written against. The In rows already are the requirements |
+| A P2 priority | P2 means "not this version", and the Out table already says that. A third priority invites rows nobody plans to build |
+| Check done-checks on every task | the same over-reach the goals comparison was narrowed away from in decision 3. A task serving one row would fail drift on all the others |
+| Migrate existing `prd.md` files | a missing column makes no claim. Readers treat it as unstated, so old PRDs stay valid without a rewrite |
+
+**Consequences**
+- `tests/prd-authoring.test.mjs` pins the new table headers, and requires the drift row to name `Done when` and `P0`.
+- The scope-swap rule is discovery's, not preflight's. A scope addition is a design-time decision, and preflight only sees the result.
+- condux minor bump, plus a minor `@jabworks/condux` changeset.

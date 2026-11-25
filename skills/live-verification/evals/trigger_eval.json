@@ -13,6 +13,7 @@
   { "query": "confirm the component actually renders now", "should_trigger": true, "expected_skill": "live-verification" },
   { "query": "spin up the app and check the change before pushing", "should_trigger": true, "expected_skill": "live-verification" },
   { "query": "did the button actually fix itself, go look", "should_trigger": true, "expected_skill": "live-verification" },
+  { "query": "do an a11y pass on the new dialog in the browser", "should_trigger": true, "expected_skill": "live-verification" },
   { "query": "run typecheck and lint before I commit", "should_trigger": true, "expected_skill": "finalize" },
   { "query": "run the full test suite", "should_trigger": true, "expected_skill": "finalize" },
   { "query": "am I actually done, did I miss anything", "should_trigger": true, "expected_skill": "preflight" },

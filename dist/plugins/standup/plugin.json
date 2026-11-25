@@ -1,0 +1,18 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "standup",
+  "version": "1.0.0",
+  "description": "Draft a daily standup (Yesterday / Today / Blockers) from the current repo's commits, PRs, docket closes and latest handoff. Read-only, this repo only, nothing invented.",
+  "author": {
+    "name": "jabworks"
+  },
+  "repository": "https://github.com/jabworks/agentic-toolkit",
+  "license": "MIT",
+  "keywords": [
+    "standup",
+    "status",
+    "daily-update",
+    "git",
+    "productivity"
+  ]
+}
